@@ -13,19 +13,19 @@ interface LayerNodeProps {
 const LayerNode: React.FC<LayerNodeProps> = ({ type, name, active, onSelect, styleMode = 'solid' }) => (
   <div className="flex flex-col items-center">
     <motion.div
-      whileHover={{ y: -4, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -6, scale: 1.05, boxShadow: '0 20px 40px rgba(19, 236, 73, 0.15)' }}
+      whileTap={{ scale: 0.95 }}
       onClick={onSelect}
       animate={{
-        borderColor: active ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-        background: active ? 'rgba(19, 236, 73, 0.08)' : '#121212',
-        boxShadow: active ? '0 0 30px rgba(19, 236, 73, 0.15)' : '0 0 0px rgba(0,0,0,0)',
+        borderColor: active ? 'var(--primary)' : 'rgba(255,255,255,0.08)',
+        background: active ? 'rgba(19, 236, 73, 0.1)' : 'rgba(10, 10, 10, 0.6)',
+        boxShadow: active ? '0 0 40px rgba(19, 236, 73, 0.2)' : '0 0 0px rgba(0,0,0,0)',
       }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      className={`rounded-sm relative select-none`}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className={`rounded-md relative select-none`}
       style={{
-        width: '280px',
-        padding: '20px',
+        width: '300px',
+        padding: '24px',
         cursor: 'pointer',
         border: '1px solid',
         borderStyle: styleMode,
@@ -126,21 +126,28 @@ export const ArchitectureBuilder: React.FC<ArchitectureBuilderProps> = ({ onActi
 
   return (
     <div className="flex-1 flex h-full overflow-hidden relative">
-      {/* Sidebar Toggle Global Hint */}
+      {/* Refined Right-Edge Sidebar Toggle */}
       {!isSidebarOpen && (
-        <button
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ width: '32px', opacity: 1, background: 'var(--primary)' }}
           onClick={() => setIsSidebarOpen(true)}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-[100] btn-primary p-3 rounded-sm shadow-2xl hover:scale-105 active:scale-95 transition-all"
-          title="Show Details Panel"
-          style={{ background: 'var(--primary)', color: 'black' }}
+          className="absolute right-0 top-0 h-full z-50 cursor-pointer transition-all flex items-center justify-center opacity-60 border-l border-primary/30"
+          style={{ width: '20px', background: 'rgba(19, 236, 73, 0.1)', backdropFilter: 'blur(8px)' }}
+          title="Open Configuration Ledger"
         >
-          <PanelRightOpen size={20} />
-        </button>
+          <div className="flex flex-col items-center">
+             <PanelRightOpen size={18} className="text-primary group-hover:text-black transition-colors" />
+          </div>
+        </motion.div>
       )}
 
       {/* Main Workspace */}
-      <div
-        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative"
+      <motion.div
+        layout
+        transition={{ type: 'spring', damping: 25, stiffness: 450 }}
+        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative border-r border-white/5"
         style={{ background: 'rgba(18,18,18,0.5)' }}
       >
         {/* Workspace Background Dots */}
@@ -156,12 +163,13 @@ export const ArchitectureBuilder: React.FC<ArchitectureBuilderProps> = ({ onActi
         />
 
         {/* Action Header - NOW RELATIVE AND DYNAMIC */}
-        <div
-          className="flex justify-between items-center glass rounded-sm z-30 m-6 p-4 border"
+        <motion.div
+          layout
+          className="flex justify-between items-center glass rounded-md z-30 m-8 p-6 border shadow-2xl"
           style={{
-            background: 'rgba(10,10,10,0.8)',
-            backdropFilter: 'blur(12px)',
-            borderColor: 'rgba(255,255,255,0.05)'
+            background: 'rgba(10,10,10,0.85)',
+            backdropFilter: 'blur(20px)',
+            borderColor: 'rgba(255,255,255,0.08)'
           }}
         >
           <div className="flex items-center gap-3">
@@ -182,22 +190,22 @@ export const ArchitectureBuilder: React.FC<ArchitectureBuilderProps> = ({ onActi
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={() => onAction?.('Configuration manifest exported successfully.')}
-              className="btn-secondary px-4 py-2 uppercase tracking-widest font-bold flex items-center gap-2" 
+              className="btn-secondary px-4 py-2 uppercase tracking-widest font-bold flex items-center gap-2"
               style={{ fontSize: '10px' }}
             >
               <Download size={14} /> Export JSON
             </button>
-            <button 
+            <button
               onClick={() => onAction?.('Architectural blueprint synchronized to blockchain.')}
-              className="btn-primary px-4 py-2 uppercase tracking-widest font-bold flex items-center gap-2" 
+              className="btn-primary px-4 py-2 uppercase tracking-widest font-bold flex items-center gap-2"
               style={{ fontSize: '10px' }}
             >
               <Save size={14} /> Save Blueprint
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Node Flow View */}
         <div className="flex-1 overflow-y-auto scroll-smooth relative z-10 custom-scrollbar pb-20">
@@ -251,51 +259,53 @@ export const ArchitectureBuilder: React.FC<ArchitectureBuilderProps> = ({ onActi
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Detail Panel Sidebar */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <motion.div 
+          <motion.div
             initial={{ x: 320, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 320, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 450 }}
             className="flex h-full"
           >
-            <div className="h-full w-[380px] border-l glass overflow-hidden relative flex flex-col shadow-[rgba(0,0,0,0.5)_-20px_0px_50px]">
-              {/* Close Handle Button */}
-              <button
-                onClick={() => setIsSidebarOpen(false)}
-                className="absolute left-4 top-6 z-50 text-muted hover:text-primary transition-colors hover:scale-110 active:scale-95"
-                title="Hide Sidebar"
-              >
-                <PanelRightClose size={20} />
-              </button>
+            <div className="h-full w-[360px] border-l border-white/5 flex flex-col shadow-[-20px_0_40px_rgba(0,0,0,0.4)]" style={{ background: '#000000' }}>
+              {/* Close Header */}
+              <div className="flex items-center justify-end px-4 py-2 border-b border-white/5 h-10">
+                <button
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="text-muted hover:text-primary transition-all p-1 hover:bg-white/5 rounded-sm"
+                  title="Hide Sidebar"
+                >
+                  <PanelRightClose size={14} />
+                </button>
+              </div>
 
-              <div className="flex-1 overflow-y-auto p-12 pt-16 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-8 pt-6 custom-scrollbar">
                 <motion.div
                   key={activeNode}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 >
-                  <div className="flex items-center gap-3 text-primary mb-4">
+                  <div className="flex items-center gap-3 text-primary mb-2">
                     {current.icon}
                     <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] opacity-80">Selected Context</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-white leading-tight mb-4 font-heading">{current.title}</h3>
-                  <p className="text-sm text-muted leading-relaxed mb-10 border-b border-white/5 pb-8">{current.desc}</p>
+                  <h3 className="text-2xl font-bold text-white leading-tight mb-3 font-heading">{current.title}</h3>
+                  <p className="text-sm text-muted leading-relaxed mb-6 border-b border-white/5 pb-6">{current.desc}</p>
 
-                  <div className="space-y-10">
+                  <div className="space-y-8">
                     <div>
-                      <div className="flex items-center gap-2 mb-6 text-white/50">
+                      <div className="flex items-center gap-2 mb-4 text-white/40">
                         <Settings2 size={14} />
                         <span className="text-[10px] font-mono font-bold uppercase tracking-widest">Configuration Ledger</span>
                       </div>
-                      <div className="space-y-5">
+                      <div className="space-y-4">
                         {current.params.map((p: any, i: number) => (
-                          <div key={i} className="flex flex-col gap-2 group">
+                          <div key={i} className="flex flex-col gap-1.5 group">
                             <span className="text-[9px] text-muted uppercase font-bold tracking-[0.15em] transition-colors group-hover:text-primary/70">{p.label}</span>
                             <div className="bg-[#111] border border-white/5 px-4 py-3 rounded-sm text-xs font-mono text-white/90 flex items-center justify-between transition-all group-hover:border-primary/30 group-hover:bg-[#151515]">
                               {p.value}
@@ -312,7 +322,7 @@ export const ArchitectureBuilder: React.FC<ArchitectureBuilderProps> = ({ onActi
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="h-1.5 flex-1 bg-white/5 rounded-full overflow-hidden">
-                          <motion.div 
+                          <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: '92%' }}
                             transition={{ duration: 1, ease: 'easeOut' }}

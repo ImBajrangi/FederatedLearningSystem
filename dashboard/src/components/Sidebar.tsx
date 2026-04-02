@@ -1,5 +1,6 @@
 import React from 'react';
 import { LayoutDashboard, Database, Activity, Library, Settings, ShieldAlert } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { Client } from '../hooks/useSimulation';
 
 type ViewType = 'dashboard' | 'training' | 'dataset' | 'library';
@@ -20,33 +21,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onViewChange 
 }) => {
   return (
-    <aside className="w-80 h-full border-r flex flex-col overflow-y-auto" style={{ background: 'rgba(255,255,255,0.02)' }}>
+    <aside className="w-80 h-full border-r border-white/5 flex flex-col overflow-y-auto" style={{ background: '#000000' }}>
       {/* Navigation */}
-      <nav className="p-4 border-b" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <NavItem 
-          icon={<LayoutDashboard size={18} />} 
-          label="Dashboard" 
-          active={currentView === 'dashboard'} 
-          onClick={() => onViewChange('dashboard')}
-        />
-        <NavItem 
-          icon={<Activity size={18} />} 
-          label="Training Workspace" 
-          active={currentView === 'training'} 
-          onClick={() => onViewChange('training')}
-        />
-        <NavItem 
-          icon={<Database size={18} />} 
-          label="Dataset Explorer" 
-          active={currentView === 'dataset'} 
-          onClick={() => onViewChange('dataset')}
-        />
-        <NavItem 
-          icon={<Library size={18} />} 
-          label="Model Library" 
-          active={currentView === 'library'} 
-          onClick={() => onViewChange('library')}
-        />
+      <nav className="p-4 border-b border-white/5 flex flex-col gap-0.5">
+        {[
+          { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={14} /> },
+          { id: 'training', label: 'Training Workspace', icon: <Activity size={14} /> },
+          { id: 'dataset', label: 'Dataset Explorer', icon: <Database size={14} /> },
+          { id: 'library', label: 'Model Library', icon: <Library size={14} /> }
+        ].map((item) => (
+          <button
+            key={item.id}
+            onClick={() => onViewChange(item.id as any)}
+            className={`group flex items-center gap-3 px-3 py-2 rounded-sm transition-all relative overflow-hidden ${
+              currentView === item.id ? 'text-primary' : 'text-text-muted hover:text-white'
+            }`}
+          >
+            {currentView === item.id && (
+              <motion.div
+                layoutId="sidebar-active"
+                className="absolute inset-0 bg-white/[0.03] border-l-2 border-primary"
+                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+              />
+            )}
+            <span className={`relative z-10 transition-transform duration-200 ${currentView === item.id ? 'scale-105' : 'group-hover:translate-x-0.5'}`}>
+              {item.icon}
+            </span>
+            <span className="relative z-10 font-bold uppercase tracking-widest text-[9px]">
+              {item.label}
+            </span>
+          </button>
+        ))}
       </nav>
 
       {/* System Metrics */}
@@ -115,32 +120,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   );
 };
 
-interface NavItemProps {
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-  onClick: () => void;
-}
-
-const NavItem: React.FC<NavItemProps> = ({ icon, label, active = false, onClick }) => (
-  <button
-    onClick={onClick}
-    className="flex items-center gap-3 px-3 py-2 rounded-sm"
-    style={{
-      width: '100%',
-      border: 'none',
-      borderLeft: active ? '2px solid var(--primary)' : '2px solid transparent',
-      background: active ? 'rgba(19, 236, 73, 0.1)' : 'transparent',
-      color: active ? 'var(--primary)' : 'var(--text-muted)',
-      cursor: 'pointer',
-      textAlign: 'left',
-      transition: 'all 0.2s'
-    }}
-  >
-    {icon}
-    <span className="font-bold tracking-tight text-sm">{label}</span>
-  </button>
-);
 
 const MetricItem = ({ label, value, color = "var(--primary)" }: { label: string, value: string | number, color?: string }) => (
   <div className="flex justify-between items-center mb-3" style={{ marginBottom: '12px' }}>

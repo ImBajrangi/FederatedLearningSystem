@@ -61,10 +61,10 @@ function App() {
         return (
           <motion.div
             key="dashboard"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            initial={{ opacity: 0, scale: 0.98, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 1.02, y: -10 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 25 }}
             className="flex-1 overflow-y-auto p-6 flex flex-col gap-6"
           >
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
@@ -193,10 +193,11 @@ function App() {
               {toasts.map(toast => (
                 <motion.div
                   key={toast.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="glass p-3 flex items-center gap-3 min-w-[240px] border-l-2"
+                  initial={{ opacity: 0, x: 20, scale: 0.9 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.1 } }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className="glass p-3 flex items-center gap-3 min-w-[240px] border-l-2 shadow-2xl"
                   style={{ borderColor: toast.type === 'success' ? 'var(--primary)' : 'var(--text-muted)' }}
                 >
                   {toast.type === 'success' ? <ShieldCheck size={16} className="text-primary" /> : <Info size={16} className="text-muted" />}
