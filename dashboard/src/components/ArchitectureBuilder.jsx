@@ -19,59 +19,78 @@ import {
   Workflow,
   ChevronRight,
   Info,
-  Code
+  Code,
+  Layers,
+  ChevronDown,
+  Search,
+  Settings,
+  AlertTriangle
 } from 'lucide-react';
 
-const LayerNode = ({ type, name, active, onSelect }) => (
+const LayerNode = ({ type, name, active, onSelect, metadata }) => (
   <div className="flex flex-col items-center w-full relative">
+    {/* Connector Top */}
+    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 border border-border bg-white rounded-full z-20 shadow-sm" />
+    
     <motion.div
-      whileHover={{ y: -2, scale: 1.01 }}
+      whileHover={{ y: -2 }}
       whileTap={{ scale: 0.99 }}
       onClick={onSelect}
-      className={`relative select-none w-fit min-w-[280px] max-w-[440px] p-6 cursor-pointer transition-all border shadow-sm ${
+      className={`relative z-10 w-[240px] border-[1.5px] bg-white shadow-sm cursor-pointer transition-all ${
         active 
-          ? 'border-primary/60 bg-white ring-1 ring-primary/10' 
-          : 'border-border/60 bg-white/80 hover:border-text-muted/30 hover:shadow-md'
+          ? 'border-primary shadow-md ring-4 ring-primary/5' 
+          : 'border-border hover:border-text-muted/50'
       }`}
     >
-      <div className="flex items-center justify-between mb-4 gap-8">
-        <div className="flex items-center gap-2">
-           <div className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-primary' : 'bg-text-muted/30'}`} />
-           <span className={`type-label text-[8px] ${active ? 'text-primary' : 'text-text-muted'}`}>
-             {type}
-           </span>
-        </div>
-        {active && <span className="text-[8px] font-bold text-primary/60 tracking-widest uppercase italic">Node Active</span>}
-      </div>
-      
-      <div className="flex flex-col gap-1">
-        <h4 className={`type-l3 sans ${active ? 'text-text-main' : 'text-text-muted'} leading-snug uppercase break-words`}>
-          {name}
-        </h4>
-        <p className="text-[9px] font-mono font-bold text-text-muted/40 uppercase tracking-tight">
-          Partition {Math.floor(Math.random() * 999)} // {type.split(' ')[0]}
-        </p>
+      {/* Node Header */}
+      <div className={`px-3 py-1.5 border-b flex justify-between items-center ${active ? 'bg-primary/5 border-primary/20' : 'bg-bg-main/30 border-border'}`}>
+        <span className={`text-[10px] font-bold uppercase tracking-wider ${active ? 'text-primary' : 'text-text-muted'}`}>
+          {type}
+        </span>
+        {active ? <Settings size={12} className="text-primary" /> : <div className="w-1.5 h-1.5 rounded-full bg-border" />}
       </div>
 
-      {active && (
-        <motion.div 
-          layoutId="active-border"
-          className="absolute -inset-[1px] border-2 border-primary pointer-events-none opacity-20"
-        />
-      )}
+      {/* Node Body */}
+      <div className="p-3 space-y-3">
+        <h4 className={`text-xs font-bold uppercase tracking-tight leading-snug ${active ? 'text-text-main' : 'text-text-muted'}`}>
+          {name}
+        </h4>
+        
+        {metadata && (
+          <div className="space-y-1">
+            {metadata.map((m, i) => (
+              <div key={i} className="flex justify-between items-center text-[9px] font-mono text-mono-sm">
+                <span className="text-text-muted/60">{m.label}:</span>
+                <span className={`font-bold ${active ? 'text-primary' : 'text-text-muted'}`}>{m.value}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Output Shape Indicator */}
+        <div className="mt-2 pt-2 border-t border-border/40 flex justify-between items-center">
+            <span className="text-[14px] text-text-muted/40">→</span>
+            <span className={`text-[10px] font-mono px-1 py-0.5 bg-bg-main border border-border/60 ${active ? 'text-primary' : 'text-text-muted'}`}>
+              (None, 26, 26, 32)
+            </span>
+        </div>
+      </div>
     </motion.div>
     
+    {/* Connector Bottom */}
+    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 border border-border bg-white rounded-full z-20 shadow-sm" />
+    
+    {/* Connection Flow Spine */}
     <div className="h-16 flex flex-col items-center justify-center relative">
-      <div className={`w-[2px] h-full ${active ? 'bg-primary/20' : 'bg-border/40'} relative transition-colors duration-500`}>
+      <div className={`w-[1px] h-full ${active ? 'bg-primary/40' : 'bg-border/60'} relative transition-colors duration-500`}>
         {active && (
            <motion.div 
              initial={{ top: 0 }}
              animate={{ top: '100%' }}
-             transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-             className="absolute w-full h-8 bg-gradient-to-b from-transparent via-primary to-transparent"
+             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+             className="absolute w-full h-12 bg-gradient-to-b from-transparent via-primary/60 to-transparent"
            />
         )}
-        <ArrowDown size={14} className={`absolute -bottom-1 -left-[6px] transition-colors ${active ? 'text-primary' : 'text-border'}`} />
       </div>
     </div>
   </div>
@@ -84,45 +103,69 @@ export const ArchitectureBuilder = ({ onAction }) => {
   const nodeDetails = {
     global: {
       title: 'Aggregation Hub',
+      type: 'Sequential Model',
       desc: 'Central orchestration layer focused on the secure aggregation of localized weighting vectors.',
       math: 'W_{agg} = \\sum_{i=1}^n \\alpha_i W_i',
+      formula: 'S(i, j) = (I * K)(i, j) = Σ Σ I(i+m, j+n) K(m, n)',
       params: [
         { label: 'Security Model', value: 'Homomorphic Encryption' },
         { label: 'Network Timeout', value: '5000ms' },
         { label: 'Aggregation Algo', value: 'FedAvg-Secure' }
       ],
+      metadata: [
+        { label: 'filters', value: '32' },
+        { label: 'kernel_size', value: '(3, 3)' }
+      ],
       icon: <Server size={18} />
     },
     blockchain: {
       title: 'Audit Ledger',
+      type: 'Consensus Layer',
       desc: 'Immutable permissioned consensus mechanism providing identity verification and reputational proofs.',
       math: '\\mathcal{L} \\gets \\mathcal{L} \\cup \\{ B_k \\}',
+      formula: 'H(B_k) = SHA256(PreHash || Root || Data)',
       params: [
         { label: 'Consensus', value: 'Proof-of-Authority' },
         { label: 'Block Interval', value: '2.0s' },
         { label: 'Encryption', value: 'ECDSA-Secp256k1' }
       ],
+      metadata: [
+        { label: 'difficulty', value: 'N/A' },
+        { label: 'finality', value: 'instant' }
+      ],
       icon: <Workflow size={18} />
     },
     security: {
       title: 'Compliance Node',
+      type: 'Policy Logic',
       desc: 'Real-time policy enforcement engine utilizing differentially private noise calibration.',
       math: '\\mathcal{M}(d) = f(d) + \\mathcal{N}(0, \\sigma^2)',
+      formula: 'DP(ε, δ) : P(M(d) ∈ S) ≤ e^ε P(M(d\') ∈ S) + δ',
       params: [
         { label: 'DP Epsilon', value: 'ε=1.2' },
         { label: 'Anomaly Bound', value: '1.96σ' },
         { label: 'Validation Mode', value: 'Strict' }
       ],
+      metadata: [
+        { label: 'noise_scale', value: 'Laplacian' },
+        { label: 'budget_limit', value: '100' }
+      ],
       icon: <Lock size={18} />
     },
     aggregation: {
       title: 'Compute Edge',
+      type: 'Execution Shard',
       desc: 'Decentralized institutional clusters executing local stochastic gradient descent iterations.',
       math: '\\nabla_{\\theta} J(\\theta) \\approx \\frac{1}{m} \\sum \\nabla \\ell(f(x_i), y_i)',
+      formula: 'θ_{t+1} = θ_t - η · ∇J(θ_t)',
       params: [
         { label: 'Hardware', value: 'NVIDIA H100 Cluster' },
         { label: 'Quantization', value: 'INT8 / BF16' },
         { label: 'Node Capacity', value: 'High Density' }
+      ],
+      metadata: [
+        { label: 'batch_size', value: '256' },
+        { label: 'learning_rate', value: '1e-4' }
       ],
       icon: <Cpu size={18} />
     }
@@ -131,164 +174,182 @@ export const ArchitectureBuilder = ({ onAction }) => {
   const current = nodeDetails[activeNode];
 
   return (
-    <div className="flex relative">
-      {/* 1. Left Component Palette (Textbook style list) */}
-      <div className="w-[280px] border-r border-border bg-bg-surface flex flex-col shrink-0">
-          <div className="p-10 border-b border-border bg-bg-main/50">
-             <span className="type-label text-text-main">Components</span>
+    <div className="flex relative h-full bg-white selection:bg-primary/10 overflow-hidden">
+      {/* 1. Left Component Palette (Professional Sidebar) */}
+      <aside className="w-[300px] border-r border-border bg-bg-surface flex flex-col shrink-0">
+          <div className="p-6 border-b border-border">
+             <h3 className="type-label text-text-muted mb-4 opacity-70">Layer Palette</h3>
+             <div className="relative group">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
+                <input 
+                   type="text" 
+                   placeholder="Search components..." 
+                   className="w-full bg-bg-main border border-border pl-10 pr-4 py-2 text-[10px] uppercase font-bold tracking-widest placeholder:text-text-muted/40 focus:outline-none focus:border-primary/50 transition-all font-sans"
+                />
+             </div>
           </div>
-         <div className="flex-1 overflow-y-auto py-8">
-             <div className="px-10 mb-8">
-                <span className="type-label text-text-muted opacity-60">Protocol Layers</span>
+          
+         <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar space-y-8">
+             {/* Core Layers */}
+             <div>
+                <div className="flex items-center justify-between mb-4 cursor-pointer group">
+                   <span className="text-[10px] font-bold text-text-main uppercase tracking-widest">Core Layers</span>
+                   <ChevronDown size={14} className="text-text-muted group-hover:text-text-main transition-colors" />
+                </div>
+                <div className="space-y-2">
+                   {['Dense', 'Activation', 'Flatten', 'Input'].map((name) => (
+                      <div key={name} className="p-3 border border-border bg-white text-[11px] font-bold text-text-muted uppercase tracking-tight flex items-center gap-3 cursor-move hover:border-primary hover:text-primary transition-all">
+                         <div className="w-4 h-4 flex items-center justify-center opacity-40"><Layers size={14} /></div>
+                         {name}
+                      </div>
+                   ))}
+                </div>
              </div>
-            {['Input Gateway', 'Identity Provider', 'Auth Service', 'Relay Node'].map((item, i) => (
-              <div key={i} className="px-10 py-3 flex items-center justify-between group cursor-pointer hover:bg-bg-main transition-colors">
-                 <span className="text-xs font-medium text-text-muted group-hover:text-primary transition-colors">{item}</span>
-                 <div className="w-1.5 h-1.5 rounded-full border border-border group-hover:bg-primary/20 transition-all" />
-              </div>
-            ))}
-                        <div className="px-10 mt-12 mb-8">
-                <span className="type-label text-text-muted opacity-60">Compute Units</span>
+
+             {/* Convolutional */}
+             <div>
+                <div className="flex items-center justify-between mb-4 cursor-pointer group">
+                   <span className="text-[10px] font-bold text-text-main uppercase tracking-widest">Convolutional</span>
+                   <ChevronDown size={14} className="text-text-muted group-hover:text-text-main transition-colors" />
+                </div>
+                <div className="space-y-2">
+                   {['Conv2D', 'Conv1D', 'MaxPooling2D', 'AveragePooling'].map((name) => (
+                      <div key={name} className="p-3 border border-border bg-white text-[11px] font-bold text-text-muted uppercase tracking-tight flex items-center gap-3 cursor-move hover:border-primary hover:text-primary transition-all">
+                         <div className="w-4 h-4 flex items-center justify-center opacity-40"><Box size={14} /></div>
+                         {name}
+                      </div>
+                   ))}
+                </div>
              </div>
-            {['GPU Cluster', 'TPU Node', 'FPGA Edge', 'CPU Worker'].map((item, i) => (
-              <div key={i} className="px-10 py-3 flex items-center justify-between group cursor-pointer hover:bg-bg-main transition-colors">
-                 <span className="text-xs font-medium text-text-muted group-hover:text-primary transition-colors">{item}</span>
-                 <div className="w-1.5 h-1.5 rounded-full border border-border group-hover:bg-primary/20 transition-all" />
-              </div>
-            ))}
          </div>
-      </div>
+      </aside>
 
-      {/* 2. Main Canvas Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-bg-main relative min-h-[800px]">
-        <div className="h-16 shrink-0 flex items-center justify-between border-b border-border px-10 bg-white/80 backdrop-blur-md sticky top-0 z-30">
-           <div className="flex items-center gap-3 text-text-muted">
-             <span className="type-label serif italic">Architecture Canvas v1.2</span>
-           </div>
-          <div className="flex items-center gap-4">
-             <button className="text-[10px] font-bold text-text-muted uppercase tracking-widest hover:text-primary transition-colors">Clear Grid</button>
-             <div className="w-px h-4 bg-border" />
-             <button className="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">Auto-Arrange</button>
-          </div>
-        </div>
+      {/* 2. Main Canvas Area (Grid Based) */}
+      <main className="flex-1 relative bg-grid overflow-auto flex flex-col items-center py-16 custom-scrollbar">
+         {/* Academic Connection Spine */}
+         <div className="absolute w-[1px] bg-border/60 top-16 bottom-16 left-1/2 -translate-x-1/2 z-0" />
 
-        <div className="flex-1 p-16 relative z-10 custom-scrollbar">
-          <div className="flex flex-col items-center max-w-2xl mx-auto">
-            <LayerNode
-              type="System Gateway"
-              name="Aggregation Hub"
-              active={activeNode === 'global'}
-              onSelect={() => setActiveNode('global')}
-            />
-            <LayerNode
-              type="Consensus Layer"
-              name="Audit Ledger"
-              active={activeNode === 'blockchain'}
-              onSelect={() => setActiveNode('blockchain')}
-            />
-            <LayerNode
-              type="Policy Logic"
-              name="Compliance Node"
-              active={activeNode === 'security'}
-              onSelect={() => setActiveNode('security')}
-            />
-            <LayerNode
-              type="Compute Cluster"
-              name="Execution Edge"
-              active={activeNode === 'aggregation'}
-              onSelect={() => setActiveNode('aggregation')}
-            />
+         <div className="max-w-2xl mx-auto space-y-0 flex flex-col items-center">
+            {Object.entries(nodeDetails).map(([key, node]) => (
+               <LayerNode
+                  key={key}
+                  type={node.type}
+                  name={node.title}
+                  metadata={node.metadata}
+                  active={activeNode === key}
+                  onSelect={() => setActiveNode(key)}
+               />
+            ))}
 
-            <div className="flex flex-col items-center mt-6">
-              <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center bg-white shadow-sm">
-                <ShieldCheck size={20} className="text-primary/40" />
-              </div>
-              <span className="text-[9px] uppercase font-bold text-text-muted mt-8 tracking-[0.3em] font-mono">
-                Institutional Integrity verified
-              </span>
+            {/* Placeholder for expansion */}
+            <motion.div 
+               whileHover={{ scale: 1.02 }}
+               className="w-[240px] h-12 border-2 border-dashed border-border bg-bg-main/20 mt-8 flex items-center justify-center group cursor-pointer transition-all"
+            >
+               <span className="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest group-hover:text-primary transition-colors flex items-center gap-2">
+                  <ChevronRight size={14} /> Drop component to extend
+               </span>
+            </motion.div>
+         </div>
+
+         {/* Integrity Badge */}
+         <div className="fixed bottom-10 flex flex-col items-center space-y-4">
+            <div className="px-6 py-2 border border-border bg-white/80 backdrop-blur-sm flex items-center gap-3 shadow-sm">
+               <ShieldCheck size={14} className="text-primary/40" />
+               <span className="text-[9px] font-bold text-text-muted uppercase tracking-[0.2em]">Architecture Policy Verified</span>
             </div>
-          </div>
-        </div>
-      </div>
+         </div>
+      </main>
 
-      {/* 3. Layer Inspector Panel */}
+      {/* 3. Layer Inspector Panel (High Density) */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <motion.div
-            initial={{ x: 480, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 480, opacity: 0 }}
-            className="w-[400px] border-l border-border bg-bg-surface flex flex-col z-40 min-h-[800px]"
-          >
-            <div className="flex items-center justify-between px-10 py-6 border-b border-border shrink-0 bg-bg-main/30">
-                <div className="flex items-center gap-4 text-primary">
-                  <Settings2 size={15} className="opacity-70" />
-                  <span className="type-l3 sans text-text-main">Layer Inspector</span>
-                </div>
-               <button onClick={() => setIsSidebarOpen(false)} className="p-2 hover:bg-bg-main rounded-sm text-text-muted transition-all">
-                  <PanelRightClose size={18} />
-               </button>
+          <aside className="w-[400px] border-l border-border bg-bg-surface flex flex-col z-40 overflow-hidden shadow-2xl">
+            {/* Inspector Header */}
+            <div className="p-8 border-b border-border bg-bg-main/30">
+               <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3 text-primary">
+                     <span className="type-label">Module Inspector</span>
+                  </div>
+                  <button onClick={() => setIsSidebarOpen(false)} className="p-2 hover:bg-bg-main rounded-sm text-text-muted transition-all">
+                     <PanelRightClose size={18} />
+                  </button>
+               </div>
+               
+               <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                     <div className="p-3 bg-white border border-border text-primary shadow-sm">
+                        {current.icon}
+                     </div>
+                     <div>
+                        <h2 className="type-l2 serif text-text-main pr-4">{current.title}</h2>
+                        <span className="text-[10px] font-bold text-primary/60 uppercase tracking-widest">{current.type}</span>
+                     </div>
+                  </div>
+                  <p className="text-[12px] font-medium text-text-muted leading-relaxed italic border-l-2 border-primary/10 pl-4">
+                     {current.desc}
+                  </p>
+               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
-              <motion.div
-                key={activeNode}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-16"
-              >
-                 <div className="space-y-6">
-                    <div className="flex items-center gap-3 text-primary/40 mb-1">
-                      <span className="type-label tracking-[0.4em]">Protocol Node</span>
-                      <div className="h-px flex-1 bg-border" />
-                    </div>
-                    <h3 className="type-l2 serif text-text-main leading-tight">{current.title}</h3>
-                    <p className="text-[13px] font-medium text-text-muted leading-relaxed italic pr-4">{current.desc}</p>
-                 </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-3 border-b border-border">
-                      <Code size={13} className="text-primary/70" />
-                      <span className="type-label text-text-main">Mathematical Formulation</span>
-                    </div>
-                   <div className="bg-white border border-border flex items-center justify-center min-h-[100px] shadow-inner-sm relative group overflow-hidden p-6">
-                      <div className="absolute inset-0 bg-bg-main opacity-[0.03] group-hover:opacity-[0.05] transition-opacity" />
-                      <div className="text-sm font-mono text-primary font-bold tabular-nums select-all relative z-10 w-full text-center leading-relaxed break-words">
-                         {current.math}
-                      </div>
-                   </div>
-                    <div className="flex items-center gap-2 text-text-muted/60 pl-1">
-                       <Info size={11} className="shrink-0" />
-                       <span className="type-label">Formulation auto-updates with parameters</span>
-                    </div>
-                 </div>
-
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+               <motion.div
+                 key={activeNode}
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 className="p-8 space-y-12"
+               >
+                  {/* Hyperparameters */}
                   <div className="space-y-6">
-                    <div className="type-label text-text-main pb-3 border-b border-border">Operational Parameters</div>
-                   <div className="space-y-6">
-                     {current.params.map((p, i) => (
-                       <div key={i} className="group">
-                        <div className="type-label text-text-muted/60 mb-2 group-hover:text-primary transition-colors pl-1">
-                             {p.label}
-                          </div>
-                         <div className="bg-white border border-border px-5 py-3 text-xs font-bold text-text-main flex items-center justify-between group-hover:border-primary/40 transition-all shadow-sm">
-                            <span className="tabular-nums">{p.value}</span>
-                            <div className="w-1 h-1 rounded-full bg-border group-hover:bg-primary/50 transition-colors" />
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 </div>
-              </motion.div>
+                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-main pb-3 border-b border-border/60">Operational Matrix</h3>
+                     <div className="space-y-6">
+                        {current.params.map((p, i) => (
+                           <div key={i}>
+                              <label className="block text-[9px] font-bold text-text-muted uppercase tracking-widest mb-2">{p.label}</label>
+                              <div className="relative group">
+                                 <input 
+                                    readOnly
+                                    value={p.value}
+                                    className="w-full bg-white border border-border px-4 py-3 text-[11px] font-bold font-mono text-text-main focus:border-primary transition-all shadow-inner-sm"
+                                 />
+                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-20"><Settings2 size={12} /></div>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* Mathematical Formulation */}
+                  <div className="space-y-6">
+                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-main pb-3 border-b border-border/60">Calculus Formulation</h3>
+                     <div className="bg-bg-main border border-border p-6 flex flex-col items-center justify-center min-h-[120px] shadow-sm group">
+                        <div className="text-[13px] font-mono text-primary font-bold text-center leading-relaxed select-all">
+                           {current.math}
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-border w-full text-center">
+                           <div className="text-[11px] font-mono text-text-muted italic opacity-60">
+                              {current.formula}
+                           </div>
+                        </div>
+                     </div>
+                     
+                     <div className="p-4 bg-primary/5 border border-primary/10 flex items-start gap-3">
+                        <Info size={14} className="text-primary mt-0.5 shrink-0" />
+                        <p className="text-[10px] leading-relaxed text-text-main font-medium">
+                           The output shape is calculated as <span className="font-mono font-bold text-primary">floor((input_size - kernel + 2*padding) / stride) + 1</span>.
+                        </p>
+                     </div>
+                  </div>
+               </motion.div>
             </div>
             
             {/* Action Footer */}
-            <div className="p-10 border-t border-border bg-bg-main/20">
-               <button className="btn btn-primary w-full h-11 uppercase tracking-[0.2em] text-[10px] font-bold">
-                  Update Configuration
+            <div className="p-8 border-t border-border bg-bg-surface shrink-0">
+               <button className="w-full bg-primary text-white h-12 uppercase tracking-[0.3em] text-[10px] font-bold hover:bg-primary/90 transition-all shadow-lg active:scale-[0.98]">
+                  Compile Institutional Net
                </button>
             </div>
-          </motion.div>
+          </aside>
         )}
       </AnimatePresence>
 
@@ -296,7 +357,7 @@ export const ArchitectureBuilder = ({ onAction }) => {
       {!isSidebarOpen && (
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-20 bg-white border border-border border-r-0 flex items-center justify-center hover:bg-bg-main transition-all z-40"
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-20 bg-white border border-border border-r-0 flex items-center justify-center hover:bg-bg-main transition-all z-40 shadow-xl"
         >
           <PanelRightOpen size={16} className="text-primary" />
         </button>

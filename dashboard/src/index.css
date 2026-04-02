@@ -21,6 +21,10 @@
   --warning: #F59E0B;
   --error: #EF4444;
   
+  --bg-grid-pattern: linear-gradient(to right, #E2E6EC 1px, transparent 1px), 
+                     linear-gradient(to bottom, #E2E6EC 1px, transparent 1px);
+  --bg-grid-size: 16px 16px;
+  
   --radius: 0px;            /* Sharp corners for textbook feel */
   --radius-sm: 0px;
   
@@ -72,6 +76,17 @@ h1, h2, h3, h4 {
 .type-body { font-size: 0.8125rem; font-weight: 500; } /* 13px */
 
 .text-mono-sm { font-family: var(--font-mono); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* 3. Specialized Layout Utilities */
+.bg-grid {
+  background-image: var(--bg-grid-pattern);
+  background-size: var(--bg-grid-size);
+}
+
+.border-academic { border: 1px solid var(--border); }
+.border-b-academic { border-bottom: 1px solid var(--border); }
+.border-r-academic { border-right: 1px solid var(--border); }
+.border-l-academic { border-left: 1px solid var(--border); }
 
 #root {
   height: 100%;

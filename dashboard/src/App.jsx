@@ -234,9 +234,6 @@ function App() {
             <div className="h-16 shrink-0 flex items-center justify-between border-b border-border px-10 bg-white z-30">
               <div className="flex items-center gap-4 text-text-muted">
                 <Clock size={12} className="text-primary/40" />
-                <span className="type-label opacity-70">
-                   v7.2.0.STABLE • RESEARCH ENV
-                </span>
               </div>
 
               <div className="flex items-center gap-6">
