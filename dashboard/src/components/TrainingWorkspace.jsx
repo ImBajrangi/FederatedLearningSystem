@@ -5,10 +5,10 @@ import { MetricsChart } from './MetricsChart';
 import { Terminal } from './Terminal';
 
 const ConfigInput = ({ label, value, onChange }) => (
-  <div className="flex flex-col gap-2">
-    <label className="text-[10px] font-bold text-text-main uppercase tracking-widest">{label}</label>
-    <div className="border border-border p-3 flex items-center justify-end bg-white">
-      <span className="text-xs font-mono font-medium text-text-main tabular-nums">{value}</span>
+  <div className="flex flex-col gap-2.5">
+    <label className="text-[9px] font-bold text-text-muted uppercase tracking-[0.2em]">{label}</label>
+    <div className="border border-border p-3 flex items-center justify-center bg-white shadow-sm h-11">
+      <span className="text-xs font-mono font-bold text-text-main tabular-nums tracking-wider">{value}</span>
     </div>
   </div>
 );
@@ -112,14 +112,14 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
               </div>
            </div>
 
-           {/* Console Output (Grounded Dark) */}
+            {/* Console Output (Grounded Dark) */}
            <div className="flex flex-col grounded-dark overflow-hidden transition-all min-h-[350px]">
-              <div className="flex items-center justify-between px-8 py-4 border-b border-white/5 bg-white/[0.02]">
+              <div className="flex items-center justify-between px-8 py-5 border-b border-white/5 bg-white/[0.02]">
                  <div className="flex items-center gap-3">
-                    <TerminalIcon size={12} className="text-primary" />
-                    <span className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] font-mono">Console Output</span>
+                    <TerminalIcon size={12} className="text-primary/70" />
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] font-mono">Console Output</span>
                  </div>
-                 <button className="text-[9px] font-bold text-white/30 uppercase tracking-widest hover:text-white transition-colors font-mono">Clear</button>
+                 <button className="text-[9px] font-bold text-white/50 uppercase tracking-widest hover:text-white transition-colors font-mono px-3 py-1 border border-white/10 hover:bg-white/5 bg-transparent">Clear</button>
               </div>
               <div className="flex-1 overflow-auto p-8 font-mono text-[11px] leading-6 text-white/60 custom-scrollbar-terminal">
                  {logs.map((log, i) => (

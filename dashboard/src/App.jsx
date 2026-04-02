@@ -27,7 +27,8 @@ function App() {
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [toasts, setToasts] = useState([]);
-  const [footerHeight, setFooterHeight] = useState(300);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
+  const [footerHeight, setFooterHeight] = useState(180);
   const [isResizing, setIsResizing] = useState(false);
 
   const startResizing = useCallback(() => {
@@ -82,6 +83,27 @@ function App() {
     addToast('Federated cycle complete. Weights aggregated.', 'success');
   };
 
+  const initSidebarResize = (e) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = sidebarWidth;
+
+    const onMouseMove = (moveEvent) => {
+      const newW = Math.min(Math.max(200, startW + (moveEvent.clientX - startX)), 480);
+      setSidebarWidth(newW);
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = 'default';
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    document.body.style.cursor = 'ew-resize';
+  };
+
   const renderView = () => {
     switch (currentView) {
       case 'training':
@@ -131,38 +153,37 @@ function App() {
                </div>
                
                <div className="grid grid-cols-3 gap-8">
-                  <div className="academic-card">
-                     <div className="flex justify-between items-start mb-6">
-                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">CNN - CIFAR10</span>
-                        <Activity size={14} className="text-border" />
-                     </div>
-                     <div className="space-y-1">
-                        <div className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main">0.041</span></div>
-                        <div className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Last Run: Oct 24, 14:30</div>
-                     </div>
-                  </div>
-                  
-                  <div className="academic-card">
-                     <div className="flex justify-between items-start mb-6">
-                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">ResNet50 Fine-tune</span>
-                        <Activity size={14} className="text-border" />
-                     </div>
-                     <div className="space-y-1">
-                        <div className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main">0.128</span></div>
-                        <div className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Last Run: Oct 22, 09:15</div>
-                     </div>
-                  </div>
+                   <div className="academic-card !p-6 flex flex-col justify-between">
+                      <div className="flex justify-between items-start mb-6">
+                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">CNN - CIFAR10</span>
+                         <Activity size={12} className="text-primary/30" />
+                      </div>
+                      <div className="space-y-1.5">
+                         <div className="text-[11px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main tabular-nums">0.041</span></div>
+                         <div className="text-[10px] font-medium text-text-muted/60 uppercase tracking-tighter">Last Run: Oct 24, 14:30</div>
+                      </div>
+                   </div>
+                                    <div className="academic-card !p-6 flex flex-col justify-between">
+                      <div className="flex justify-between items-start mb-6">
+                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">ResNet50 Fine-tune</span>
+                         <Activity size={12} className="text-primary/30" />
+                      </div>
+                      <div className="space-y-1.5">
+                         <div className="text-[11px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main tabular-nums">0.128</span></div>
+                         <div className="text-[10px] font-medium text-text-muted/60 uppercase tracking-tighter">Last Run: Oct 22, 09:15</div>
+                      </div>
+                   </div>
 
-                  <div className="academic-card">
-                     <div className="flex justify-between items-start mb-6">
-                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Linear Reg Baseline</span>
-                        <Activity size={14} className="text-border" />
-                     </div>
-                     <div className="space-y-1">
-                        <div className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main">1.402</span></div>
-                        <div className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">Last Run: Oct 18, 16:45</div>
-                     </div>
-                  </div>
+                   <div className="academic-card !p-6 flex flex-col justify-between">
+                      <div className="flex justify-between items-start mb-6">
+                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Linear Reg Baseline</span>
+                         <Activity size={12} className="text-primary/30" />
+                      </div>
+                      <div className="space-y-1.5">
+                         <div className="text-[11px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main tabular-nums">1.402</span></div>
+                         <div className="text-[10px] font-medium text-text-muted/60 uppercase tracking-tighter">Last Run: Oct 18, 16:45</div>
+                      </div>
+                   </div>
                </div>
             </div>
 
@@ -195,13 +216,17 @@ function App() {
       <Header status={isActive ? 'Live' : round >= 6 ? 'Standby' : 'Ready'} />
 
       <div className="shell-body">
-        <Sidebar
-          clients={clients}
-          rejectedCount={rejectedCount}
-          chainHeight={blockchain.length}
-          currentView={currentView}
-          setView={setCurrentView}
-        />
+        <div style={{ width: `${sidebarWidth}px` }} className="shrink-0 flex flex-col relative overflow-hidden">
+          <Sidebar
+            clients={clients}
+            rejectedCount={rejectedCount}
+            chainHeight={blockchain.length}
+            currentView={currentView}
+            setView={setCurrentView}
+          />
+        </div>
+
+        <div className="resize-handle-h" onMouseDown={initSidebarResize} />
 
         <main className="shell-main">
           {/* Institutional Top Bar: Actions */}

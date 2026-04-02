@@ -223,33 +223,34 @@ export const ArchitectureBuilder = ({ onAction }) => {
                   <p className="text-sm font-medium text-text-muted leading-relaxed italic">{current.desc}</p>
                 </div>
 
-                <div className="space-y-10">
-                  <div className="flex items-center gap-3 pb-4 border-b border-border">
-                    <Code size={14} className="text-primary" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-text-main">Mathematical Formulation</span>
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 pb-3 border-b border-border">
+                    <Code size={13} className="text-primary/70 mb-[1px]" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-text-main">Mathematical Formulation</span>
                   </div>
-                  <div className="bg-bg-main p-8 border border-border flex items-center justify-center overflow-hidden">
-                     <span className="text-base font-mono text-primary font-medium tabular-nums select-all">
+                  <div className="bg-white border border-border flex items-center justify-center min-h-[120px] shadow-inner-sm relative group overflow-hidden">
+                     <div className="absolute inset-0 bg-bg-main opacity-[0.03] group-hover:opacity-[0.05] transition-opacity" />
+                     <span className="text-base font-mono text-primary font-bold tabular-nums select-all relative z-10 px-8 text-center leading-relaxed">
                         {current.math}
                      </span>
                   </div>
-                  <div className="flex items-center gap-3 text-text-muted">
-                     <Info size={12} />
-                     <span className="text-[9px] font-bold uppercase tracking-widest">Formulation auto-updates with parameters</span>
+                  <div className="flex items-center gap-3 text-text-muted/60 pl-1">
+                     <Info size={11} className="shrink-0" />
+                     <span className="text-[9px] font-bold uppercase tracking-widest leading-none">Formulation auto-updates with parameters</span>
                   </div>
                 </div>
 
-                <div className="space-y-10">
-                  <div className="text-[10px] text-text-main font-bold uppercase tracking-widest pb-4 border-b border-border">Operational Parameters</div>
-                  <div className="space-y-10">
+                <div className="space-y-8">
+                  <div className="text-[10px] text-text-main font-bold uppercase tracking-[0.15em] pb-3 border-b border-border">Operational Parameters</div>
+                  <div className="space-y-8">
                     {current.params.map((p, i) => (
                       <div key={i} className="group">
-                        <div className="text-[9px] font-bold text-text-muted uppercase tracking-widest mb-4 group-hover:text-primary transition-colors">
+                        <div className="text-[9px] font-bold text-text-muted/60 uppercase tracking-widest mb-3 group-hover:text-primary transition-colors pl-1">
                            {p.label}
                         </div>
-                        <div className="bg-white border border-border px-6 py-4 text-xs font-bold text-text-main flex items-center justify-between group-hover:border-primary/30 transition-all">
-                           {p.value}
-                           <div className="w-1.5 h-1.5 rounded-full bg-border group-hover:bg-primary/40 transition-colors" />
+                        <div className="bg-white border border-border px-5 py-3.5 text-xs font-bold text-text-main flex items-center justify-between group-hover:border-primary/40 transition-all shadow-sm">
+                           <span className="tabular-nums">{p.value}</span>
+                           <div className="w-1 h-1 rounded-full bg-border group-hover:bg-primary/50 transition-colors" />
                         </div>
                       </div>
                     ))}
