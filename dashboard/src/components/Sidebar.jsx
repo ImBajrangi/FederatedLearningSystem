@@ -1,115 +1,101 @@
 import React from 'react';
-import { LayoutDashboard, Database, Activity, Library, Settings, ShieldAlert } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  LayoutDashboard, 
+  Database, 
+  ShieldCheck, 
+  Terminal, 
+  Activity, 
+  Layers,
+  History,
+  Workflow,
+  Cpu,
+  BookOpen,
+  PieChart
+} from 'lucide-react';
 
-export const Sidebar = ({ 
-  clients, 
-  rejectedCount, 
-  chainHeight, 
-  currentView, 
-  onViewChange 
-}) => {
+const MetricItem = ({ label, value }) => (
+  <div className="flex items-center justify-between py-3 border-b border-border group">
+    <div className="flex flex-col">
+      <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest mb-1">{label}</span>
+      <span className="text-xs font-bold text-text-main tabular-nums">{value}</span>
+    </div>
+  </div>
+);
+
+export const Sidebar = ({ currentView, setView, clients }) => {
   return (
     <aside className="shell-sidebar">
-      {/* 1. Branding Area */}
-      <div className="p-8 border-b border-white/5 bg-slate-900/50 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-indigo-600 rounded-lg shadow-xl shadow-indigo-500/30">
-            <ShieldAlert size={26} className="text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight uppercase leading-none">
-              Federated
-            </h1>
-            <h2 className="text-[10px] font-bold text-indigo-400 tracking-widest uppercase mt-2">
-              Engine v3.1.2
-            </h2>
-          </div>
+      {/* Sidebar Navigation */}
+      <div className="sidebar-nav-scroll custom-scrollbar">
+        <div className="mb-10 px-12">
+           <span className="text-[10px] font-bold text-text-main uppercase tracking-[0.25em] serif">Coursework</span>
+        </div>
+        
+        <div className="flex flex-col">
+          <button 
+            onClick={() => setView('dashboard')}
+            className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">01</span>
+            Academic Progress
+          </button>
+          
+          <button 
+            onClick={() => setView('training')}
+            className={`nav-item ${currentView === 'training' ? 'active' : ''}`}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">02</span>
+            Training Cluster
+          </button>
+
+          <button 
+            onClick={() => setView('dataset')}
+            className={`nav-item ${currentView === 'dataset' ? 'active' : ''}`}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">03</span>
+            Shard Registry
+          </button>
+
+          <button 
+            onClick={() => setView('library')}
+            className={`nav-item ${currentView === 'library' ? 'active' : ''}`}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">04</span>
+            Model Library
+          </button>
+        </div>
+
+        <div className="mt-16 px-12 mb-8">
+           <span className="text-[10px] font-bold text-text-main uppercase tracking-[0.25em] serif">Statistics</span>
+        </div>
+
+        <div className="px-12 space-y-2 pb-20">
+          <MetricItem 
+            label="Node Count" 
+            value={clients.length} 
+          />
+          <MetricItem 
+            label="Verification Yield" 
+            value="98.2%" 
+          />
+          <MetricItem 
+            label="Computing Power" 
+            value="1.2 GB/s" 
+          />
         </div>
       </div>
 
-      {/* 2. Navigation Container (Scrollable) */}
-      <nav className="sidebar-nav-scroll custom-scrollbar">
-        {[
-          { id: 'dashboard', label: 'Institutional Dashboard', icon: <LayoutDashboard size={18} /> },
-          { id: 'training', label: 'Training Workspace', icon: <Activity size={18} /> },
-          { id: 'dataset', label: 'Dataset Explorer', icon: <Database size={18} /> },
-          { id: 'library', label: 'Model Architecture', icon: <Library size={18} /> }
-        ].map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onViewChange(item.id)}
-            className={`nav-item ${currentView === item.id ? 'active' : ''}`}
-          >
-            <span className="icon">
-              {item.icon}
-            </span>
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
-
-      {/* 3. Telemetry & Ledger (Independent Scrollable Area) */}
-      <div className="sidebar-telemetry custom-scrollbar">
-        <section className="mb-10">
-          <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500 mb-6">System Telemetry</div>
-          <MetricItem label="Nodes connected" value={clients.length} />
-          <MetricItem label="Consensus rounds" value="06" />
-          <MetricItem label="Adversarial ratio" value="25%" color="#f59e0b" />
-        </section>
-
-        <section className="pt-8 border-t border-white/5 mb-10">
-          <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500 mb-6">Security Tracking</div>
-          <MetricItem label="Chain integrity" value={`${chainHeight} blocks`} />
-          <MetricItem label="Anomalies detected" value={rejectedCount} color="#ef4444" />
-        </section>
-
-        <section className="pt-8 border-t border-white/5 space-y-6">
-          <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Institutional Ledger</div>
-          <div className="space-y-6">
-            {clients.map(client => (
-              <div key={client.id} className="group">
-                <div className="flex justify-between items-end mb-3">
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-extrabold text-slate-200 group-hover:text-indigo-400 transition-colors">
-                      {client.id}
-                    </span>
-                    <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">
-                      {client.org}
-                    </span>
-                  </div>
-                  <span className="font-mono font-extrabold text-[10px]" style={{ color: client.status === 'ACTIVE' ? '#10b981' : '#ef4444' }}>
-                    {client.reputation}%
-                  </span>
-                </div>
-                <div className="w-full bg-slate-800 rounded-full overflow-hidden h-[4px]">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${client.reputation}%` }}
-                    className="h-full bg-indigo-500/60 group-hover:bg-indigo-500 transition-colors"
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      {/* 4. Sidebar Footer */}
-      <div className="p-6 border-t border-white/5 bg-slate-900/50 shrink-0">
-        <button className="flex items-center gap-3 text-slate-400 hover:text-white transition-colors w-full font-bold">
-          <Settings size={18} />
-          <span className="text-[10px] uppercase tracking-widest">Protocol Settings</span>
-        </button>
+      {/* Footer Branding Area */}
+      <div className="p-12 border-t border-border mt-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <BookOpen size={14} className="text-primary" />
+          <span className="text-[10px] font-bold text-text-main uppercase tracking-widest serif">Research Node</span>
+        </div>
+        <div className="flex flex-col gap-1">
+           <span className="text-[9px] font-bold text-text-muted uppercase tracking-tighter">Session ID:</span>
+           <span className="text-[10px] font-bold text-primary font-mono select-all">BC-7724</span>
+        </div>
       </div>
     </aside>
   );
 };
-
-const MetricItem = ({ label, value, color = "#6366f1" }) => (
-  <div className="flex justify-between items-center mb-4">
-    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">{label}</span>
-    <span className="font-mono font-bold text-xs" style={{ color }}>{value}</span>
-  </div>
-);

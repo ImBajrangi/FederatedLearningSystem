@@ -1,96 +1,110 @@
 import React from 'react';
-import { Database, ShieldCheck, Share2, Box } from 'lucide-react';
+import { Database, ShieldCheck, Share2, Box, PieChart, Activity, HardDrive, Search, Filter, Info, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const DatasetExplorer = () => {
   const fragments = [
-    { id: 'SHARD-001-A', org: 'MedCenter Alpha', size: '420', density: 92, status: 'VERIFIED', type: 'Clinical', utilization: 78 },
-    { id: 'SHARD-002-B', org: 'FinGroup Beta', size: '850', density: 85, status: 'VERIFIED', type: 'Financial', utilization: 64 },
-    { id: 'SHARD-003-G', org: 'GovService Gamma', size: '120', density: 98, status: 'VERIFIED', type: 'Public', utilization: 91 },
-    { id: 'SHARD-004-D', org: 'EduTrust Delta', size: '310', density: 74, status: 'VERIFIED', type: 'Academic', utilization: 45 },
-    { id: 'SHARD-005-E', org: 'TechOps Epsilon', size: '640', density: 88, status: 'VERIFIED', type: 'Operational', utilization: 82 },
-    { id: 'SHARD-006-Z', org: 'Hospital Zeta', size: '550', density: 95, status: 'VERIFIED', type: 'Imaging', utilization: 88 },
+    { id: 'SHARD-001', org: 'MedCenter Alpha', size: '420', density: 92, type: 'Clinical', date: 'Oct 24, 2025' },
+    { id: 'SHARD-002', org: 'FinGroup Beta', size: '850', density: 85, type: 'Financial', date: 'Oct 24, 2025' },
+    { id: 'SHARD-003', org: 'GovService Gamma', size: '120', density: 98, type: 'Public', date: 'Oct 23, 2025' },
+    { id: 'SHARD-004', org: 'EduTrust Delta', size: '310', density: 74, type: 'Academic', date: 'Oct 22, 2025' },
+    { id: 'SHARD-005', org: 'TechOps Epsilon', size: '640', density: 88, type: 'Operational', date: 'Oct 22, 2025' },
+    { id: 'SHARD-006', org: 'Hospital Zeta', size: '550', density: 95, type: 'Imaging', date: 'Oct 21, 2025' },
   ];
 
   return (
-    <div className="flex flex-col gap-10">
-      {/* Registry Header */}
+    <div className="flex flex-col gap-16 pb-32">
+      {/* Module Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight uppercase">Dataset Distribution Explorer</h2>
-          <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest mt-2">
-            Multi-Institutional Data Fragment Sharding Registry
-          </p>
+        <div className="space-y-4">
+           <div className="flex items-center gap-3 text-primary">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Module 03</span>
+              <span className="w-8 h-px bg-primary/20" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Shard Registry</span>
+           </div>
+           <h2 className="text-4xl font-bold text-text-main serif">Dataset Distribution</h2>
+           <p className="text-sm text-text-muted font-medium max-w-2xl">
+             Registry of institutional data shards currently indexed for federated synchronization. All fragments are cryptographically hashed and verified against the audit ledger.
+           </p>
         </div>
+        
         <div className="flex gap-4">
-           <div className="flex items-center gap-3 px-5 py-2.5 bg-white rounded-lg border border-slate-200 shadow-sm">
-             <Database size={16} className="text-indigo-400" />
-             <span className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest leading-none">Total: 12.4 TB Sharded</span>
+           <div className="flex items-center gap-3 px-6 py-3 bg-bg-surface border border-border">
+              <Database size={16} className="text-primary/40" />
+              <span className="text-[10px] font-bold text-text-main uppercase tracking-widest tabular-nums">12.4 TB INDEXED</span>
            </div>
         </div>
       </div>
 
+      {/* Control Bar */}
+      <div className="flex items-center justify-between border-b border-border pb-6">
+         <div className="flex items-center gap-10">
+            <div className="flex items-center gap-3 cursor-pointer group">
+               <Search size={14} className="text-text-muted group-hover:text-primary transition-colors" />
+               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest group-hover:text-text-main transition-colors">Search Shards</span>
+            </div>
+            <div className="flex items-center gap-3 cursor-pointer group">
+               <Filter size={14} className="text-text-muted group-hover:text-primary transition-colors" />
+               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest group-hover:text-text-main transition-colors">Filter by Type</span>
+            </div>
+         </div>
+         <div className="flex items-center gap-3 text-text-muted italic">
+            <Info size={12} />
+            <span className="text-[10px] font-medium">Verified against Ledger Height: 48,291</span>
+         </div>
+      </div>
+
       {/* Registry Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {fragments.map((frag, idx) => (
           <motion.div
             key={frag.id}
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
-            className="data-card group"
+            className="academic-card group !p-0 overflow-hidden flex flex-col"
           >
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <div className="text-[10px] font-extrabold text-indigo-500 uppercase tracking-widest mb-1">
-                   {frag.type} node fragment
-                </div>
-                <h4 className="text-sm font-extrabold text-slate-800 truncate max-w-[180px]">
-                  {frag.id}
-                </h4>
-              </div>
-              <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-indigo-50 transition-colors">
-                <ShieldCheck size={16} className="text-slate-400 group-hover:text-indigo-500" />
-              </div>
+            {/* Header Area */}
+            <div className="p-8 border-b border-border bg-bg-main/30 flex justify-between items-start">
+               <div>
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-[0.2em] mb-3 block">Fragment {frag.id}</span>
+                  <h3 className="text-lg font-bold text-text-main serif uppercase tracking-tight">{frag.org}</h3>
+               </div>
+               <FileText size={18} className="text-border group-hover:text-primary/40 transition-colors" />
             </div>
 
-            <div className="space-y-6">
-              {/* Data Density Visualization */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
-                  <span>Shard Density</span>
-                  <span className="text-slate-600">{frag.density}%</span>
-                </div>
-                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden border">
-                   <motion.div
-                     initial={{ width: 0 }}
-                     animate={{ width: `${frag.density}%` }}
-                     className="h-full bg-indigo-500 shadow-sm"
-                   />
-                </div>
-              </div>
+            {/* Metrics Area */}
+            <div className="p-8 space-y-10">
+               <div className="space-y-4">
+                  <div className="flex justify-between items-end text-[10px] font-bold uppercase tracking-widest">
+                     <span className="text-text-muted">Shard Density</span>
+                     <span className="text-text-main">{frag.density}%</span>
+                  </div>
+                  <div className="progress-bar-minimal">
+                     <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${frag.density}%` }}
+                        className="progress-bar-fill"
+                     />
+                  </div>
+               </div>
 
-              {/* Fragment Meta Attributes */}
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
-                <div>
-                   <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-tighter mb-1">Scale</div>
-                   <div className="text-xs font-bold text-slate-700">{frag.size} MB</div>
-                </div>
-                <div>
-                   <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-tighter mb-1">Utilization</div>
-                   <div className="text-xs font-bold text-slate-700">{frag.utilization}%</div>
-                </div>
-              </div>
+               <div className="grid grid-cols-2 gap-px bg-border -mx-8 -mb-8">
+                  <div className="bg-white p-6">
+                     <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest block mb-2">Scale</span>
+                     <span className="text-xs font-bold text-text-main tabular-nums">{frag.size} MB</span>
+                  </div>
+                  <div className="bg-white p-6 border-l border-border">
+                     <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest block mb-2">Protocol</span>
+                     <span className="text-xs font-bold text-text-main">{frag.type}</span>
+                  </div>
+               </div>
             </div>
-
-            <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-[9px] font-extrabold text-emerald-600 uppercase tracking-widest flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                Live Sync: STABLE
-              </span>
-              <button className="text-[9px] font-extrabold uppercase text-slate-400 hover:text-indigo-600 transition-colors">
-                 Inspect Shard
-              </button>
+            
+            {/* Action Hover */}
+            <div className="px-8 py-5 border-t border-border mt-auto flex items-center justify-between bg-bg-main/10 opacity-0 group-hover:opacity-100 transition-opacity">
+               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{frag.date}</span>
+               <button className="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">Download Metadata</button>
             </div>
           </motion.div>
         ))}

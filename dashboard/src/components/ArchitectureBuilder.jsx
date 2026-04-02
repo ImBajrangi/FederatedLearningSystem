@@ -1,40 +1,53 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowDown, Cpu, ShieldCheck, Zap, Settings2, Lock, Share2, Server, Download, Save, PanelRightClose, PanelRightOpen, Box, Info } from 'lucide-react';
+import { 
+  ArrowDown, 
+  Cpu, 
+  ShieldCheck, 
+  Zap, 
+  Settings2, 
+  Lock, 
+  Share2, 
+  Server, 
+  Download, 
+  Save, 
+  PanelRightClose, 
+  PanelRightOpen, 
+  Box, 
+  Terminal,
+  Activity,
+  Workflow,
+  ChevronRight,
+  Info,
+  Code
+} from 'lucide-react';
 
-const LayerNode = ({ type, name, active, onSelect, styleMode = 'solid' }) => (
-  <div className="flex flex-col items-center w-full">
+const LayerNode = ({ type, name, active, onSelect }) => (
+  <div className="flex flex-col items-center w-full relative">
     <motion.div
-      whileHover={{ y: -4, shadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
+      whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onSelect}
-      className={`data-card relative select-none w-full max-w-[340px] p-6 cursor-pointer transition-all border-2 ${
+      className={`relative select-none w-full max-w-[320px] p-6 cursor-pointer transition-all border ${
         active 
-          ? 'border-indigo-500 bg-indigo-50/50 shadow-lg shadow-indigo-100' 
-          : 'border-slate-200 bg-white hover:border-slate-300'
+          ? 'border-primary bg-white shadow-sm' 
+          : 'border-border bg-white hover:border-text-muted/30'
       }`}
-      style={{ borderStyle: styleMode }}
     >
       <div className="flex items-center justify-between mb-4">
-        <span className={`text-[9px] font-extrabold uppercase tracking-widest ${active ? 'text-indigo-600' : 'text-slate-400'}`}>
+        <span className={`text-[9px] font-bold uppercase tracking-[0.2em] ${active ? 'text-primary' : 'text-text-muted'}`}>
           {type}
         </span>
-        {active && <Zap size={14} className="text-indigo-600 animate-pulse" />}
+        {active && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
       </div>
-      <h4 className={`text-sm font-extrabold tracking-tight ${active ? 'text-slate-900' : 'text-slate-500'} leading-snug`}>
+      <h4 className={`text-sm font-bold tracking-tight ${active ? 'text-text-main' : 'text-text-muted'} leading-snug serif uppercase`}>
         {name}
       </h4>
-
-      {active && (
-        <motion.div
-          layoutId="node-arrow"
-          className="absolute -right-2 top-1/2 -translate-y-1/2 w-1.5 h-10 bg-indigo-500 rounded-full shadow-sm"
-        />
-      )}
     </motion.div>
+    
     <div className="h-12 flex flex-col items-center justify-center">
-      <div className="w-0.5 h-full bg-slate-200 relative">
-        <ArrowDown size={14} className="absolute -bottom-1 -left-[6px] text-slate-300" />
+      <div className={`w-px h-full bg-border relative`}>
+        <ArrowDown size={12} className="absolute -bottom-1 -left-[5.5px] text-border" />
       </div>
     </div>
   </div>
@@ -46,219 +59,224 @@ export const ArchitectureBuilder = ({ onAction }) => {
 
   const nodeDetails = {
     global: {
-      title: 'Aggregation Server',
-      desc: 'Central orchestration layer for institutional weight aggregation.',
+      title: 'Aggregation Hub',
+      desc: 'Central orchestration layer focused on the secure aggregation of localized weighting vectors.',
+      math: 'W_{agg} = \\sum_{i=1}^n \\alpha_i W_i',
       params: [
         { label: 'Security Model', value: 'Homomorphic Encryption' },
-        { label: 'Minimum Peers', value: '03' },
-        { label: 'Network Timeout', value: '5000ms' }
+        { label: 'Network Timeout', value: '5000ms' },
+        { label: 'Aggregation Algo', value: 'FedAvg-Secure' }
       ],
-      icon: <Server size={20} />
+      icon: <Server size={18} />
     },
     blockchain: {
-      title: 'Consensus engine',
-      desc: 'Permissioned ledger for reputation tracking and anomaly registry.',
+      title: 'Audit Ledger',
+      desc: 'Immutable permissioned consensus mechanism providing identity verification and reputational proofs.',
+      math: '\\mathcal{L} \\gets \\mathcal{L} \\cup \\{ B_k \\}',
       params: [
-        { label: 'Protocol', value: 'Proof-of-Authority' },
+        { label: 'Consensus', value: 'Proof-of-Authority' },
         { label: 'Block Interval', value: '2.0s' },
-        { label: 'Node Redundancy', value: 'High (3x)' }
+        { label: 'Encryption', value: 'ECDSA-Secp256k1' }
       ],
-      icon: <Share2 size={20} />
+      icon: <Workflow size={18} />
     },
     security: {
-      title: 'Policy enforcement',
-      desc: 'Automated contract validation for institutional update verification.',
+      title: 'Compliance Node',
+      desc: 'Real-time policy enforcement engine utilizing differentially private noise calibration.',
+      math: '\\mathcal{M}(d) = f(d) + \\mathcal{N}(0, \\sigma^2)',
       params: [
-        { label: 'Logic Runtime', value: 'EVM-Standard' },
-        { label: 'Statistical Bound', value: '1.96σ' },
-        { label: 'Violation Penalty', value: '-25% Rep' }
+        { label: 'DP Epsilon', value: 'ε=1.2' },
+        { label: 'Anomaly Bound', value: '1.96σ' },
+        { label: 'Validation Mode', value: 'Strict' }
       ],
-      icon: <Lock size={20} />
+      icon: <Lock size={18} />
     },
     aggregation: {
-      title: 'Institutional Cluster',
-      desc: 'Edge-distributed infrastructure provisioned for local computation.',
+      title: 'Compute Edge',
+      desc: 'Decentralized institutional clusters executing local stochastic gradient descent iterations.',
+      math: '\\nabla_{\\theta} J(\\theta) \\approx \\frac{1}{m} \\sum \\nabla \\ell(f(x_i), y_i)',
       params: [
-        { label: 'Device Profile', value: 'Enterprise GPU' },
-        { label: 'Compute Level', value: 'FP16 / INT8' },
-        { label: 'Parallel Workers', value: '32' }
+        { label: 'Hardware', value: 'NVIDIA H100 Cluster' },
+        { label: 'Quantization', value: 'INT8 / BF16' },
+        { label: 'Node Capacity', value: 'High Density' }
       ],
-      icon: <Cpu size={20} />
+      icon: <Cpu size={18} />
     }
   };
 
   const current = nodeDetails[activeNode];
 
   return (
-    <div className="flex flex-col h-full overflow-hidden relative">
-      {/* Schematic Layout Header */}
-      <div className="flex justify-between items-center bg-white border-b p-8 z-30 shadow-sm border-t-0">
-        <div>
-          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight uppercase">System Architecture Builder</h2>
-          <p className="text-[10px] font-extrabold text-indigo-500 uppercase tracking-widest mt-2">
-            Institutional Network Blueprint Designer
-          </p>
-        </div>
-        <div className="flex items-center gap-6">
-          <button
-            onClick={() => onAction?.('Architecture manifest exported.')}
-            className="btn btn-outline h-10 px-6 group"
-          >
-            <Download size={16} /> 
-            <span>Export Manifest</span>
-          </button>
-          <button
-            onClick={() => onAction?.('Blueprint synced to institutional ledger.')}
-            className="btn btn-primary h-10 px-10 shadow-lg"
-          >
-            <Save size={16} /> 
-            <span>Commit Architecture</span>
-          </button>
-        </div>
+    <div className="flex h-full overflow-hidden relative">
+      {/* 1. Left Component Palette (Textbook style list) */}
+      <div className="w-[280px] border-r border-border bg-bg-surface flex flex-col shrink-0">
+         <div className="p-10 border-b border-border bg-bg-main/50">
+            <span className="text-[10px] font-bold text-text-main uppercase tracking-[0.3em] serif">Components</span>
+         </div>
+         <div className="flex-1 overflow-y-auto py-8">
+            <div className="px-10 mb-8">
+               <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Protocol Layers</span>
+            </div>
+            {['Input Gateway', 'Identity Provider', 'Auth Service', 'Relay Node'].map((item, i) => (
+              <div key={i} className="px-10 py-3 flex items-center justify-between group cursor-pointer hover:bg-bg-main transition-colors">
+                 <span className="text-xs font-medium text-text-muted group-hover:text-primary transition-colors">{item}</span>
+                 <div className="w-1.5 h-1.5 rounded-full border border-border group-hover:bg-primary/20 transition-all" />
+              </div>
+            ))}
+            
+            <div className="px-10 mt-12 mb-8">
+               <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Compute Units</span>
+            </div>
+            {['GPU Cluster', 'TPU Node', 'FPGA Edge', 'CPU Worker'].map((item, i) => (
+              <div key={i} className="px-10 py-3 flex items-center justify-between group cursor-pointer hover:bg-bg-main transition-colors">
+                 <span className="text-xs font-medium text-text-muted group-hover:text-primary transition-colors">{item}</span>
+                 <div className="w-1.5 h-1.5 rounded-full border border-border group-hover:bg-primary/20 transition-all" />
+              </div>
+            ))}
+         </div>
       </div>
 
-      <div className="flex-1 flex min-h-0 overflow-hidden bg-slate-50 relative">
-        {/* Background Grid Layer */}
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(#4f46e5 1.5px, transparent 1.5px)',
-            backgroundSize: '32px 32px'
-          }}
-        />
+      {/* 2. Main Canvas Area */}
+      <div className="flex-1 flex flex-col min-w-0 bg-bg-main relative">
+        <div className="h-16 shrink-0 flex items-center justify-between border-b border-border px-10 bg-white/80 backdrop-blur-md z-30">
+          <div className="flex items-center gap-3 text-text-muted">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] serif italic">Architecture Canvas v1.2</span>
+          </div>
+          <div className="flex items-center gap-4">
+             <button className="text-[10px] font-bold text-text-muted uppercase tracking-widest hover:text-primary transition-colors">Clear Grid</button>
+             <div className="w-px h-4 bg-border" />
+             <button className="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">Auto-Arrange</button>
+          </div>
+        </div>
 
-        {/* Sidebar Toggle (Visible when closed) */}
-        {!isSidebarOpen && (
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-24 bg-white border border-r-0 rounded-l-xl flex items-center justify-center hover:bg-slate-50 transition-all z-40 shadow-xl border-slate-200"
-          >
-            <PanelRightOpen size={20} className="text-indigo-600" />
-          </button>
-        )}
-
-        {/* Schematic Flow Area */}
         <div className="flex-1 overflow-y-auto p-16 relative z-10 custom-scrollbar pb-64">
           <div className="flex flex-col items-center max-w-2xl mx-auto">
             <LayerNode
-              type="Institutional Gateway"
-              name="SecAgg Aggregation Hub"
+              type="System Gateway"
+              name="Aggregation Hub"
               active={activeNode === 'global'}
               onSelect={() => setActiveNode('global')}
             />
             <LayerNode
-              type="Immutability Layer"
-              name="Proof-of-Authority Consensus"
+              type="Consensus Layer"
+              name="Audit Ledger"
               active={activeNode === 'blockchain'}
               onSelect={() => setActiveNode('blockchain')}
             />
             <LayerNode
               type="Policy Logic"
-              name="Institutional Smart Contracts"
+              name="Compliance Node"
               active={activeNode === 'security'}
               onSelect={() => setActiveNode('security')}
             />
             <LayerNode
-              type="Execution Edge"
-              name="High-Performance Cluster"
+              type="Compute Cluster"
+              name="Execution Edge"
               active={activeNode === 'aggregation'}
               onSelect={() => setActiveNode('aggregation')}
-              styleMode="dashed"
             />
 
-            <div className="flex flex-col items-center mt-10">
-              <div className="w-16 h-16 rounded-full bg-white border-2 border-indigo-100 shadow-xl flex items-center justify-center">
-                <ShieldCheck size={28} className="text-emerald-500" />
+            <div className="flex flex-col items-center mt-6">
+              <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center bg-white shadow-sm">
+                <ShieldCheck size={20} className="text-primary/40" />
               </div>
-              <span className="text-[10px] uppercase font-bold text-slate-400 mt-6 tracking-widest bg-slate-50 px-4 py-2 rounded-full border">
-                Institutional Security Target Reached
+              <span className="text-[9px] uppercase font-bold text-text-muted mt-8 tracking-[0.3em] font-mono">
+                Institutional Integrity verified
               </span>
             </div>
           </div>
         </div>
-
-        {/* Property Inspector (Integrated Panel) */}
-        <AnimatePresence>
-          {isSidebarOpen && (
-            <motion.div
-              initial={{ x: 420, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 420, opacity: 0 }}
-              className="w-[420px] h-full bg-white border-l shadow-2xl flex flex-col z-40"
-            >
-              <div className="flex items-center justify-between px-8 py-6 border-b shrink-0 bg-slate-50/50">
-                 <div className="flex items-center gap-3">
-                   <Settings2 size={18} className="text-indigo-600" />
-                   <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">Global Parameters</span>
-                 </div>
-                 <button onClick={() => setIsSidebarOpen(false)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-all">
-                    <PanelRightClose size={20} />
-                 </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
-                <motion.div
-                  key={activeNode}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-12"
-                >
-                  <div>
-                    <div className="flex items-center gap-4 text-indigo-600 mb-6">
-                      <div className="p-3 bg-indigo-50 rounded-xl border border-indigo-100 shadow-sm">
-                        {current.icon}
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400 block mb-1">Architecture Node</span>
-                        <span className="text-xs font-bold text-indigo-600 uppercase">Status: VALIDATED</span>
-                      </div>
-                    </div>
-                    <h3 className="text-3xl font-extrabold text-slate-800 tracking-tight leading-none mb-4">{current.title}</h3>
-                    <p className="text-sm font-medium text-slate-500 leading-relaxed pb-8 border-b border-slate-100 italic">{current.desc}</p>
-                  </div>
-
-                  <div className="space-y-8">
-                    <div className="label text-slate-400 font-extrabold tracking-widest">Functional Matrix</div>
-                    <div className="space-y-6">
-                      {current.params.map((p, i) => (
-                        <div key={i} className="group">
-                          <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3 transition-colors group-hover:text-indigo-600">
-                             {p.label}
-                          </div>
-                          <div className="bg-slate-50 border border-slate-200 px-5 py-4 rounded-xl text-xs font-extrabold text-slate-700 flex items-center justify-between group-hover:bg-indigo-50 group-hover:border-indigo-200 transition-all shadow-inner">
-                             {p.value}
-                             <div className="w-2 h-2 rounded-full bg-slate-300 group-hover:bg-indigo-500 transition-colors shadow-sm" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-8 bg-slate-900 rounded-2xl space-y-6 shadow-2xl relative overflow-hidden">
-                     <div className="absolute top-0 right-0 p-4 opacity-10">
-                        <Box size={80} className="text-white" />
-                     </div>
-                     <div className="flex items-center gap-3 relative z-10">
-                       <ShieldCheck size={18} className="text-emerald-400" />
-                       <span className="text-[11px] font-extrabold text-white uppercase tracking-widest">Policy Compliance Matrix</span>
-                     </div>
-                     <div className="flex items-center gap-5 relative z-10">
-                        <div className="h-2.5 flex-1 bg-white/10 rounded-full overflow-hidden">
-                           <motion.div 
-                             initial={{ width: 0 }}
-                             animate={{ width: '94%' }}
-                             className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                           />
-                        </div>
-                        <span className="text-sm font-extrabold text-emerald-400 font-mono">94.0%</span>
-                     </div>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* 3. Layer Inspector Panel */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ x: 480, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 480, opacity: 0 }}
+            className="w-[480px] h-full bg-bg-surface border-l border-border flex flex-col z-40"
+          >
+            <div className="flex items-center justify-between px-10 py-6 border-b border-border shrink-0 bg-bg-main/30">
+               <div className="flex items-center gap-4 text-primary">
+                 <Settings2 size={16} />
+                 <span className="text-[11px] font-bold uppercase tracking-[0.2em] serif">Layer Inspector</span>
+               </div>
+               <button onClick={() => setIsSidebarOpen(false)} className="p-2 hover:bg-bg-main rounded-sm text-text-muted transition-all">
+                  <PanelRightClose size={18} />
+               </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
+              <motion.div
+                key={activeNode}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-16"
+              >
+                <div className="space-y-8">
+                  <div className="flex items-center gap-4 text-primary/40 mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Protocol Node</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+                  <h3 className="text-3xl font-bold text-text-main serif leading-tight">{current.title}</h3>
+                  <p className="text-sm font-medium text-text-muted leading-relaxed italic">{current.desc}</p>
+                </div>
+
+                <div className="space-y-10">
+                  <div className="flex items-center gap-3 pb-4 border-b border-border">
+                    <Code size={14} className="text-primary" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-text-main">Mathematical Formulation</span>
+                  </div>
+                  <div className="bg-bg-main p-8 border border-border flex items-center justify-center overflow-hidden">
+                     <span className="text-base font-mono text-primary font-medium tabular-nums select-all">
+                        {current.math}
+                     </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-text-muted">
+                     <Info size={12} />
+                     <span className="text-[9px] font-bold uppercase tracking-widest">Formulation auto-updates with parameters</span>
+                  </div>
+                </div>
+
+                <div className="space-y-10">
+                  <div className="text-[10px] text-text-main font-bold uppercase tracking-widest pb-4 border-b border-border">Operational Parameters</div>
+                  <div className="space-y-10">
+                    {current.params.map((p, i) => (
+                      <div key={i} className="group">
+                        <div className="text-[9px] font-bold text-text-muted uppercase tracking-widest mb-4 group-hover:text-primary transition-colors">
+                           {p.label}
+                        </div>
+                        <div className="bg-white border border-border px-6 py-4 text-xs font-bold text-text-main flex items-center justify-between group-hover:border-primary/30 transition-all">
+                           {p.value}
+                           <div className="w-1.5 h-1.5 rounded-full bg-border group-hover:bg-primary/40 transition-colors" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Action Footer */}
+            <div className="p-10 border-t border-border bg-bg-main/20">
+               <button className="btn btn-primary w-full h-11 uppercase tracking-[0.2em] text-[10px] font-bold">
+                  Update Configuration
+               </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Re-open Sidebar Button */}
+      {!isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-20 bg-white border border-border border-r-0 flex items-center justify-center hover:bg-bg-main transition-all z-40"
+        >
+          <PanelRightOpen size={16} className="text-primary" />
+        </button>
+      )}
     </div>
   );
 };
