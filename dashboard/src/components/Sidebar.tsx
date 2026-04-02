@@ -2,21 +2,51 @@ import React from 'react';
 import { LayoutDashboard, Database, Activity, Library, Settings, ShieldAlert } from 'lucide-react';
 import type { Client } from '../hooks/useSimulation';
 
+type ViewType = 'dashboard' | 'training' | 'dataset' | 'library';
+
 interface SidebarProps {
   clients: Client[];
   rejectedCount: number;
   chainHeight: number;
+  currentView: ViewType;
+  onViewChange: (view: ViewType) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ clients, rejectedCount, chainHeight }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ 
+  clients, 
+  rejectedCount, 
+  chainHeight, 
+  currentView, 
+  onViewChange 
+}) => {
   return (
     <aside className="w-80 h-full border-r flex flex-col overflow-y-auto" style={{ background: 'rgba(255,255,255,0.02)' }}>
       {/* Navigation */}
       <nav className="p-4 border-b" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <NavItem icon={<LayoutDashboard size={18} />} label="Dashboard" active />
-        <NavItem icon={<Activity size={18} />} label="Training Workspace" />
-        <NavItem icon={<Database size={18} />} label="Dataset Explorer" />
-        <NavItem icon={<Library size={18} />} label="Model Library" />
+        <NavItem 
+          icon={<LayoutDashboard size={18} />} 
+          label="Dashboard" 
+          active={currentView === 'dashboard'} 
+          onClick={() => onViewChange('dashboard')}
+        />
+        <NavItem 
+          icon={<Activity size={18} />} 
+          label="Training Workspace" 
+          active={currentView === 'training'} 
+          onClick={() => onViewChange('training')}
+        />
+        <NavItem 
+          icon={<Database size={18} />} 
+          label="Dataset Explorer" 
+          active={currentView === 'dataset'} 
+          onClick={() => onViewChange('dataset')}
+        />
+        <NavItem 
+          icon={<Library size={18} />} 
+          label="Model Library" 
+          active={currentView === 'library'} 
+          onClick={() => onViewChange('library')}
+        />
       </nav>
 
       {/* System Metrics */}
@@ -85,8 +115,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ clients, rejectedCount, chainH
   );
 };
 
-const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
+interface NavItemProps {
+  icon: React.ReactNode;
+  label: string;
+  active?: boolean;
+  onClick: () => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ icon, label, active = false, onClick }) => (
   <button
+    onClick={onClick}
     className="flex items-center gap-3 px-3 py-2 rounded-sm"
     style={{
       width: '100%',
