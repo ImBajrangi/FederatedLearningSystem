@@ -38,6 +38,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
   line-height: 1.5;
+  transform: translateZ(0); /* Hardware acceleration */
 }
 
 h1,
@@ -50,18 +51,21 @@ h6 {
   letter-spacing: -0.02em;
 }
 
-/* Utilities */
+/* Optimized Glassmorphism */
 .glass {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px); /* Reduced filter complexity */
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translate3d(0,0,0);
 }
 
 .glass-card {
-  background: rgba(18, 18, 18, 0.8);
-  backdrop-filter: blur(16px);
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(8px); /* Reduced filter complexity */
   border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Lighter shadow */
+  transform: translate3d(0,0,0);
+  will-change: transform, opacity;
 }
 
 .text-primary {
@@ -261,25 +265,29 @@ h6 {
 
 .overflow-y-auto {
   overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
 /* Animation Utils */
 @keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
+  0%, 100% { 
+    opacity: 1; 
     transform: scale(1);
   }
-
-  50% {
-    opacity: 0.5;
-    transform: scale(0.9);
+  50% { 
+    opacity: 0.6; 
+    transform: scale(0.95);
   }
 }
 
 .animate-pulse-dot {
-  animation: pulse 2s infinite;
+  animation: pulse 2s infinite ease-in-out;
+  will-change: opacity, transform;
 }
 
 @keyframes spin {
@@ -321,13 +329,19 @@ h6 {
 }
 
 /* Scrollbars */
+::selection {
+  background: var(--primary);
+  color: black;
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 1px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {

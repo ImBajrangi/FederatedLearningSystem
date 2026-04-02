@@ -50,12 +50,12 @@ function App() {
 
         <main
           className="flex-1 flex flex-col relative overflow-hidden"
-          style={{ backgroundColor: 'var(--terminal-bg)' }}
+          style={{ backgroundColor: 'var(--terminal-bg)', transform: 'translate3d(0,0,0)', willChange: 'transform' }}
         >
           {/* Main Top Area: Tabs and Actions */}
           <div
             className="flex items-center justify-between border-b z-20 sticky top-0 px-6 py-3"
-            style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+            style={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)', transform: 'translateZ(0)' }}
           >
             <div
               className="flex rounded-sm border"
@@ -103,7 +103,7 @@ function App() {
                 className={`btn-primary flex items-center gap-2 px-6 py-2 rounded-sm uppercase font-mono font-bold tracking-widest transition-all ${isActive || round >= 6 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}
                 style={{
                   fontSize: '10px',
-                  boxShadow: isActive || round >= 6 ? 'none' : '0 0 20px rgba(19, 236, 73, 0.35)'
+                  boxShadow: isActive || round >= 6 ? 'none' : '0 0 16px rgba(19, 236, 73, 0.25)'
                 }}
               >
                 {isActive ? 'Executing...' : round >= 6 ? 'Session Complete' : 'Initialize Environment'}
@@ -112,15 +112,16 @@ function App() {
             </div>
           </div>
 
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex overflow-hidden" style={{ transform: 'translateZ(0)' }}>
             <div className="flex-1 relative overflow-hidden flex flex-col">
               <AnimatePresence mode="wait">
                 {activeTab === 'analytics' ? (
                   <motion.div
                     key="analytics"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                     className="flex-1 overflow-y-auto p-6 flex flex-col gap-6"
                   >
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>

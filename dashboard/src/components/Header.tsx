@@ -8,8 +8,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ status }) => {
   return (
     <header 
-      className="glass border-b px-6 flex items-center justify-between sticky top-0 z-50"
-      style={{ height: '64px' }}
+      className="glass border-b px-6 flex items-center justify-between sticky top-0 z-50 transition-none"
+      style={{ height: '64px', transform: 'translate3d(0,0,0)', willChange: 'transform' }}
     >
       <div className="flex items-center gap-3">
         <Beaker className="text-primary" size={24} />
@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ status }) => {
               width: '8px', 
               height: '8px', 
               backgroundColor: status === 'Live' ? 'var(--primary)' : 'var(--text-muted)',
-              boxShadow: status === 'Live' ? '0 0 8px var(--primary)' : 'none'
+              // Removed heavy box-shadow to prevent GPU ghosting
             }} 
           />
           <span className="font-mono font-bold uppercase" style={{ fontSize: '10px' }}>

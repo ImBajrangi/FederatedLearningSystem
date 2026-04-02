@@ -13,30 +13,35 @@ interface LayerNodeProps {
 const LayerNode: React.FC<LayerNodeProps> = ({ type, name, active, onSelect, styleMode = 'solid' }) => (
   <div className="flex flex-col items-center">
     <motion.div
-      whileHover={{ y: -2, scale: 1.02 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onSelect}
-      className={`rounded-sm transition-all duration-300 relative`}
+      animate={{
+        borderColor: active ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+        background: active ? 'rgba(19, 236, 73, 0.08)' : '#121212',
+        boxShadow: active ? '0 0 30px rgba(19, 236, 73, 0.15)' : '0 0 0px rgba(0,0,0,0)',
+      }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className={`rounded-sm relative select-none`}
       style={{
         width: '280px',
-        padding: '16px',
+        padding: '20px',
         cursor: 'pointer',
         border: '1px solid',
-        borderColor: active ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
         borderStyle: styleMode,
-        background: active ? 'rgba(19, 236, 73, 0.05)' : '#121212',
-        boxShadow: active ? '0 0 20px rgba(19, 236, 73, 0.1)' : 'none'
+        transform: 'translateZ(0)',
+        willChange: 'transform'
       }}
     >
-      <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
+      <div className="flex items-center justify-between" style={{ marginBottom: '10px' }}>
         <span className="font-mono font-bold text-muted uppercase tracking-widest" style={{ fontSize: '9px' }}>
           {type}
         </span>
         {active && <Zap size={14} style={{ color: 'var(--primary)' }} className="animate-pulse" />}
       </div>
       <h4
-        className="font-bold tracking-tight"
-        style={{ fontSize: '14px', color: active ? 'white' : 'var(--text-muted)' }}
+        className="font-bold tracking-tight font-heading"
+        style={{ fontSize: '15px', color: active ? 'white' : 'var(--text-muted)' }}
       >
         {name}
       </h4>
@@ -45,19 +50,22 @@ const LayerNode: React.FC<LayerNodeProps> = ({ type, name, active, onSelect, sty
         <motion.div
           layoutId="node-glow"
           className="rounded-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           style={{
             position: 'absolute',
-            inset: '-2px',
+            inset: '-1px',
             background: 'rgba(19, 236, 73, 0.1)',
-            filter: 'blur(8px)',
+            filter: 'blur(10px)',
             zIndex: -1
           }}
         />
       )}
     </motion.div>
     <div style={{ height: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '1px', height: '100%', backgroundColor: 'rgba(255,255,255,0.1)', position: 'relative' }}>
-        <ArrowDown size={10} style={{ position: 'absolute', bottom: '-4px', left: '-4.5px', color: 'rgba(255,255,255,0.1)' }} />
+      <div style={{ width: '1px', height: '100%', backgroundColor: 'rgba(255,255,255,0.08)', position: 'relative' }}>
+        <ArrowDown size={12} style={{ position: 'absolute', bottom: '-4px', left: '-5.5px', color: 'rgba(255,255,255,0.08)' }} />
       </div>
     </div>
   </div>
