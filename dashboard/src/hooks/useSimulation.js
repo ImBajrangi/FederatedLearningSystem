@@ -1,37 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export interface Client {
-  id: string;
-  org: string;
-  isMalicious: boolean;
-  reputation: number;
-  status: 'ACTIVE' | 'BLOCKED';
-  validCount: number;
-}
-
-export interface Transaction {
-  peer: string;
-  status: 'GREEN' | 'RED';
-  action: 'REWARD' | 'PENALTY';
-}
-
-export interface Block {
-  index: number;
-  hash: string;
-  transactions: Transaction[];
-}
-
-export interface SimulationConfig {
-  clients: number;
-  rounds: number;
-  maliciousRatio: number;
-  repInitial: number;
-  repThreshold: number;
-  repReward: number;
-  repPenalty: number;
-}
-
-const DEFAULT_CONFIG: SimulationConfig = {
+const DEFAULT_CONFIG = {
   clients: 8,
   rounds: 6,
   maliciousRatio: 0.25,
@@ -44,22 +13,22 @@ const DEFAULT_CONFIG: SimulationConfig = {
 export function useSimulation() {
   const [round, setRound] = useState(0);
   const [isActive, setIsActive] = useState(false);
-  const [blockchain, setBlockchain] = useState<Block[]>([
+  const [blockchain, setBlockchain] = useState([
     { index: 0, hash: '0x0000_GENESIS', transactions: [] }
   ]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [accuracyHistory, setAccuracyHistory] = useState<number[]>([0.12]);
+  const [clients, setClients] = useState([]);
+  const [accuracyHistory, setAccuracyHistory] = useState([0.12]);
   const [rejectedCount, setRejectedCount] = useState(0);
-  const [logs, setLogs] = useState<{msg: string, color: string}[]>([]);
+  const [logs, setLogs] = useState([]);
 
-  const addLog = useCallback((msg: string, color: string = 'gray') => {
+  const addLog = useCallback((msg, color = 'gray') => {
     setLogs(prev => [...prev.slice(-99), { msg: `> ${msg}`, color }]);
   }, []);
 
   const initClients = useCallback(() => {
     const types = ['Hospital', 'FinTech', 'AutoDrive', 'Retail', 'Logistics', 'HealthAI', 'EdTech', 'GovNet'];
     const numMal = Math.floor(DEFAULT_CONFIG.clients * DEFAULT_CONFIG.maliciousRatio);
-    const newClients: Client[] = Array.from({ length: DEFAULT_CONFIG.clients }, (_, i) => ({
+    const newClients = Array.from({ length: DEFAULT_CONFIG.clients }, (_, i) => ({
       id: `P-${i.toString().padStart(2, '0')}`,
       org: types[i % types.length],
       isMalicious: i < numMal,
@@ -68,12 +37,12 @@ export function useSimulation() {
       validCount: 0
     }));
     setClients(newClients);
-    addLog('[INIT] Blockchain-based Secure Federated Learning Engine v2.0', '#13ec49');
-    addLog('[AUTH] Credential rotation system active.', '#94a3b8');
+    addLog('[INIT] Secure Federated Learning Engine v3.0 (Enterprise)', '#4f46e5');
+    addLog('[AUTH] Federated identity synchronization complete.', '#64748b');
   }, [addLog]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('bcfl_state_react');
+    const saved = localStorage.getItem('bcfl_state_corp');
     if (saved) {
       const parsed = JSON.parse(saved);
       setRound(parsed.round);
@@ -88,7 +57,7 @@ export function useSimulation() {
 
   useEffect(() => {
     if (clients.length > 0) {
-      localStorage.setItem('bcfl_state_react', JSON.stringify({
+      localStorage.setItem('bcfl_state_corp', JSON.stringify({
         round, blockchain, clients, accuracyHistory, rejectedCount
       }));
     }
@@ -97,66 +66,56 @@ export function useSimulation() {
   const runRound = useCallback(async () => {
     setRound(prev => {
       const nextRound = prev + 1;
-      addLog(`[ROUND ${nextRound}] Broadcast Phase triggered...`, '#13ec49');
+      addLog(`[CYCLE ${nextRound}] Global aggregation sequence initiated.`, '#4f46e5');
       
       let acceptedThisRound = 0;
-      const txs: Transaction[] = [];
+      const txs = [];
 
       setClients(currentClients => {
         return currentClients.map(c => {
           if (c.status === 'BLOCKED') return c;
           
           let newRep = c.reputation;
-          let newStatus: 'ACTIVE' | 'BLOCKED' = c.status;
+          let newStatus = c.status;
           let newValidCount = c.validCount;
 
           if (c.isMalicious) {
             newRep = Math.max(0, c.reputation - DEFAULT_CONFIG.repPenalty);
             setRejectedCount(rc => rc + 1);
-            addLog(`  [-] Rejected ${c.id} (${c.org}): Anomaly detected by Smart Contract.`, '#ef4444');
+            addLog(`  [-] ${c.id}: Integrity check failed. Local update discarded.`, '#ef4444');
             txs.push({ peer: c.id, status: 'RED', action: 'PENALTY' });
           } else {
-            newRep = Math.min(200, c.reputation + DEFAULT_CONFIG.repReward);
+            newRep = Math.min(100, c.reputation + DEFAULT_CONFIG.repReward);
             newValidCount++;
             acceptedThisRound++;
-            addLog(`  [+] Validated ${c.id}: L2-Norm within baseline. Accepting shares.`, '#13ec49');
+            addLog(`  [+] ${c.id}: Gradient verified. Merging parameters.`, '#10b981');
             txs.push({ peer: c.id, status: 'GREEN', action: 'REWARD' });
           }
 
           if (newRep < DEFAULT_CONFIG.repThreshold) {
-            newStatus = 'BLOCKED' as const;
-            addLog(`  [!] NODE ${c.id} BLACKLISTED. Cumulative trust failure.`, '#ef4444');
+            newStatus = 'BLOCKED';
+            addLog(`  [!] NODE ${c.id} DECOMMISSIONED. Trust threshold violation.`, '#ef4444');
           }
 
           return { ...c, reputation: newRep, status: newStatus, validCount: newValidCount };
         });
       });
 
-      // Update Blockchain
       const hash = '0x' + Math.random().toString(16).substr(2, 12).toUpperCase();
       setBlockchain(prevChain => [...prevChain, { index: nextRound, hash, transactions: txs }]);
 
-      // Update Accuracy
       setAccuracyHistory(prevAccHistory => {
         const prevAcc = prevAccHistory[prevAccHistory.length - 1];
-        const boost = acceptedThisRound > 2 ? (0.05 + Math.random() * 0.1) : -0.05;
-        return [...prevAccHistory, Math.min(0.985, Math.max(0.1, prevAcc + boost))];
+        const boost = acceptedThisRound > 2 ? (0.05 + Math.random() * 0.08) : -0.02;
+        return [...prevAccHistory, Math.min(0.99, Math.max(0.1, prevAcc + boost))];
       });
 
       return nextRound;
     });
   }, [addLog]);
 
-  const startExecution = useCallback(async () => {
-    if (isActive) return;
-    setIsActive(true);
-    
-    // We can't use a simple loop because of state updates, 
-    // so we'll use a recursive timeout or a useEffect trigger.
-  }, [isActive]);
-
   const clearSimulation = useCallback(() => {
-    localStorage.removeItem('bcfl_state_react');
+    localStorage.removeItem('bcfl_state_corp');
     window.location.reload();
   }, []);
 
@@ -169,7 +128,6 @@ export function useSimulation() {
     rejectedCount,
     logs,
     runRound,
-    startExecution,
     clearSimulation,
     setIsActive
   };
