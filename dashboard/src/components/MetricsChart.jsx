@@ -30,8 +30,8 @@ export const MetricsChart = ({ data }) => {
         </div>
       </div>
 
-      <div className="h-[240px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[240px] w-full">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <AreaChart
             data={chartData}
             margin={{ top: 0, right: 0, left: -20, bottom: 0 }}

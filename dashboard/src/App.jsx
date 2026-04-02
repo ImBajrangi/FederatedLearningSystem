@@ -114,10 +114,10 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="app-shell selection:bg-indigo-100 selection:text-indigo-900">
       <Header status={isActive ? 'Live' : round >= 6 ? 'Standby' : 'Ready'} />
 
-      <div className="flex-1 flex min-h-0 overflow-hidden">
+      <div className="shell-body">
         <Sidebar
           clients={clients}
           rejectedCount={rejectedCount}
@@ -126,51 +126,55 @@ function App() {
           onViewChange={setCurrentView}
         />
 
-        <main className="flex-1 flex flex-col relative overflow-hidden min-h-0">
-          {/* Main Top Area: Actions */}
+        <main className="shell-main">
+          {/* Institutional Top Bar: Actions */}
           {['dashboard', 'library'].includes(currentView) && (
-            <div className="h-16 flex items-center justify-between border-b px-8 py-3 bg-white/80 backdrop-blur-md z-20 sticky top-0 shadow-sm">
-              <div className="flex items-center gap-2 text-slate-400">
-                <ChevronRight size={14} />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
-                   Protocol version: v7.2.0-Ent
+            <div className="h-16 shrink-0 flex items-center justify-between border-b px-10 bg-white/80 backdrop-blur-md z-30 sticky top-0 shadow-sm">
+              <div className="flex items-center gap-3 text-slate-400">
+                <div className="p-1.5 bg-slate-100 rounded text-slate-500">
+                   <ChevronRight size={14} />
+                </div>
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-500">
+                   Institutional Node: v7.2.0.STABLE
                 </span>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <button
                   onClick={() => {
                     clearSimulation();
                     addToast('System state reset.', 'info');
                   }}
-                  className="btn btn-outline h-10 px-4"
+                  className="btn btn-outline h-10 px-6 group"
                 >
-                  <RotateCcw size={16} />
-                  <span className="font-bold uppercase tracking-wider text-[11px]">Clear Cache</span>
+                  <RotateCcw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+                  <span>Clear Ledger</span>
                 </button>
                 <button
                   onClick={startSimulation}
                   disabled={isActive || round >= 6}
-                  className={`btn btn-primary h-10 px-8 shadow-lg shadow-indigo-500/20 ${isActive || round >= 6 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`btn btn-primary h-10 px-10 shadow-lg ${isActive || round >= 6 ? 'opacity-50 grayscale' : ''}`}
                 >
                   <Play size={16} fill="currentColor" />
-                  <span className="font-bold uppercase tracking-wider text-[11px]">
-                    {isActive ? 'Executing cycle...' : round >= 6 ? 'Session complete' : 'Start training session'}
+                  <span>
+                    {isActive ? 'Executing cycle...' : round >= 6 ? 'Process Finalized' : 'Initiate Broadcast'}
                   </span>
                 </button>
               </div>
             </div>
           )}
 
-          <div className="flex-1 flex min-h-0">
-            <AnimatePresence mode="wait">
-              {renderView()}
-            </AnimatePresence>
+          <div className="content-viewport custom-scrollbar px-10 py-8">
+            <div className="max-w-[1600px] mx-auto w-full">
+              <AnimatePresence mode="wait">
+                {renderView()}
+              </AnimatePresence>
+            </div>
           </div>
 
-          <div className="sticky bottom-0 z-40 w-full bg-white border-t">
+          <footer className="shell-footer">
             <BlockchainRibbon blockchain={blockchain} />
-          </div>
+          </footer>
 
           {/* Toast Notification System */}
           <div className="absolute right-8 top-20 z-[100] flex flex-col gap-3">
@@ -181,15 +185,13 @@ function App() {
                   initial={{ opacity: 0, x: 20, scale: 0.95 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.1 } }}
-                  className={`flex items-center gap-3 px-5 py-3 rounded-lg shadow-xl border-l-4 min-w-[280px] bg-white ${
+                  className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl border-l-4 min-w-[320px] bg-white ${
                     toast.type === 'success' ? 'border-emerald-500' : 'border-indigo-500'
                   }`}
                 >
-                  {toast.type === 'success' ? (
-                    <ShieldCheck size={18} className="text-emerald-500" />
-                  ) : (
-                    <Info size={18} className="text-indigo-500" />
-                  )}
+                  <div className={`p-2 rounded-full ${toast.type === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                    {toast.type === 'success' ? <ShieldCheck size={18} /> : <Info size={18} />}
+                  </div>
                   <span className="text-xs font-bold text-slate-700">{toast.msg}</span>
                   <button onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} className="ml-auto text-slate-300 hover:text-slate-500">
                     <X size={16} />

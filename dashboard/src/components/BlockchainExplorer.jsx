@@ -12,77 +12,77 @@ export const BlockchainRibbon = ({ blockchain }) => {
   }, [blockchain]);
 
   return (
-    <div className="flex flex-col bg-slate-900 overflow-hidden shadow-2xl">
-      {/* Ribbon Header */}
-      <div className="px-8 py-3 border-b border-slate-800 flex items-center justify-between shrink-0">
+    <div className="flex flex-col bg-slate-900 overflow-hidden shadow-2xl relative">
+      {/* Ribbon Header Institutionalized */}
+      <div className="px-10 py-3 border-b border-white/5 flex items-center justify-between shrink-0 bg-black/20">
         <div className="flex items-center gap-3">
-          <History size={16} className="text-slate-400" />
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
-            Immutable Audit Ledger
+          <History size={16} className="text-indigo-400" />
+          <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none">
+            Audit Ledger (Immutability Layer)
           </span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-md">
-            <ShieldCheck size={12} className="text-indigo-400" />
-            <span className="text-[9px] font-bold text-slate-300 uppercase tracking-wider">
-               Integrity: Verified
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 px-3 py-1 bg-slate-800 rounded border border-white/5 shadow-inner">
+            <ShieldCheck size={12} className="text-emerald-500" />
+            <span className="text-[9px] font-extrabold text-slate-300 uppercase tracking-widest">
+               Protocol Integrity: SECURE
             </span>
           </div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
-            Height: {blockchain.length}
+          <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+            Chain height: {blockchain.length.toString().padStart(3, '0')}
           </span>
         </div>
       </div>
 
-      {/* Ribbon Content */}
+      {/* Ribbon Content Viewport */}
       <div
         ref={ribbonRef}
-        className="flex-1 flex items-center gap-6 px-8 overflow-x-auto py-6 scroll-smooth custom-scrollbar-ribbon"
+        className="flex items-center gap-8 px-10 overflow-x-auto py-8 scroll-smooth custom-scrollbar-ribbon"
       >
         {blockchain.map((block) => (
           <motion.div
-            key={block.index}
+            key={`${block.index}-${block.hash}`}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className={`min-w-[220px] rounded-lg p-5 flex flex-col gap-4 border transition-all ${
+            className={`min-w-[260px] rounded-xl p-6 flex flex-col gap-5 border transition-all relative group cursor-default ${
               block.index === 0 
-                ? 'bg-indigo-600 border-indigo-500 shadow-lg shadow-indigo-500/20' 
-                : 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                ? 'bg-indigo-600 border-indigo-400 shadow-xl shadow-indigo-500/30' 
+                : 'bg-slate-800/50 border-white/5 hover:border-indigo-500/50 hover:bg-slate-800 transition-colors shadow-lg'
             }`}
           >
             <div className="flex justify-between items-center">
-               <div className="flex items-center gap-2">
-                  <Box size={14} className={block.index === 0 ? 'text-white/80' : 'text-slate-500'} />
-                  <span className={`text-xs font-bold ${block.index === 0 ? 'text-white' : 'text-slate-200'}`}>
-                    Block #{block.index}
+               <div className="flex items-center gap-3">
+                  <Box size={16} className={block.index === 0 ? 'text-white' : 'text-indigo-400'} />
+                  <span className={`text-xs font-extrabold tracking-tight ${block.index === 0 ? 'text-white' : 'text-slate-100'}`}>
+                    Block #{block.index.toString().padStart(3, '0')}
                   </span>
                </div>
                {block.index === 0 && (
-                 <span className="text-[8px] font-bold bg-white/20 text-white px-2 py-0.5 rounded uppercase">Genesis</span>
+                 <span className="text-[8px] font-extrabold bg-white/20 text-white px-3 py-1 rounded-full uppercase tracking-widest border border-white/20">Genesis Node</span>
                )}
             </div>
 
-            <div className="space-y-1.5">
-               <div className={`text-[9px] font-mono tracking-tighter ${block.index === 0 ? 'text-indigo-100/60' : 'text-slate-500'}`}>
-                 Hash: {block.hash !== 'null' && block.hash.length > 10 ? block.hash.slice(0, 18) + '...' : '0x0000_GENESIS'}
+            <div className="space-y-2">
+               <div className={`text-[9px] font-mono font-bold tracking-tighter ${block.index === 0 ? 'text-indigo-100' : 'text-slate-500'}`}>
+                 HASH: {block.hash !== 'null' && block.hash.length > 10 ? block.hash.slice(0, 24) : '0x0000_SEED_PROTOCOL_GENESIS'}
                </div>
-               <div className="w-full h-1 bg-black/20 rounded-full overflow-hidden">
+               <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5">
                  <div 
-                   className={`h-full ${block.index === 0 ? 'bg-white/40' : 'bg-indigo-500/50'}`}
-                   style={{ width: `${Math.min(100, (block.transactions.length / 8) * 100)}%` }}
+                   className={`h-full ${block.index === 0 ? 'bg-white' : 'bg-indigo-500'}`}
+                   style={{ width: `${Math.max(10, Math.min(100, (block.transactions.length / 8) * 100))}%` }}
                  />
                </div>
             </div>
 
-            <div className="flex justify-between items-center">
-              <span className={`text-[9px] font-bold uppercase tracking-tight ${block.index === 0 ? 'text-white/70' : 'text-slate-400'}`}>
-                {block.transactions.length} Contributions
+            <div className="flex justify-between items-center mt-2">
+              <span className={`text-[9px] font-extrabold uppercase tracking-widest ${block.index === 0 ? 'text-white/80' : 'text-slate-500'}`}>
+                {block.transactions.length} Update Envelopes
               </span>
-              <div className="flex -space-x-1.5">
-                {block.transactions.slice(0, 4).map((tx, idx) => (
+              <div className="flex -space-x-2">
+                {block.transactions.slice(0, 5).map((tx, idx) => (
                   <div
                     key={idx}
-                    className={`w-2.5 h-2.5 rounded-full border-2 ${block.index === 0 ? 'border-indigo-600' : 'border-slate-800'}`}
+                    className={`w-3.5 h-3.5 rounded-full border-2 ${block.index === 0 ? 'border-indigo-600 shadow-sm' : 'border-slate-900 shadow-sm'}`}
                     style={{ backgroundColor: tx.status === 'GREEN' ? '#10b981' : '#ef4444' }}
                   />
                 ))}
@@ -93,9 +93,10 @@ export const BlockchainRibbon = ({ blockchain }) => {
       </div>
       
       <style>{`
-        .custom-scrollbar-ribbon::-webkit-scrollbar { height: 6px; }
-        .custom-scrollbar-ribbon::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar-ribbon::-webkit-scrollbar { height: 4px; }
+        .custom-scrollbar-ribbon::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
         .custom-scrollbar-ribbon::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar-ribbon::-webkit-scrollbar-thumb:hover { background: #475569; }
       `}</style>
     </div>
   );
