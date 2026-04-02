@@ -107,7 +107,7 @@ export const ArchitectureBuilder = ({ onAction }) => {
   const current = nodeDetails[activeNode];
 
   return (
-    <div className="flex h-full overflow-hidden relative">
+    <div className="flex relative">
       {/* 1. Left Component Palette (Textbook style list) */}
       <div className="w-[280px] border-r border-border bg-bg-surface flex flex-col shrink-0">
          <div className="p-10 border-b border-border bg-bg-main/50">
@@ -137,8 +137,8 @@ export const ArchitectureBuilder = ({ onAction }) => {
       </div>
 
       {/* 2. Main Canvas Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-bg-main relative">
-        <div className="h-16 shrink-0 flex items-center justify-between border-b border-border px-10 bg-white/80 backdrop-blur-md z-30">
+      <div className="flex-1 flex flex-col min-w-0 bg-bg-main relative min-h-[800px]">
+        <div className="h-16 shrink-0 flex items-center justify-between border-b border-border px-10 bg-white/80 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-3 text-text-muted">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] serif italic">Architecture Canvas v1.2</span>
           </div>
@@ -149,7 +149,7 @@ export const ArchitectureBuilder = ({ onAction }) => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-16 relative z-10 custom-scrollbar pb-64">
+        <div className="flex-1 p-16 relative z-10 custom-scrollbar">
           <div className="flex flex-col items-center max-w-2xl mx-auto">
             <LayerNode
               type="System Gateway"
@@ -195,7 +195,7 @@ export const ArchitectureBuilder = ({ onAction }) => {
             initial={{ x: 480, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 480, opacity: 0 }}
-            className="w-[480px] h-full bg-bg-surface border-l border-border flex flex-col z-40"
+            className="w-[400px] border-l border-border bg-bg-surface flex flex-col z-40 min-h-[800px]"
           >
             <div className="flex items-center justify-between px-10 py-6 border-b border-border shrink-0 bg-bg-main/30">
                <div className="flex items-center gap-4 text-primary">
