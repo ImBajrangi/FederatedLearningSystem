@@ -12,6 +12,18 @@ export const DatasetExplorer = () => {
     { id: 'SHARD-006', org: 'Hospital Zeta', size: '550', density: 95, type: 'Imaging', date: 'Oct 21, 2025' },
   ];
 
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [filterType, setFilterType] = React.useState('All');
+
+  const types = ['All', ...new Set(fragments.map(f => f.type))];
+
+  const filteredFragments = fragments.filter(frag => {
+    const matchesSearch = frag.org.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         frag.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = filterType === 'All' || frag.type === filterType;
+    return matchesSearch && matchesFilter;
+  });
+
   return (
     <div className="flex flex-col gap-16 pb-32">
       {/* Module Header */}
@@ -36,16 +48,30 @@ export const DatasetExplorer = () => {
         </div>
       </div>
 
-      {/* Control Bar */}
       <div className="flex items-center justify-between border-b border-border pb-6">
-         <div className="flex items-center gap-10">
-            <div className="flex items-center gap-3 cursor-pointer group">
-               <Search size={14} className="text-text-muted group-hover:text-primary transition-colors" />
-               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest group-hover:text-text-main transition-colors">Search Shards</span>
+         <div className="flex items-center gap-12">
+            <div className="flex items-center gap-3 group relative">
+               <Search size={14} className={`${searchQuery ? 'text-primary' : 'text-text-muted'} group-hover:text-primary transition-colors`} />
+               <input 
+                 type="text"
+                 placeholder="Search Shards..."
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+                 className="bg-transparent border-none outline-none text-[10px] font-bold text-text-main uppercase tracking-widest placeholder:text-text-muted/50 w-40"
+               />
+               <div className="absolute -bottom-6 left-0 w-full h-[1px] bg-primary scale-x-0 group-focus-within:scale-x-100 transition-transform origin-left" />
             </div>
-            <div className="flex items-center gap-3 cursor-pointer group">
-               <Filter size={14} className="text-text-muted group-hover:text-primary transition-colors" />
-               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest group-hover:text-text-main transition-colors">Filter by Type</span>
+            
+            <div className="flex items-center gap-3 cursor-pointer group relative">
+               <Filter size={14} className={`${filterType !== 'All' ? 'text-primary' : 'text-text-muted'} group-hover:text-primary transition-colors`} />
+               <select 
+                 value={filterType}
+                 onChange={(e) => setFilterType(e.target.value)}
+                 className="bg-transparent border-none outline-none text-[10px] font-bold text-text-muted uppercase tracking-widest appearance-none cursor-pointer hover:text-text-main transition-colors pr-4"
+               >
+                 {types.map(t => <option key={t} value={t} className="bg-white text-black py-2">{t}</option>)}
+               </select>
+               <div className="absolute -bottom-6 left-0 w-full h-[1px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
             </div>
          </div>
          <div className="flex items-center gap-3 text-text-muted italic">
@@ -56,9 +82,10 @@ export const DatasetExplorer = () => {
 
       {/* Registry Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {fragments.map((frag, idx) => (
+        {filteredFragments.length > 0 ? filteredFragments.map((frag, idx) => (
           <motion.div
             key={frag.id}
+            layout
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
@@ -107,7 +134,12 @@ export const DatasetExplorer = () => {
                <button className="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">Download Metadata</button>
             </div>
           </motion.div>
-        ))}
+        )) : (
+          <div className="col-span-full py-20 border border-dashed border-border flex flex-col items-center justify-center bg-bg-main/20">
+             <Box size={24} className="text-text-muted mb-4 opacity-20" />
+             <span className="type-label text-text-muted">No institutional shards found matching criteria</span>
+          </div>
+        )}
       </div>
     </div>
   );

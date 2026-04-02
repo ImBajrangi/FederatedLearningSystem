@@ -25,29 +25,53 @@ import {
 const LayerNode = ({ type, name, active, onSelect }) => (
   <div className="flex flex-col items-center w-full relative">
     <motion.div
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -2, scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
       onClick={onSelect}
-      className={`relative select-none w-full max-w-[320px] p-6 cursor-pointer transition-all border ${
+      className={`relative select-none w-fit min-w-[280px] max-w-[440px] p-6 cursor-pointer transition-all border shadow-sm ${
         active 
-          ? 'border-primary bg-white shadow-sm' 
-          : 'border-border bg-white hover:border-text-muted/30'
+          ? 'border-primary/60 bg-white ring-1 ring-primary/10' 
+          : 'border-border/60 bg-white/80 hover:border-text-muted/30 hover:shadow-md'
       }`}
     >
-      <div className="flex items-center justify-between mb-4">
-        <span className={`type-label ${active ? 'text-primary' : 'text-text-muted'}`}>
-          {type}
-        </span>
-        {active && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
+      <div className="flex items-center justify-between mb-4 gap-8">
+        <div className="flex items-center gap-2">
+           <div className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-primary' : 'bg-text-muted/30'}`} />
+           <span className={`type-label text-[8px] ${active ? 'text-primary' : 'text-text-muted'}`}>
+             {type}
+           </span>
+        </div>
+        {active && <span className="text-[8px] font-bold text-primary/60 tracking-widest uppercase italic">Node Active</span>}
       </div>
-      <h4 className={`text-sm font-bold tracking-tight ${active ? 'text-text-main' : 'text-text-muted'} leading-snug uppercase`}>
-        {name}
-      </h4>
+      
+      <div className="flex flex-col gap-1">
+        <h4 className={`type-l3 sans ${active ? 'text-text-main' : 'text-text-muted'} leading-snug uppercase break-words`}>
+          {name}
+        </h4>
+        <p className="text-[9px] font-mono font-bold text-text-muted/40 uppercase tracking-tight">
+          Partition {Math.floor(Math.random() * 999)} // {type.split(' ')[0]}
+        </p>
+      </div>
+
+      {active && (
+        <motion.div 
+          layoutId="active-border"
+          className="absolute -inset-[1px] border-2 border-primary pointer-events-none opacity-20"
+        />
+      )}
     </motion.div>
     
-    <div className="h-12 flex flex-col items-center justify-center">
-      <div className={`w-px h-full bg-border relative`}>
-        <ArrowDown size={12} className="absolute -bottom-1 -left-[5.5px] text-border" />
+    <div className="h-16 flex flex-col items-center justify-center relative">
+      <div className={`w-[2px] h-full ${active ? 'bg-primary/20' : 'bg-border/40'} relative transition-colors duration-500`}>
+        {active && (
+           <motion.div 
+             initial={{ top: 0 }}
+             animate={{ top: '100%' }}
+             transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+             className="absolute w-full h-8 bg-gradient-to-b from-transparent via-primary to-transparent"
+           />
+        )}
+        <ArrowDown size={14} className={`absolute -bottom-1 -left-[6px] transition-colors ${active ? 'text-primary' : 'text-border'}`} />
       </div>
     </div>
   </div>
@@ -213,48 +237,48 @@ export const ArchitectureBuilder = ({ onAction }) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-16"
               >
-                <div className="space-y-8">
-                   <div className="flex items-center gap-4 text-primary/40 mb-2">
-                     <span className="type-label tracking-[0.4em]">Protocol Node</span>
-                     <div className="h-px flex-1 bg-border" />
-                   </div>
-                   <h3 className="type-l1 serif text-text-main leading-tight">{current.title}</h3>
-                   <p className="text-sm font-medium text-text-muted leading-relaxed italic">{current.desc}</p>
-                </div>
-
                  <div className="space-y-6">
-                   <div className="flex items-center gap-3 pb-3 border-b border-border">
-                     <Code size={13} className="text-primary/70 mb-[1px]" />
-                     <span className="type-label text-text-main">Mathematical Formulation</span>
-                   </div>
-                  <div className="bg-white border border-border flex items-center justify-center min-h-[120px] shadow-inner-sm relative group overflow-hidden">
-                     <div className="absolute inset-0 bg-bg-main opacity-[0.03] group-hover:opacity-[0.05] transition-opacity" />
-                     <span className="text-base font-mono text-primary font-bold tabular-nums select-all relative z-10 px-8 text-center leading-relaxed">
-                        {current.math}
-                     </span>
-                  </div>
-                   <div className="flex items-center gap-3 text-text-muted/60 pl-1">
-                      <Info size={11} className="shrink-0" />
-                      <span className="type-label">Formulation auto-updates with parameters</span>
-                   </div>
-                </div>
+                    <div className="flex items-center gap-3 text-primary/40 mb-1">
+                      <span className="type-label tracking-[0.4em]">Protocol Node</span>
+                      <div className="h-px flex-1 bg-border" />
+                    </div>
+                    <h3 className="type-l2 serif text-text-main leading-tight">{current.title}</h3>
+                    <p className="text-[13px] font-medium text-text-muted leading-relaxed italic pr-4">{current.desc}</p>
+                 </div>
 
-                 <div className="space-y-8">
-                   <div className="type-label text-text-main pb-3 border-b border-border">Operational Parameters</div>
-                  <div className="space-y-8">
-                    {current.params.map((p, i) => (
-                      <div key={i} className="group">
-                       <div className="type-label text-text-muted/60 mb-3 group-hover:text-primary transition-colors pl-1">
-                            {p.label}
-                         </div>
-                        <div className="bg-white border border-border px-5 py-3.5 text-xs font-bold text-text-main flex items-center justify-between group-hover:border-primary/40 transition-all shadow-sm">
-                           <span className="tabular-nums">{p.value}</span>
-                           <div className="w-1 h-1 rounded-full bg-border group-hover:bg-primary/50 transition-colors" />
-                        </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 pb-3 border-b border-border">
+                      <Code size={13} className="text-primary/70" />
+                      <span className="type-label text-text-main">Mathematical Formulation</span>
+                    </div>
+                   <div className="bg-white border border-border flex items-center justify-center min-h-[100px] shadow-inner-sm relative group overflow-hidden p-6">
+                      <div className="absolute inset-0 bg-bg-main opacity-[0.03] group-hover:opacity-[0.05] transition-opacity" />
+                      <div className="text-sm font-mono text-primary font-bold tabular-nums select-all relative z-10 w-full text-center leading-relaxed break-words">
+                         {current.math}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                   </div>
+                    <div className="flex items-center gap-2 text-text-muted/60 pl-1">
+                       <Info size={11} className="shrink-0" />
+                       <span className="type-label">Formulation auto-updates with parameters</span>
+                    </div>
+                 </div>
+
+                  <div className="space-y-6">
+                    <div className="type-label text-text-main pb-3 border-b border-border">Operational Parameters</div>
+                   <div className="space-y-6">
+                     {current.params.map((p, i) => (
+                       <div key={i} className="group">
+                        <div className="type-label text-text-muted/60 mb-2 group-hover:text-primary transition-colors pl-1">
+                             {p.label}
+                          </div>
+                         <div className="bg-white border border-border px-5 py-3 text-xs font-bold text-text-main flex items-center justify-between group-hover:border-primary/40 transition-all shadow-sm">
+                            <span className="tabular-nums">{p.value}</span>
+                            <div className="w-1 h-1 rounded-full bg-border group-hover:bg-primary/50 transition-colors" />
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 </div>
               </motion.div>
             </div>
             
