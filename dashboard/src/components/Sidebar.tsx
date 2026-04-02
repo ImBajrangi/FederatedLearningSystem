@@ -60,9 +60,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ clients, rejectedCount, chainH
                   </span>
                 </div>
                 <div className="w-full" style={{ height: '2px', background: 'var(--border)', overflow: 'hidden' }}>
-                  <div 
-                    style={{ 
-                      height: '100%', 
+                  <div
+                    style={{
+                      height: '100%',
                       width: `${(client.reputation / 200) * 100}%`,
                       background: client.status === 'ACTIVE' ? 'var(--primary)' : 'var(--error)',
                       transition: 'width 0.7s ease-out'
@@ -86,9 +86,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ clients, rejectedCount, chainH
 };
 
 const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
-  <button 
+  <button
     className="flex items-center gap-3 px-3 py-2 rounded-sm"
-    style={{ 
+    style={{
       width: '100%',
       border: 'none',
       borderLeft: active ? '2px solid var(--primary)' : '2px solid transparent',

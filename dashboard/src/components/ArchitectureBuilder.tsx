@@ -17,9 +17,9 @@ const LayerNode: React.FC<LayerNodeProps> = ({ type, name, active, onSelect, sty
       whileTap={{ scale: 0.98 }}
       onClick={onSelect}
       className={`rounded-sm transition-all duration-300 relative`}
-      style={{ 
-        width: '280px', 
-        padding: '16px', 
+      style={{
+        width: '280px',
+        padding: '16px',
         cursor: 'pointer',
         border: '1px solid',
         borderColor: active ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
@@ -34,21 +34,21 @@ const LayerNode: React.FC<LayerNodeProps> = ({ type, name, active, onSelect, sty
         </span>
         {active && <Zap size={14} style={{ color: 'var(--primary)' }} className="animate-pulse" />}
       </div>
-      <h4 
-        className="font-bold tracking-tight" 
+      <h4
+        className="font-bold tracking-tight"
         style={{ fontSize: '14px', color: active ? 'white' : 'var(--text-muted)' }}
       >
         {name}
       </h4>
-      
+
       {active && (
-        <motion.div 
+        <motion.div
           layoutId="node-glow"
           className="rounded-sm"
-          style={{ 
-            position: 'absolute', 
-            inset: '-2px', 
-            background: 'rgba(19, 236, 73, 0.1)', 
+          style={{
+            position: 'absolute',
+            inset: '-2px',
+            background: 'rgba(19, 236, 73, 0.1)',
             filter: 'blur(8px)',
             zIndex: -1
           }}
@@ -67,56 +67,56 @@ export const ArchitectureBuilder: React.FC = () => {
   const [activeNode, setActiveNode] = useState('global');
 
   return (
-    <div 
+    <div
       className="flex-1 overflow-y-auto scroll-smooth relative"
       style={{ background: 'rgba(18,18,18,0.5)' }}
     >
       {/* Visual Workspace Background */}
-      <div 
-        style={{ 
-          position: 'absolute', 
-          inset: 0, 
-          opacity: 0.1, 
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          opacity: 0.1,
           pointerEvents: 'none',
-          backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)', 
-          backgroundSize: '32px 32px' 
-        }} 
+          backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)',
+          backgroundSize: '32px 32px'
+        }}
       />
 
       <div style={{ position: 'relative', zIndex: 10, padding: '80px 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <LayerNode 
-          type="Global Init" 
-          name="Secure Aggregation Server" 
-          active={activeNode === 'global'} 
-          onSelect={() => setActiveNode('global')} 
+        <LayerNode
+          type="Global Init"
+          name="Secure Aggregation Server"
+          active={activeNode === 'global'}
+          onSelect={() => setActiveNode('global')}
         />
-        <LayerNode 
-          type="Consensus Protocol" 
-          name="PoA Integrity Ledger" 
-          active={activeNode === 'blockchain'} 
-          onSelect={() => setActiveNode('blockchain')} 
+        <LayerNode
+          type="Consensus Protocol"
+          name="PoA Integrity Ledger"
+          active={activeNode === 'blockchain'}
+          onSelect={() => setActiveNode('blockchain')}
         />
-        <LayerNode 
-          type="Integrity Policy" 
-          name="Smart Contract Validation" 
-          active={activeNode === 'security'} 
-          onSelect={() => setActiveNode('security')} 
+        <LayerNode
+          type="Integrity Policy"
+          name="Smart Contract Validation"
+          active={activeNode === 'security'}
+          onSelect={() => setActiveNode('security')}
         />
-        <LayerNode 
-          type="Compute Cluster" 
-          name="8 Peers Provisioned" 
-          active={activeNode === 'aggregation'} 
-          onSelect={() => setActiveNode('aggregation')} 
+        <LayerNode
+          type="Compute Cluster"
+          name="8 Peers Provisioned"
+          active={activeNode === 'aggregation'}
+          onSelect={() => setActiveNode('aggregation')}
           styleMode="dashed"
         />
-        
+
         <div className="flex flex-col items-center" style={{ marginTop: '16px' }}>
-          <div 
-            className="rounded-full flex items-center justify-center" 
-            style={{ 
-              width: '48px', 
-              height: '48px', 
-              border: '1px solid rgba(255,255,255,0.1)', 
+          <div
+            className="rounded-full flex items-center justify-center"
+            style={{
+              width: '48px',
+              height: '48px',
+              border: '1px solid rgba(255,255,255,0.1)',
               backgroundColor: 'rgba(255,255,255,0.05)',
               cursor: 'pointer',
               transition: 'all 0.2s'
@@ -131,13 +131,13 @@ export const ArchitectureBuilder: React.FC = () => {
       </div>
 
       {/* Floating Toolbar */}
-      <div 
+      <div
         className="flex justify-between items-center glass rounded-sm shadow-2xl"
-        style={{ 
-          position: 'absolute', 
-          top: '24px', 
-          left: '24px', 
-          right: '24px', 
+        style={{
+          position: 'absolute',
+          top: '24px',
+          left: '24px',
+          right: '24px',
           padding: '16px',
           background: 'rgba(10,10,10,0.8)'
         }}
@@ -146,12 +146,12 @@ export const ArchitectureBuilder: React.FC = () => {
           <h2 className="font-bold text-white uppercase tracking-widest" style={{ fontSize: '14px' }}>
             Architecture Workspace
           </h2>
-          <span 
+          <span
             className="font-mono font-bold rounded-full"
-            style={{ 
-              padding: '2px 8px', 
-              backgroundColor: 'rgba(19, 236, 73, 0.1)', 
-              color: 'var(--primary)', 
+            style={{
+              padding: '2px 8px',
+              backgroundColor: 'rgba(19, 236, 73, 0.1)',
+              color: 'var(--primary)',
               fontSize: '9px',
               border: '1px solid rgba(19, 236, 73, 0.2)'
             }}

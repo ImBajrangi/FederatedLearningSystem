@@ -28,7 +28,7 @@ function App() {
   const startSimulation = async () => {
     if (isActive) return;
     setIsActive(true);
-    
+
     // Simulate rounds
     for (let r = round; r < 6; r++) {
       await runRound();
@@ -40,31 +40,31 @@ function App() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-black text-academic-text font-body">
       <Header status={isActive ? 'Live' : round >= 6 ? 'Standby' : 'Ready'} />
-      
+
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar 
-          clients={clients} 
-          rejectedCount={rejectedCount} 
-          chainHeight={blockchain.length} 
+        <Sidebar
+          clients={clients}
+          rejectedCount={rejectedCount}
+          chainHeight={blockchain.length}
         />
-        
-        <main 
-          className="flex-1 flex flex-col relative overflow-hidden" 
+
+        <main
+          className="flex-1 flex flex-col relative overflow-hidden"
           style={{ backgroundColor: 'var(--terminal-bg)' }}
         >
           {/* Main Top Area: Tabs and Actions */}
-          <div 
+          <div
             className="flex items-center justify-between border-b z-20 sticky top-0 px-6 py-3"
             style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
           >
-            <div 
-              className="flex rounded-sm border" 
+            <div
+              className="flex rounded-sm border"
               style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '4px', borderColor: 'rgba(255,255,255,0.1)' }}
             >
-              <button 
+              <button
                 onClick={() => setActiveTab('analytics')}
                 className="px-4 py-1.5 uppercase font-mono font-bold tracking-widest rounded-sm transition-all"
-                style={{ 
+                style={{
                   fontSize: '10px',
                   border: 'none',
                   backgroundColor: activeTab === 'analytics' ? 'var(--primary)' : 'transparent',
@@ -74,10 +74,10 @@ function App() {
               >
                 Training Analytics
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab('architecture')}
                 className="px-4 py-1.5 uppercase font-mono font-bold tracking-widest rounded-sm transition-all"
-                style={{ 
+                style={{
                   fontSize: '10px',
                   border: 'none',
                   backgroundColor: activeTab === 'architecture' ? 'var(--primary)' : 'transparent',
@@ -90,18 +90,18 @@ function App() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={clearSimulation}
                 className="btn-secondary flex items-center gap-2 px-3 py-2 rounded-sm"
               >
                 <RotateCcw size={14} />
                 <span className="uppercase font-mono font-bold tracking-widest" style={{ fontSize: '10px' }}>Reset Cache</span>
               </button>
-              <button 
+              <button
                 onClick={startSimulation}
                 disabled={isActive || round >= 6}
                 className={`btn-primary flex items-center gap-2 px-6 py-2 rounded-sm uppercase font-mono font-bold tracking-widest transition-all ${isActive || round >= 6 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}
-                style={{ 
+                style={{
                   fontSize: '10px',
                   boxShadow: isActive || round >= 6 ? 'none' : '0 0 20px rgba(19, 236, 73, 0.35)'
                 }}
@@ -116,7 +116,7 @@ function App() {
             <div className="flex-1 relative overflow-hidden flex flex-col">
               <AnimatePresence mode="wait">
                 {activeTab === 'analytics' ? (
-                  <motion.div 
+                  <motion.div
                     key="analytics"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -138,27 +138,27 @@ function App() {
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         <Terminal logs={logs} />
-                        <div 
+                        <div
                           className="flex-1 glass rounded-sm flex flex-col items-center justify-center transition-opacity"
-                          style={{ 
-                            padding: '24px', 
-                            borderStyle: 'dashed', 
+                          style={{
+                            padding: '24px',
+                            borderStyle: 'dashed',
                             borderColor: 'rgba(19, 236, 73, 0.2)',
                             opacity: 0.6
                           }}
                         >
-                          <div 
+                          <div
                             className="rounded-full flex items-center justify-center"
-                            style={{ 
-                              width: '48px', 
-                              height: '48px', 
-                              backgroundColor: 'rgba(19, 236, 73, 0.1)', 
-                              marginBottom: '16px' 
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              backgroundColor: 'rgba(19, 236, 73, 0.1)',
+                              marginBottom: '16px'
                             }}
                           >
-                            <div 
+                            <div
                               className="animate-spin rounded-full"
-                              style={{ width: '24px', height: '24px', border: '2px solid var(--primary)', borderTopColor: 'transparent' }} 
+                              style={{ width: '24px', height: '24px', border: '2px solid var(--primary)', borderTopColor: 'transparent' }}
                             />
                           </div>
                           <span className="font-mono font-bold text-muted uppercase tracking-widest" style={{ fontSize: '10px' }}>
@@ -169,7 +169,7 @@ function App() {
                     </div>
                   </motion.div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     key="architecture"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

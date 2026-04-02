@@ -1,6 +1,6 @@
 import React from 'react';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 
 interface MetricsChartProps {
@@ -14,11 +14,11 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data }) => {
   }));
 
   return (
-    <div 
+    <div
       className="glass rounded-sm"
-      style={{ 
-        width: '100%', 
-        padding: '24px', 
+      style={{
+        width: '100%',
+        padding: '24px',
         border: '1px solid rgba(255, 255, 255, 0.05)'
       }}
     >
@@ -33,9 +33,9 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data }) => {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div 
-              className="rounded-full" 
-              style={{ width: '8px', height: '8px', backgroundColor: 'var(--primary)' }} 
+            <div
+              className="rounded-full"
+              style={{ width: '8px', height: '8px', backgroundColor: 'var(--primary)' }}
             />
             <span className="font-mono text-muted uppercase tracking-widest font-bold" style={{ fontSize: '10px' }}>
               Current: {(data[data.length - 1] * 100).toFixed(1)}%
@@ -52,30 +52,30 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data }) => {
           >
             <defs>
               <linearGradient id="colorAcc" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#13ec49" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#13ec49" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#13ec49" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#13ec49" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-            <XAxis 
-              dataKey="round" 
-              fontSize={10} 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#94a3b8' }} 
+            <XAxis
+              dataKey="round"
+              fontSize={10}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#94a3b8' }}
             />
-            <YAxis 
-              fontSize={10} 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#94a3b8' }} 
+            <YAxis
+              fontSize={10}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#94a3b8' }}
               domain={[0, 100]}
               tickFormatter={(val) => `${val}%`}
             />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#050505', 
-                border: '1px solid #1e293b', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#050505',
+                border: '1px solid #1e293b',
                 borderRadius: '4px',
                 fontSize: '12px',
                 fontFamily: 'Space Grotesk'
@@ -83,13 +83,13 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data }) => {
               labelStyle={{ color: '#13ec49' }}
               itemStyle={{ color: '#e2e8f0' }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="accuracy" 
-              stroke="#13ec49" 
+            <Area
+              type="monotone"
+              dataKey="accuracy"
+              stroke="#13ec49"
               strokeWidth={3}
-              fillOpacity={1} 
-              fill="url(#colorAcc)" 
+              fillOpacity={1}
+              fill="url(#colorAcc)"
               animationDuration={1500}
             />
           </AreaChart>
@@ -100,11 +100,11 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data }) => {
         <h4 className="font-mono font-bold text-muted uppercase tracking-widest" style={{ fontSize: '10px' }}>
           Consensus Analytics
         </h4>
-        <div 
-          style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 1fr', 
-            gap: '16px' 
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '16px'
           }}
         >
           <div className="rounded-sm border" style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.05)' }}>
@@ -112,7 +112,7 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ data }) => {
               Validation Pass Rate
             </span>
             <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
-              {data.length > 1 ? (data[data.length-1] > data[data.length-2] ? '↑' : '↓') : ''} 
+              {data.length > 1 ? (data[data.length - 1] > data[data.length - 2] ? '↑' : '↓') : ''}
               {((1 - (data[data.length - 1] / 1)) * 100).toFixed(1)}%
             </span>
           </div>

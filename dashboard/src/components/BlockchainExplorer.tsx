@@ -17,11 +17,11 @@ export const BlockchainRibbon: React.FC<BlockchainRibbonProps> = ({ blockchain }
   }, [blockchain]);
 
   return (
-    <div 
+    <div
       className="border-t flex flex-col"
       style={{ height: '176px', width: '100%', backgroundColor: '#050505' }}
     >
-      <div 
+      <div
         className="px-6 py-2 border-b flex items-center justify-between"
         style={{ borderColor: 'rgba(255,255,255,0.05)' }}
       >
@@ -36,7 +36,7 @@ export const BlockchainRibbon: React.FC<BlockchainRibbonProps> = ({ blockchain }
         </span>
       </div>
 
-      <div 
+      <div
         ref={ribbonRef}
         className="flex-1 flex items-center gap-4 px-6 overflow-x-auto py-4 scroll-smooth"
         style={{ scrollbarWidth: 'none' }}
@@ -47,9 +47,9 @@ export const BlockchainRibbon: React.FC<BlockchainRibbonProps> = ({ blockchain }
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="glass rounded-sm shadow-lg"
-            style={{ 
-              minWidth: '180px', 
-              padding: '16px', 
+            style={{
+              minWidth: '180px',
+              padding: '16px',
               borderColor: block.index === 0 ? 'rgba(19, 236, 73, 0.2)' : 'rgba(255, 255, 255, 0.1)',
               background: block.index === 0 ? 'rgba(19, 236, 73, 0.05)' : 'rgba(255, 255, 255, 0.02)',
               display: 'flex',
@@ -63,15 +63,15 @@ export const BlockchainRibbon: React.FC<BlockchainRibbonProps> = ({ blockchain }
               </span>
               <Box size={14} style={{ color: 'var(--text-muted)', opacity: 0.3 }} />
             </div>
-            
+
             <div className="flex flex-col gap-1">
               <span className="font-mono text-muted uppercase block" style={{ fontSize: '9px' }}>
                 Hash: {block.hash !== 'null' ? block.hash.slice(0, 14) + '...' : 'GENESIS'}
               </span>
               <div className="w-full rounded-full overflow-hidden" style={{ height: '4px', background: 'rgba(255,255,255,0.05)' }}>
-                <div 
-                  style={{ 
-                    height: '100%', 
+                <div
+                  style={{
+                    height: '100%',
                     width: `${Math.min(100, (block.transactions.length / 8) * 100)}%`,
                     background: 'rgba(19, 236, 73, 0.4)'
                   }}
@@ -85,16 +85,16 @@ export const BlockchainRibbon: React.FC<BlockchainRibbonProps> = ({ blockchain }
               </span>
               <div className="flex" style={{ marginLeft: '-4px' }}>
                 {block.transactions.slice(0, 3).map((tx, idx) => (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     className="rounded-full"
-                    style={{ 
-                      width: '8px', 
-                      height: '8px', 
+                    style={{
+                      width: '8px',
+                      height: '8px',
                       border: '1px solid black',
                       backgroundColor: tx.status === 'GREEN' ? 'var(--primary)' : 'var(--error)',
                       marginLeft: '-2px'
-                    }} 
+                    }}
                   />
                 ))}
               </div>
