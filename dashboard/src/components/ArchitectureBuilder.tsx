@@ -120,19 +120,22 @@ export const ArchitectureBuilder: React.FC = () => {
 
         <div className="flex flex-col items-center" style={{ marginTop: '16px' }}>
           <div
-            className="rounded-full flex items-center justify-center"
+            className="rounded-full"
             style={{
               width: '48px',
               height: '48px',
               border: '1px solid rgba(255,255,255,0.1)',
               backgroundColor: 'rgba(255,255,255,0.05)',
               cursor: 'pointer',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              display: 'grid',
+              placeItems: 'center',
+              transform: 'translateZ(0)'
             }}
           >
             <ShieldCheck size={20} style={{ color: 'var(--text-muted)' }} />
           </div>
-          <span className="font-mono text-muted uppercase mt-3 tracking-widest font-bold" style={{ fontSize: '10px', marginTop: '12px' }}>
+          <span className="font-mono text-muted uppercase mt-3 tracking-widest font-bold" style={{ fontSize: '10px' }}>
             Secure Endpoint
           </span>
         </div>

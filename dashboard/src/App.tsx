@@ -149,12 +149,15 @@ function App() {
                           }}
                         >
                           <div
-                            className="rounded-full flex items-center justify-center"
+                            className="rounded-full"
                             style={{
                               width: '48px',
                               height: '48px',
                               backgroundColor: 'rgba(19, 236, 73, 0.1)',
-                              marginBottom: '16px'
+                              marginBottom: '16px',
+                              display: 'grid',
+                              placeItems: 'center',
+                              transform: 'translateZ(0)'
                             }}
                           >
                             <div
