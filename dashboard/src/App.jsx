@@ -7,8 +7,8 @@ import { Terminal } from './components/Terminal';
 import { BlockchainRibbon } from './components/BlockchainExplorer';
 import { TrainingWorkspace } from './components/TrainingWorkspace';
 import { DatasetExplorer } from './components/DatasetExplorer';
-import { useSimulation } from './hooks/useSimulation';
-import { Play, RotateCcw, ShieldCheck, Info, X, Zap, ChevronRight, Activity, BookOpen, Clock } from 'lucide-react';
+import { useSecureFederated } from './hooks/useSecureFederated';
+import { Play, RotateCcw, ShieldCheck, Info, X, Zap, Activity, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
@@ -22,8 +22,10 @@ function App() {
     logs,
     runRound,
     setIsActive,
-    clearSimulation
-  } = useSimulation();
+    clearSimulation,
+    isConnected,
+    status
+  } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [toasts, setToasts] = useState([]);
@@ -71,16 +73,19 @@ function App() {
   };
 
   const startSimulation = async () => {
-    if (isActive) return;
-    setIsActive(true);
-    addToast('Global synchronization initiated.', 'info');
-
-    for (let r = round; r < 6; r++) {
-      await runRound();
-      await new Promise(res => setTimeout(res, 1500));
+    if (!isConnected) {
+      addToast('Backend connection offline.', 'error');
+      return;
     }
-    setIsActive(false);
-    addToast('Federated cycle complete. Weights aggregated.', 'success');
+    
+    addToast(status === 'IDLE' ? 'Initiating FL connection.' : 'Starting aggregation cycle.', 'info');
+    const success = await runRound();
+    
+    if (success) {
+      addToast('Federated command acknowledged.', 'success');
+    } else {
+      addToast('Command failed. Check backend logs.', 'error');
+    }
   };
 
   const initSidebarResize = (e) => {
@@ -101,207 +106,176 @@ function App() {
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-    document.body.style.cursor = 'ew-resize';
+    document.body.style.cursor = 'col-resize';
   };
 
   const renderView = () => {
     switch (currentView) {
-      case 'training':
-        return <TrainingWorkspace clients={clients} />;
-      case 'dataset':
-        return <DatasetExplorer />;
-      case 'library':
-        return <ArchitectureBuilder onAction={(msg) => addToast(msg, 'success')} />;
-      default:
+      case 'dashboard':
         return (
-          <motion.div
-            key="dashboard"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="flex flex-col gap-16"
-          >
-            {/* Academic Progress Header */}
-            <div className="space-y-12">
-               <div>
-                  <h2 className="text-4xl font-bold tracking-tight text-text-main serif mb-4">Academic Progress</h2>
-                  <p className="text-sm text-text-muted font-medium">
-                    Welcome back to your research node. Resume your training environments and historical ledger analysis below.
-                  </p>
-               </div>
-
-               <div className="space-y-4">
-                  <div className="flex justify-between items-end">
-                     <span className="text-[10px] font-bold text-text-main uppercase tracking-widest">Overall Research Completion</span>
-                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{(round / 6 * 100).toFixed(0)}%</span>
-                  </div>
-                  <div className="progress-bar-minimal">
-                     <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(round / 6 * 100)}%` }}
-                        className="progress-bar-fill"
-                     />
-                  </div>
-               </div>
-            </div>
-
-            {/* Experiment Grid */}
-            <div className="space-y-10">
-                   <div className="flex items-center justify-between pb-4 border-b border-border">
-                      <h3 className="type-l3 text-text-main">Recent Experiments</h3>
-                      <button className="type-label text-primary hover:underline hover:underline-offset-4">View All Archive</button>
-                   </div>
-               
-               <div className="grid grid-cols-3 gap-8">
-                   <div className="academic-card !p-6 flex flex-col justify-between">
-                      <div className="flex justify-between items-start mb-6">
-                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">CNN - CIFAR10</span>
-                         <Activity size={12} className="text-primary/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                         <div className="text-[11px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main tabular-nums">0.041</span></div>
-                         <div className="text-[10px] font-medium text-text-muted/60 uppercase tracking-tighter">Last Run: Oct 24, 14:30</div>
-                      </div>
-                   </div>
-                                    <div className="academic-card !p-6 flex flex-col justify-between">
-                      <div className="flex justify-between items-start mb-6">
-                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">ResNet50 Fine-tune</span>
-                         <Activity size={12} className="text-primary/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                         <div className="text-[11px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main tabular-nums">0.128</span></div>
-                         <div className="text-[10px] font-medium text-text-muted/60 uppercase tracking-tighter">Last Run: Oct 22, 09:15</div>
-                      </div>
-                   </div>
-
-                   <div className="academic-card !p-6 flex flex-col justify-between">
-                      <div className="flex justify-between items-start mb-6">
-                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Linear Reg Baseline</span>
-                         <Activity size={12} className="text-primary/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                         <div className="text-[11px] font-bold text-text-muted uppercase tracking-tighter">Final Loss: <span className="text-text-main tabular-nums">1.402</span></div>
-                         <div className="text-[10px] font-medium text-text-muted/60 uppercase tracking-tighter">Last Run: Oct 18, 16:45</div>
-                      </div>
-                   </div>
-               </div>
-            </div>
-
-            {/* Next Chapter Promo */}
-            <div className="academic-card border-l-4 border-l-primary !p-12 mt-4">
-                <div className="flex items-start justify-between">
-                   <div className="space-y-4">
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Next Task</span>
-                      <h4 className="text-2xl font-bold text-text-main">Federated Weight Aggregation</h4>
-                      <p className="text-sm text-text-muted leading-relaxed max-w-xl">
-                        Explore how institutional local weights are synchronized via the consensus ledger while maintaining Differential Privacy (DP) guarantees.
-                      </p>
-                      <button 
-                        onClick={() => setCurrentView('training')}
-                        className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center gap-2 group mt-4"
-                      >
-                         Continue Training <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                      </button>
-                   </div>
-                   <BookOpen size={48} className="text-primary/10" />
+          <div className="flex-1 p-10 space-y-12 overflow-y-auto section-fade custom-scrollbar min-h-0 bg-white">
+            <div className="flex items-center justify-between pb-8 border-b border-border">
+              <div className="space-y-1">
+                <h2 className="type-l1 serif text-text-main pr-10">Global Orchestrator</h2>
+                <div className="flex items-center gap-3">
+                  <span className="type-label-mono text-text-muted/60">NODE_ID: 0x88F2_SECURE</span>
+                  <div className="w-1 h-1 rounded-full bg-border" />
+                  <span className="type-label-mono text-primary font-bold">MODE: Institutional Production</span>
                 </div>
+              </div>
+              
+              <div className="flex items-center gap-6">
+                <div className="text-right pr-6 border-r border-border">
+                  <div className="type-label text-text-muted mb-1 opacity-50 uppercase tracking-[0.15em]">Global Accuracy</div>
+                  <div className="flex items-center gap-2">
+                    <span className="type-l2 serif text-text-main">
+                      {(accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)}%
+                    </span>
+                    <Activity size={16} className="text-emerald-500 opacity-60" />
+                  </div>
+                </div>
+                
+                <div className="flex gap-3">
+                  <button 
+                    onClick={startSimulation}
+                    disabled={isActive || !isConnected}
+                    className={`institutional-btn-primary flex items-center gap-3 shadow-lg active:scale-95 transition-all ${(!isConnected || isActive) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                  >
+                    <Play size={15} className={isActive ? 'animate-pulse' : ''} />
+                    <span className="tracking-[0.2em]">{status === 'IDLE' ? 'Open Round' : status === 'WAITING' ? 'Aggregate' : 'Starting...'}</span>
+                  </button>
+                  <button 
+                    onClick={clearSimulation}
+                    className="p-3 border border-border text-text-muted hover:bg-slate-50 transition-all hover:text-text-main"
+                  >
+                    <RotateCcw size={15} />
+                  </button>
+                </div>
+              </div>
             </div>
-          </motion.div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+              <div className="xl:col-span-2 space-y-10">
+                <div className="institutional-card">
+                  <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-bg-surface/50">
+                    <div className="flex items-center gap-3">
+                      <Activity size={14} className="text-primary" />
+                      <span className="type-label text-text-main font-bold pr-10">Real-Time Model Convergence</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-text-muted/60 font-sans">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-1 bg-primary" /> Converged Accuracy
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-8 h-[340px]">
+                    <MetricsChart data={accuracyHistory.map((v, i) => ({ round: i, accuracy: v }))} isActive={isActive} />
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <h3 className="type-l2 serif text-text-main whitespace-nowrap">Immutable Node Journal</h3>
+                    <div className="h-[1px] flex-1 bg-border/60" />
+                  </div>
+                  <BlockchainRibbon blockchain={blockchain} />
+                </div>
+              </div>
+
+              <div className="space-y-10">
+                 <div className="institutional-card bg-primary text-white border-none overflow-hidden group">
+                    <div className="p-8 relative z-10">
+                       <ShieldCheck className="mb-6 opacity-40 group-hover:scale-110 transition-transform" size={24} />
+                       <h3 className="type-l2 serif mb-4">Security Policy Active</h3>
+                       <p className="text-[11px] leading-relaxed opacity-80 uppercase tracking-tight font-sans">
+                         Differential Privacy calibration enabled (ε=0.8). Homomorphic encryption layers initialized for node-to-node synchronization.
+                       </p>
+                    </div>
+                    <div className="absolute top-0 right-0 p-8 opacity-10">
+                       <Zap size={80} />
+                    </div>
+                 </div>
+                 
+                 <div className="institutional-card">
+                    <div className="px-6 py-4 border-b border-border flex items-center gap-3 bg-bg-surface/50">
+                       <Activity size={14} className="text-primary" />
+                       <span className="type-label text-text-main font-bold">Network Resilience</span>
+                    </div>
+                    <div className="p-8 space-y-6">
+                       <div className="flex justify-between items-center pb-6 border-b border-border/50">
+                          <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Active Shards</span>
+                          <span className="type-label text-primary font-bold">{clients.filter(c => c.status === 'ACTIVE').length} / 8</span>
+                       </div>
+                       <div className="flex justify-between items-center pb-6 border-b border-border/50">
+                          <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Rounds Synced</span>
+                          <span className="type-label text-primary font-bold">{round}</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                          <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Integrity Alerts</span>
+                          <span className={`type-label font-bold ${rejectedCount > 0 ? 'text-red-600' : 'text-emerald-600'}`}>{rejectedCount}</span>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </div>
         );
+      case 'architecture':
+        return <ArchitectureBuilder onAction={addToast} />;
+      case 'training':
+        return <TrainingWorkspace clients={clients} isLive={isActive} round={round} />;
+      case 'datasets':
+        return <DatasetExplorer />;
+      default:
+        return <div>View not found</div>;
     }
   };
 
   return (
-    <div className="app-shell selection:bg-primary/10 selection:text-primary">
-      <Header status={isActive ? 'Live' : round >= 6 ? 'Standby' : 'Ready'} />
-
-      <div className="shell-body">
-        <div style={{ width: `${sidebarWidth}px` }} className="shrink-0 flex flex-col relative overflow-hidden">
-          <Sidebar
-            clients={clients}
-            rejectedCount={rejectedCount}
-            chainHeight={blockchain.length}
-            currentView={currentView}
-            setView={setCurrentView}
-          />
-        </div>
-
-        <div className="resize-handle-h" onMouseDown={initSidebarResize} />
-
-        <main className="shell-main">
-          {/* Institutional Top Bar: Actions */}
-          {['dashboard', 'library'].includes(currentView) && (
-            <div className="h-16 shrink-0 flex items-center justify-between border-b border-border px-10 bg-white z-30">
-              <div className="flex items-center gap-4 text-text-muted">
-                <Clock size={12} className="text-primary/40" />
-              </div>
-
-              <div className="flex items-center gap-6">
-                <button
-                  onClick={() => {
-                    clearSimulation();
-                    addToast('Research state cleared.', 'info');
-                  }}
-                  className="btn btn-outline h-10 px-6 group border-border hover:border-text-muted text-text-muted"
-                >
-                  <RotateCcw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
-                  <span className="uppercase tracking-widest text-[9px] font-bold">Clear Ledger</span>
-                </button>
-                <button
-                  onClick={startSimulation}
-                  disabled={isActive || round >= 6}
-                  className={`btn btn-primary h-10 px-8 ${isActive || round >= 6 ? 'opacity-30 grayscale cursor-not-allowed' : ''}`}
-                >
-                  <Play size={12} fill="currentColor" />
-                    <span className="type-label text-white">
-                      {isActive ? 'Simulating...' : round >= 6 ? 'Halted' : 'Initiate Training'}
-                    </span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="content-viewport custom-scrollbar">
-            <AnimatePresence mode="wait">
-              {renderView()}
-            </AnimatePresence>
+    <div className="shell-container selection:bg-primary/10 bg-white">
+      <Header status={isConnected ? (isActive ? 'SYSTEM_RUNNING' : status || 'CONNECTED') : 'OFFLINE'} />
+      
+      <div className="flex flex-1 overflow-hidden min-h-0 bg-white">
+        <Sidebar 
+          currentView={currentView} 
+          setView={setCurrentView} 
+          clients={clients}
+          width={sidebarWidth} 
+          onResize={initSidebarResize}
+        />
+        
+        <main className="flex-1 flex flex-col min-w-0 bg-white min-h-0">
+          <div className="flex-1 flex flex-col min-h-0 bg-white">
+            {renderView()}
           </div>
-
-          <footer 
-            className="shell-footer" 
-            style={{ height: `${footerHeight}px` }}
-          >
-            <div className="resize-handle-v" onMouseDown={startResizing} />
-            <BlockchainRibbon blockchain={blockchain} />
-          </footer>
-
-          {/* Toast Notification System (Academic Styling) */}
-          <div className="absolute right-12 top-24 z-[100] flex flex-col gap-4">
-            <AnimatePresence>
-              {toasts.map(toast => (
-                <motion.div
-                  key={toast.id}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
-                  className="bg-white p-6 rounded-sm border border-border border-l-4 border-l-primary shadow-2xl flex items-center gap-6 min-w-[360px]"
-                >
-                  <div className={`p-2 rounded-full ${toast.type === 'success' ? 'bg-primary/10 text-primary' : 'bg-blue-500/10 text-blue-400'}`}>
-                    {toast.type === 'success' ? <ShieldCheck size={18} /> : <Info size={18} />}
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">{toast.type} notification</span>
-                    <span className="type-body font-bold text-text-main italic">{toast.msg}</span>
-                  </div>
-                  <button onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} className="ml-auto text-text-muted hover:text-text-main transition-colors">
-                    <X size={14} />
-                  </button>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+          
+          <div style={{ height: footerHeight }}>
+            <Terminal 
+              logs={logs} 
+              onResize={startResizing} 
+              isResizing={isResizing}
+              onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
+            />
           </div>
         </main>
       </div>
+
+      <AnimatePresence>
+        {toasts.map((toast) => (
+          <motion.div
+            key={toast.id}
+            initial={{ opacity: 0, y: 50, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className={`institutional-toast-enterprise fixed right-8 bottom-8 z-[200] ${toast.type === 'error' ? 'border-red-500 bg-red-50 text-red-700' : ''}`}
+          >
+            <div className="flex items-center gap-3">
+              {toast.type === 'error' ? <X size={14} /> : <ShieldCheck size={14} />}
+              <span className="type-label font-bold uppercase tracking-widest">{toast.msg}</span>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

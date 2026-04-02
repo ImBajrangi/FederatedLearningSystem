@@ -1,3 +1,11 @@
-__pycache__/\n*.pyc\n.DS_Store\n.localStorage
-venv
-node_modules
+__pycache__/
+*.pyc
+.DS_Store
+.localStorage
+venv/
+venv_mac/
+node_modules/
+*.zip
+*.db
+*.sqlite3
+data/

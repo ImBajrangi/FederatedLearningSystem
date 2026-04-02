@@ -50,16 +50,16 @@ export const Sidebar = ({ currentView, setView, clients }) => {
           </button>
 
           <button 
-            onClick={() => setView('dataset')}
-            className={`nav-item ${currentView === 'dataset' ? 'active' : ''}`}
+            onClick={() => setView('datasets')}
+            className={`nav-item ${currentView === 'datasets' ? 'active' : ''}`}
           >
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">03</span>
             Shard Registry
           </button>
 
           <button 
-            onClick={() => setView('library')}
-            className={`nav-item ${currentView === 'library' ? 'active' : ''}`}
+            onClick={() => setView('architecture')}
+            className={`nav-item ${currentView === 'architecture' ? 'active' : ''}`}
           >
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">04</span>
             Model Library
@@ -73,7 +73,7 @@ export const Sidebar = ({ currentView, setView, clients }) => {
         <div className="px-12 space-y-2 pb-20">
           <MetricItem 
             label="Node Count" 
-            value={clients.length} 
+            value={clients?.length || 0} 
           />
           <MetricItem 
             label="Verification Yield" 

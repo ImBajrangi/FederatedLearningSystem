@@ -40,7 +40,7 @@ export const BlockchainRibbon = ({ blockchain }) => {
         ref={ribbonRef}
         className="flex-1 flex items-center gap-px overflow-x-auto bg-black scroll-smooth custom-scrollbar-ribbon"
       >
-        {blockchain.map((block) => (
+        {blockchain?.map((block) => (
           <motion.div
             key={`${block.index}-${block.hash}`}
             initial={{ opacity: 0 }}
