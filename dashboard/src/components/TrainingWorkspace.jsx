@@ -19,12 +19,12 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
       {/* 1. Module Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
-           <div className="flex items-center gap-3 text-primary mb-2">
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Module 04</span>
-              <span className="w-8 h-px bg-primary/20" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Chapter 4: Neural Networks</span>
+           <div className="flex items-center gap-2 text-primary mb-2">
+              <span className="type-label">Module 04</span>
+              <span className="w-6 h-px bg-primary/20" />
+              <span className="type-label text-text-muted opacity-70">Chapter 4: Neural Networks</span>
            </div>
-           <h2 className="text-3xl font-bold text-text-main serif">Training Workspace</h2>
+           <h2 className="type-l1 serif text-text-main">Training Workspace</h2>
         </div>
         <div className="flex gap-4">
            <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50 border border-emerald-100/50">
@@ -44,13 +44,13 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
         <div className="flex-1 flex flex-col gap-8">
            {/* Hyperparameters Card */}
            <div className="academic-card !p-8">
-              <div className="flex items-center justify-between mb-8 border-b border-border pb-4">
-                 <div className="flex items-center gap-3">
-                    <Settings2 size={14} className="text-primary" />
-                    <span className="text-[11px] font-bold text-text-main uppercase tracking-widest serif">Hyperparameters</span>
-                 </div>
-                 <button className="text-[9px] font-bold text-primary uppercase tracking-widest hover:underline">Reset to defaults</button>
-              </div>
+               <div className="flex items-center justify-between mb-8 border-b border-border pb-4">
+                  <div className="flex items-center gap-3">
+                     <Settings2 size={13} className="text-primary/70" />
+                     <span className="type-l3 text-text-main">Hyperparameters</span>
+                  </div>
+                  <button className="type-label text-primary hover:underline">Reset to defaults</button>
+               </div>
               <div className="grid grid-cols-3 gap-8">
                  <ConfigInput label="Learning Rate" value="0.010" />
                  <ConfigInput label="Batch Size" value="64" />
@@ -60,13 +60,13 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
 
            {/* Model Architecture View */}
            <div className="academic-card flex flex-col !p-0 overflow-hidden min-h-[400px]">
-              <div className="flex items-center justify-between px-8 py-4 border-b border-border bg-bg-main">
-                 <div className="flex items-center gap-3">
-                    <Code size={14} className="text-primary" />
-                    <span className="text-[11px] font-bold text-text-main uppercase tracking-widest serif">Model Architecture</span>
-                    <span className="px-2 py-0.5 bg-border text-[9px] font-mono text-text-muted border border-border">model.py</span>
-                 </div>
-              </div>
+               <div className="flex items-center justify-between px-8 py-4 border-b border-border bg-bg-main">
+                  <div className="flex items-center gap-3">
+                     <Code size={13} className="text-primary/70" />
+                     <span className="type-l3 text-text-main">Model Architecture</span>
+                     <span className="px-2 py-0.5 bg-border type-label text-text-muted">model.py</span>
+                  </div>
+               </div>
               <div className="flex-1 overflow-auto bg-white p-8 font-mono text-xs leading-relaxed selection:bg-primary/10">
                  <pre className="text-text-main opacity-80">
                    <span className="text-blue-600">import</span> torch<br/>
@@ -91,11 +91,11 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
         <div className="flex-1 flex flex-col gap-8">
            {/* Training Metrics Chart */}
            <div className="academic-card flex flex-col !p-0 min-h-[350px]">
-              <div className="flex items-center justify-between px-8 py-4 border-b border-border">
-                 <div className="flex items-center gap-3">
-                    <Activity size={14} className="text-primary" />
-                    <span className="text-[11px] font-bold text-text-main uppercase tracking-widest serif">Training Metrics</span>
-                 </div>
+               <div className="flex items-center justify-between px-8 py-4 border-b border-border">
+                  <div className="flex items-center gap-3">
+                     <Activity size={13} className="text-primary/70" />
+                     <span className="type-l3 text-text-main">Training Metrics</span>
+                  </div>
                  <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
                        <div className="w-2.5 h-0.5 bg-primary" />
@@ -114,13 +114,13 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
 
             {/* Console Output (Grounded Dark) */}
            <div className="flex flex-col grounded-dark overflow-hidden transition-all min-h-[350px]">
-              <div className="flex items-center justify-between px-8 py-5 border-b border-white/5 bg-white/[0.02]">
-                 <div className="flex items-center gap-3">
-                    <TerminalIcon size={12} className="text-primary/70" />
-                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] font-mono">Console Output</span>
-                 </div>
-                 <button className="text-[9px] font-bold text-white/50 uppercase tracking-widest hover:text-white transition-colors font-mono px-3 py-1 border border-white/10 hover:bg-white/5 bg-transparent">Clear</button>
-              </div>
+               <div className="flex items-center justify-between px-8 py-5 border-b border-white/5 bg-white/[0.02]">
+                  <div className="flex items-center gap-3">
+                     <TerminalIcon size={11} className="text-primary/50" />
+                     <span className="type-label text-white/40">Console Output</span>
+                  </div>
+                  <button className="type-label text-white/50 hover:text-white transition-colors border border-white/10 px-3 py-1 bg-transparent hover:bg-white/5">Clear</button>
+               </div>
               <div className="flex-1 overflow-auto p-8 font-mono text-[11px] leading-6 text-white/60 custom-scrollbar-terminal">
                  {logs.map((log, i) => (
                    <div key={i} className="flex gap-4">

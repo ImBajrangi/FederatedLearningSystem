@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { Activity } from 'lucide-react';
 
 export const MetricsChart = ({ data }) => {
   const chartData = data.map((val, index) => ({
@@ -12,14 +13,15 @@ export const MetricsChart = ({ data }) => {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
-        <div>
-          <h3 className="text-xl font-bold text-text-main tracking-tight serif">
-            Convergence Analysis
+        <div className="flex items-center gap-3">
+          <Activity size={13} className="text-primary/70" />
+          <h3 className="type-l3 text-text-main tracking-tight">
+            Real-time Training Analytics
           </h3>
-          <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-1 font-mono">
-            Institutional Accuracy Curve (Global)
-          </p>
         </div>
+        <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-1 font-mono">
+          Institutional Accuracy Curve (Global)
+        </p>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 px-4 py-1.5 bg-emerald-50 border border-emerald-100/50 rounded-sm">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
@@ -87,25 +89,26 @@ export const MetricsChart = ({ data }) => {
 
       <div className="grid grid-cols-2 gap-8 mt-10">
         <div className="p-6 bg-white border border-border shadow-sm">
-          <span className="text-[9px] font-bold text-text-muted uppercase tracking-[0.2em] block mb-3 font-mono">
-            Validation Yield
-          </span>
-          <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-text-main tabular-nums serif">
-              {data?.length > 1 ? (data[data.length - 1] >= data[data.length - 2] ? '↑ ' : '↓ ') : ''}
-              {(data?.length ? data[data.length - 1] * 100 : 0).toFixed(1)}%
+          <div className="flex flex-col gap-3">
+            <span className="type-label text-text-muted opacity-70">Model Accuracy</span>
+            <span className="type-l2 sans text-text-main tabular-nums">
+               {(data?.length ? data[data.length - 1] * 100 : 0).toFixed(1)}%
             </span>
-            <div className={`text-[10px] font-bold uppercase tracking-widest ${data?.length > 1 ? (data[data.length - 1] >= data[data.length - 2] ? 'text-emerald-600' : 'text-error') : 'text-text-muted'}`}>
-              Institutional Progress
-            </div>
+          </div>
+          <div className={`text-[10px] font-bold uppercase tracking-widest mt-4 ${data?.length > 1 ? (data[data.length - 1] >= data[data.length - 2] ? 'text-emerald-600' : 'text-error') : 'text-text-muted'}`}>
+            Institutional Progress
           </div>
         </div>
         <div className="p-6 bg-white border border-border shadow-sm">
-          <span className="text-[9px] font-bold text-text-muted uppercase tracking-[0.2em] block mb-3 font-mono">
+          <span className="type-label text-text-muted opacity-70 block mb-3">
             Privacy Budget (DP)
+            <div className="flex items-center gap-4 opacity-40">
+              <span className="type-label tabular-nums">01</span>
+              <span className="type-label">PENDING VALIDATION</span>
+            </div>
           </span>
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-primary tabular-nums serif">
+            <span className="type-l2 sans text-primary tabular-nums">
               ε=1.2
             </span>
             <div className="px-2 py-0.5 border border-primary/20 bg-primary/5 text-[9px] font-bold text-primary uppercase tracking-widest">

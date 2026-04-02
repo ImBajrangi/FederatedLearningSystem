@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Box, Layers, History, ShieldCheck, Activity, Archive, Landmark } from 'lucide-react';
+import { Box, Layers, History, ShieldCheck, Activity, Archive, Landmark, Database } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const BlockchainRibbon = ({ blockchain }) => {
@@ -22,14 +22,16 @@ export const BlockchainRibbon = ({ blockchain }) => {
           </span>
         </div>
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-3">
-            <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest">Integrity:</span>
-            <span className="text-[9px] font-bold text-primary font-mono select-all">SHA-256</span>
-          </div>
-          <div className="flex items-center gap-3">
-             <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest">H:</span>
-             <span className="text-[9px] font-bold text-white/50 tabular-nums font-mono">{blockchain.length.toString().padStart(5, '0')}</span>
-          </div>
+           <div className="flex items-center gap-4">
+             <div className="flex items-center gap-2">
+               <Database size={13} className="text-primary/70" />
+               <h3 className="type-l3 text-white">Blockchain Ledger</h3>
+             </div>
+             <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10">
+               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+               <span className="type-label text-emerald-400">Ledger Synchronized</span>
+             </div>
+           </div>
         </div>
       </div>
 

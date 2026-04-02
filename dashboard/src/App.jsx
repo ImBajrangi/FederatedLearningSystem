@@ -147,10 +147,10 @@ function App() {
 
             {/* Experiment Grid */}
             <div className="space-y-10">
-               <div className="flex items-center justify-between border-b border-border pb-4">
-                  <h3 className="text-lg font-bold text-text-main serif">Recent Experiments</h3>
-                  <button className="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">View All Logs →</button>
-               </div>
+                   <div className="flex items-center justify-between pb-4 border-b border-border">
+                      <h3 className="type-l3 text-text-main">Recent Experiments</h3>
+                      <button className="type-label text-primary hover:underline hover:underline-offset-4">View All Archive</button>
+                   </div>
                
                <div className="grid grid-cols-3 gap-8">
                    <div className="academic-card !p-6 flex flex-col justify-between">
@@ -192,7 +192,7 @@ function App() {
                 <div className="flex items-start justify-between">
                    <div className="space-y-4">
                       <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Next Task</span>
-                      <h4 className="text-2xl font-bold text-text-main serif">Federated Weight Aggregation</h4>
+                      <h4 className="text-2xl font-bold text-text-main">Federated Weight Aggregation</h4>
                       <p className="text-sm text-text-muted leading-relaxed max-w-xl">
                         Explore how institutional local weights are synchronized via the consensus ledger while maintaining Differential Privacy (DP) guarantees.
                       </p>
@@ -233,8 +233,8 @@ function App() {
           {['dashboard', 'library'].includes(currentView) && (
             <div className="h-16 shrink-0 flex items-center justify-between border-b border-border px-10 bg-white z-30">
               <div className="flex items-center gap-4 text-text-muted">
-                <Clock size={14} className="text-primary/40" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
+                <Clock size={12} className="text-primary/40" />
+                <span className="type-label opacity-70">
                    v7.2.0.STABLE • RESEARCH ENV
                 </span>
               </div>
@@ -256,9 +256,9 @@ function App() {
                   className={`btn btn-primary h-10 px-8 ${isActive || round >= 6 ? 'opacity-30 grayscale cursor-not-allowed' : ''}`}
                 >
                   <Play size={12} fill="currentColor" />
-                  <span className="uppercase tracking-widest text-[9px] font-bold">
-                    {isActive ? 'Simulating...' : round >= 6 ? 'Halted' : 'Initiate Training'}
-                  </span>
+                    <span className="type-label text-white">
+                      {isActive ? 'Simulating...' : round >= 6 ? 'Halted' : 'Initiate Training'}
+                    </span>
                 </button>
               </div>
             </div>
@@ -294,7 +294,7 @@ function App() {
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">{toast.type} notification</span>
-                    <span className="text-xs font-bold text-text-main serif italic">{toast.msg}</span>
+                    <span className="type-body font-bold text-text-main italic">{toast.msg}</span>
                   </div>
                   <button onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} className="ml-auto text-text-muted hover:text-text-main transition-colors">
                     <X size={14} />

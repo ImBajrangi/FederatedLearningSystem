@@ -10,7 +10,8 @@ import {
   Workflow,
   Cpu,
   BookOpen,
-  PieChart
+  PieChart,
+  Server
 } from 'lucide-react';
 
 const MetricItem = ({ label, value }) => (
@@ -27,9 +28,9 @@ export const Sidebar = ({ currentView, setView, clients }) => {
     <aside className="shell-sidebar">
       {/* Sidebar Navigation */}
       <div className="sidebar-nav-scroll custom-scrollbar">
-        <div className="mb-10 px-12">
-           <span className="text-[10px] font-bold text-text-main uppercase tracking-[0.25em] serif">Coursework</span>
-        </div>
+         <div className="p-10 border-b border-border bg-bg-main/50">
+           <span className="type-label text-text-main">Coursework</span>
+         </div>
         
         <div className="flex flex-col">
           <button 
@@ -65,9 +66,9 @@ export const Sidebar = ({ currentView, setView, clients }) => {
           </button>
         </div>
 
-        <div className="mt-16 px-12 mb-8">
-           <span className="text-[10px] font-bold text-text-main uppercase tracking-[0.25em] serif">Statistics</span>
-        </div>
+         <div className="p-10 border-b border-border border-t bg-bg-main/50 mt-auto">
+           <span className="type-label text-text-main">Statistics</span>
+         </div>
 
         <div className="px-12 space-y-2 pb-20">
           <MetricItem 
@@ -86,16 +87,17 @@ export const Sidebar = ({ currentView, setView, clients }) => {
       </div>
 
       {/* Footer Branding Area */}
-      <div className="p-12 border-t border-border mt-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <BookOpen size={14} className="text-primary" />
-          <span className="text-[10px] font-bold text-text-main uppercase tracking-widest serif">Research Node</span>
+        <div className="p-10 bg-bg-main/80 flex flex-col gap-4 border-t border-border">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary rounded-sm shadow-sm">
+              <Server size={14} className="text-white" />
+            </div>
+            <div className="flex flex-col">
+              <span className="type-label text-text-main">Research Node</span>
+              <span className="type-label text-emerald-600 opacity-80">Online</span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-           <span className="text-[9px] font-bold text-text-muted uppercase tracking-tighter">Session ID:</span>
-           <span className="text-[10px] font-bold text-primary font-mono select-all">BC-7724</span>
-        </div>
-      </div>
     </aside>
   );
 };
