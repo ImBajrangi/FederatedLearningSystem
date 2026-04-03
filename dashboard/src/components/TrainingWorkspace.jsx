@@ -122,14 +122,19 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
                   <button className="type-label text-white/50 hover:text-white transition-colors border border-white/10 px-3 py-1 bg-transparent hover:bg-white/5">Clear</button>
                </div>
               <div className="flex-1 overflow-auto p-8 font-mono text-[11px] leading-6 text-white/60 custom-scrollbar-terminal">
-                 {logs.map((log, i) => (
-                   <div key={i} className="flex gap-4">
-                     <span className="text-white/20 shrink-0 select-none">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
-                     <span className={log.includes('COMPLETE') ? 'text-primary' : log.includes('ERR') ? 'text-error' : ''}>
-                        {log}
-                     </span>
-                   </div>
-                 ))}
+                 {logs.map((log, i) => {
+                    const logObj = typeof log === 'object' ? log : { msg: log };
+                    const isComplete = logObj.msg.includes('COMPLETE') || logObj.msg.includes('FINISHED');
+                    const isError = logObj.msg.includes('ERR') || logObj.msg.includes('CRITICAL');
+                    return (
+                      <div key={i} className="flex gap-4">
+                        <span className="text-white/20 shrink-0 select-none">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
+                        <span className={isComplete ? 'text-primary' : isError ? 'text-error' : ''}>
+                           {logObj.msg}
+                        </span>
+                      </div>
+                    );
+                 })}
                  <div className="flex gap-4 items-center">
                     <span className="text-white/20 shrink-0 select-none">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
                     <span className="w-1.5 h-3 bg-primary animate-pulse" />

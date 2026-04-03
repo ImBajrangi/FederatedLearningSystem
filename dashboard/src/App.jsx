@@ -220,7 +220,7 @@ function App() {
       case 'architecture':
         return <ArchitectureBuilder onAction={addToast} />;
       case 'training':
-        return <TrainingWorkspace clients={clients} isLive={isActive} round={round} />;
+        return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} />;
       case 'datasets':
         return <DatasetExplorer />;
       default:
