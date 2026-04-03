@@ -25,7 +25,7 @@ export const DatasetExplorer = () => {
   });
 
   return (
-    <div className="flex flex-col gap-16 pb-32">
+    <div className="flex-1 p-10 flex flex-col gap-16 pb-32 section-fade">
       {/* Module Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-4">

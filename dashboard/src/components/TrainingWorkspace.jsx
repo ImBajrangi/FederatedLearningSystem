@@ -15,7 +15,7 @@ const ConfigInput = ({ label, value, onChange }) => (
 
 export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex-1 p-10 flex flex-col gap-4 section-fade">
       {/* 1. Module Header */}
       <div className="flex items-center justify-between mb-10">
         <div>

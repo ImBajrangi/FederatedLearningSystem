@@ -63,9 +63,17 @@ export function useSecureFederated() {
         setIsActive(message.status === 'RUNNING');
         break;
 
-      case 'log':
-        setLogs(prev => [...prev.slice(-99), { msg: `> ${message.data}`, color: message.data.includes('Rejected') ? '#ef4444' : '#64748b' }]);
+      case 'log': {
+        const dataStr = typeof message.data === 'object' 
+            ? `Client ${message.data.client_id} [${message.data.status}]: Hash ${message.data.hash}`
+            : message.data;
+        const isError = typeof message.data === 'object' 
+            ? message.data.status === 'REJECTED' 
+            : String(message.data).includes('Rejected');
+            
+        setLogs(prev => [...prev.slice(-99), { msg: `> ${dataStr}`, color: isError ? '#ef4444' : '#64748b' }]);
         break;
+      }
 
       default:
         break;
@@ -73,7 +81,15 @@ export function useSecureFederated() {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
+    let reconnectTimeout = null;
+
     const connect = () => {
+      if (ws.current) {
+        ws.current.onclose = null; // Clean previous listener if exists
+        ws.current.close();
+      }
+
       ws.current = new WebSocket(WS_URL);
 
       ws.current.onopen = () => {
@@ -85,20 +101,26 @@ export function useSecureFederated() {
 
       ws.current.onclose = () => {
         setIsConnected(false);
-        console.log("Federated WebSocket Disconnected. Retrying in 3s...");
-        setTimeout(connect, 3000);
+        if (isMounted) {
+            console.log("Federated WebSocket Disconnected. Retrying in 3s...");
+            reconnectTimeout = setTimeout(connect, 3000);
+        }
       };
 
       ws.current.onerror = (err) => {
         console.error("WebSocket Error:", err);
-        ws.current.close();
       };
     };
 
     connect();
 
     return () => {
-      if (ws.current) ws.current.close();
+      isMounted = false;
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      if (ws.current) {
+        ws.current.onclose = null; // Prevent reconnect cycle
+        ws.current.close();
+      }
     };
   }, [onMessage]);
 

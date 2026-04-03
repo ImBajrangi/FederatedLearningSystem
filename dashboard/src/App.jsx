@@ -113,7 +113,7 @@ function App() {
     switch (currentView) {
       case 'dashboard':
         return (
-          <div className="flex-1 p-10 space-y-12 overflow-y-auto section-fade custom-scrollbar min-h-0 bg-white">
+          <div className="flex-1 p-10 space-y-12 section-fade bg-white">
             <div className="flex items-center justify-between pb-8 border-b border-border">
               <div className="space-y-1">
                 <h2 className="type-l1 serif text-text-main pr-10">Global Orchestrator</h2>
@@ -235,7 +235,7 @@ function App() {
     <div className="shell-container selection:bg-primary/10 bg-white">
       <Header status={isConnected ? (isActive ? 'SYSTEM_RUNNING' : status || 'CONNECTED') : 'OFFLINE'} />
       
-      <div className="flex flex-1 overflow-hidden min-h-0 bg-white">
+      <div className="flex flex-1 bg-white">
         <Sidebar 
           currentView={currentView} 
           setView={setCurrentView} 
@@ -244,8 +244,8 @@ function App() {
           onResize={initSidebarResize}
         />
         
-        <main className="flex-1 flex flex-col min-w-0 bg-white min-h-0">
-          <div className="flex-1 flex flex-col min-h-0 bg-white">
+        <main className="flex-1 flex flex-col min-w-0 bg-white">
+          <div className="flex-1 flex flex-col bg-white">
             {renderView()}
           </div>
           

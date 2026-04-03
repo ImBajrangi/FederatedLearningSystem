@@ -53,10 +53,6 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  position: fixed;
 }
 
 h1, h2, h3, h4 {
@@ -93,12 +89,10 @@ h1, h2, h3, h4 {
 }
 
 /* 2. Structured Shell Architecture */
-.app-shell {
+.shell-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  min-height: 100vh;
   background-color: var(--bg-main);
 }
 
@@ -111,23 +105,26 @@ h1, h2, h3, h4 {
   display: flex;
   align-items: center;
   padding: 0 4rem;
+  position: sticky;
+  top: 0;
 }
 
 .shell-body {
   flex: 1;
   display: flex;
-  min-height: 0;
-  overflow: hidden;
 }
 
 .shell-sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
   background: var(--bg-sidebar);
-  height: 100%;
+  height: calc(100vh - var(--header-height));
+  position: sticky;
+  top: var(--header-height);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .shell-main {
@@ -137,7 +134,6 @@ h1, h2, h3, h4 {
   flex-direction: column;
   background: var(--bg-main);
   position: relative;
-  overflow: hidden;
 }
 
 .content-viewport {

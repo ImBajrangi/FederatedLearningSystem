@@ -239,7 +239,7 @@ export const ArchitectureBuilder = ({ onAction }) => {
   };
 
   return (
-    <div className="flex relative h-full bg-white selection:bg-primary/10 overflow-hidden">
+    <div className="flex relative h-full bg-white selection:bg-primary/10 overflow-hidden" style={{ height: 'calc(100vh - 64px)' }}>
       {/* ZOOM CONTROLS (Floating Institutional Hub) */}
       <div className="absolute bottom-10 right-10 flex flex-col gap-2 z-50">
           <div className="p-1 px-4 bg-white/90 border border-border shadow-xl backdrop-blur-md flex flex-col gap-1">
