@@ -1,86 +1,99 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
-import os
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import json
 import logging
 import asyncio
+import os
+import time
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("Bridge")
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    datefmt='%H:%M:%S'
+)
+logger = logging.getLogger("GuardianBridge")
 
 class ConnectionManager:
-    """Manages active WebSocket connections to the React Dashboard."""
+    """Manages active WebSocket connections to the Institutional Dashboard."""
     def __init__(self):
         self.active_connections: List[WebSocket] = []
-        self.loop = None # Will be set by the running app
-        self.latest_stats = {
+        self.loop = None 
+        self.state = {
             "round": 0,
             "total_blocks": 0,
             "clients_active": 0,
-            "trust_score": 100.0,
-            "status": "IDLE",
-            "last_hash": "N/A"
+            "trust_avg": 0.0,
+            "status": "IDLE", # IDLE, TRAINING, AGGREGATING, MINING
+            "last_hash": "N/A",
+            "accuracy_history": []
         }
-        self.chain_history = []
+        self.log_buffer: List[str] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        # Capture the running loop if not already set
         if self.loop is None:
             self.loop = asyncio.get_running_loop()
             
-        # Send initial state
-        await self.send_personal_message({
-            "type": "initial_state",
-            "stats": self.latest_stats,
-            "chain": self.chain_history
+        # Send initial state snapshot
+        await self.send_json({
+            "type": "INITIAL_SYNC",
+            "payload": {
+                "state": self.state,
+                "logs": self.log_buffer[-10:] # Last 10 logs
+            }
         }, websocket)
+        logger.info(f"Dashboard connected. Total subscribers: {len(self.active_connections)}")
 
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
+            logger.info("Dashboard disconnected.")
 
-    async def send_personal_message(self, message: dict, websocket: WebSocket):
-        await websocket.send_json(message)
+    async def send_json(self, data: dict, websocket: WebSocket):
+        try:
+            await websocket.send_json(data)
+        except Exception:
+            self.disconnect(websocket)
 
-    def broadcast_sync(self, message: dict):
-        """
-        Thread-safe synchronous wrapper to broadcast from other threads (e.g. Flower).
-        """
+    def broadcast_sync(self, message_type: str, payload: Any):
+        """Thread-safe synchronous broadcast for use from Flower threads."""
         if self.loop:
-            asyncio.run_coroutine_threadsafe(self.broadcast(message), self.loop)
-        else:
-            # Fallback if loop not yet initialized
-            logger.warning("Attempted broadcast before bridge initialization.")
+            asyncio.run_coroutine_threadsafe(
+                self.broadcast(message_type, payload), 
+                self.loop
+            )
 
-    async def broadcast(self, message: dict):
-        # Update latest stats for persistent UI state
-        if message["type"] == "global_update":
-            self.latest_stats.update(message["stats"])
-            if "chain" in message:
-                self.chain_history = message["chain"]
-        elif message["type"] == "status_update":
-            self.latest_stats["status"] = message["status"]
+    async def broadcast(self, message_type: str, payload: Any):
+        """Reactive broadcast engine."""
+        # Update local state cache for new connections
+        if message_type == "STAT_UPDATE":
+            # Handle specialized serialization for the blockchain ledger
+            if "ledger" in payload:
+                # Convert list of Block objects to serializable dicts
+                chain_dict = [b.to_dict() for b in payload["ledger"]]
+                payload["chain"] = chain_dict
+                self.state["chain"] = chain_dict
+                del payload["ledger"]
             
+            self.state.update(payload)
+            
+        elif message_type == "LOG":
+            self.log_buffer.append(payload)
+            if len(self.log_buffer) > 100: self.log_buffer.pop(0)
+
+        data = {"type": message_type, "payload": payload}
         for connection in self.active_connections:
             try:
-                await connection.send_json(message)
+                await connection.send_json(data)
             except Exception:
                 pass
 
-# Global Bridge Manager
-manager = ConnectionManager()
+# Global Bridge Instance
+bridge = ConnectionManager()
 app = FastAPI(title="AI Guardian Bridge")
-
-@app.on_event("startup")
-async def startup_event():
-    manager.loop = asyncio.get_running_loop()
-    logger.info("Bridge Event Loop captured.")
 
 app.add_middleware(
     CORSMiddleware,
@@ -90,44 +103,43 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.websocket("/bridge/ws")
+@app.on_event("startup")
+async def startup():
+    bridge.loop = asyncio.get_running_loop()
+    logger.info("Bridge Event Loop initialized.")
+
+@app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    logger.info(f"WS [REQUEST] Origin: {websocket.headers.get('origin')} | Path: {websocket.url.path}")
-    await manager.connect(websocket)
-    logger.info("WS [ESTABLISHED] Handshake accepted.")
+    await bridge.connect(websocket)
     try:
         while True:
-            await websocket.receive_text()
+            # Keep connection alive & handle incoming pings/commands
+            data = await websocket.receive_text()
+            # Handle manual triggers from UI if needed
+            msg = json.loads(data)
+            if msg.get("type") == "PING":
+                await websocket.send_json({"type": "PONG", "ts": time.time()})
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        logger.info("WS [DISCONNECT] Client closed connection.")
+        bridge.disconnect(websocket)
     except Exception as e:
-        manager.disconnect(websocket)
-        logger.error(f"WS [ERROR] {e}")
+        logger.error(f"WS Error: {e}")
+        bridge.disconnect(websocket)
 
-@app.get("/status")
-async def get_status():
-    return manager.latest_stats
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ONLINE", "clients": len(bridge.active_connections)}
 
-@app.post("/initiate-round")
-async def initiate_round():
-    return {"message": "Federated round initiated by server"}
+@app.post("/api/terminate")
+async def terminate_session():
+    """Safety endpoint to stop all training nodes."""
+    bridge.broadcast_sync("SYSTEM_EVENT", {"action": "TERMINATE", "reason": "User Request"})
+    return {"status": "TERMINATION_SENT"}
 
-@app.post("/aggregate")
-async def aggregate():
-    return {"message": "Aggregation triggered"}
+@app.get("/api/state")
+async def get_state():
+    return bridge.state
 
-# Production Static File Serving
-# Place this AFTER all routes (ws, status, etc.) to ensure they take priority
-frontend_path = os.path.join(os.getcwd(), "dist")
-if os.path.exists(frontend_path):
-    # Mount frontend dist but with an SPA fallback
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
-else:
-    logger.warning(f"Frontend dist directory not found at {frontend_path}")
-
-def run_bridge():
-    """Entry point for Uvicorn."""
+def start_bridge(port: int = 7860):
     import uvicorn
-    port = int(os.environ.get("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
+    logger.info(f"Launching Guardian Bridge on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="warning")

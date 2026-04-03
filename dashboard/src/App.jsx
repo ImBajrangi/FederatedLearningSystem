@@ -91,14 +91,10 @@ function App() {
       return;
     }
 
-    addToast(status === 'IDLE' ? 'Initiating FL connection.' : 'Starting aggregation cycle.', 'info');
-    const success = await runRound();
-
-    if (success) {
-      addToast('Federated command acknowledged.', 'success');
-    } else {
-      addToast('Command failed. Check backend logs.', 'error');
-    }
+    addToast(status === 'IDLE' ? 'Monitoring external backend...' : 'Session already in progress.', 'info');
+    // In our new architecture, run_backend.py starts the rounds. 
+    // The button acts as a "Synchonize/Monitor" state.
+    await runRound();
   };
 
   const renderView = () => {
@@ -127,9 +123,9 @@ function App() {
                   <div className="text-[9px] font-light text-text-muted mb-2 uppercase tracking-[0.3em]">Global Accuracy</div>
                   <div className="flex items-center justify-end gap-3">
                     <span className="type-l2 serif text-text-main font-medium">
-                      {accuracyHistory.length > 0
-                        ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
-                        : "0.00"}%
+                      {(accuracyHistory?.length > 0
+                        ? accuracyHistory[accuracyHistory.length - 1] * 100
+                        : 0.0).toFixed(2)}%
                     </span>
                     <div className="p-1 px-1.5 bg-emerald-50 border border-emerald-100 rounded-sm">
                       <Activity size={10} className="text-emerald-600" />
@@ -145,7 +141,7 @@ function App() {
                   >
                     <Play size={14} className={isActive ? 'animate-pulse' : ''} />
                     <span className="tracking-[0.25em]">
-                      {status === 'IDLE' ? 'Initiate Orchestration' : status === 'WAITING' ? 'Synchronize Weights' : 'Processing...'}
+                      {status === 'IDLE' ? 'Connect Sessions' : status === 'FINISHED' ? 'Report Complete' : 'Synchronized'}
                     </span>
                   </button>
                   <button
@@ -192,7 +188,7 @@ function App() {
                     <ShieldCheck className="mb-6 opacity-40 group-hover:scale-110 transition-transform" size={24} />
                     <h3 className="type-l2 serif mb-4">Security Policy Active</h3>
                     <p className="text-[11px] leading-relaxed opacity-80 uppercase tracking-tight font-sans">
-                      Differential Privacy calibration enabled (ε=0.8). Homomorphic encryption layers initialized for node-to-node synchronization.
+                      Differential Privacy calibration enabled (L2-Clip=1.0, Noise=0.01). Coordination via Secure gRPC Tunnel.
                     </p>
                   </div>
                 </div>
@@ -205,7 +201,7 @@ function App() {
                   <div className="p-8 space-y-6">
                     <div className="flex justify-between items-center pb-6 border-b border-border/50">
                       <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Active Shards</span>
-                      <span className="type-label text-primary font-bold">{clients.filter(c => c.status === 'ACTIVE').length} / 8</span>
+                      <span className="type-label text-primary font-bold">{clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length} / 8</span>
                     </div>
                     <div className="flex justify-between items-center pb-6 border-b border-border/50">
                       <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Rounds Synced</span>
@@ -234,7 +230,7 @@ function App() {
 
   return (
     <div className={`shell-container selection:bg-primary/10 bg-white`}>
-      <Header status={isConnected ? (isActive ? 'SYSTEM_RUNNING' : status || 'CONNECTED') : 'OFFLINE'} />
+      <Header status={isConnected ? (isActive ? 'TRAINING' : status || 'CONNECTED') : 'OFFLINE'} />
 
       <div className="flex flex-1" style={{ overflow: 'hidden' }}>
         <Sidebar

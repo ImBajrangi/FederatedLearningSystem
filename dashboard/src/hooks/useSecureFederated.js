@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const isProd = import.meta.env.PROD;
-const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7880';
+const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7860';
 const API_BASE_URL = isProd ? window.location.origin : `http://localhost:${BACKEND_PORT}`;
-const WS_URL = isProd ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/bridge/ws` : `ws://localhost:${BACKEND_PORT}/bridge/ws`;
+const WS_URL = isProd 
+  ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws` 
+  : `ws://localhost:${BACKEND_PORT}/ws`;
 
 export function useSecureFederated() {
   const [round, setRound] = useState(0);
@@ -22,79 +24,41 @@ export function useSecureFederated() {
 
   const onMessage = useCallback((event) => {
     const message = JSON.parse(event.data);
-    
-    switch (message.type) {
-      case 'initial_state':
-      case 'global_update':
-        if (message.stats) {
-          setRound(message.stats.round);
-          setStatus(message.stats.status);
-          setIsActive(message.stats.status === 'RUNNING');
-          
-          // Map trust_score or other metrics if needed
-          // For now, let's derive clients from clients_active
-          const numActive = message.stats.clients_active || 0;
-          const currentStatus = message.stats.status;
+    const { type, payload } = message;
 
-          setClients(Array.from({ length: 8 }, (_, i) => ({
-            id: `P-${i.toString().padStart(2, '0')}`,
-            org: ['Hospital', 'FinTech', 'AutoDrive', 'Retail', 'Logistics', 'HealthAI', 'EdTech', 'GovNet'][i % 8],
-            status: i < numActive ? (['TRAINING', 'EVALUATING', 'AGGREGATING'].includes(currentStatus) ? 'BUSY' : 'ACTIVE') : 'IDLE',
-            reputation: 100
-          })));
-
-          // Synchronize actual accuracy from the AI Guardian Bridge
-          if (message.stats.accuracy !== undefined) {
-             setAccuracyHistory(prev => {
-                const newAcc = parseFloat(message.stats.accuracy.toFixed(4));
-                const currentRound = message.stats.round;
-                
-                // If it's a new round, append it. 
-                // If the round already exists, update the last point (for intra-round refinements).
-                if (currentRound > prev.length) {
-                   return [...prev, newAcc];
-                } else if (currentRound === prev.length && prev.length > 0) {
-                   const updated = [...prev];
-                   updated[updated.length - 1] = newAcc;
-                   return updated;
-                }
-                return prev;
-             });
-          }
-        }
+    switch (type) {
+      case 'INITIAL_SYNC': {
+        const { state, logs: initialLogs } = payload;
+        setRound(state.round || 0);
+        setStatus(state.status || 'IDLE');
+        setAccuracyHistory(state.accuracy_history || []);
+        setLogs(initialLogs.map(l => ({ msg: `> ${l}`, color: '#64748b' })));
         
-        // Prevent empty 'chain: []' updates from overwriting the UI ledger history
-        if (message.chain && message.chain.length > 0) {
-          setBlockchain(message.chain);
+        // Mock client updates based on active status
+        updateClientStatus(state.status, state.clients_active);
+        break;
+      }
+
+      case 'STAT_UPDATE': {
+        if (payload.round !== undefined) setRound(payload.round);
+        if (payload.status !== undefined) {
+            setStatus(payload.status);
+            setIsActive(['TRAINING', 'AGGREGATING', 'MINING'].includes(payload.status));
+            updateClientStatus(payload.status, payload.clients_active);
+        }
+        if (payload.accuracy_history !== undefined) {
+            setAccuracyHistory(payload.accuracy_history);
+        }
+        if (payload.total_blocks !== undefined) {
+          // Trigger a re-fetch or update blockchain state if hashes were sent
+          // For now, we'll increment if not sent
         }
         break;
+      }
 
-      case 'status_update':
-        setStatus(message.status);
-        setIsActive(message.status === 'RUNNING');
-        break;
-
-      case 'log': {
-        const dataStr = typeof message.data === 'object' 
-            ? `Client ${message.data.client_id} [${message.data.status}]: Hash ${message.data.hash}`
-            : message.data;
-
-        if (typeof message.data === 'object' && message.data.client_id) {
-           setNodeRegistry(prev => ({
-              ...prev,
-              [message.data.client_id]: {
-                 status: message.data.status,
-                 hash: message.data.hash,
-                 timestamp: message.data.timestamp
-              }
-           }));
-        }
-
-        const isError = typeof message.data === 'object' 
-            ? message.data.status === 'REJECTED' 
-            : String(message.data).includes('Rejected');
-            
-        setLogs(prev => [...prev.slice(-99), { msg: `> ${dataStr}`, color: isError ? '#ef4444' : '#64748b' }]);
+      case 'LOG': {
+        const isError = payload.includes('ERROR') || payload.includes('CRITICAL');
+        setLogs(prev => [...prev.slice(-99), { msg: `> ${payload}`, color: isError ? '#ef4444' : '#64748b' }]);
         break;
       }
 
@@ -103,13 +67,22 @@ export function useSecureFederated() {
     }
   }, []);
 
+  const updateClientStatus = (currentStatus, numActive = 2) => {
+    setClients(Array.from({ length: 8 }, (_, i) => ({
+      id: `NODE-${i}`,
+      org: ['Hospital', 'FinTech', 'AutoDrive', 'Retail', 'Logistics', 'HealthAI', 'EdTech', 'GovNet'][i % 8],
+      status: i < numActive ? (['TRAINING', 'AGGREGATING'].includes(currentStatus) ? 'BUSY' : 'ACTIVE') : 'IDLE',
+      reputation: 100
+    })));
+  };
+
   useEffect(() => {
     let isMounted = true;
     let reconnectTimeout = null;
 
     const connect = () => {
       if (ws.current) {
-        ws.current.onclose = null; // Clean previous listener if exists
+        ws.current.onclose = null;
         ws.current.close();
       }
 
@@ -117,7 +90,7 @@ export function useSecureFederated() {
 
       ws.current.onopen = () => {
         setIsConnected(true);
-        console.log("Federated WebSocket Connected");
+        console.log("Secure Federated Bridge Connected");
       };
 
       ws.current.onmessage = onMessage;
@@ -125,13 +98,13 @@ export function useSecureFederated() {
       ws.current.onclose = () => {
         setIsConnected(false);
         if (isMounted) {
-            console.log("Federated WebSocket Disconnected. Retrying in 3s...");
+            console.log("Bridge connection lost. Retrying...");
             reconnectTimeout = setTimeout(connect, 3000);
         }
       };
 
       ws.current.onerror = (err) => {
-        console.error("WebSocket Error:", err);
+        console.error("Bridge WebSocket Error:", err);
       };
     };
 
@@ -141,7 +114,7 @@ export function useSecureFederated() {
       isMounted = false;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
       if (ws.current) {
-        ws.current.onclose = null; // Prevent reconnect cycle
+        ws.current.onclose = null;
         ws.current.close();
       }
     };
@@ -149,9 +122,9 @@ export function useSecureFederated() {
 
   const runRound = async () => {
     try {
-      const endpoint = status === 'IDLE' ? '/initiate-round' : '/aggregate';
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, { method: 'POST' });
-      if (!response.ok) throw new Error('API Execution Failed');
+      const response = await fetch(`${API_BASE_URL}/api/health`); // Dummy hit to check health
+      if (!response.ok) throw new Error('Backend Offline');
+      // The rounds are managed by Flower server; dashboard just observes or triggers via run_backend.py
       return true;
     } catch (err) {
       console.error("Round Execution Error:", err);
@@ -160,7 +133,6 @@ export function useSecureFederated() {
   };
 
   const clearSimulation = () => {
-    // Optional: Add backend reset if needed
     window.location.reload();
   };
 
