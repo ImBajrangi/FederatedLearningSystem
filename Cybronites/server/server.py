@@ -38,7 +38,7 @@ def main():
     reputation = ReputationManager()
 
     # 2. Start Dashboard Bridge (FastAPI) in background
-    bridge_port = int(os.environ.get("PORT", 7860))
+    bridge_port = int(os.environ.get("PORT", 7861))
     bridge_thread = threading.Thread(
         target=start_bridge, 
         args=(bridge_port,), 

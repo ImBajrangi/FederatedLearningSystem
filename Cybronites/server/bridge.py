@@ -82,7 +82,9 @@ class ConnectionManager:
     async def send_json(self, data: dict, websocket: WebSocket):
         """Defensive JSON delivery."""
         try:
-            await websocket.send_json(data)
+            # Only send if the websocket is actively connected
+            if websocket.client_state.name == "CONNECTED":
+                await websocket.send_json(data)
         except Exception as e:
             logger.error(f"WS Serialization/Send Error: {e}")
             self.disconnect(websocket)

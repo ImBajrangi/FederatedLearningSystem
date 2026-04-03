@@ -51,7 +51,7 @@ def run_backend(num_clients=2, rounds=5):
             processes.append(client_proc)
             time.sleep(1)
 
-        print(f"\n[SUCCESS] All components active. Dashboard available at http://localhost:7860")
+        print(f"\n[SUCCESS] All components active. Dashboard available at http://localhost:7861")
         print(f"[INFO] Press Ctrl+C to terminate the session.\n")
 
         # Keep main thread alive

@@ -30,7 +30,9 @@ import {
   Minus,
   Maximize,
   X,
-  Link
+  Link,
+  Trash2,
+  BookOpen
 } from 'lucide-react';
 
 // NODE COMPONENT (Draggable with Connection Ports)
@@ -44,12 +46,13 @@ const LayerNode = ({
   position, 
   onDragEnd, 
   onPortClick,
+  onDelete,
   isConnecting 
 }) => (
   <motion.div
     drag
     dragMomentum={false}
-    onDragEnd={onDragEnd}
+    onDragEnd={(e, info) => onDragEnd(id, info)}
     onClick={onSelect}
     initial={position}
     animate={position}
@@ -68,7 +71,7 @@ const LayerNode = ({
       </button>
       
       <div 
-        className={`relative w-[220px] border-[1.5px] bg-white shadow-sm cursor-grab active:cursor-grabbing transition-all ${
+        className={`relative w-[210px] border-[1.5px] bg-white shadow-sm cursor-grab active:cursor-grabbing transition-all ${
           active 
             ? 'border-primary shadow-md ring-4 ring-primary/5' 
             : 'border-border hover:border-text-muted/50'
@@ -76,24 +79,33 @@ const LayerNode = ({
       >
         {/* Node Header */}
         <div className={`px-2.5 py-1.5 border-b flex justify-between items-center ${active ? 'bg-primary/5 border-primary/20' : 'bg-bg-main/30 border-border'}`}>
-          <span className={`text-[9px] font-bold uppercase tracking-wider ${active ? 'text-primary' : 'text-text-muted'}`}>
-            {type}
-          </span>
-          <Move size={10} className={active ? 'text-primary opacity-50' : 'text-border'} />
+          <div className="flex items-center gap-2">
+            <span className={`text-[8px] font-extrabold uppercase tracking-[0.15em] ${active ? 'text-primary' : 'text-text-muted/60'}`}>
+               {type}
+            </span>
+          </div>
+          {active && onDelete && (
+             <button 
+               onClick={(e) => { e.stopPropagation(); onDelete(id); }}
+               className="p-1 hover:text-red-500 transition-colors"
+             >
+                <Trash2 size={10} />
+             </button>
+          )}
         </div>
 
         {/* Node Body */}
-        <div className="p-3 space-y-2">
-          <h4 className={`text-[11px] font-bold uppercase tracking-tight leading-loose break-words ${active ? 'text-text-main' : 'text-text-muted'}`}>
+        <div className="p-4 space-y-2.5">
+          <h4 className={`text-[10px] font-bold uppercase tracking-tight leading-none break-words ${active ? 'text-text-main' : 'text-text-muted'}`}>
             {name}
           </h4>
           
-          {metadata && (
-            <div className="space-y-1 opacity-80">
+          {metadata && metadata.length > 0 && (
+            <div className="space-y-1.5 pt-1">
               {metadata.map((m, i) => (
                 <div key={i} className="flex justify-between items-center text-[8px] font-mono leading-none">
-                  <span className="text-text-muted/60">{m.label}:</span>
-                  <span className={`font-bold ${active ? 'text-primary' : 'text-text-muted'}`}>{m.value}</span>
+                  <span className="text-text-muted/50 uppercase tracking-tighter">{m.label}:</span>
+                  <span className={`font-bold tabular-nums ${active ? 'text-primary' : 'text-text-muted/80'}`}>{m.value}</span>
                 </div>
               ))}
             </div>
@@ -118,20 +130,19 @@ const LayerNode = ({
   </motion.div>
 );
 
-// CONNECTION LINE (Bezier Curve with Pruning Control)
+// CONNECTION LINE (Bezier Curve)
 const ConnectionLine = ({ from, to, onDelete }) => {
   if (!from || !to) return null;
 
-  const startX = from.x + 110; 
-  const startY = from.y + 115; // Output Pin
-  const endX = to.x + 110;
-  const endY = to.y; // Input Pin
+  const startX = from.x + 105; 
+  const startY = from.y + 110; 
+  const endX = to.x + 105;
+  const endY = to.y; 
 
   const cp1y = startY + (endY - startY) / 2;
   const cp2y = startY + (endY - startY) / 2;
   const d = `M ${startX} ${startY} C ${startX} ${cp1y}, ${endX} ${cp2y}, ${endX} ${endY}`;
 
-  // Center of the path for the 'X' button
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
 
@@ -162,14 +173,22 @@ const ConnectionLine = ({ from, to, onDelete }) => {
 export const ArchitectureBuilder = ({ onAction }) => {
   const [activeNode, setActiveNode] = useState('global');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [viewScale, setViewScale] = useState(0.7); // Bumping up default zoom
-  const [isConnecting, setIsConnecting] = useState(null); // { from, type }
+  const [viewScale, setViewScale] = useState(0.8);
+  const [isConnecting, setIsConnecting] = useState(null); 
+  const [isCompiling, setIsCompiling] = useState(false);
   
   const [positions, setPositions] = useState({
     global: { x: 400, y: 50 },
     blockchain: { x: 200, y: 250 },
     security: { x: 600, y: 250 },
     aggregation: { x: 400, y: 450 }
+  });
+
+  const [nodes, setNodes] = useState({
+    global: { title: 'Aggregation Hub', type: 'Core', metadata: [{ label: 'I/O', value: 'Unified' }] },
+    blockchain: { title: 'Audit Ledger', type: 'Consensus', metadata: [{ label: 'Ledger', value: 'Active' }] },
+    security: { title: 'Compliance Shard', type: 'Secure', metadata: [{ label: 'Privacy', value: 'DP' }] },
+    aggregation: { title: 'Training Node', type: 'Compute', metadata: [{ label: 'GFLOPs', value: '1.2k' }] }
   });
 
   const [edges, setEdges] = useState([
@@ -179,43 +198,105 @@ export const ArchitectureBuilder = ({ onAction }) => {
     { id: 'edge-4', from: 'security', to: 'aggregation' }
   ]);
 
-  const nodeDetails = useMemo(() => ({
-    global: { title: 'Aggregation Hub', type: 'Sequential System', desc: 'Central orchestration layer focused on the secure aggregation of localized weighting vectors.', math: 'W_{agg} = \\sum_{i=1}^n \\alpha_i W_i', formula: 'S(i, j) = (I * K)(i, j)', params: [{ label: 'Security Model', value: 'Homomorphic Encryption' }, { label: 'Network Timeout', value: '5000ms' }], metadata: [{ label: 'filters', value: '32' }], icon: <Server size={18} /> },
-    blockchain: { title: 'Audit Ledger', type: 'Consensus Layer', desc: 'Immutable permissioned consensus mechanism providing identity verification.', math: '\\mathcal{L} \\gets \\mathcal{L} \\cup \\{ B_k \\}', formula: 'H(B_k) = SHA256(...)', params: [{ label: 'Consensus', value: 'Proof-of-Authority' }], metadata: [{ label: 'finality', value: 'instant' }], icon: <Workflow size={18} /> },
-    security: { title: 'Compliance Node', type: 'Policy Logic', desc: 'Real-time policy enforcement engine utilizing differentially private noise calibration.', math: '\\mathcal{M}(d) = f(d) + \\mathcal{N}(0, \\sigma^2)', formula: 'DP(ε, δ)', params: [{ label: 'DP Epsilon', value: 'ε=1.2' }], metadata: [{ label: 'noise_scale', value: 'Laplacian' }], icon: <Lock size={18} /> },
-    aggregation: { title: 'Compute Edge', type: 'Execution Shard', desc: 'Decentralized institutional clusters executing local SGD iterations.', math: '\\nabla_{\\theta} J(\\theta) \\approx \\dots', formula: 'θ_{t+1} = θ_t - η · ∇J(θ_t)', params: [{ label: 'Hardware', value: 'NVIDIA H100' }], metadata: [{ label: 'batch_size', value: '256' }], icon: <Cpu size={18} /> }
-  }), []);
+  const [search, setSearch] = useState('');
 
-  const current = nodeDetails[activeNode];
+  // LIBTEMPLATES / PRESETS
+  const libraryTemplates = useMemo(() => ([
+    {
+      id: 'mnist-mlp',
+      name: 'MNIST-MLP Base',
+      nodes: {
+        'in': { title: 'Input [28x28]', type: 'Inference', metadata: [{ label: 'Dim', value: '784' }] },
+        'h1': { title: 'Hidden Layer 1', type: 'Dense', metadata: [{ label: 'Nodes', value: '128' }] },
+        'h2': { title: 'Hidden Layer 2', type: 'Dense', metadata: [{ label: 'Nodes', value: '64' }] },
+        'out': { title: 'Classifier', type: 'Dropout', metadata: [{ label: 'Outputs', value: '10' }] }
+      },
+      edges: [
+        { id: 'l1', from: 'in', to: 'h1' },
+        { id: 'l2', from: 'h1', to: 'h2' },
+        { id: 'l3', from: 'h2', to: 'out' }
+      ],
+      layout: {
+        'in': { x: 100, y: 100 },
+        'h1': { x: 100, y: 280 },
+        'h2': { x: 100, y: 460 },
+        'out': { x: 100, y: 640 }
+      }
+    },
+    {
+        id: 'secure-resnet',
+        name: 'Secure-ResNet Shard',
+        nodes: {
+          'r_in': { title: 'Res-Block V1', type: 'Core', metadata: [{ label: 'Filters', value: '64' }] },
+          'r_sec': { title: 'TEE Encryption', type: 'Secure', metadata: [{ label: 'Level', value: 'Hardened' }] },
+          'r_agg': { title: 'Aggregator', type: 'Sequential', metadata: [{ label: 'Strategy', value: 'FedAvg' }] }
+        },
+        edges: [
+          { id: 'rl1', from: 'r_in', to: 'r_sec' },
+          { id: 'rl2', from: 'r_sec', to: 'r_agg' }
+        ],
+        layout: {
+          'r_in': { x: 400, y: 100 },
+          'r_sec': { x: 400, y: 280 },
+          'r_agg': { x: 400, y: 460 }
+        }
+      }
+  ]), []);
 
-  // COLLISION AUDIT & SNAPPING
-  const GRID_SIZE = 20;
-  const NODE_WIDTH = 220;
-  const NODE_HEIGHT = 180;
+  const addNodeFromPalette = (name, type) => {
+    const id = `node-${Date.now()}`;
+    const x = 300 + Math.random() * 50;
+    const y = 200 + Math.random() * 50;
+    
+    setPositions(prev => ({ ...prev, [id]: { x, y } }));
+    setNodes(prev => ({
+        ...prev,
+        [id]: { title: name, type: type || 'Dense', metadata: [{ label: 'Alloc', value: 'Auto' }] }
+    }));
+    setActiveNode(id);
+    if(onAction) onAction(`Initialized ${name} shard.`);
+  };
+
+  const applyTemplate = (template) => {
+    setPositions(template.layout);
+    setNodes(template.nodes);
+    setEdges(template.edges);
+    setActiveNode(Object.keys(template.nodes)[0]);
+    if(onAction) onAction(`Loaded Library Template: ${template.name}`);
+  };
+
+  const deleteNode = (id) => {
+    if (['global', 'aggregation', 'blockchain', 'security'].includes(id)) {
+        if(onAction) onAction(`Cannot delete core system node: ${id}`, 'error');
+        return;
+    }
+    setNodes(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+    });
+    setPositions(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+    });
+    setEdges(prev => prev.filter(e => e.from !== id && e.to !== id));
+    setActiveNode('global');
+  };
+
+  const compileModel = () => {
+    setIsCompiling(true);
+    setTimeout(() => {
+        setIsCompiling(false);
+        if(onAction) onAction('Architecture Compiled & Deployed to Cluster Shards.', 'success');
+    }, 2000);
+  };
 
   const handleDragEnd = (id, info) => {
-    setPositions(prev => {
-      const newX = Math.round((prev[id].x + info.delta.x) / GRID_SIZE) * GRID_SIZE;
-      const newY = Math.round((prev[id].y + info.delta.y) / GRID_SIZE) * GRID_SIZE;
-
-      // Check for overlapping with any other node
-      const hasCollision = Object.entries(prev).some(([key, pos]) => {
-        if (key === id) return false;
-        const dx = Math.abs(newX - pos.x);
-        const dy = Math.abs(newY - pos.y);
-        return dx < NODE_WIDTH + 40 && dy < NODE_HEIGHT + 40;
-      });
-
-      if (hasCollision) {
-        // Simple push-back logic if collision detected
-        return { ...prev };
-      }
-
-      return {
+    setPositions(prev => ({
         ...prev,
-        [id]: { x: newX, y: newY }
-      };
-    });
+        [id]: { x: prev[id].x + info.delta.x, y: prev[id].y + info.delta.y }
+    }));
   };
 
   const handlePortClick = (id, type) => {
@@ -224,7 +305,6 @@ export const ArchitectureBuilder = ({ onAction }) => {
       else setIsConnecting({ to: id });
     } else {
       if (type === 'input' && isConnecting.from && isConnecting.from !== id) {
-        // Finalize Edge
         const newEdge = { id: `edge-${Date.now()}`, from: isConnecting.from, to: id };
         setEdges([...edges, newEdge]);
         setIsConnecting(null);
@@ -233,85 +313,98 @@ export const ArchitectureBuilder = ({ onAction }) => {
         setEdges([...edges, newEdge]);
         setIsConnecting(null);
       } else {
-        setIsConnecting(null); // Cancel
+        setIsConnecting(null); 
       }
     }
   };
 
-  return (
-    <div className="flex relative h-full bg-white selection:bg-primary/10 overflow-hidden" style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
-      {/* ZOOM CONTROLS (Floating Institutional Hub) */}
-      <div className="absolute bottom-10 right-10 flex flex-col gap-2 z-50">
-          <div className="p-1 px-4 bg-white/90 border border-border shadow-xl backdrop-blur-md flex flex-col gap-1">
-             <span className="text-[10px] font-bold text-text-muted text-center py-2 opacity-40 uppercase tracking-widest">{Math.round(viewScale * 100)}% scale</span>
-             <div className="flex gap-1 border-t border-border/40 pt-1">
-                <button onClick={() => setViewScale(s => Math.max(0.4, s - 0.1))} className="p-2 hover:bg-bg-main text-text-muted transition-all">
-                   <Minus size={14} />
-                </button>
-                <button onClick={() => setViewScale(0.8)} className="p-2 hover:bg-bg-main text-primary transition-all">
-                   <Maximize size={14} />
-                </button>
-                <button onClick={() => setViewScale(s => Math.min(1.5, s + 0.1))} className="p-2 hover:bg-bg-main text-text-muted transition-all">
-                   <Plus size={14} />
-                </button>
-             </div>
-          </div>
-      </div>
+  const current = nodes[activeNode] || nodes['global'];
 
-      {/* 1. Left Component Palette */}
-      <aside className="w-[280px] border-r border-border bg-bg-surface flex flex-col shrink-0 min-h-0 z-10 bg-white">
-          <div className="p-6 border-b border-border shrink-0 bg-white">
-             <h3 className="type-label text-text-muted mb-4 opacity-70">Architecture Forge</h3>
+  return (
+    <div className="flex relative h-full bg-white overflow-hidden" style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
+      {/* 1. Left Component Library Panel */}
+      <aside className="w-[300px] border-r border-border bg-bg-surface flex flex-col shrink-0 min-h-0 z-10 bg-white shadow-xl">
+          <div className="p-8 border-b border-border shrink-0 bg-white">
+             <div className="flex items-center gap-3 mb-6">
+                <BookOpen size={14} className="text-primary" />
+                <h3 className="type-label text-text-main font-bold tracking-widest uppercase">Model Library</h3>
+             </div>
              <div className="relative group">
                 <input 
                    type="text" 
-                   placeholder="Filter shards..." 
-                   className="w-full bg-bg-main border border-border pl-4 pr-10 py-2.5 text-[10px] uppercase font-bold tracking-widest focus:outline-none focus:border-primary/50 transition-all font-sans"
+                   value={search}
+                   onChange={(e) => setSearch(e.target.value)}
+                   placeholder="Search library..." 
+                   className="w-full bg-bg-main border border-border pl-4 pr-10 py-3 text-[10px] uppercase font-extrabold tracking-widest focus:outline-none focus:border-primary transition-all font-sans"
                 />
                 <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted opacity-40" />
              </div>
           </div>
           
-         <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar space-y-10 min-h-0">
-             {Object.entries({
-                "Inference Components": ['Core', 'Dense', 'Recurrent', 'Activation'],
-                "Network Topology": ['Input', 'Output', 'Reshape', 'Dropout'],
-                "Secure Layers": ['Homomorphic', 'DP-Optimized', 'TEE-Box']
-             }).map(([cat, items]) => (
-                <div key={cat}>
-                    <div className="flex items-center justify-between mb-5">
-                       <span className="text-[10px] font-medium text-text-muted uppercase tracking-[0.25em]">{cat}</span>
-                    </div>
-                    <div className="space-y-3">
-                       {items.map((name) => (
-                          <div key={name} className="p-3 border border-border bg-white text-[10px] font-bold text-text-muted uppercase tracking-tight flex items-center gap-3 cursor-move hover:border-primary hover:text-primary transition-all shadow-sm active:shadow-inner-sm">
-                             <div className="w-4 h-4 flex items-center justify-center opacity-30"><Layers size={13} /></div>
-                             {name}
-                          </div>
-                       ))}
-                    </div>
+          <div className="flex-1 overflow-y-auto px-8 py-8 custom-scrollbar space-y-10 min-h-0">
+              {/* Presets Section */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-bold text-text-muted uppercase tracking-[0.25em]">Model Presets</span>
                 </div>
-             ))}
-         </div>
+                <div className="space-y-2">
+                    {libraryTemplates.map(t => (
+                        <button 
+                            key={t.id}
+                            onClick={() => applyTemplate(t)}
+                            className="w-full p-4 border border-border bg-slate-50/50 hover:bg-white hover:border-primary transition-all flex flex-col items-start gap-1 group text-left"
+                        >
+                            <span className="text-[10px] font-bold text-text-main uppercase group-hover:text-primary">{t.name}</span>
+                            <span className="text-[8px] text-text-muted uppercase tracking-tighter opacity-60">Nodes: {Object.keys(t.nodes).length} | Verified Architecture</span>
+                        </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Components Section */}
+              {Object.entries({
+                 "Neural Topology": ['Dense', 'Convolutional', 'Recurrent', 'Activation'],
+                 "Compliance Shards": ['Input', 'Security', 'Aggregation', 'Gateway'],
+                 "Secure Storage": ['Blockchain', 'TEE-Vault', 'HSM-Node']
+              }).map(([cat, items]) => (
+                 <div key={cat} className="space-y-4">
+                     <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-bold text-text-muted uppercase tracking-[0.25em]">{cat}</span>
+                     </div>
+                     <div className="grid grid-cols-1 gap-2">
+                        {items.filter(name => name.toLowerCase().includes(search.toLowerCase())).map((name) => (
+                           <button 
+                             key={name} 
+                             onClick={() => addNodeFromPalette(name, name)}
+                             className="p-3 border border-border bg-white text-[9px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-3 cursor-pointer hover:border-primary hover:text-primary hover:bg-primary/[0.02] transition-all shadow-sm active:scale-95"
+                           >
+                              <Layers size={11} className="opacity-40" />
+                              {name}
+                           </button>
+                        ))}
+                     </div>
+                 </div>
+              ))}
+          </div>
       </aside>
 
-      {/* 2. Main Canvas Area (Zoomable 2D Space) */}
-      <main className="flex-1 relative bg-grid overflow-hidden bg-bg-main cursor-crosshair" onClick={() => setIsConnecting(null)}>
+      {/* 2. Main Canvas Area (Focus Area) */}
+      <main className="flex-1 relative bg-grid overflow-hidden bg-bg-main cursor-crosshair">
          {/* Canvas Controls Header */}
-         <div className="absolute top-8 left-10 flex items-center gap-6 z-30">
-            <div className="px-5 py-2.5 border border-border bg-white shadow-md flex items-center gap-4">
+         <div className="absolute top-8 left-10 flex items-center gap-6 z-30 pointer-events-none">
+            <div className="px-6 py-3 border border-border bg-white shadow-xl flex items-center gap-4 pointer-events-auto">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="type-label tracking-[0.2em] opacity-60">Architecture Workspace v2.5 // Blueprint Live</span>
+                <span className="text-[10px] uppercase font-extrabold tracking-[0.3em] text-text-main opacity-80">Forge Status: Ready</span>
             </div>
             {isConnecting && (
-               <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="px-5 py-2.5 bg-primary text-white text-[9px] font-bold uppercase tracking-widest shadow-xl flex items-center gap-3">
-                  <Link size={12} /> Pending Data Flow Connection...
-               </motion.div>
+               <div className="px-6 py-3 bg-primary text-white text-[9px] font-bold uppercase tracking-widest shadow-xl flex items-center gap-3 pointer-events-auto animate-pulse">
+                  <Link size={12} /> Pending Connection...
+               </div>
             )}
          </div>
 
          {/* The Zoomable Workspace */}
-         <div className="w-full h-full overflow-auto custom-scrollbar">
+         <div className="w-full h-full overflow-auto custom-scrollbar" onClick={() => setIsConnecting(null)}>
             <motion.div 
                className="relative min-w-[3000px] min-h-[3000px]"
                animate={{ scale: viewScale }}
@@ -330,106 +423,135 @@ export const ArchitectureBuilder = ({ onAction }) => {
                   ))}
                </svg>
 
-               {/* Institutional Shards (Nodes) */}
+               {/* Nodes Layer */}
                {Object.keys(positions).map((key) => (
                   <LayerNode
                      key={key}
                      id={key}
-                     type={nodeDetails[key].type}
-                     name={nodeDetails[key].title}
-                     metadata={nodeDetails[key].metadata}
+                     type={nodes[key]?.type}
+                     name={nodes[key]?.title}
+                     metadata={nodes[key]?.metadata}
                      active={activeNode === key}
                      position={positions[key]}
                      isConnecting={isConnecting}
                      onSelect={() => setActiveNode(key)}
-                     onDragEnd={(_, info) => handleDragEnd(key, info)}
+                     onDragEnd={handleDragEnd}
                      onPortClick={handlePortClick}
+                     onDelete={deleteNode}
                   />
                ))}
             </motion.div>
          </div>
 
-         {/* Integrity Badge */}
-         <div className="absolute bottom-10 left-10 z-20 pointer-events-none">
-            <div className="px-6 py-2.5 border border-border bg-white/90 backdrop-blur-sm flex items-center gap-3 shadow-xl">
-               <ShieldCheck size={14} className="text-primary/40" />
-               <span className="text-[10px] font-extrabold text-text-muted uppercase tracking-[0.3em] font-mono">Structural Compliance Verified</span>
+         {/* Floating Zoom UI */}
+         <div className="absolute bottom-10 left-10 flex items-center gap-2 z-50">
+            <div className="flex bg-white border border-border shadow-2xl p-1 shrink-0">
+                <button onClick={() => setViewScale(s => Math.max(0.4, s - 0.1))} className="p-3 hover:bg-slate-50 text-text-muted transition-all border-r border-border">
+                   <Minus size={14} />
+                </button>
+                <div className="px-4 flex items-center justify-center">
+                    <span className="text-[10px] font-bold text-text-main min-w-[40px] text-center">{Math.round(viewScale * 100)}%</span>
+                </div>
+                <button onClick={() => setViewScale(s => Math.min(1.5, s + 0.1))} className="p-3 hover:bg-slate-50 text-text-muted transition-all border-l border-border">
+                   <Plus size={14} />
+                </button>
             </div>
          </div>
       </main>
 
-      {/* 3. Layer Inspector Panel */}
+      {/* 3. Layer Inspector Panel (Right) */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <aside className="w-[400px] border-l border-border bg-bg-surface flex flex-col z-40 overflow-hidden shadow-2xl min-h-0 bg-white">
-            <div className="p-8 border-b border-border bg-bg-main/30 shrink-0">
-               <div className="flex items-center justify-between mb-8">
+          <aside className="w-[420px] border-l border-border bg-bg-surface flex flex-col z-40 overflow-hidden shadow-2xl min-h-0 bg-white">
+            <div className="p-10 border-b border-border bg-bg-main/30 shrink-0">
+               <div className="flex items-center justify-between mb-10">
                   <div className="flex items-center gap-3 text-primary">
-                     <Settings size={15} className="opacity-70" />
-                     <span className="type-label">Module Inspector</span>
+                     <Settings2 size={16} />
+                     <span className="text-[10px] font-extrabold uppercase tracking-[0.2em]">Module Inspector</span>
                   </div>
                   <button onClick={() => setIsSidebarOpen(false)} className="p-2 hover:bg-bg-main rounded-sm text-text-muted transition-all">
-                     <PanelRightClose size={18} />
+                     <PanelRightClose size={20} />
                   </button>
                </div>
                
-               <div className="space-y-4">
-                  <div className="flex items-center gap-6">
-                     <div className="p-4 bg-white border border-border text-primary shadow-sm">
-                        {current.icon}
-                     </div>
-                     <div className="space-y-1">
-                        <h2 className="type-l2 serif text-text-main pr-4 font-medium tracking-tight h-8 truncate">{current.title}</h2>
-                        <div className="flex items-center gap-3">
-                           <div className="w-1.5 h-[1px] bg-primary/30" />
-                           <span className="text-[10px] font-light text-primary/60 uppercase tracking-[0.2em]">{current.type}</span>
-                        </div>
+               <div className="flex items-center gap-6">
+                  <div className="p-5 bg-white border border-border text-primary shadow-sm rounded-sm">
+                     <Layers size={20} />
+                  </div>
+                  <div className="space-y-1.5 flex-1 overflow-hidden">
+                     <h2 className="text-xl serif text-text-main font-medium tracking-tight truncate">{current?.title}</h2>
+                     <div className="flex items-center gap-3">
+                        <div className="w-3 h-[1px] bg-primary/40" />
+                        <span className="text-[10px] font-bold text-primary/60 uppercase tracking-[0.2em]">{current?.type} MODULE</span>
                      </div>
                   </div>
                </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
-                <motion.div key={activeNode} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-14 pb-32">
-                  <div className="space-y-10">
-                     <div className="flex items-center gap-3 mb-6">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-text-main">Operational Matrix</span>
-                        <div className="h-px flex-1 bg-border/40" />
-                     </div>
-                     
-                     <div className="space-y-8">
-                        {current.params.map((p, i) => (
+            <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0 p-10 space-y-12 pb-32">
+                <div className="space-y-8">
+                   <div className="flex items-center gap-4">
+                      <span className="text-[9px] font-extrabold uppercase tracking-[0.3em] text-text-muted/60">Operational Configuration</span>
+                      <div className="h-px flex-1 bg-border/40" />
+                   </div>
+                   
+                   <div className="space-y-8">
+                        {current?.metadata?.map((p, i) => (
                            <div key={i} className="group">
-                              <label className="block text-[9px] font-light text-text-muted uppercase tracking-[0.25em] mb-2.5 ml-0.5">{p.label}</label>
+                              <label className="block text-[9px] font-bold text-text-muted uppercase tracking-[0.25em] mb-3">{p.label}</label>
                               <div className="relative">
-                                 <div className="absolute inset-y-0 left-0 w-[2px] bg-primary/10 group-hover:bg-primary/40 transition-colors" />
+                                 <div className="absolute inset-y-0 left-0 w-[3px] bg-primary/20 group-hover:bg-primary transition-colors" />
                                  <input 
                                     readOnly 
                                     value={p.value} 
-                                    className="w-full bg-bg-surface border-none pl-5 py-2.5 text-[11px] font-semibold font-sans text-text-main focus:outline-none" 
+                                    className="w-full bg-slate-50/50 border border-border/50 pl-6 py-4 text-[12px] font-bold font-mono text-text-main focus:outline-none" 
                                  />
                               </div>
                            </div>
                         ))}
-                     </div>
-                  </div>
-                  <div className="space-y-10">
-                     <div className="flex items-center gap-3 mb-6">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-text-main">Calculus Formulation</span>
-                        <div className="h-px flex-1 bg-border/40" />
-                     </div>
-                     <div className="bg-bg-main/40 border border-border p-10 flex flex-col items-center justify-center min-h-[140px] shadow-inner-sm relative group">
-                        <div className="absolute top-2 left-2 opacity-5 text-primary"><Code size={32} /></div>
-                        <div className="text-[13px] font-mono text-text-main font-medium text-center leading-relaxed">{current.math}</div>
-                     </div>
-                  </div>
-               </motion.div>
+                   </div>
+                </div>
+
+                <div className="space-y-8">
+                   <div className="flex items-center gap-4">
+                      <span className="text-[9px] font-extrabold uppercase tracking-[0.3em] text-text-muted/60">Calculus Basis</span>
+                      <div className="h-px flex-1 bg-border/40" />
+                   </div>
+                   <div className="bg-slate-900 border-none p-10 rounded-sm flex flex-col items-center justify-center min-h-[160px] shadow-2xl relative overflow-hidden">
+                      <div className="absolute top-4 left-4 opacity-10 text-primary"><Activity size={32} /></div>
+                      <div className="text-[14px] font-mono text-primary font-bold text-center leading-relaxed">
+                         {current?.type === 'Dense' ? 'W^T x + b' : current?.type === 'Convolutional' ? 'f * g' : 'L = sum(w_i x_i)'}
+                      </div>
+                      <div className="mt-6 text-[8px] font-mono text-white/30 uppercase tracking-widest italic">Verification via Homomorphic Proof</div>
+                   </div>
+                </div>
             </div>
             
-            <div className="p-8 border-t border-border bg-bg-surface shrink-0 z-10 shadow-inner-sm">
-               <button className="w-full bg-primary text-white h-12 uppercase tracking-[0.2em] text-[10px] font-extrabold hover:bg-primary/90 transition-all shadow-lg active:scale-[0.98]">
-                  Compile Net Shard
+            <div className="p-10 border-t border-border bg-white shrink-0 z-10">
+               <button 
+                 onClick={compileModel}
+                 disabled={isCompiling}
+                 className={`w-full h-14 uppercase tracking-[0.3em] text-[11px] font-black transition-all shadow-2xl flex items-center justify-center gap-4 ${
+                   isCompiling 
+                     ? 'bg-slate-100 text-text-muted cursor-not-allowed' 
+                     : 'bg-primary text-white hover:bg-primary/90 active:scale-95'
+                 }`}
+               >
+                  {isCompiling ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-text-muted border-t-transparent rounded-full animate-spin" />
+                      COMPILING NET...
+                    </>
+                  ) : (
+                    <>
+                      <Zap size={16} fill="white" />
+                      COMPILE NET SHARD
+                    </>
+                  )}
                </button>
+               <div className="mt-4 text-center">
+                  <span className="text-[8px] font-bold text-text-muted/40 uppercase tracking-[0.2em] font-sans">v4.2 Compiler Stable // Institutional Target</span>
+               </div>
             </div>
           </aside>
         )}
