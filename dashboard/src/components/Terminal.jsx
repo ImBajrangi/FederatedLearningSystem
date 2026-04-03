@@ -41,26 +41,76 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {} }) => {
         }} />
       </div>
 
-      {/* ── Title Bar ── */}
+      {/* ── Web Terminal Optimized Header ── */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '6px 16px', background: '#0f172a',
-        borderBottom: '1px solid #1e293b', flexShrink: 0,
+        padding: '0 12px', background: '#111827', height: '36px',
+        borderBottom: '1px solid #1f2937', flexShrink: 0,
       }}>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+        {/* Tabs for Terminal / Nodes / Output */}
+        <div style={{ display: 'flex', height: '100%', gap: '2px' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+            background: '#0b1120', borderTop: '2px solid #6366f1',
+            color: '#e2e8f0', fontSize: '10px', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'default'
+          }}>
+            <span style={{ opacity: 0.6 }}>$</span> Terminal
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+            color: '#64748b', fontSize: '10px', fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
+            transition: 'color 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#94a3b8'}
+          onMouseLeave={(e) => e.currentTarget.style.color = '#64748b'}
+          >
+            Node Registry
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+            color: '#64748b', fontSize: '10px', fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer'
+          }}>
+            Output
+          </div>
         </div>
-        <span style={{
-          fontFamily: 'monospace', fontSize: 10, color: '#64748b',
-          textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700,
-        }}>
-          System Output Console
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9, color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px rgba(16,185,129,0.5)' }} />
-          Live Bridge
+
+        {/* Terminal Actions (Clear, Scroll, Copy) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              padding: '4px', color: '#64748b', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: '4px', transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#1e293b'; e.currentTarget.style.color = '#e2e8f0'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; }}
+            title="Clear Terminal"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            </div>
+            <div style={{
+              padding: '4px', color: '#64748b', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: '4px', transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#1e293b'; e.currentTarget.style.color = '#e2e8f0'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; }}
+            title="Copy Logs"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </div>
+          </div>
+          <div style={{
+            padding: '3px 8px', background: '#0f172a', border: '1px solid #1e293b',
+            borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: '9px', fontWeight: 700, color: '#10b981', textTransform: 'uppercase'
+          }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
+            node-bridge:7880
+          </div>
         </div>
       </div>
 
@@ -84,27 +134,41 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {} }) => {
           <span style={{ flex: 1 }}>Last_Model_Hash</span>
           <span style={{ width: 40, textAlign: 'right', flexShrink: 0 }}>Rep</span>
         </div>
-        {/* Data rows */}
+        {/* Data rows with better standard formatting */}
         {Object.entries(nodeRegistry).length === 0 ? (
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#334155', fontStyle: 'italic', paddingTop: 4 }}>
-            Awaiting secure node handshake...
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#334155', fontStyle: 'italic', paddingTop: 6, textAlign: 'center' }}>
+            [SYSTEM] No active nodes connected. Awaiting secure handshake...
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {Object.entries(nodeRegistry).map(([id, info]) => (
-              <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 24, fontFamily: 'monospace', fontSize: 10, color: '#cbd5e1' }}>
-                <span style={{ width: 200, flexShrink: 0, color: '#818cf8', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={id}>{id}</span>
-                <span style={{ width: 100, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{
-                    width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                    background: info.status === 'TRAINING' ? '#fbbf24' : info.status === 'COMPLETED' ? '#34d399' : '#475569',
-                    boxShadow: info.status === 'TRAINING' ? '0 0 8px rgba(251,191,36,0.3)' : '',
-                    animation: info.status === 'TRAINING' ? 'pulse 1.5s infinite' : '',
+              <div key={id} style={{
+                display: 'flex', alignItems: 'center', gap: 24, fontFamily: 'monospace',
+                fontSize: '10px', color: '#cbd5e1', padding: '4px 8px', borderRadius: '4px',
+                background: 'rgba(30,41,59,0.2)', transition: 'background 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(30,41,59,0.4)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(30,41,59,0.2)'}
+              >
+                <span style={{
+                  width: 200, flexShrink: 0, color: '#818cf8', fontWeight: 600,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                }} title={id}>{id}</span>
+                <span style={{ width: 100, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{
+                    width: 7, height: 7, borderRadius: '2px', flexShrink: 0,
+                    background: info.status === 'TRAINING' ? '#fbbf24' : info.status === 'COMPLETED' ? '#10b981' : '#475569',
+                    boxShadow: info.status === 'TRAINING' ? '0 0 10px rgba(251,191,36,0.2)' : '',
+                    animation: info.status === 'TRAINING' ? 'pulse 2s infinite' : '',
                   }} />
-                  <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', opacity: 0.85 }}>{info.status}</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: info.status === 'TRAINING' ? '#fbbf24' : info.status === 'COMPLETED' ? '#34d399' : '#64748b' }}>
+                    {info.status}
+                  </span>
                 </span>
-                <span style={{ flex: 1, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{info.hash || '----------------'}</span>
-                <span style={{ width: 40, textAlign: 'right', flexShrink: 0, color: '#34d399', opacity: 0.6 }}>1.0</span>
+                <span style={{ flex: 1, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '9px' }}>
+                  {info.hash || '----------------'}
+                </span>
+                <span style={{ width: 40, textAlign: 'right', flexShrink: 0, color: '#10b981', opacity: 0.6, fontSize: '9px' }}>1.0 REP</span>
               </div>
             ))}
           </div>
