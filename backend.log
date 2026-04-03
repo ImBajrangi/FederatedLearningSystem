@@ -1,167 +1,195 @@
 WARNING:Bridge:Frontend dist directory not found at /Users/sakhi/Code/secure_federated_learning/Cybronites/dist
-INFO flwr 2026-04-03 13:37:34,864 | app.py:148 | Starting Flower server, config: ServerConfig(num_rounds=20, round_timeout=None)
+INFO flwr 2026-04-03 14:15:01,320 | app.py:148 | Starting Flower server, config: ServerConfig(num_rounds=20, round_timeout=None)
 INFO:flwr:Starting Flower server, config: ServerConfig(num_rounds=20, round_timeout=None)
-INFO flwr 2026-04-03 13:37:34,896 | app.py:168 | Flower ECE: gRPC server running (20 rounds), SSL is disabled
+I0403 14:15:01.343910 1172664 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+INFO flwr 2026-04-03 14:15:01,349 | app.py:168 | Flower ECE: gRPC server running (20 rounds), SSL is disabled
 INFO:flwr:Flower ECE: gRPC server running (20 rounds), SSL is disabled
-INFO flwr 2026-04-03 13:37:34,897 | server.py:86 | Initializing global parameters
+INFO flwr 2026-04-03 14:15:01,352 | server.py:86 | Initializing global parameters
 INFO:flwr:Initializing global parameters
-INFO flwr 2026-04-03 13:37:34,897 | server.py:273 | Requesting initial parameters from one random client
+INFO flwr 2026-04-03 14:15:01,353 | server.py:273 | Requesting initial parameters from one random client
 INFO:flwr:Requesting initial parameters from one random client
-INFO:     Started server process [53002]
+I0403 14:15:01.367851 1172664 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+INFO:     Started server process [55133]
 INFO:     Waiting for application startup.
 INFO:Bridge:Bridge Event Loop captured.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:7880 (Press CTRL+C to quit)
-I0403 13:37:34.997701 1131297 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-I0403 13:37:35.051833 1131297 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
 AI GUARDIAN | INITIALIZING SECURE FEDERATED ORCHESTRATOR...
 AI GUARDIAN | Flower gRPC on port 8095
-INFO:     127.0.0.1:50770 - "GET /status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52465 - "GET /status HTTP/1.1" 200 OK
 INFO:Bridge:WS [REQUEST] Origin: http://localhost:5173 | Path: /bridge/ws
-INFO:     127.0.0.1:50777 - "WebSocket /bridge/ws" [accepted]
+INFO:     127.0.0.1:52467 - "WebSocket /bridge/ws" [accepted]
 INFO:     connection open
 INFO:Bridge:WS [ESTABLISHED] Handshake accepted.
 INFO:Bridge:WS [REQUEST] Origin: http://localhost:5173 | Path: /bridge/ws
-INFO:     127.0.0.1:50780 - "WebSocket /bridge/ws" [accepted]
-INFO:     connection open
-INFO:Bridge:WS [ESTABLISHED] Handshake accepted.
-INFO:Bridge:WS [REQUEST] Origin: http://localhost:5173 | Path: /bridge/ws
-INFO:     127.0.0.1:50781 - "WebSocket /bridge/ws" [accepted]
-INFO:     connection open
-INFO:Bridge:WS [ESTABLISHED] Handshake accepted.
-INFO:Bridge:WS [DISCONNECT] Client closed connection.
-INFO:     connection closed
-INFO:Bridge:WS [REQUEST] Origin: http://localhost:5173 | Path: /bridge/ws
-INFO:     127.0.0.1:50782 - "WebSocket /bridge/ws" [accepted]
+INFO:     127.0.0.1:52469 - "WebSocket /bridge/ws" [accepted]
 INFO:     connection open
 INFO:Bridge:WS [ESTABLISHED] Handshake accepted.
 WARNING:Bridge:Frontend dist directory not found at /Users/sakhi/Code/secure_federated_learning/Cybronites/dist
-WARNING:Bridge:Frontend dist directory not found at /Users/sakhi/Code/secure_federated_learning/Cybronites/dist
-INFO flwr 2026-04-03 13:37:47,015 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
-INFO flwr 2026-04-03 13:37:47,015 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+INFO flwr 2026-04-03 14:15:04,650 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
 INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
-INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
-DEBUG flwr 2026-04-03 13:37:47,019 | connection.py:39 | ChannelConnectivity.IDLE
-DEBUG flwr 2026-04-03 13:37:47,019 | connection.py:39 | ChannelConnectivity.IDLE
+DEBUG flwr 2026-04-03 14:15:04,652 | connection.py:39 | ChannelConnectivity.IDLE
 DEBUG:flwr:ChannelConnectivity.IDLE
-DEBUG:flwr:ChannelConnectivity.IDLE
-DEBUG flwr 2026-04-03 13:37:47,023 | connection.py:39 | ChannelConnectivity.CONNECTING
+DEBUG flwr 2026-04-03 14:15:04,652 | connection.py:39 | ChannelConnectivity.CONNECTING
 DEBUG:flwr:ChannelConnectivity.CONNECTING
-DEBUG flwr 2026-04-03 13:37:47,024 | connection.py:39 | ChannelConnectivity.CONNECTING
-DEBUG:flwr:ChannelConnectivity.CONNECTING
-DEBUG flwr 2026-04-03 13:37:47,031 | connection.py:39 | ChannelConnectivity.READY
-DEBUG flwr 2026-04-03 13:37:47,031 | connection.py:39 | ChannelConnectivity.READY
+I0403 14:15:04.655002 1172787 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+DEBUG flwr 2026-04-03 14:15:04,659 | connection.py:39 | ChannelConnectivity.READY
 DEBUG:flwr:ChannelConnectivity.READY
-DEBUG:flwr:ChannelConnectivity.READY
-I0403 13:37:47.032436 1131635 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-I0403 13:37:47.032894 1131634 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-INFO flwr 2026-04-03 13:37:47,064 | server.py:277 | Received initial parameters from one random client
+INFO flwr 2026-04-03 14:15:04,663 | server.py:277 | Received initial parameters from one random client
 INFO:flwr:Received initial parameters from one random client
-INFO flwr 2026-04-03 13:37:47,064 | server.py:88 | Evaluating initial parameters
+INFO flwr 2026-04-03 14:15:04,664 | server.py:88 | Evaluating initial parameters
 INFO:flwr:Evaluating initial parameters
-INFO flwr 2026-04-03 13:37:47,064 | server.py:101 | FL starting
+INFO flwr 2026-04-03 14:15:04,664 | server.py:101 | FL starting
 INFO:flwr:FL starting
-DEBUG flwr 2026-04-03 13:37:47,065 | server.py:218 | fit_round 1: strategy sampled 2 clients (out of 2)
+I0403 14:15:04.666331 1172787 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+WARNING:Bridge:Frontend dist directory not found at /Users/sakhi/Code/secure_federated_learning/Cybronites/dist
+INFO flwr 2026-04-03 14:15:05,038 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG flwr 2026-04-03 14:15:05,039 | connection.py:39 | ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG flwr 2026-04-03 14:15:05,040 | connection.py:39 | ChannelConnectivity.READY
+DEBUG:flwr:ChannelConnectivity.READY
+DEBUG flwr 2026-04-03 14:15:05,041 | server.py:218 | fit_round 1: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 1: strategy sampled 2 clients (out of 2)
-I0403 13:37:47.092325 1131635 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-I0403 13:37:47.092487 1131634 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-DEBUG flwr 2026-04-03 13:38:13,654 | server.py:232 | fit_round 1 received 2 results and 0 failures
+I0403 14:15:05.045517 1172871 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+I0403 14:15:05.058165 1172871 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+DEBUG flwr 2026-04-03 14:15:15,666 | server.py:232 | fit_round 1 received 2 results and 0 failures
 DEBUG:flwr:fit_round 1 received 2 results and 0 failures
-WARNING flwr 2026-04-03 13:38:13,748 | fedavg.py:243 | No fit_metrics_aggregation_fn provided
+WARNING flwr 2026-04-03 14:15:15,705 | fedavg.py:243 | No fit_metrics_aggregation_fn provided
 WARNING:flwr:No fit_metrics_aggregation_fn provided
-DEBUG flwr 2026-04-03 13:38:13,748 | server.py:168 | evaluate_round 1: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:15,706 | server.py:168 | evaluate_round 1: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 1: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:38:17,595 | server.py:182 | evaluate_round 1 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:15:17,204 | server.py:182 | evaluate_round 1 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 1 received 2 results and 0 failures
-WARNING flwr 2026-04-03 13:38:17,595 | fedavg.py:274 | No evaluate_metrics_aggregation_fn provided
+WARNING flwr 2026-04-03 14:15:17,204 | fedavg.py:274 | No evaluate_metrics_aggregation_fn provided
 WARNING:flwr:No evaluate_metrics_aggregation_fn provided
-DEBUG flwr 2026-04-03 13:38:17,596 | server.py:218 | fit_round 2: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:17,204 | server.py:218 | fit_round 2: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 2: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:38:42,880 | server.py:232 | fit_round 2 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:15:27,529 | server.py:232 | fit_round 2 received 2 results and 0 failures
 DEBUG:flwr:fit_round 2 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:38:42,963 | server.py:168 | evaluate_round 2: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:27,566 | server.py:168 | evaluate_round 2: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 2: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:38:51,565 | server.py:182 | evaluate_round 2 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:15:28,992 | server.py:182 | evaluate_round 2 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 2 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:38:51,568 | server.py:218 | fit_round 3: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:28,992 | server.py:218 | fit_round 3: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 3: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:39:44,793 | server.py:232 | fit_round 3 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:15:38,449 | server.py:232 | fit_round 3 received 2 results and 0 failures
 DEBUG:flwr:fit_round 3 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:39:44,918 | server.py:168 | evaluate_round 3: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:38,481 | server.py:168 | evaluate_round 3: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 3: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:40:02,284 | server.py:182 | evaluate_round 3 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:15:39,820 | server.py:182 | evaluate_round 3 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 3 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:40:02,290 | server.py:218 | fit_round 4: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:39,820 | server.py:218 | fit_round 4: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 4: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:40:51,628 | server.py:232 | fit_round 4 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:15:49,056 | server.py:232 | fit_round 4 received 2 results and 0 failures
 DEBUG:flwr:fit_round 4 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:40:51,760 | server.py:168 | evaluate_round 4: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:49,088 | server.py:168 | evaluate_round 4: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 4: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:40:55,608 | server.py:182 | evaluate_round 4 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:15:50,423 | server.py:182 | evaluate_round 4 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 4 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:40:55,609 | server.py:218 | fit_round 5: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:15:50,423 | server.py:218 | fit_round 5: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 5: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:41:25,570 | server.py:232 | fit_round 5 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:01,753 | server.py:232 | fit_round 5 received 2 results and 0 failures
 DEBUG:flwr:fit_round 5 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:41:25,639 | server.py:168 | evaluate_round 5: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:01,789 | server.py:168 | evaluate_round 5: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 5: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:41:29,425 | server.py:182 | evaluate_round 5 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:03,491 | server.py:182 | evaluate_round 5 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 5 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:41:29,425 | server.py:218 | fit_round 6: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:03,491 | server.py:218 | fit_round 6: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 6: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:41:53,256 | server.py:232 | fit_round 6 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:12,676 | server.py:232 | fit_round 6 received 2 results and 0 failures
 DEBUG:flwr:fit_round 6 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:41:53,372 | server.py:168 | evaluate_round 6: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:12,709 | server.py:168 | evaluate_round 6: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 6: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:41:57,485 | server.py:182 | evaluate_round 6 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:14,018 | server.py:182 | evaluate_round 6 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 6 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:41:57,485 | server.py:218 | fit_round 7: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:14,018 | server.py:218 | fit_round 7: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 7: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:42:19,806 | server.py:232 | fit_round 7 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:23,135 | server.py:232 | fit_round 7 received 2 results and 0 failures
 DEBUG:flwr:fit_round 7 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:42:19,927 | server.py:168 | evaluate_round 7: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:23,167 | server.py:168 | evaluate_round 7: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 7: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:42:26,680 | server.py:182 | evaluate_round 7 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:24,495 | server.py:182 | evaluate_round 7 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 7 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:42:26,682 | server.py:218 | fit_round 8: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:24,495 | server.py:218 | fit_round 8: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 8: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:43:23,127 | server.py:232 | fit_round 8 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:33,996 | server.py:232 | fit_round 8 received 2 results and 0 failures
 DEBUG:flwr:fit_round 8 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:43:23,429 | server.py:168 | evaluate_round 8: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:34,029 | server.py:168 | evaluate_round 8: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 8: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:43:29,396 | server.py:182 | evaluate_round 8 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:35,438 | server.py:182 | evaluate_round 8 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 8 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:43:29,399 | server.py:218 | fit_round 9: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:35,438 | server.py:218 | fit_round 9: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 9: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:43:54,889 | server.py:232 | fit_round 9 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:45,039 | server.py:232 | fit_round 9 received 2 results and 0 failures
 DEBUG:flwr:fit_round 9 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:43:54,946 | server.py:168 | evaluate_round 9: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:45,072 | server.py:168 | evaluate_round 9: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 9: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:43:57,044 | server.py:182 | evaluate_round 9 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:46,387 | server.py:182 | evaluate_round 9 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 9 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:43:57,045 | server.py:218 | fit_round 10: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:46,388 | server.py:218 | fit_round 10: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 10: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:44:12,047 | server.py:232 | fit_round 10 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:55,551 | server.py:232 | fit_round 10 received 2 results and 0 failures
 DEBUG:flwr:fit_round 10 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:44:12,099 | server.py:168 | evaluate_round 10: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:55,585 | server.py:168 | evaluate_round 10: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 10: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:44:14,547 | server.py:182 | evaluate_round 10 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:16:56,991 | server.py:182 | evaluate_round 10 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 10 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:44:14,547 | server.py:218 | fit_round 11: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:16:56,992 | server.py:218 | fit_round 11: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 11: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:44:31,049 | server.py:232 | fit_round 11 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:06,980 | server.py:232 | fit_round 11 received 2 results and 0 failures
 DEBUG:flwr:fit_round 11 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:44:31,099 | server.py:168 | evaluate_round 11: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:07,013 | server.py:168 | evaluate_round 11: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 11: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:44:33,431 | server.py:182 | evaluate_round 11 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:08,363 | server.py:182 | evaluate_round 11 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 11 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:44:33,431 | server.py:218 | fit_round 12: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:08,364 | server.py:218 | fit_round 12: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 12: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:44:50,722 | server.py:232 | fit_round 12 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:18,457 | server.py:232 | fit_round 12 received 2 results and 0 failures
 DEBUG:flwr:fit_round 12 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:44:50,774 | server.py:168 | evaluate_round 12: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:18,489 | server.py:168 | evaluate_round 12: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:evaluate_round 12: strategy sampled 2 clients (out of 2)
-DEBUG flwr 2026-04-03 13:44:52,985 | server.py:182 | evaluate_round 12 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:19,824 | server.py:182 | evaluate_round 12 received 2 results and 0 failures
 DEBUG:flwr:evaluate_round 12 received 2 results and 0 failures
-DEBUG flwr 2026-04-03 13:44:52,986 | server.py:218 | fit_round 13: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:19,825 | server.py:218 | fit_round 13: strategy sampled 2 clients (out of 2)
 DEBUG:flwr:fit_round 13: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:29,326 | server.py:232 | fit_round 13 received 2 results and 0 failures
+DEBUG:flwr:fit_round 13 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:29,359 | server.py:168 | evaluate_round 13: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:evaluate_round 13: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:30,669 | server.py:182 | evaluate_round 13 received 2 results and 0 failures
+DEBUG:flwr:evaluate_round 13 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:30,670 | server.py:218 | fit_round 14: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:fit_round 14: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:39,777 | server.py:232 | fit_round 14 received 2 results and 0 failures
+DEBUG:flwr:fit_round 14 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:39,810 | server.py:168 | evaluate_round 14: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:evaluate_round 14: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:41,128 | server.py:182 | evaluate_round 14 received 2 results and 0 failures
+DEBUG:flwr:evaluate_round 14 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:41,128 | server.py:218 | fit_round 15: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:fit_round 15: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:51,390 | server.py:232 | fit_round 15 received 2 results and 0 failures
+DEBUG:flwr:fit_round 15 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:51,437 | server.py:168 | evaluate_round 15: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:evaluate_round 15: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:17:53,023 | server.py:182 | evaluate_round 15 received 2 results and 0 failures
+DEBUG:flwr:evaluate_round 15 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:17:53,023 | server.py:218 | fit_round 16: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:fit_round 16: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:18:03,129 | server.py:232 | fit_round 16 received 2 results and 0 failures
+DEBUG:flwr:fit_round 16 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:18:03,166 | server.py:168 | evaluate_round 16: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:evaluate_round 16: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:18:04,539 | server.py:182 | evaluate_round 16 received 2 results and 0 failures
+DEBUG:flwr:evaluate_round 16 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:18:04,539 | server.py:218 | fit_round 17: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:fit_round 17: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:18:14,100 | server.py:232 | fit_round 17 received 2 results and 0 failures
+DEBUG:flwr:fit_round 17 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:18:14,133 | server.py:168 | evaluate_round 17: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:evaluate_round 17: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-03 14:18:15,500 | server.py:182 | evaluate_round 17 received 2 results and 0 failures
+DEBUG:flwr:evaluate_round 17 received 2 results and 0 failures
+DEBUG flwr 2026-04-03 14:18:15,501 | server.py:218 | fit_round 18: strategy sampled 2 clients (out of 2)
+DEBUG:flwr:fit_round 18: strategy sampled 2 clients (out of 2)
