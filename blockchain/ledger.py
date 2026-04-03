@@ -42,6 +42,9 @@ class Block:
     nonce: int = 0
     hash: str = ""
 
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
     def compute_hash(self) -> str:
         """SHA-256 of the block contents (excluding the hash field itself)."""
         block_data = json.dumps({

@@ -28,9 +28,16 @@ class MNISTNet(nn.Module):
 def train(model, train_loader, optimizer, epochs, device):
     """
     Local training function for a single client.
+    Returns: (final_loss, final_accuracy)
     """
     model.train()
+    last_loss = 0.0
+    correct = 0
+    total = 0
+    
     for _ in range(epochs):
+        correct = 0
+        total = 0
         for data, target in train_loader:
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
@@ -38,6 +45,13 @@ def train(model, train_loader, optimizer, epochs, device):
             loss = F.nll_loss(output, target)
             loss.backward()
             optimizer.step()
+            
+            last_loss = loss.item()
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+            total += target.size(0)
+            
+    return last_loss, correct / total
 
 def test(model, test_loader, device):
     """

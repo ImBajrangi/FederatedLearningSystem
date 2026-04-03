@@ -1,17 +1,24 @@
 import React from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line
 } from 'recharts';
-import { Activity } from 'lucide-react';
+import { Activity, TrendingDown, TrendingUp } from 'lucide-react';
 
-export const MetricsChart = ({ data }) => {
-  // Map raw floats to charted objects. If empty, show a zero-baseline.
+export const MetricsChart = ({ data = [], lossData = [] }) => {
+  // Map raw floats to charted objects.
   const chartData = data.length > 0 
     ? data.map((val, index) => ({
-        round: index + 1, // Start labelling from Round 1
-        accuracy: val * 100,
+        round: index + 1,
+        accuracy: (val * 100).toFixed(1),
+        loss: (lossData[index] || 0).toFixed(3),
       }))
-    : [{ round: 0, accuracy: 0 }];
+    : [{ round: 0, accuracy: 0, loss: 0 }];
+
+  const currentAcc = data.length > 0 ? (data[data.length - 1] * 100).toFixed(1) : "0.0";
+  const currentLoss = lossData.length > 0 ? lossData[lossData.length - 1].toFixed(3) : "0.000";
+  
+  const accImproved = data.length > 1 ? data[data.length-1] >= data[data.length-2] : true;
+  const lossReduced = lossData.length > 1 ? lossData[lossData.length-1] <= lossData[lossData.length-2] : true;
 
   return (
     <div className="w-full">
@@ -23,13 +30,13 @@ export const MetricsChart = ({ data }) => {
           </h3>
         </div>
         <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-1 font-mono">
-          Institutional Accuracy Curve (Global)
+          Federated Convergence Metrics
         </p>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 px-4 py-1.5 bg-emerald-50 border border-emerald-100/50 rounded-sm">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest tabular-nums">
-              {(data?.length ? data[data.length - 1] * 100 : 0).toFixed(1)}% Accuracy
+              {currentAcc}% Accuracy
             </span>
           </div>
         </div>
@@ -39,13 +46,16 @@ export const MetricsChart = ({ data }) => {
         <ResponsiveContainer width="99%" height="100%" debounce={50}>
           <AreaChart
             data={chartData}
-            margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
-            aspect={2.5}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
             <defs>
               <linearGradient id="colorAcc" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15} />
                 <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
@@ -58,6 +68,7 @@ export const MetricsChart = ({ data }) => {
               dy={10}
             />
             <YAxis
+              yAxisId="left"
               fontSize={10}
               axisLine={false}
               tickLine={false}
@@ -65,6 +76,15 @@ export const MetricsChart = ({ data }) => {
               domain={[0, 100]}
               tickFormatter={(val) => `${val}%`}
               dx={-5}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              fontSize={10}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#ef4444', fontWeight: 600, fontFamily: 'monospace' }}
+              dx={5}
             />
             <Tooltip
               contentStyle={{
@@ -76,9 +96,10 @@ export const MetricsChart = ({ data }) => {
                 fontFamily: 'monospace'
               }}
               labelStyle={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}
-              itemStyle={{ color: 'var(--primary)', fontWeight: 700 }}
+              itemStyle={{ fontWeight: 700 }}
             />
             <Area
+              yAxisId="left"
               type="monotone"
               dataKey="accuracy"
               stroke="var(--primary)"
@@ -86,6 +107,19 @@ export const MetricsChart = ({ data }) => {
               fillOpacity={1}
               fill="url(#colorAcc)"
               animationDuration={1500}
+              name="Accuracy"
+            />
+            <Area
+              yAxisId="right"
+              type="monotone"
+              dataKey="loss"
+              stroke="#ef4444"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorLoss)"
+              animationDuration={1500}
+              name="Loss"
+              strokeDasharray="4 4"
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -94,30 +128,31 @@ export const MetricsChart = ({ data }) => {
       <div className="grid grid-cols-2 gap-8 mt-10">
         <div className="p-6 bg-white border border-border shadow-sm">
           <div className="flex flex-col gap-3">
-            <span className="type-label text-text-muted opacity-70">Model Accuracy</span>
-            <span className="type-l2 sans text-text-main tabular-nums">
-               {(data?.length ? data[data.length - 1] * 100 : 0).toFixed(1)}%
-            </span>
+            <span className="type-label text-text-muted opacity-70">Global Accuracy</span>
+            <div className="flex items-baseline gap-2">
+               <span className="type-l2 sans text-text-main tabular-nums">{currentAcc}%</span>
+               {data.length > 1 && (
+                 <TrendingUp size={14} className={accImproved ? 'text-emerald-500' : 'text-error rotate-180'} />
+               )}
+            </div>
           </div>
-          <div className={`text-[10px] font-bold uppercase tracking-widest mt-4 ${data?.length > 1 ? (data[data.length - 1] >= data[data.length - 2] ? 'text-emerald-600' : 'text-error') : 'text-text-muted'}`}>
-            Institutional Progress
+          <div className="text-[10px] font-bold uppercase tracking-widest mt-4 text-text-muted">
+            Institutional Convergence
           </div>
         </div>
+        
         <div className="p-6 bg-white border border-border shadow-sm">
-          <span className="type-label text-text-muted opacity-70 block mb-3">
-            Privacy Budget (DP)
-            <div className="flex items-center gap-4 opacity-40">
-              <span className="type-label tabular-nums">01</span>
-              <span className="type-label">PENDING VALIDATION</span>
+          <div className="flex flex-col gap-3">
+            <span className="type-label text-text-muted opacity-70">Training Loss</span>
+            <div className="flex items-baseline gap-2">
+               <span className="type-l2 sans text-error tabular-nums">{currentLoss}</span>
+               {lossData.length > 1 && (
+                 <TrendingDown size={14} className={lossReduced ? 'text-emerald-500' : 'text-error rotate-180'} />
+               )}
             </div>
-          </span>
-          <div className="flex items-center justify-between">
-            <span className="type-l2 sans text-primary tabular-nums">
-              ε=1.2
-            </span>
-            <div className="px-2 py-0.5 border border-primary/20 bg-primary/5 text-[9px] font-bold text-primary uppercase tracking-widest">
-              Secured
-            </div>
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-widest mt-4 text-text-muted">
+            Error Minimization
           </div>
         </div>
       </div>

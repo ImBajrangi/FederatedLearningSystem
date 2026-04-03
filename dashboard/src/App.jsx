@@ -18,6 +18,7 @@ function App() {
     blockchain,
     clients,
     accuracyHistory,
+    lossHistory,
     rejectedCount,
     logs,
     runRound,
@@ -25,6 +26,7 @@ function App() {
     clearSimulation,
     isConnected,
     status,
+    lastSync,
     nodeRegistry
   } = useSecureFederated();
 
@@ -121,14 +123,21 @@ function App() {
               <div className="flex items-center gap-6">
                 <div className="text-right pr-8 border-r border-border">
                   <div className="text-[9px] font-light text-text-muted mb-2 uppercase tracking-[0.3em]">Global Accuracy</div>
-                  <div className="flex items-center justify-end gap-3">
-                    <span className="type-l2 serif text-text-main font-medium">
-                      {(accuracyHistory?.length > 0
-                        ? accuracyHistory[accuracyHistory.length - 1] * 100
-                        : 0.0).toFixed(2)}%
+                  <div className="flex items-center justify-end gap-3 px-2">
+                    <span className="type-l2 serif text-text-main font-medium tabular-nums">
+                      {accuracyHistory && accuracyHistory.length > 0
+                        ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
+                        : "0.00"}%
                     </span>
-                    <div className="p-1 px-1.5 bg-emerald-50 border border-emerald-100 rounded-sm">
-                      <Activity size={10} className="text-emerald-600" />
+                    <div className="flex flex-col items-end gap-1">
+                      <div className={`p-1 rounded-full ${isConnected ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                        <Activity size={10} className={isConnected && isActive ? 'text-emerald-500 animate-pulse' : 'text-text-muted'} />
+                      </div>
+                      {lastSync && (
+                         <span className="text-[8px] font-mono text-text-muted/60">
+                           SYNC_{lastSync.toLocaleTimeString([], { hour12: false, minute:'2-digit', second:'2-digit' })}
+                         </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -220,7 +229,7 @@ function App() {
       case 'architecture':
         return <ArchitectureBuilder onAction={addToast} />;
       case 'training':
-        return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} />;
+        return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} />;
       case 'datasets':
         return <DatasetExplorer />;
       default:

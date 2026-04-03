@@ -13,7 +13,7 @@ const ConfigInput = ({ label, value, onChange }) => (
   </div>
 );
 
-export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) => {
+export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [] }) => {
   return (
     <div className="flex-1 p-10 flex flex-col gap-4 section-fade">
       {/* 1. Module Header */}
@@ -90,7 +90,7 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
         {/* Right Column: Metrics & Console */}
         <div className="flex-1 flex flex-col gap-8">
            {/* Training Metrics Chart */}
-           <div className="academic-card flex flex-col !p-0 min-h-[350px]">
+           <div className="academic-card flex flex-col !p-0 min-h-[420px]">
                <div className="flex items-center justify-between px-8 py-4 border-b border-border">
                   <div className="flex items-center gap-3">
                      <Activity size={13} className="text-primary/70" />
@@ -99,16 +99,16 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [] }) 
                  <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
                        <div className="w-2.5 h-0.5 bg-primary" />
-                       <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Training Loss</span>
+                       <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Accuracy</span>
                     </div>
                     <div className="flex items-center gap-2">
-                       <div className="w-2.5 h-0.5 bg-accent" />
-                       <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Validation Loss</span>
+                       <div className="w-2.5 h-0.5 bg-error" />
+                       <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Loss</span>
                     </div>
                  </div>
               </div>
               <div className="flex-1 p-10 bg-white">
-                 <MetricsChart data={accuracyHistory} />
+                 <MetricsChart data={accuracyHistory} lossData={lossHistory} />
               </div>
            </div>
 

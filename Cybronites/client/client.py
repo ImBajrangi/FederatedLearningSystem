@@ -57,8 +57,7 @@ class FlowerClient(fl.client.NumPyClient):
         
         optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
         logger.info(f"Client {self.client_id} | Training locally...")
-        
-        train(self.model, self.train_loader, optimizer, epochs=1, device=device)
+        last_loss, last_acc = train(self.model, self.train_loader, optimizer, epochs=1, device=device)
         
         # Compute Parameter Update (Delta)
         new_params = [val.cpu() for _, val in self.model.state_dict().items()]
@@ -76,7 +75,7 @@ class FlowerClient(fl.client.NumPyClient):
             param_with_noise = initial_params[i].cpu() + dp_updates[name]
             final_params.append(param_with_noise.numpy())
 
-        return final_params, len(self.train_loader.dataset), {}
+        return final_params, len(self.train_loader.dataset), {"accuracy": float(last_acc), "loss": float(last_loss)}
 
     def evaluate(self, parameters, config):
         self.set_parameters(parameters)
