@@ -118,7 +118,7 @@ async def aggregate():
 frontend_path = os.path.join(os.getcwd(), "dist")
 if os.path.exists(frontend_path):
     # Mount frontend dist but with an SPA fallback
-    app.mount("/", StaticFiles(directory=frontend_path, html=True, follow_symlinks=True), name="static")
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
 else:
     logger.warning(f"Frontend dist directory not found at {frontend_path}")
 
