@@ -27,7 +27,8 @@ function App() {
     isConnected,
     status,
     lastSync,
-    nodeRegistry
+    nodeRegistry,
+    hyperparams
   } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState('dashboard');
@@ -229,7 +230,7 @@ function App() {
       case 'architecture':
         return <ArchitectureBuilder onAction={addToast} />;
       case 'training':
-        return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} />;
+        return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} hyperparams={hyperparams} />;
       case 'datasets':
         return <DatasetExplorer />;
       default:

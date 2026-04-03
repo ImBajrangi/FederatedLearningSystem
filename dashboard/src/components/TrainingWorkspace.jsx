@@ -13,7 +13,14 @@ const ConfigInput = ({ label, value, onChange }) => (
   </div>
 );
 
-export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [] }) => {
+export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams }) => {
+   const defaultHyperparams = {
+      learning_rate: 0.01,
+      batch_size: 32,
+      epochs: 1
+   };
+   
+   const hp = hyperparams || defaultHyperparams;
   return (
     <div className="flex-1 p-10 flex flex-col gap-4 section-fade">
       {/* 1. Module Header */}
@@ -52,9 +59,9 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
                   <button className="type-label text-primary hover:underline">Reset to defaults</button>
                </div>
               <div className="grid grid-cols-3 gap-8">
-                 <ConfigInput label="Learning Rate" value="0.010" />
-                 <ConfigInput label="Batch Size" value="64" />
-                 <ConfigInput label="Epochs" value="100" />
+                 <ConfigInput label="Learning Rate" value={hp.learning_rate.toFixed(3)} />
+                 <ConfigInput label="Batch Size" value={hp.batch_size.toString()} />
+                 <ConfigInput label="Epochs" value={hp.epochs.toString()} />
               </div>
            </div>
 

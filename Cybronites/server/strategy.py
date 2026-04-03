@@ -1,6 +1,6 @@
 import flwr as fl
 from typing import List, Tuple, Union, Optional, Dict
-from dataclasses import asdict # Safe direct import
+from dataclasses import asdict
 from flwr.common import (
     Parameters,
     Scalar,
@@ -49,6 +49,14 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         self.accuracy_history = []
         self.loss_history = []
         self.node_registry = {}
+        
+        # Real Hyperparameters in use by clients
+        self.hyperparams = {
+            "learning_rate": 0.01,
+            "batch_size": 32,
+            "epochs": 1,
+            "max_rounds": 5
+        }
 
     def aggregate_fit(
         self,
@@ -117,14 +125,11 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         avg_acc = float(np.mean(acc_list)) if acc_list else (0.4 + (server_round * 0.1))
         avg_loss = float(np.mean(loss_list)) if loss_list else (2.0 / (server_round + 1))
         
-        # Limit accuracy to 0.99 
         avg_acc = min(0.99, avg_acc)
-        
-        # Persist locally in strategy 
         self.accuracy_history.append(avg_acc)
         self.loss_history.append(avg_loss)
 
-        # PRE-SERIALIZATION with asdict to avoid object-method missing errors
+        # PRE-SERIALIZATION with asdict
         try:
             serialized_chain = [asdict(b) for b in self.blockchain.chain]
         except Exception as e:
@@ -142,6 +147,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             "accuracy_history": list(self.accuracy_history),
             "loss_history": list(self.loss_history),
             "node_registry": self.node_registry,
+            "hyperparams": self.hyperparams, # TRANSMIT SHIFTED PARAMETERS
             "heartbeat": time.time()
         })
         

@@ -22,6 +22,11 @@ export function useSecureFederated() {
   const [status, setStatus] = useState('IDLE');
   const [lastSync, setLastSync] = useState(null);
   const [nodeRegistry, setNodeRegistry] = useState({});
+  const [hyperparams, setHyperparams] = useState({
+    learning_rate: 0.01,
+    batch_size: 32,
+    epochs: 1
+  });
   const ws = useRef(null);
 
   const updateClientStatus = useCallback((currentStatus, numActive = 2) => {
@@ -41,7 +46,7 @@ export function useSecureFederated() {
 
         switch (type) {
           case 'INITIAL_SYNC': {
-            console.log("INITIAL_SYNC RECEIVED", payload);
+            console.log("INITIAL_SYNC", payload);
             const { state, logs: initialLogs } = payload;
             setRound(state.round || 0);
             setStatus(state.status || 'IDLE');
@@ -50,30 +55,24 @@ export function useSecureFederated() {
             setLogs(initialLogs.map(l => ({ msg: `${l}`, color: '#64748b' })));
             if (state.chain) setBlockchain(state.chain);
             if (state.node_registry) setNodeRegistry(state.node_registry);
+            if (state.hyperparams) setHyperparams(state.hyperparams);
             updateClientStatus(state.status, state.clients_active);
             break;
           }
 
           case 'STAT_UPDATE': {
-            console.log("STAT_UPDATE RECEIVED", payload);
+            console.log("STAT_UPDATE", payload);
             if (payload.round !== undefined) setRound(payload.round);
             if (payload.status !== undefined) {
                 setStatus(payload.status);
                 setIsActive(['TRAINING', 'AGGREGATING', 'MINING'].includes(payload.status));
                 updateClientStatus(payload.status, payload.clients_active);
             }
-            if (payload.accuracy_history !== undefined) {
-                setAccuracyHistory(payload.accuracy_history);
-            }
-            if (payload.loss_history !== undefined) {
-                setLossHistory(payload.loss_history);
-            }
-            if (payload.chain !== undefined) {
-                setBlockchain(payload.chain);
-            }
-            if (payload.node_registry !== undefined) {
-                setNodeRegistry(payload.node_registry);
-            }
+            if (payload.accuracy_history !== undefined) setAccuracyHistory(payload.accuracy_history);
+            if (payload.loss_history !== undefined) setLossHistory(payload.loss_history);
+            if (payload.chain !== undefined) setBlockchain(payload.chain);
+            if (payload.node_registry !== undefined) setNodeRegistry(payload.node_registry);
+            if (payload.hyperparams) setHyperparams(payload.hyperparams);
             break;
           }
 
@@ -87,7 +86,7 @@ export function useSecureFederated() {
             break;
         }
     } catch (err) {
-        console.error("Hook Message Processing Error:", err);
+        console.error("Hook Message Error:", err);
     }
   }, [updateClientStatus]);
 
@@ -106,22 +105,17 @@ export function useSecureFederated() {
 
       ws.current.onopen = () => {
         setIsConnected(true);
-        console.log("Secure Federated Bridge Connected");
+        console.log("Bridge Connected");
       };
 
       ws.current.onmessage = onMessage;
 
       ws.current.onclose = () => {
         setIsConnected(false);
-        if (isMounted) {
-            console.log("Bridge connection lost. Retrying...");
-            reconnectTimeout = setTimeout(connect, 3000);
-        }
+        if (isMounted) reconnectTimeout = setTimeout(connect, 3000);
       };
 
-      ws.current.onerror = (err) => {
-        console.error("Bridge WebSocket Error:", err);
-      };
+      ws.current.onerror = (err) => console.error("WS Error:", err);
     };
 
     connect();
@@ -161,6 +155,7 @@ export function useSecureFederated() {
     isConnected,
     status,
     lastSync,
-    nodeRegistry
+    nodeRegistry,
+    hyperparams
   };
 }
