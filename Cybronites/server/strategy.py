@@ -26,6 +26,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
     2. Blockchain Model Registry
     3. Client Reputation scoring
     4. Real-time Dashboard telemetry
+    5. Institutional Parameter Audit History
     """
 
     def __init__(
@@ -49,8 +50,8 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         self.accuracy_history = []
         self.loss_history = []
         self.node_registry = {}
+        self.round_history = [] # For Institutional Audit Ledger
         
-        # Real Hyperparameters in use by clients
         self.hyperparams = {
             "learning_rate": 0.01,
             "batch_size": 32,
@@ -87,17 +88,39 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             aggregated_ndarrays = self._aggregate_weighted_avg(weights_results)
 
         # 3. Blockchain & Reputation Integration
-        for ndarrays, num_examples, cid in weights_results:
-            weight_hash = str(hash(tuple([arr.tobytes()[:100] for arr in ndarrays])))
+        acc_list = []
+        loss_list = []
+        
+        for proxy, fit_res in results:
+            cid = proxy.cid
+            weight_hash = str(hash(tuple([arr.tobytes()[:100] for arr in parameters_to_ndarrays(fit_res.parameters)])))
             new_score = self.reputation.record_valid_update(cid)
             
-            # Update Node Registry for UI
+            # Extract Metrics
+            m_acc = float(fit_res.metrics.get("accuracy", 0.0)) if fit_res.metrics else 0.0
+            m_loss = float(fit_res.metrics.get("loss", 2.0)) if fit_res.metrics else 2.0
+            acc_list.append(m_acc)
+            loss_list.append(m_loss)
+
+            # Update Node Registry
             self.node_registry[cid] = {
                 "status": "COMPLETED",
                 "hash": f"0x{weight_hash[:12]}...",
                 "reputation": new_score
             }
             
+            # Add to Institutional Audit History (the dynamic table history)
+            self.round_history.append({
+                "round": server_round,
+                "client": cid,
+                "acc": m_acc,
+                "loss": m_loss,
+                "lr": self.hyperparams["learning_rate"],
+                "batch": self.hyperparams["batch_size"],
+                "epochs": self.hyperparams["epochs"]
+            })
+            if len(self.round_history) > 100: self.round_history.pop(0)
+
             tx = Transaction(
                 client_id=cid,
                 model_hash=weight_hash,
@@ -111,16 +134,6 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         # 4. Mine the block
         new_block = self.blockchain.mine_pending_transactions()
         
-        # 5. Extract Dynamic Metrics from Reporting Clients
-        acc_list = []
-        loss_list = []
-        for proxy, res in results:
-            if res.metrics:
-                m_acc = res.metrics.get("accuracy")
-                m_loss = res.metrics.get("loss")
-                if m_acc is not None: acc_list.append(float(m_acc))
-                if m_loss is not None: loss_list.append(float(m_loss))
-
         # Calculate Average Metrics for the Round
         avg_acc = float(np.mean(acc_list)) if acc_list else (0.4 + (server_round * 0.1))
         avg_loss = float(np.mean(loss_list)) if loss_list else (2.0 / (server_round + 1))
@@ -147,13 +160,14 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             "accuracy_history": list(self.accuracy_history),
             "loss_history": list(self.loss_history),
             "node_registry": self.node_registry,
-            "hyperparams": self.hyperparams, # TRANSMIT SHIFTED PARAMETERS
+            "hyperparams": self.hyperparams,
+            "round_history": self.round_history, # NEW DATA POINT for audit table
             "heartbeat": time.time()
         })
         
         bridge.broadcast_sync("LOG", f"Round {server_round} Synced (Acc: {avg_acc:.2%})")
 
-        # Updated metrics to return to Flower
+        # Updated metrics to return 
         metrics = {"accuracy": avg_acc, "loss": avg_loss}
         return ndarrays_to_parameters(aggregated_ndarrays), metrics
 

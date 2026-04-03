@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cpu, Activity, ShieldCheck, Server, Globe, Zap, Network, Settings2, Code, Terminal as TerminalIcon } from 'lucide-react';
+import { Cpu, Activity, ShieldCheck, Server, Globe, Zap, Network, Settings2, Code, Database, Terminal as TerminalIcon } from 'lucide-react';
 import { MetricsChart } from './MetricsChart';
 import { Terminal } from './Terminal';
 
@@ -13,7 +13,7 @@ const ConfigInput = ({ label, value, onChange }) => (
   </div>
 );
 
-export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams }) => {
+export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams, roundHistory = [] }) => {
    const defaultHyperparams = {
       learning_rate: 0.01,
       batch_size: 32,
@@ -62,6 +62,64 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
                  <ConfigInput label="Learning Rate" value={hp.learning_rate.toFixed(3)} />
                  <ConfigInput label="Batch Size" value={hp.batch_size.toString()} />
                  <ConfigInput label="Epochs" value={hp.epochs.toString()} />
+              </div>
+           </div>
+
+           {/* Institutional Parameter Audit Ledger */}
+           <div className="academic-card !p-0 overflow-hidden shadow-sm border-primary/10">
+              <div className="px-8 py-5 border-b border-border bg-slate-50/50 flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                    <Database size={12} className="text-primary/70" />
+                    <span className="type-l3 text-text-main">Institutional Parameter Audit Ledger</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    <span className="type-label text-text-muted opacity-60 uppercase tracking-widest shrink-0">Live Audit Sync</span>
+                 </div>
+              </div>
+              <div className="max-h-[320px] overflow-auto custom-scrollbar">
+                 <table className="w-full text-left border-collapse">
+                    <thead className="sticky top-0 bg-slate-50 z-10">
+                       <tr className="border-b border-border shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                          <th className="px-8 py-3 type-label text-text-muted/60 font-bold uppercase tracking-widest">Rnd</th>
+                          <th className="px-4 py-3 type-label text-text-muted/60 font-bold uppercase tracking-widest">Node_ID</th>
+                          <th className="px-4 py-3 type-label text-text-muted/60 font-bold uppercase tracking-widest">LR</th>
+                          <th className="px-4 py-3 type-label text-text-muted/60 font-bold uppercase tracking-widest">Batch</th>
+                          <th className="px-4 py-3 type-label text-text-muted/60 font-bold uppercase tracking-widest text-right">Acc %</th>
+                          <th className="px-8 py-3 type-label text-text-muted/60 font-bold uppercase tracking-widest text-right">Status</th>
+                       </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/40">
+                       {roundHistory.length === 0 ? (
+                          <tr>
+                             <td colSpan="6" className="px-8 py-16 text-center text-[10px] uppercase tracking-[0.25em] text-text-muted/30 font-medium">
+                                Awaiting initial orchestration cycle...
+                             </td>
+                          </tr>
+                       ) : (
+                          [...roundHistory].reverse().map((row, idx) => (
+                             <tr key={idx} className="hover:bg-primary/[0.02] transition-colors group">
+                                <td className="px-8 py-4 font-mono text-[10px] text-text-main font-bold tabular-nums">#{row.round.toString().padStart(2, '0')}</td>
+                                <td className="px-4 py-4">
+                                   <div className="flex flex-col">
+                                      <span className="text-[10px] font-bold text-text-main font-mono">{row.client}</span>
+                                      <span className="text-[8px] text-text-muted/50 uppercase tracking-widest leading-tight">Secure_Node_v{idx + 1}</span>
+                                   </div>
+                                </td>
+                                <td className="px-4 py-4 font-mono text-[10px] text-text-muted tabular-nums">{row.lr.toFixed(3)}</td>
+                                <td className="px-4 py-4 font-mono text-[10px] text-text-muted tabular-nums">{row.batch}</td>
+                                <td className="px-4 py-4 text-right font-mono text-[10px] text-emerald-600 font-bold tabular-nums">{(row.acc * 100).toFixed(1)}%</td>
+                                <td className="px-8 py-4 text-right">
+                                   <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-[2px] text-[8px] font-bold uppercase tracking-widest">
+                                      <ShieldCheck size={8} />
+                                      <span>Verified</span>
+                                   </div>
+                                </td>
+                             </tr>
+                          ))
+                       )}
+                    </tbody>
+                 </table>
               </div>
            </div>
 

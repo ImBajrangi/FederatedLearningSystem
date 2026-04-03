@@ -27,6 +27,8 @@ export function useSecureFederated() {
     batch_size: 32,
     epochs: 1
   });
+  const [roundHistory, setRoundHistory] = useState([]); // NEW STATE
+  
   const ws = useRef(null);
 
   const updateClientStatus = useCallback((currentStatus, numActive = 2) => {
@@ -56,6 +58,7 @@ export function useSecureFederated() {
             if (state.chain) setBlockchain(state.chain);
             if (state.node_registry) setNodeRegistry(state.node_registry);
             if (state.hyperparams) setHyperparams(state.hyperparams);
+            if (state.round_history) setRoundHistory(state.round_history);
             updateClientStatus(state.status, state.clients_active);
             break;
           }
@@ -73,6 +76,7 @@ export function useSecureFederated() {
             if (payload.chain !== undefined) setBlockchain(payload.chain);
             if (payload.node_registry !== undefined) setNodeRegistry(payload.node_registry);
             if (payload.hyperparams) setHyperparams(payload.hyperparams);
+            if (payload.round_history) setRoundHistory(payload.round_history);
             break;
           }
 
@@ -156,6 +160,7 @@ export function useSecureFederated() {
     status,
     lastSync,
     nodeRegistry,
-    hyperparams
+    hyperparams,
+    roundHistory
   };
 }
