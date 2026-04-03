@@ -4,11 +4,25 @@ import numpy as np
 import sys
 import os
 
-# Add parent directory to sys.path to allow relative imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Add absolute project root (secure_federated_learning/Cybronites) to sys.path
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
 
-from client.model import MNISTNet, train, test
-from client.dataset import load_data
+try:
+    from client.model import MNISTNet, train, test
+    from client.dataset import load_data
+    from server.bridge import manager
+except ImportError:
+    try:
+        from model import MNISTNet, train, test
+        from dataset import load_data
+        from bridge import manager
+    except ImportError:
+        # Final fallback for complex sub-package resolutions
+        from model import MNISTNet, train, test
+        from dataset import load_data
+        from bridge import manager
 
 # Use CPU or GPU (CUDA/MPS)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -73,7 +87,7 @@ def main():
     
     # Start Flower client
     fl.client.start_numpy_client(
-        server_address="127.0.0.1:8080",
+        server_address="127.0.0.1:8089",
         client=FlowerClient(client_id, train_loader, test_loader),
     )
 

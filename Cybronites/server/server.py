@@ -5,11 +5,17 @@ import threading
 import asyncio
 import uvicorn
 
-# Add parent directory to sys.path to allow relative imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Add absolute project root (secure_federated_learning/Cybronites) to sys.path
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
 
-from server.bridge import app, manager, run_bridge
-from server.strategy import SecureFedAvg
+try:
+    from server.bridge import app, manager, run_bridge
+    from server.strategy import SecureFedAvg
+except ImportError:
+    from bridge import app, manager, run_bridge
+    from strategy import SecureFedAvg
 
 def main():
     """
@@ -34,7 +40,7 @@ def main():
 
     # 4. Start Flower server
     fl.server.start_server(
-        server_address="0.0.0.0:8080",
+        server_address="0.0.0.0:8089",
         config=fl.server.ServerConfig(num_rounds=20),
         strategy=strategy,
     )
@@ -52,7 +58,11 @@ if __name__ == "__main__":
         asyncio.set_event_loop(loop)
     
     # Broadcast initial waiting status
-    from server.bridge import manager
-    manager.latest_stats["status"] = "WAITING"
+    try:
+        from server.bridge import manager
+    except ImportError:
+        from bridge import manager
+    
+    manager.latest_stats["status"] = "IDLE"
     
     main()

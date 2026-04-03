@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const isProd = import.meta.env.PROD;
-const API_BASE_URL = isProd ? window.location.origin : 'http://127.0.0.1:8000';
+const API_BASE_URL = isProd ? window.location.origin : 'http://127.0.0.1:7869';
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const WS_URL = isProd ? `${protocol}//${window.location.host}/ws` : 'ws://127.0.0.1:8000/ws';
+const WS_URL = isProd ? `${protocol}//${window.location.host}/ws` : 'ws://127.0.0.1:7869/ws';
 
 export function useSecureFederated() {
   const [round, setRound] = useState(0);
@@ -34,20 +34,29 @@ export function useSecureFederated() {
           // Map trust_score or other metrics if needed
           // For now, let's derive clients from clients_active
           const numActive = message.stats.clients_active || 0;
+          const currentStatus = message.stats.status;
+
           setClients(Array.from({ length: 8 }, (_, i) => ({
             id: `P-${i.toString().padStart(2, '0')}`,
             org: ['Hospital', 'FinTech', 'AutoDrive', 'Retail', 'Logistics', 'HealthAI', 'EdTech', 'GovNet'][i % 8],
-            status: i < numActive ? 'ACTIVE' : 'IDLE',
+            status: i < numActive ? (['TRAINING', 'EVALUATING', 'AGGREGATING'].includes(currentStatus) ? 'BUSY' : 'ACTIVE') : 'IDLE',
             reputation: 100
           })));
 
           // Synchronize actual accuracy from the AI Guardian Bridge
           if (message.stats.accuracy !== undefined) {
              setAccuracyHistory(prev => {
-                const newAcc = message.stats.accuracy;
-                // Add the new accuracy point if it's a new round!
-                if (message.stats.round >= prev.length) {
-                   return [...prev, parseFloat(newAcc.toFixed(4))];
+                const newAcc = parseFloat(message.stats.accuracy.toFixed(4));
+                const currentRound = message.stats.round;
+                
+                // If it's a new round, append it. 
+                // If the round already exists, update the last point (for intra-round refinements).
+                if (currentRound > prev.length) {
+                   return [...prev, newAcc];
+                } else if (currentRound === prev.length && prev.length > 0) {
+                   const updated = [...prev];
+                   updated[updated.length - 1] = newAcc;
+                   return updated;
                 }
                 return prev;
              });

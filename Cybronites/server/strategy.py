@@ -19,14 +19,35 @@ import time
 try:
     from server.bridge import manager
 except ImportError:
-    from bridge import manager
+    try:
+        from bridge import manager
+    except ImportError:
+        import sys
+        import os
+        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+        from bridge import manager
 
 class SecureFedAvg(fl.server.strategy.FedAvg):
     """
     Custom Flower Strategy that extends FedAvg with:
     1. SHA-256 weight hashing for each client.
     2. Statistical anomaly detection to filter malicious updates.
+    3. Real-time status broadcasting to the AI Guardian Bridge.
     """
+    def configure_fit(
+        self, server_round: int, parameters: Parameters, client_manager: fl.server.client_manager.ClientManager
+    ) -> List[Tuple[ClientProxy, fl.common.FitIns]]:
+        """Broadcast 'TRAINING' status when the round starts."""
+        manager.broadcast_sync({"type": "status_update", "status": "TRAINING"})
+        return super().configure_fit(server_round, parameters, client_manager)
+
+    def configure_evaluate(
+        self, server_round: int, parameters: Parameters, client_manager: fl.server.client_manager.ClientManager
+    ) -> List[Tuple[ClientProxy, fl.common.EvaluateIns]]:
+        """Broadcast 'EVALUATING' status when evaluation starts."""
+        manager.broadcast_sync({"type": "status_update", "status": "EVALUATING"})
+        return super().configure_evaluate(server_round, parameters, client_manager)
+
     def aggregate_fit(
         self,
         server_round: int,

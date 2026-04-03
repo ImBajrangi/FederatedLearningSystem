@@ -35,8 +35,8 @@ export const MetricsChart = ({ data }) => {
         </div>
       </div>
 
-      <div className="h-[240px] w-full min-h-[240px] relative overflow-hidden">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[240px] w-full min-h-[240px] relative overflow-hidden" style={{ minWidth: 0 }}>
+        <ResponsiveContainer width="99%" height="100%" debounce={50}>
           <AreaChart
             data={chartData}
             margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
