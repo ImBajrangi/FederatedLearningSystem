@@ -35,11 +35,12 @@ export const MetricsChart = ({ data }) => {
         </div>
       </div>
 
-      <div className="h-[240px] w-full">
-        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+      <div className="h-[240px] w-full min-h-[240px] relative overflow-hidden">
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
             margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
+            aspect={2.5}
           >
             <defs>
               <linearGradient id="colorAcc" x1="0" y1="0" x2="0" y2="1">

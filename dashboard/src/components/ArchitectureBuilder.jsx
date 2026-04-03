@@ -162,7 +162,7 @@ const ConnectionLine = ({ from, to, onDelete }) => {
 export const ArchitectureBuilder = ({ onAction }) => {
   const [activeNode, setActiveNode] = useState('global');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [viewScale, setViewScale] = useState(0.8);
+  const [viewScale, setViewScale] = useState(0.7); // Bumping up default zoom
   const [isConnecting, setIsConnecting] = useState(null); // { from, type }
   
   const [positions, setPositions] = useState({
@@ -239,7 +239,7 @@ export const ArchitectureBuilder = ({ onAction }) => {
   };
 
   return (
-    <div className="flex relative h-full bg-white selection:bg-primary/10 overflow-hidden" style={{ height: 'calc(100vh - 64px)' }}>
+    <div className="flex relative h-full bg-white selection:bg-primary/10 overflow-hidden" style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
       {/* ZOOM CONTROLS (Floating Institutional Hub) */}
       <div className="absolute bottom-10 right-10 flex flex-col gap-2 z-50">
           <div className="p-1 px-4 bg-white/90 border border-border shadow-xl backdrop-blur-md flex flex-col gap-1">
@@ -296,9 +296,9 @@ export const ArchitectureBuilder = ({ onAction }) => {
       </aside>
 
       {/* 2. Main Canvas Area (Zoomable 2D Space) */}
-      <main className="flex-1 relative bg-grid overflow-hidden bg-bg-main" onClick={() => setIsConnecting(null)}>
+      <main className="flex-1 relative bg-grid overflow-hidden bg-bg-main cursor-crosshair" onClick={() => setIsConnecting(null)}>
          {/* Canvas Controls Header */}
-         <div className="absolute top-8 left-10 flex items-center gap-6 z-20">
+         <div className="absolute top-8 left-10 flex items-center gap-6 z-30">
             <div className="px-5 py-2.5 border border-border bg-white shadow-md flex items-center gap-4">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span className="type-label tracking-[0.2em] opacity-60">Architecture Workspace v2.5 // Blueprint Live</span>

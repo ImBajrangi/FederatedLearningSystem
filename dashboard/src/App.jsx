@@ -149,10 +149,12 @@ function App() {
                   <button 
                     onClick={startSimulation}
                     disabled={isActive || !isConnected}
-                    className={`institutional-btn-primary flex items-center gap-3 shadow-lg active:scale-95 transition-all ${(!isConnected || isActive) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                    className={`institutional-btn-primary flex items-center gap-4 shadow-lg active:scale-95 transition-all px-8 ${(!isConnected || isActive) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                   >
-                    <Play size={15} className={isActive ? 'animate-pulse' : ''} />
-                    <span className="tracking-[0.2em]">{status === 'IDLE' ? 'Open Round' : status === 'WAITING' ? 'Aggregate' : 'Starting...'}</span>
+                    <Play size={14} className={isActive ? 'animate-pulse' : ''} />
+                    <span className="tracking-[0.25em]">
+                      {status === 'IDLE' ? 'Initiate Orchestration' : status === 'WAITING' ? 'Synchronize Weights' : 'Processing...'}
+                    </span>
                   </button>
                   <button 
                     onClick={clearSimulation}
