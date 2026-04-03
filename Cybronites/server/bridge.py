@@ -90,16 +90,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.websocket("/ws")
+@app.websocket("/bridge/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    logger.info(f"WS [REQUEST] Origin: {websocket.headers.get('origin')} | Path: {websocket.url.path}")
     await manager.connect(websocket)
+    logger.info("WS [ESTABLISHED] Handshake accepted.")
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-    except Exception:
+        logger.info("WS [DISCONNECT] Client closed connection.")
+    except Exception as e:
         manager.disconnect(websocket)
+        logger.error(f"WS [ERROR] {e}")
 
 @app.get("/status")
 async def get_status():
@@ -126,4 +130,4 @@ def run_bridge():
     """Entry point for Uvicorn."""
     import uvicorn
     port = int(os.environ.get("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level="error")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")

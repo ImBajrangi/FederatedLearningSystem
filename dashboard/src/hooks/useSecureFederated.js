@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const isProd = import.meta.env.PROD;
-const API_BASE_URL = isProd ? window.location.origin : '/api';
-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const WS_URL = isProd ? `${protocol}//${window.location.host}/ws` : `${protocol}//${window.location.host}/ws`;
+const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7880';
+const API_BASE_URL = isProd ? window.location.origin : `http://localhost:${BACKEND_PORT}`;
+const WS_URL = isProd ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/bridge/ws` : `ws://localhost:${BACKEND_PORT}/bridge/ws`;
 
 export function useSecureFederated() {
   const [round, setRound] = useState(0);
@@ -18,7 +18,6 @@ export function useSecureFederated() {
   const [isConnected, setIsConnected] = useState(false);
   const [status, setStatus] = useState('IDLE');
   const [nodeRegistry, setNodeRegistry] = useState({});
-
   const ws = useRef(null);
 
   const onMessage = useCallback((event) => {

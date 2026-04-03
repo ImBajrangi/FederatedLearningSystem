@@ -39,8 +39,10 @@ def main():
     )
 
     # 4. Start Flower server
+    flower_port = int(os.environ.get("FLOWER_PORT", 8095))
+    print(f"AI GUARDIAN | Flower gRPC on port {flower_port}")
     fl.server.start_server(
-        server_address="0.0.0.0:8090",
+        server_address=f"0.0.0.0:{flower_port}",
         config=fl.server.ServerConfig(num_rounds=20),
         strategy=strategy,
     )

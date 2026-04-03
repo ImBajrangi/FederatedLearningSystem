@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const backendPort = env.VITE_BACKEND_PORT || '8000';
+  console.log(`\n[AI GUARDIAN] PROXY TARGET DETECTED: http://localhost:${backendPort}\n`);
   
   return {
     plugins: [react()],
@@ -15,9 +16,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
-        '/ws': {
-          target: `ws://localhost:${backendPort}`,
-          ws: true
+        '/bridge/ws': {
+          target: `http://localhost:${backendPort}`,
+          ws: true,
+          changeOrigin: true,
+          secure: false
         }
       }
     }

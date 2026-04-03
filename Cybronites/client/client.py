@@ -86,8 +86,9 @@ def main():
     train_loader, test_loader = load_data(client_id=client_id, num_clients=num_clients)
     
     # Start Flower client
+    flower_port = int(os.environ.get("FLOWER_PORT", 8095))
     fl.client.start_numpy_client(
-        server_address="127.0.0.1:8089",
+        server_address=f"127.0.0.1:{flower_port}",
         client=FlowerClient(client_id, train_loader, test_loader),
     )
 
