@@ -1,4 +1,7 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+import os
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any
 import json
@@ -110,7 +113,17 @@ async def initiate_round():
 async def aggregate():
     return {"message": "Aggregation triggered"}
 
+# Production Static File Serving
+# Place this AFTER all routes (ws, status, etc.) to ensure they take priority
+frontend_path = os.path.join(os.getcwd(), "dist")
+if os.path.exists(frontend_path):
+    # Mount frontend dist but with an SPA fallback
+    app.mount("/", StaticFiles(directory=frontend_path, html=True, follow_symlinks=True), name="static")
+else:
+    logger.warning(f"Frontend dist directory not found at {frontend_path}")
+
 def run_bridge():
     """Entry point for Uvicorn."""
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="error")
+    port = int(os.environ.get("PORT", 7860))
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="error")

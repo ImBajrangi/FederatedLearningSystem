@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
-const WS_URL = 'ws://127.0.0.1:8000/ws';
+const isProd = import.meta.env.PROD;
+const API_BASE_URL = isProd ? window.location.origin : 'http://127.0.0.1:8000';
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const WS_URL = isProd ? `${protocol}//${window.location.host}/ws` : 'ws://127.0.0.1:8000/ws';
 
 export function useSecureFederated() {
   const [round, setRound] = useState(0);

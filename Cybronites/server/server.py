@@ -8,13 +8,8 @@ import uvicorn
 # Add parent directory to sys.path to allow relative imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from server.bridge import app, manager, run_bridge
 from server.strategy import SecureFedAvg
-from server.bridge import app, manager
-
-def run_bridge():
-    """Starts the FastAPI WebSocket bridge."""
-    print("AI GUARDIAN | STARTING DASHBOARD BRIDGE...")
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="error")
 
 def main():
     """
