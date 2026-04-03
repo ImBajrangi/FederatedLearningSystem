@@ -279,10 +279,10 @@ export const ArchitectureBuilder = ({ onAction }) => {
                 "Secure Layers": ['Homomorphic', 'DP-Optimized', 'TEE-Box']
              }).map(([cat, items]) => (
                 <div key={cat}>
-                    <div className="flex items-center justify-between mb-4">
-                       <span className="text-[9px] font-extrabold text-text-main uppercase tracking-widest opacity-60 underline underline-offset-4 decoration-primary/20">{cat}</span>
+                    <div className="flex items-center justify-between mb-5">
+                       <span className="text-[10px] font-medium text-text-muted uppercase tracking-[0.25em]">{cat}</span>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                        {items.map((name) => (
                           <div key={name} className="p-3 border border-border bg-white text-[10px] font-bold text-text-muted uppercase tracking-tight flex items-center gap-3 cursor-move hover:border-primary hover:text-primary transition-all shadow-sm active:shadow-inner-sm">
                              <div className="w-4 h-4 flex items-center justify-center opacity-30"><Layers size={13} /></div>
@@ -374,37 +374,53 @@ export const ArchitectureBuilder = ({ onAction }) => {
                </div>
                
                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                     <div className="p-3 bg-white border border-border text-primary shadow-sm">
+                  <div className="flex items-center gap-6">
+                     <div className="p-4 bg-white border border-border text-primary shadow-sm">
                         {current.icon}
                      </div>
-                     <div>
-                        <h2 className="type-l2 serif text-text-main pr-4">{current.title}</h2>
-                        <span className="text-[9px] font-bold text-primary/60 uppercase tracking-widest">{current.type}</span>
+                     <div className="space-y-1">
+                        <h2 className="type-l2 serif text-text-main pr-4 font-medium tracking-tight h-8 truncate">{current.title}</h2>
+                        <div className="flex items-center gap-3">
+                           <div className="w-1.5 h-[1px] bg-primary/30" />
+                           <span className="text-[10px] font-light text-primary/60 uppercase tracking-[0.2em]">{current.type}</span>
+                        </div>
                      </div>
                   </div>
                </div>
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
-               <motion.div key={activeNode} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-12 pb-32">
-                  <div className="space-y-8">
-                     <h3 className="text-[9px] font-bold uppercase tracking-widest text-text-main pb-3 border-b border-border/80">Operational Matrix</h3>
-                     <div className="space-y-7">
+                <motion.div key={activeNode} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-14 pb-32">
+                  <div className="space-y-10">
+                     <div className="flex items-center gap-3 mb-6">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-text-main">Operational Matrix</span>
+                        <div className="h-px flex-1 bg-border/40" />
+                     </div>
+                     
+                     <div className="space-y-8">
                         {current.params.map((p, i) => (
-                           <div key={i}>
-                              <label className="block text-[8px] font-bold text-text-muted uppercase tracking-[0.2em] mb-2 pl-1">{p.label}</label>
-                              <div className="relative group">
-                                 <input readOnly value={p.value} className="w-full bg-white border border-border px-4 py-3.5 text-[10px] font-bold font-mono text-text-main" />
+                           <div key={i} className="group">
+                              <label className="block text-[9px] font-light text-text-muted uppercase tracking-[0.25em] mb-2.5 ml-0.5">{p.label}</label>
+                              <div className="relative">
+                                 <div className="absolute inset-y-0 left-0 w-[2px] bg-primary/10 group-hover:bg-primary/40 transition-colors" />
+                                 <input 
+                                    readOnly 
+                                    value={p.value} 
+                                    className="w-full bg-bg-surface border-none pl-5 py-2.5 text-[11px] font-semibold font-sans text-text-main focus:outline-none" 
+                                 />
                               </div>
                            </div>
                         ))}
                      </div>
                   </div>
-                  <div className="space-y-8">
-                     <h3 className="text-[9px] font-bold uppercase tracking-widest text-text-main pb-3 border-b border-border/80">Calculus Formulation</h3>
-                     <div className="bg-bg-main border border-border p-6 flex flex-col items-center justify-center min-h-[130px] shadow-sm">
-                        <div className="text-[12px] font-mono text-primary font-bold text-center">{current.math}</div>
+                  <div className="space-y-10">
+                     <div className="flex items-center gap-3 mb-6">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-text-main">Calculus Formulation</span>
+                        <div className="h-px flex-1 bg-border/40" />
+                     </div>
+                     <div className="bg-bg-main/40 border border-border p-10 flex flex-col items-center justify-center min-h-[140px] shadow-inner-sm relative group">
+                        <div className="absolute top-2 left-2 opacity-5 text-primary"><Code size={32} /></div>
+                        <div className="text-[13px] font-mono text-text-main font-medium text-center leading-relaxed">{current.math}</div>
                      </div>
                   </div>
                </motion.div>

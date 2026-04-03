@@ -5,10 +5,13 @@ import {
 import { Activity } from 'lucide-react';
 
 export const MetricsChart = ({ data }) => {
-  const chartData = data.map((val, index) => ({
-    round: index,
-    accuracy: val * 100,
-  }));
+  // Map raw floats to charted objects. If empty, show a zero-baseline.
+  const chartData = data.length > 0 
+    ? data.map((val, index) => ({
+        round: index + 1, // Start labelling from Round 1
+        accuracy: val * 100,
+      }))
+    : [{ round: 0, accuracy: 0 }];
 
   return (
     <div className="w-full">
@@ -16,7 +19,7 @@ export const MetricsChart = ({ data }) => {
         <div className="flex items-center gap-3">
           <Activity size={13} className="text-primary/70" />
           <h3 className="type-l3 text-text-main tracking-tight">
-            Real-time Training Analytics
+            Institutional Training Analysis
           </h3>
         </div>
         <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-1 font-mono">

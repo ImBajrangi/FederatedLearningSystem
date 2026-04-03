@@ -12,7 +12,7 @@ export function useSecureFederated() {
     { index: 0, hash: '0x0000_GENESIS', transactions: [] }
   ]);
   const [clients, setClients] = useState([]);
-  const [accuracyHistory, setAccuracyHistory] = useState([0.12]);
+  const [accuracyHistory, setAccuracyHistory] = useState([]);
   const [rejectedCount, setRejectedCount] = useState(0);
   const [logs, setLogs] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
