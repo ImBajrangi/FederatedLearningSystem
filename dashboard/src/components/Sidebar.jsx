@@ -23,9 +23,25 @@ const MetricItem = ({ label, value }) => (
   </div>
 );
 
-export const Sidebar = ({ currentView, setView, clients }) => {
+export const Sidebar = ({ currentView, setView, clients, width, onResize }) => {
   return (
-    <aside className="shell-sidebar">
+    <aside className="shell-sidebar" style={{ width: width || 280, flexShrink: 0, position: 'relative' }}>
+      {/* VS Code style resize handle on right edge */}
+      <div
+        onMouseDown={onResize}
+        style={{
+          position: 'absolute', top: 0, right: -3, bottom: 0, width: 6,
+          cursor: 'col-resize', zIndex: 100,
+        }}
+      >
+        <div style={{
+          position: 'absolute', top: 0, bottom: 0, left: 2, width: 2,
+          background: 'transparent', transition: 'background 0.2s',
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = '#3b82f6'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+        />
+      </div>
       {/* Sidebar Navigation */}
       <div className="sidebar-nav-scroll custom-scrollbar">
          <div className="p-10 border-b border-border bg-bg-main/50">

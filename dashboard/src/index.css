@@ -164,7 +164,8 @@ h4 {
 .shell-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background-color: var(--bg-main);
 }
 

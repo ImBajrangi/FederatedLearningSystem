@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { ArchitectureBuilder } from './components/ArchitectureBuilder';
@@ -31,39 +31,51 @@ function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [toasts, setToasts] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(280);
-  const [footerHeight, setFooterHeight] = useState(180);
-  const [isResizing, setIsResizing] = useState(false);
+  const [footerHeight, setFooterHeight] = useState(280);
+  const resizingRef = useRef(null); // 'terminal' | 'sidebar' | null
 
-  const startResizing = useCallback(() => {
-    setIsResizing(true);
-  }, []);
-
-  const stopResizing = useCallback(() => {
-    setIsResizing(false);
-  }, []);
-
-  const resize = useCallback((e) => {
-    if (isResizing) {
-      const newHeight = window.innerHeight - e.clientY;
-      if (newHeight >= 64 && newHeight <= window.innerHeight * 0.7) {
-        setFooterHeight(newHeight);
-      }
-    }
-  }, [isResizing]);
-
+  // Universal resize handler using refs (no stale closures)
   useEffect(() => {
-    if (isResizing) {
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', stopResizing);
-    } else {
-      window.removeEventListener('mousemove', resize);
-      window.removeEventListener('mouseup', stopResizing);
-    }
-    return () => {
-      window.removeEventListener('mousemove', resize);
-      window.removeEventListener('mouseup', stopResizing);
+    const onMouseMove = (e) => {
+      if (!resizingRef.current) return;
+      e.preventDefault();
+      if (resizingRef.current === 'terminal') {
+        const newH = window.innerHeight - e.clientY;
+        if (newH >= 80 && newH <= window.innerHeight * 0.7) {
+          setFooterHeight(newH);
+        }
+      } else if (resizingRef.current === 'sidebar') {
+        if (e.clientX >= 160 && e.clientX <= 500) {
+          setSidebarWidth(e.clientX);
+        }
+      }
     };
-  }, [isResizing, resize, stopResizing]);
+    const onMouseUp = () => {
+      resizingRef.current = null;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, []);
+
+  const startTerminalResize = useCallback((e) => {
+    e.preventDefault();
+    resizingRef.current = 'terminal';
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
+
+  const startSidebarResize = useCallback((e) => {
+    e.preventDefault();
+    resizingRef.current = 'sidebar';
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
 
   const addToast = (msg, type = 'success') => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -87,27 +99,6 @@ function App() {
     } else {
       addToast('Command failed. Check backend logs.', 'error');
     }
-  };
-
-  const initSidebarResize = (e) => {
-    e.preventDefault();
-    const startX = e.clientX;
-    const startW = sidebarWidth;
-
-    const onMouseMove = (moveEvent) => {
-      const newW = Math.min(Math.max(200, startW + (moveEvent.clientX - startX)), 480);
-      setSidebarWidth(newW);
-    };
-
-    const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-      document.body.style.cursor = 'default';
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-    document.body.style.cursor = 'col-resize';
   };
 
   const renderView = () => {
@@ -242,28 +233,28 @@ function App() {
   };
 
   return (
-    <div className={`shell-container selection:bg-primary/10 bg-white ${isResizing ? 'cursor-ns-resize select-none' : ''}`}>
+    <div className={`shell-container selection:bg-primary/10 bg-white`}>
       <Header status={isConnected ? (isActive ? 'SYSTEM_RUNNING' : status || 'CONNECTED') : 'OFFLINE'} />
 
-      <div className="flex flex-1 bg-white">
+      <div className="flex flex-1" style={{ overflow: 'hidden' }}>
         <Sidebar
           currentView={currentView}
           setView={setCurrentView}
           clients={clients}
           width={sidebarWidth}
-          onResize={initSidebarResize}
+          onResize={startSidebarResize}
         />
 
-        <main className="flex-1 flex flex-col min-w-0 bg-white">
-          <div className="flex-1 flex flex-col bg-white">
+        <main className="flex-1 flex flex-col" style={{ minWidth: 0, overflow: 'hidden' }}>
+          <div className="flex-1" style={{ overflowY: 'auto', minHeight: 0 }}>
             {renderView()}
           </div>
 
-          <div style={{ height: footerHeight }}>
+          <div style={{ height: footerHeight, flexShrink: 0 }}>
             <Terminal
               logs={logs}
-              onResize={startResizing}
-              isResizing={isResizing}
+              onResize={startTerminalResize}
+              isResizing={!!resizingRef.current}
               nodeRegistry={nodeRegistry}
               onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
             />

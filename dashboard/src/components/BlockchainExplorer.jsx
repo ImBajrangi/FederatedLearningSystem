@@ -22,16 +22,16 @@ export const BlockchainRibbon = ({ blockchain }) => {
           </span>
         </div>
         <div className="flex items-center gap-8">
-           <div className="flex items-center gap-4">
-             <div className="flex items-center gap-2">
-               <Database size={13} className="text-primary/70" />
-               <h3 className="type-l3 text-white">Blockchain Ledger</h3>
-             </div>
-             <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10">
-               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-               <span className="type-label text-emerald-400">Ledger Synchronized</span>
-             </div>
-           </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Database size={13} className="text-primary/70" />
+              <h3 className="type-l3 text-white">Blockchain Ledger</h3>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="type-label text-emerald-400">Ledger Synchronized</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -45,28 +45,27 @@ export const BlockchainRibbon = ({ blockchain }) => {
             key={`${block.index}-${block.hash}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`min-w-[200px] h-full px-6 py-4 flex flex-col justify-center gap-3 border-r border-white/5 transition-all relative group cursor-default ${
-              block.index === 0 ? 'bg-primary/5' : ''
-            }`}
+            className={`min-w-[200px] h-full px-6 py-4 flex flex-col justify-center gap-3 border-r border-white/5 transition-all relative group cursor-default ${block.index === 0 ? 'bg-primary/5' : ''
+              }`}
           >
             <div className="flex justify-between items-center">
-               <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/60 serif leading-none">
-                 {block.index === 0 ? 'Genesis' : `Block ${block.index.toString().padStart(4, '0')}`}
-               </span>
-               <div className={`w-1 h-1 rounded-full ${block.index === 0 ? 'bg-primary shadow-[0_0_8px_var(--primary-glow)]' : 'bg-white/10'}`} />
+              <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/60 serif leading-none">
+                {block.index === 0 ? 'Genesis' : `Block ${block.index.toString().padStart(4, '0')}`}
+              </span>
+              <div className={`w-1 h-1 rounded-full ${block.index === 0 ? 'bg-primary shadow-[0_0_8px_var(--primary-glow)]' : 'bg-white/10'}`} />
             </div>
 
             <div className="space-y-2">
-               <div className="text-[8px] font-mono font-bold tracking-tighter text-white/20 truncate uppercase">
-                 {block.hash !== 'null' && block.hash.length > 10 ? block.hash.slice(0, 16) : '0x00...SEED'}
-               </div>
-               <div className="w-full h-[1px] bg-white/5 overflow-hidden">
-                 <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: '100%' }}
-                    className="h-full bg-primary/30"
-                 />
-               </div>
+              <div className="text-[8px] font-mono font-bold tracking-tighter text-white/20 truncate uppercase">
+                {block.hash !== 'null' && block.hash.length > 10 ? block.hash.slice(0, 16) : '0x00...SEED'}
+              </div>
+              <div className="w-full h-[1px] bg-white/5 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '100%' }}
+                  className="h-full bg-primary/30"
+                />
+              </div>
             </div>
 
             <div className="flex justify-between items-center">
@@ -85,7 +84,7 @@ export const BlockchainRibbon = ({ blockchain }) => {
           </motion.div>
         ))}
       </div>
-      
+
       <style>{`
         .custom-scrollbar-ribbon::-webkit-scrollbar { height: 2px; }
         .custom-scrollbar-ribbon::-webkit-scrollbar-track { background: #000; }
