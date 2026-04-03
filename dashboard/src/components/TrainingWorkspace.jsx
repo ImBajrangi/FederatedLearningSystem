@@ -13,7 +13,7 @@ const ConfigInput = ({ label, value, onChange }) => (
   </div>
 );
 
-export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams, roundHistory = [] }) => {
+export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams, roundHistory = [], modelArchitecture }) => {
    const defaultHyperparams = {
       learning_rate: 0.01,
       batch_size: 32,
@@ -129,24 +129,12 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
                   <div className="flex items-center gap-3">
                      <Code size={13} className="text-primary/70" />
                      <span className="type-l3 text-text-main">Model Architecture</span>
-                     <span className="px-2 py-0.5 bg-border type-label text-text-muted">model.py</span>
+                     <span className="px-2 py-0.5 bg-border type-label text-text-muted tracking-widest uppercase">model.py</span>
                   </div>
                </div>
-              <div className="flex-1 overflow-auto bg-white p-8 font-mono text-xs leading-relaxed selection:bg-primary/10">
-                 <pre className="text-text-main opacity-80">
-                   <span className="text-blue-600">import</span> torch<br/>
-                   <span className="text-blue-600">import</span> torch.nn <span className="text-blue-600">as</span> nn<br/><br/>
-                   <span className="text-purple-600">class</span> <span className="text-blue-900">SimpleMLP</span>(nn.Module):<br/>
-                   &nbsp;&nbsp;<span className="text-blue-600">def</span> <span className="text-blue-900">__init__</span>(self, input_size):<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;super().__init__()<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;self.fc1 = nn.Linear(input_size, 128)<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;self.relu = nn.ReLU()<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;self.fc2 = nn.Linear(128, 10)<br/><br/>
-                   &nbsp;&nbsp;<span className="text-blue-600">def</span> <span className="text-blue-900">forward</span>(self, x):<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;out = self.fc1(x)<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;out = self.relu(out)<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;out = self.fc2(out)<br/>
-                   &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-blue-600">return</span> out
+              <div className="flex-1 overflow-auto bg-white p-8 font-mono text-[10px] leading-relaxed selection:bg-primary/10 transition-all">
+                 <pre className="text-text-main opacity-80 whitespace-pre scroll-smooth">
+                    {modelArchitecture}
                  </pre>
               </div>
            </div>

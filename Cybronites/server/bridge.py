@@ -29,9 +29,24 @@ class ConnectionManager:
             "last_hash": "N/A",
             "accuracy_history": [],
             "loss_history": [],
-            "chain": []
+            "chain": [],
+            "model_architecture": "# Loading Source Code..." # DYNAMIC CODE PLACEHOLDER
         }
         self.log_buffer: List[str] = []
+
+    def load_model_code(self):
+        """Reads Cybronites/client/model.py and injects it into local state."""
+        try:
+            # Check relative to root of execution (run_backend.py)
+            model_path = os.path.join(os.getcwd(), "Cybronites", "client", "model.py")
+            if os.path.exists(model_path):
+                with open(model_path, "r") as f:
+                    content = f.read()
+                    # Capture MNISTNet class and main imports
+                    self.state["model_architecture"] = content
+                    logger.info("Model source code loaded for dashboard telemetry.")
+        except Exception as e:
+            logger.error(f"Failed to load model source: {e}")
 
     async def connect(self, websocket: WebSocket):
         try:
@@ -43,6 +58,9 @@ class ConnectionManager:
                     self.loop = asyncio.get_running_loop()
                 except RuntimeError:
                     pass
+            
+            # Fresh read of the model code
+            self.load_model_code()
                 
             # Send initial state snapshot
             await self.send_json({
@@ -64,7 +82,6 @@ class ConnectionManager:
     async def send_json(self, data: dict, websocket: WebSocket):
         """Defensive JSON delivery."""
         try:
-            # We use jsonable_encoder implicitly but we'll try to catch serialization errors here
             await websocket.send_json(data)
         except Exception as e:
             logger.error(f"WS Serialization/Send Error: {e}")
@@ -120,6 +137,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     bridge.loop = asyncio.get_running_loop()
+    bridge.load_model_code()
     logger.info("Guardian Bridge Event Loop context captured.")
 
 @app.websocket("/ws")
