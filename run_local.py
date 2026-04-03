@@ -26,7 +26,16 @@ def main():
     env = os.environ.copy()
     cwd = os.getcwd()
     env["PYTHONPATH"] = f"{cwd}/Cybronites:{env.get('PYTHONPATH', '')}"
-    env["PORT"] = "7869" # Port 7869 for local dev stability
+    env["PORT"] = "7870" # Port 7870 for local dev stability
+
+    # Inject port into dashboard environment for dynamic detection (No hardcoding)
+    try:
+        env_path = os.path.join(cwd, "dashboard", ".env.local")
+        with open(env_path, "w") as f:
+            f.write(f"VITE_BACKEND_PORT={env['PORT']}\n")
+        print(f"AI GUARDIAN | SYNCED PORT {env['PORT']} TO FRONTEND ENV.")
+    except Exception as e:
+        print(f"AI GUARDIAN | WARNING: FAILED TO SYNC PORT: {e}")
 
     # Use the local virtual environment Python
     python_path = os.path.join(cwd, "Cybronites/venv_mac/bin/python3")
@@ -34,7 +43,7 @@ def main():
         python_path = sys.executable # Fallback
 
     # 1. Launch Server & Bridge
-    print("AI GUARDIAN | STARTING ORCHESTRATOR & BRIDGE (Port 7869)...")
+    print("AI GUARDIAN | STARTING ORCHESTRATOR & BRIDGE (Port 7870)...")
     log_file = open("backend.log", "w")
     server_proc = subprocess.Popen(
         [python_path, "-m", "server.server"],
@@ -62,7 +71,7 @@ def main():
         processes.append(client_proc)
         time.sleep(1)
 
-    print("AI GUARDIAN | ALL NODES ACTIVE. MONITORING AT http://127.0.0.1:7869")
+    print("AI GUARDIAN | ALL NODES ACTIVE. MONITORING AT http://localhost:7870")
     print("AI GUARDIAN | PRESS CTRL+C TO TERMINATE")
 
     # Keep alive

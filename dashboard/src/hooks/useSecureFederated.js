@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const isProd = import.meta.env.PROD;
-const API_BASE_URL = isProd ? window.location.origin : 'http://127.0.0.1:7869';
+const API_BASE_URL = isProd ? window.location.origin : '/api';
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const WS_URL = isProd ? `${protocol}//${window.location.host}/ws` : 'ws://127.0.0.1:7869/ws';
+const WS_URL = isProd ? `${protocol}//${window.location.host}/ws` : `${protocol}//${window.location.host}/ws`;
 
 export function useSecureFederated() {
   const [round, setRound] = useState(0);
@@ -17,6 +17,7 @@ export function useSecureFederated() {
   const [logs, setLogs] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [status, setStatus] = useState('IDLE');
+  const [nodeRegistry, setNodeRegistry] = useState({});
 
   const ws = useRef(null);
 
@@ -78,6 +79,18 @@ export function useSecureFederated() {
         const dataStr = typeof message.data === 'object' 
             ? `Client ${message.data.client_id} [${message.data.status}]: Hash ${message.data.hash}`
             : message.data;
+
+        if (typeof message.data === 'object' && message.data.client_id) {
+           setNodeRegistry(prev => ({
+              ...prev,
+              [message.data.client_id]: {
+                 status: message.data.status,
+                 hash: message.data.hash,
+                 timestamp: message.data.timestamp
+              }
+           }));
+        }
+
         const isError = typeof message.data === 'object' 
             ? message.data.status === 'REJECTED' 
             : String(message.data).includes('Rejected');
@@ -164,6 +177,7 @@ export function useSecureFederated() {
     clearSimulation,
     setIsActive,
     isConnected,
-    status
+    status,
+    nodeRegistry
   };
 }

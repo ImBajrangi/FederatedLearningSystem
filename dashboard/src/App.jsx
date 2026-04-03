@@ -24,7 +24,8 @@ function App() {
     setIsActive,
     clearSimulation,
     isConnected,
-    status
+    status,
+    nodeRegistry
   } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState('dashboard');
@@ -241,7 +242,7 @@ function App() {
   };
 
   return (
-    <div className="shell-container selection:bg-primary/10 bg-white">
+    <div className={`shell-container selection:bg-primary/10 bg-white ${isResizing ? 'cursor-ns-resize select-none' : ''}`}>
       <Header status={isConnected ? (isActive ? 'SYSTEM_RUNNING' : status || 'CONNECTED') : 'OFFLINE'} />
 
       <div className="flex flex-1 bg-white">
@@ -263,6 +264,7 @@ function App() {
               logs={logs}
               onResize={startResizing}
               isResizing={isResizing}
+              nodeRegistry={nodeRegistry}
               onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
             />
           </div>

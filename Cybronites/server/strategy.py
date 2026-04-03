@@ -37,7 +37,18 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
     def configure_fit(
         self, server_round: int, parameters: Parameters, client_manager: fl.server.client_manager.ClientManager
     ) -> List[Tuple[ClientProxy, fl.common.FitIns]]:
-        """Broadcast 'TRAINING' status when the round starts."""
+        """Broadcast 'TRAINING' status and update client-specific registry."""
+        clients = client_manager.sample(num_clients=client_manager.num_available())
+        for client in clients:
+            manager.broadcast_sync({
+                "type": "log", 
+                "data": {
+                    "client_id": client.cid,
+                    "status": "TRAINING",
+                    "timestamp": time.time(),
+                    "hash": "---"
+                }
+            })
         manager.broadcast_sync({"type": "status_update", "status": "TRAINING"})
         return super().configure_fit(server_round, parameters, client_manager)
 
@@ -66,7 +77,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             # Broadcast Log to Dashboard
             log_entry = {
                 "client_id": client.cid,
-                "status": "ACCEPTED",
+                "status": "COMPLETED",
                 "timestamp": time.time(),
                 "hash": current_hash[:16] + "..."
             }
