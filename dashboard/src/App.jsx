@@ -30,7 +30,9 @@ function App() {
     nodeRegistry,
     hyperparams,
     roundHistory,
-    modelArchitecture
+    modelArchitecture,
+    shards,
+    clientsActive
   } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState('dashboard');
@@ -234,7 +236,7 @@ function App() {
       case 'training':
         return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} hyperparams={hyperparams} roundHistory={roundHistory} modelArchitecture={modelArchitecture} />;
       case 'datasets':
-        return <DatasetExplorer />;
+        return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
       default:
         return <div>View not found</div>;
     }

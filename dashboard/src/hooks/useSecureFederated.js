@@ -10,6 +10,7 @@ const WS_URL = isProd
 export function useSecureFederated() {
   const [round, setRound] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const [clientsActive, setClientsActive] = useState(0); 
   const [blockchain, setBlockchain] = useState([
     { index: 0, hash: '0x0000_GENESIS', transactions: [] }
   ]);
@@ -28,7 +29,8 @@ export function useSecureFederated() {
     epochs: 1
   });
   const [roundHistory, setRoundHistory] = useState([]);
-  const [modelArchitecture, setModelArchitecture] = useState('# Loading Model source...'); // NEW STATE
+  const [shards, setShards] = useState([]); // NEW STATE
+  const [modelArchitecture, setModelArchitecture] = useState('# Loading Model source...'); 
 
   const ws = useRef(null);
 
@@ -39,6 +41,7 @@ export function useSecureFederated() {
       status: i < numActive ? (['TRAINING', 'AGGREGATING'].includes(currentStatus) ? 'BUSY' : 'ACTIVE') : 'IDLE',
       reputation: 100
     })));
+    setClientsActive(numActive);
   }, []);
 
   const onMessage = useCallback((event) => {
@@ -60,6 +63,7 @@ export function useSecureFederated() {
             if (state.node_registry) setNodeRegistry(state.node_registry);
             if (state.hyperparams) setHyperparams(state.hyperparams);
             if (state.round_history) setRoundHistory(state.round_history);
+            if (state.shards) setShards(state.shards);
             if (state.model_architecture) setModelArchitecture(state.model_architecture);
             updateClientStatus(state.status, state.clients_active);
             break;
@@ -79,6 +83,7 @@ export function useSecureFederated() {
             if (payload.node_registry !== undefined) setNodeRegistry(payload.node_registry);
             if (payload.hyperparams) setHyperparams(payload.hyperparams);
             if (payload.round_history) setRoundHistory(payload.round_history);
+            if (payload.shards) setShards(payload.shards);
             if (payload.model_architecture) setModelArchitecture(payload.model_architecture);
             break;
           }
@@ -165,6 +170,8 @@ export function useSecureFederated() {
     nodeRegistry,
     hyperparams,
     roundHistory,
-    modelArchitecture
+    modelArchitecture,
+    shards,
+    clientsActive
   };
 }

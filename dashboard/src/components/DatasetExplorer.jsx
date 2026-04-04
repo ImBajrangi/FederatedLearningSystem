@@ -2,18 +2,12 @@ import React from 'react';
 import { Database, ShieldCheck, Share2, Box, PieChart, Activity, HardDrive, Search, Filter, Info, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export const DatasetExplorer = () => {
-  const fragments = [
-    { id: 'SHARD-001', org: 'MedCenter Alpha', size: '420', density: 92, type: 'Clinical', date: 'Oct 24, 2025' },
-    { id: 'SHARD-002', org: 'FinGroup Beta', size: '850', density: 85, type: 'Financial', date: 'Oct 24, 2025' },
-    { id: 'SHARD-003', org: 'GovService Gamma', size: '120', density: 98, type: 'Public', date: 'Oct 23, 2025' },
-    { id: 'SHARD-004', org: 'EduTrust Delta', size: '310', density: 74, type: 'Academic', date: 'Oct 22, 2025' },
-    { id: 'SHARD-005', org: 'TechOps Epsilon', size: '640', density: 88, type: 'Operational', date: 'Oct 22, 2025' },
-    { id: 'SHARD-006', org: 'Hospital Zeta', size: '550', density: 95, type: 'Imaging', date: 'Oct 21, 2025' },
-  ];
-
+export const DatasetExplorer = ({ shards = [], clientsActive = 0 }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filterType, setFilterType] = React.useState('All');
+  
+  // Show only shards that are actively being used by the connected nodes
+  const fragments = shards.slice(0, clientsActive);
 
   const types = ['All', ...new Set(fragments.map(f => f.type))];
 
@@ -118,8 +112,8 @@ export const DatasetExplorer = () => {
 
                <div className="grid grid-cols-2 gap-px bg-border -mx-8 -mb-8">
                   <div className="bg-white p-6">
-                     <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest block mb-2">Scale</span>
-                     <span className="text-xs font-bold text-text-main tabular-nums">{frag.size} MB</span>
+                     <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest block mb-1">Sample Count</span>
+                     <span className="text-xs font-bold text-text-main tabular-nums">{(frag.size || 0).toLocaleString()}</span>
                   </div>
                   <div className="bg-white p-6 border-l border-border">
                      <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest block mb-2">Protocol</span>

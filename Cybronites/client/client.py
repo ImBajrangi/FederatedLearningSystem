@@ -38,6 +38,7 @@ class FlowerClient(fl.client.NumPyClient):
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.dp_spec = DPSpec(l2_norm_clip=1.0, noise_multiplier=0.01)
+        self.local_cache = {} # Cache for local intermediate results if needed
 
     def get_parameters(self, config):
         return [val.cpu().numpy() for _, val in self.model.state_dict().items()]
@@ -91,10 +92,26 @@ def main():
     train_loader, test_loader = load_data(client_id=int(client_id), num_clients=num_clients)
     
     flower_port = int(os.environ.get("FLOWER_PORT", 8080))
-    fl.client.start_numpy_client(
-        server_address=f"127.0.0.1:{flower_port}",
-        client=FlowerClient(client_id, train_loader, test_loader),
-    )
+    server_address = f"127.0.0.1:{flower_port}"
+    
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            logger.info(f"Connecting to Secure Server at {server_address} (Attempt {attempt+1})...")
+            fl.client.start_numpy_client(
+                server_address=server_address,
+                client=FlowerClient(client_id, train_loader, test_loader),
+                grpc_max_message_length=512 * 1024 * 1024 # 512 MB
+            )
+            break
+        except Exception as e:
+            logger.warning(f"Connection failed: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+            else:
+                logger.error("Max retries reached. Exiting.")
+                sys.exit(1)
 
 if __name__ == "__main__":
+    import time
     main()

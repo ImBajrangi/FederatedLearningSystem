@@ -6,6 +6,7 @@ import logging
 import asyncio
 import os
 import time
+import sqlite3
 
 # Setup logging
 logging.basicConfig(
@@ -30,9 +31,15 @@ class ConnectionManager:
             "accuracy_history": [],
             "loss_history": [],
             "chain": [],
-            "model_architecture": "# Loading Source Code..." # DYNAMIC CODE PLACEHOLDER
+            "shards": [],
+            "model_architecture": "# Loading Source Code..." 
         }
         self.log_buffer: List[str] = []
+        self.cache = {
+            "last_sync": 0,
+            "round_snapshots": {}, # Cache for historical round data
+            "blockchain_cache": []
+        }
 
     def load_model_code(self):
         """Reads Cybronites/client/model.py and injects it into local state."""
@@ -48,6 +55,24 @@ class ConnectionManager:
         except Exception as e:
             logger.error(f"Failed to load model source: {e}")
 
+    def load_db_shards(self):
+        """Fetches real institutional shards from guardian.db."""
+        try:
+            db_path = os.path.join(os.getcwd(), "Cybronites", "guardian.db")
+            if not os.path.exists(db_path):
+                return
+            
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM shards")
+            rows = [dict(row) for row in cur.fetchall()]
+            self.state["shards"] = rows
+            conn.close()
+            logger.info(f"Loaded {len(rows)} real data shards from database.")
+        except Exception as e:
+            logger.error(f"DB Shard Load Error: {e}")
+
     async def connect(self, websocket: WebSocket):
         try:
             await websocket.accept()
@@ -59,8 +84,9 @@ class ConnectionManager:
                 except RuntimeError:
                     pass
             
-            # Fresh read of the model code
+            # Fresh read of the model code and DB shards
             self.load_model_code()
+            self.load_db_shards()
                 
             # Send initial state snapshot
             await self.send_json({
@@ -104,8 +130,18 @@ class ConnectionManager:
     async def broadcast(self, message_type: str, payload: Any):
         """Reactive broadcast engine."""
         if message_type == "STAT_UPDATE":
-            # Direct update of local state
+            # 1. Update local state
             self.state.update(payload)
+            
+            # 2. Update Cache for responsiveness
+            if "round" in payload:
+                r = payload["round"]
+                self.cache["round_snapshots"][r] = payload
+            
+            if "chain" in payload:
+                self.cache["blockchain_cache"] = payload["chain"]
+            
+            self.cache["last_sync"] = time.time()
             
             # Diagnostic for history persistence
             if "accuracy_history" in payload:

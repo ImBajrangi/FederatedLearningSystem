@@ -15,6 +15,7 @@ import logging
 from .bridge import bridge
 from blockchain.ledger import Blockchain, Transaction
 from blockchain.reputation import ReputationManager
+from blockchain.smart_contract import ValidationContract
 import time
 
 logger = logging.getLogger("SecureStrategy")
@@ -52,6 +53,11 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         self.node_registry = {}
         self.round_history = [] # For Institutional Audit Ledger
         
+        self.validation_contract = ValidationContract(
+            norm_threshold=10.0,
+            cosine_threshold=-0.2 # Standard threshold for gradient validation
+        )
+
         self.hyperparams = {
             "learning_rate": 0.01,
             "batch_size": 32,
@@ -87,51 +93,89 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         else:
             aggregated_ndarrays = self._aggregate_weighted_avg(weights_results)
 
-        # 3. Blockchain & Reputation Integration
+        # 3. Validation & Blockchain Integration
+        valid_updates = []
+        valid_ndarrays = []
         acc_list = []
         loss_list = []
         
+        # Compute Reference Median for validation
+        all_weights = [parameters_to_ndarrays(fit_res.parameters) for _, fit_res in results]
+        reference_median = self._compute_median_from_ndarrays(all_weights)
+
         for proxy, fit_res in results:
             cid = proxy.cid
-            weight_hash = str(hash(tuple([arr.tobytes()[:100] for arr in parameters_to_ndarrays(fit_res.parameters)])))
-            new_score = self.reputation.record_valid_update(cid)
+            weights = parameters_to_ndarrays(fit_res.parameters)
+            weight_hash = str(hash(tuple([arr.tobytes()[:100] for arr in weights])))
             
+            # Convert ndarrays to torch tensors for ValidationContract
+            update_tensors = {f"layer_{i}": torch.from_numpy(arr) for i, arr in enumerate(weights)}
+            median_tensors = {f"layer_{i}": torch.from_numpy(arr) for i, arr in enumerate(reference_median)} if reference_median else None
+
+            # RUN SMART CONTRACT VALIDATION
+            is_valid, tx = self.validation_contract.validate_update(
+                client_id=cid,
+                update=update_tensors,
+                reference_median=median_tensors,
+                current_reputation=self.reputation.get_score(cid),
+                round_number=server_round
+            )
+
+            if is_valid:
+                new_score = self.reputation.record_valid_update(cid)
+                valid_ndarrays.append((weights, fit_res.num_examples, cid))
+                status = "VALID"
+                bridge.broadcast_sync("LOG", f"  ✅ {cid}: Update VALID (norm={tx.l2_norm:.2f})")
+            else:
+                new_score = self.reputation.record_malicious_update(cid)
+                status = "REJECTED"
+                bridge.broadcast_sync("LOG", f"  ❌ {cid}: REJECTED - {tx.rejection_reason}")
+
             # Extract Metrics
             m_acc = float(fit_res.metrics.get("accuracy", 0.0)) if fit_res.metrics else 0.0
             m_loss = float(fit_res.metrics.get("loss", 2.0)) if fit_res.metrics else 2.0
-            acc_list.append(m_acc)
-            loss_list.append(m_loss)
+            
+            if is_valid:
+                acc_list.append(m_acc)
+                loss_list.append(m_loss)
 
             # Update Node Registry
             self.node_registry[cid] = {
-                "status": "COMPLETED",
+                "status": status,
                 "hash": f"0x{weight_hash[:12]}...",
                 "reputation": new_score
             }
             
-            # Add to Institutional Audit History (the dynamic table history)
+            # Add to Institutional Audit History
             self.round_history.append({
                 "round": server_round,
                 "client": cid,
                 "acc": m_acc,
                 "loss": m_loss,
+                "status": status,
+                "reason": tx.rejection_reason if not is_valid else "",
                 "lr": self.hyperparams["learning_rate"],
                 "batch": self.hyperparams["batch_size"],
                 "epochs": self.hyperparams["epochs"]
             })
             if len(self.round_history) > 100: self.round_history.pop(0)
 
-            tx = Transaction(
-                client_id=cid,
-                model_hash=weight_hash,
-                timestamp=time.time(),
-                validation_status="VALID",
-                reputation_score=new_score,
-                round_number=server_round
-            )
+            # Update TX score and add to ledger
+            tx.reputation_score = new_score
             self.blockchain.add_transaction(tx)
 
-        # 4. Mine the block
+        # 4. Final Aggregation Step (Only Valid Updates)
+        if valid_ndarrays:
+            if self.aggregation_method == "median":
+                aggregated_ndarrays = self._aggregate_median(valid_ndarrays)
+            else:
+                aggregated_ndarrays = self._aggregate_weighted_avg(valid_ndarrays)
+        else:
+             # Skip if no valid updates
+             bridge.broadcast_sync("LOG", f"  ⚠️ Round {server_round}: NO VALID UPDATES. Skipping aggregation.")
+             return None, {}
+
+        # 5. Mine the block
         new_block = self.blockchain.mine_pending_transactions()
         
         # Calculate Average Metrics for the Round
@@ -190,3 +234,15 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
                 weighted_layer += ndarrays[layer_idx] * (num_examples / total_examples)
             aggregated_ndarrays.append(weighted_layer)
         return aggregated_ndarrays
+
+    def _compute_median_from_ndarrays(self, all_weights: List[List[np.ndarray]]) -> Optional[List[np.ndarray]]:
+        """Compute coordinate-wise median across multiple updates for reference."""
+        if not all_weights:
+            return None
+        num_layers = len(all_weights[0])
+        median_ndarrays = []
+        for layer_idx in range(num_layers):
+            layer_updates = [weights[layer_idx] for weights in all_weights]
+            median_layer = np.median(np.stack(layer_updates), axis=0)
+            median_ndarrays.append(median_layer)
+        return median_ndarrays

@@ -62,11 +62,15 @@ def main():
     flower_port = int(os.environ.get("FLOWER_PORT", 8080))
     logger.info(f"Launching Flower Server on port {flower_port}...")
     
+    server_config = fl.server.ServerConfig(num_rounds=5)
+    
     try:
+        # Increase gRPC max message size for "global use" (larger models/updates)
         fl.server.start_server(
             server_address=f"0.0.0.0:{flower_port}",
-            config=fl.server.ServerConfig(num_rounds=5),
+            config=server_config,
             strategy=strategy,
+            grpc_max_message_length=512 * 1024 * 1024 # 512 MB
         )
     except Exception as e:
         logger.error(f"Flower Server crashed: {e}")
@@ -77,9 +81,16 @@ def main():
     bridge.broadcast_sync("LOG", "SESSION_COMPLETE: All rounds finalized.")
     bridge.broadcast_sync("STAT_UPDATE", {"status": "FINISHED"})
     
-    # Wait for bridge thread if necessary, or just block here
-    while True:
-        time.sleep(10)
+    # Graceful shutdown handler
+    def shutdown():
+        logger.info("Shutting down Guardian Server...")
+        sys.exit(0)
+
+    try:
+        while True:
+            time.sleep(10)
+    except KeyboardInterrupt:
+        shutdown()
 
 if __name__ == "__main__":
     main()
