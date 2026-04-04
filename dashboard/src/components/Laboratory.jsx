@@ -41,6 +41,7 @@ export const Laboratory = ({ onAction }) => {
   const handleCompile = async () => {
     setStatus('COMPILING');
     addLog('Initiating backend compilation protocol...', 'info');
+    setErrorLine(null);
     
     try {
       const response = await fetch('/v1/laboratory/validate', {
@@ -52,16 +53,24 @@ export const Laboratory = ({ onAction }) => {
       
       if (data.success) {
         setStatus('READY');
-        setErrorLine(null);
         addLog('Compilation successful. Architecture verified.', 'success');
       } else {
         setStatus('ERROR');
-        setErrorLine(data.line || null);
-        addLog(`Compilation Error (L${data.line || '?'}): ${data.error}`, 'error');
+        const line = data.line || null;
+        setErrorLine(line);
+        
+        // Detailed Compiler Feedback
+        const errorType = data.type || 'Error';
+        const errorMsg = data.error || 'Unknown syntax exception';
+        const column = data.column ? ` (Col: ${data.column})` : '';
+        
+        addLog(`[${errorType}] Line ${line || '?'}${column}: ${errorMsg}`, 'error');
+        addLog(`System Diagnostic: Execution halted due to architectural misalignment.`, 'error');
       }
     } catch (err) {
       setStatus('ERROR');
-      addLog('Could not connect to compiler service.', 'error');
+      addLog('FATAL: Could not connect to Institutional Compiler Service.', 'error');
+      addLog(`Debug Info: ${err.message}`, 'error');
     }
   };
 

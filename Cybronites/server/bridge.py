@@ -210,6 +210,64 @@ async def websocket_endpoint(websocket: WebSocket):
 async def health_check():
     return {"status": "ONLINE", "clients": len(bridge.active_connections)}
 
+@app.post("/v1/laboratory/validate")
+async def validate_code(data: Dict[str, str]):
+    code = data.get("code", "")
+    try:
+        if not code.strip():
+            return {"success": False, "error": "Empty source code submitted."}
+            
+        # 1. Syntactic analysis
+        import ast
+        ast.parse(code)
+        
+        # 2. Compilation check (Catching PyTorch import context errors)
+        compile(code, '<laboratory>', 'exec')
+        
+        return {"success": True}
+    except SyntaxError as e:
+        # Professional Diagnostic Extraction
+        return {
+            "success": False, 
+            "error": str(e.msg), 
+            "line": e.lineno, 
+            "column": e.offset,
+            "type": "SyntaxError"
+        }
+    except Exception as e:
+        import traceback
+        logger.error(f"Laboratory Validation Error: {e}")
+        return {"success": False, "error": str(e), "type": type(e).__name__}
+
+@app.post("/v1/laboratory/deploy")
+async def deploy_model(data: Dict[str, str]):
+    code = data.get("code", "")
+    try:
+        # Verify before writing to prevent system crashes
+        import ast
+        ast.parse(code)
+        
+        # Target local Cybronites environment
+        target_path = os.path.join(os.getcwd(), "Cybronites", "client", "model.py")
+        
+        # Fallback for relative server context
+        if not os.path.exists(os.path.dirname(target_path)):
+            target_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "client", "model.py")
+            
+        with open(target_path, "w") as f:
+            f.write(code)
+            
+        logger.info(f"Local Dynamic Model HOT-SWAPPED at {target_path}")
+        
+        # Synchronize live state
+        bridge.state["model_architecture"] = code
+        await bridge.broadcast("LOG", "SYSTEM: Local model hot-swapped. Synchronizing nodes...")
+        
+        return {"success": True}
+    except Exception as e:
+        logger.error(f"Local Deployment Error: {e}")
+        return {"success": False, "error": str(e)}
+
 # ── Static Dashboard Serving (for Deployment) ──
 # Look for 'static' (Hugging Face) or 'dist' (Local build)
 static_dirs = [os.path.join(os.getcwd(), "static"), os.path.join(os.getcwd(), "dist")]
