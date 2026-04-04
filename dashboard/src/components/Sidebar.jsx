@@ -86,13 +86,21 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
             <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">04</span>
             Model Library
           </button>
+
+          <button 
+            onClick={() => setView('laboratory')}
+            className={`nav-item ${currentView === 'laboratory' ? 'active' : ''}`}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">05</span>
+            Code Laboratory
+          </button>
         </div>
 
          <div className="p-10 border-b border-border border-t bg-bg-main/50">
            <span className="type-label text-text-main">Statistics</span>
          </div>
 
-        <div className="p-10 space-y-4 pb-32">
+        <div className="p-10 space-y-4 pb-48">
           <MetricItem 
             label="Node Count" 
             value={Object.keys(nodeRegistry).length || clients.length || 0} 
@@ -108,18 +116,21 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
         </div>
       </div>
 
-      {/* Footer Branding Area */}
-        <div className="p-10 bg-white flex flex-col gap-4 border-t border-border mt-auto shrink-0 z-20">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-text-main rounded-sm shadow-sm">
-              <Server size={14} className="text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="type-label text-black font-bold">Research Node</span>
-              <span className="type-label text-emerald-600 font-bold opacity-100">Online</span>
-            </div>
+      {/* Footer Branding Area: Institutional Pinned Bar */}
+      <div className="p-10 bg-white flex flex-col gap-4 border-t border-border shrink-0 z-20">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-text-main rounded-sm shadow-sm ring-1 ring-black/5">
+            <Server size={14} className="text-white" />
+          </div>
+          <div className="flex flex-col">
+            <span className="type-label text-black font-bold">Research Node</span>
+            <span className="type-label text-emerald-600 font-bold opacity-100 flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Operational
+            </span>
           </div>
         </div>
+      </div>
     </aside>
   );
 };

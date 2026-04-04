@@ -7,6 +7,7 @@ import { Terminal } from './components/Terminal';
 import { BlockchainRibbon } from './components/BlockchainExplorer';
 import { TrainingWorkspace } from './components/TrainingWorkspace';
 import { DatasetExplorer } from './components/DatasetExplorer';
+import { Laboratory } from './components/Laboratory';
 import { useSecureFederated } from './hooks/useSecureFederated';
 import { Play, RotateCcw, ShieldCheck, Info, X, Zap, Activity, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -237,6 +238,8 @@ function App() {
         return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} hyperparams={hyperparams} roundHistory={roundHistory} modelArchitecture={modelArchitecture} />;
       case 'datasets':
         return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
+      case 'laboratory':
+        return <Laboratory onAction={addToast} />;
       default:
         return <div>View not found</div>;
     }
