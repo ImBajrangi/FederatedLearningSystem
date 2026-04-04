@@ -53,9 +53,8 @@ export const BlockchainRibbon = ({ blockchain }) => {
             key={`${block.index}-${block.hash}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`flex items-center px-10 py-4 border-b border-white/5 hover:bg-white/[0.02] transition-all group ${
-              block.index === 0 ? 'bg-primary/5' : ''
-            }`}
+            className={`flex items-center px-10 py-4 border-b border-white/5 hover:bg-white/[0.02] transition-all group ${block.index === 0 ? 'bg-primary/5' : ''
+              }`}
           >
             {/* Block ID */}
             <div className="w-[120px] flex items-center gap-3">
@@ -84,9 +83,8 @@ export const BlockchainRibbon = ({ blockchain }) => {
 
             {/* Integrity Status */}
             <div className="w-[120px] text-right">
-              <span className={`text-[8px] font-bold uppercase tracking-widest px-2 py-1 border ${
-                block.index === 0 ? 'text-primary border-primary/20 bg-primary/5' : 'text-emerald-500 border-emerald-500/10 bg-emerald-500/5'
-              }`}>
+              <span className={`text-[8px] font-bold uppercase tracking-widest px-2 py-1 border ${block.index === 0 ? 'text-primary border-primary/20 bg-primary/5' : 'text-emerald-500 border-emerald-500/10 bg-emerald-500/5'
+                }`}>
                 {block.index === 0 ? 'Authorized' : 'Verified'}
               </span>
             </div>
