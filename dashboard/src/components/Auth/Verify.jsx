@@ -33,13 +33,13 @@ const Verify = () => {
 
     return (
         <div className="min-h-screen bg-[#131315] flex flex-col items-center justify-center p-4 font-['Inter'] text-[#e5e1e4]">
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-md bg-[#1c1b1d]/40 backdrop-blur-xl border border-[#3a494b]/20 p-12 text-center shadow-2xl relative overflow-hidden"
             >
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-right from-[#00f2ff] to-[#bc13fe]"></div>
-                
+
                 {status === 'verifying' && (
                     <>
                         <Loader2 className="w-16 h-16 text-[#00f2ff] mx-auto mb-6 animate-spin" />
@@ -53,7 +53,7 @@ const Verify = () => {
                         <CheckCircle className="w-16 h-16 text-[#00f2ff] mx-auto mb-6" />
                         <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white mb-4 uppercase tracking-tighter">IDENTITY_VERIFIED</h2>
                         <p className="text-[#b9cacb] mb-8 text-sm">{message}</p>
-                        <Link 
+                        <Link
                             to="/login"
                             className="inline-flex items-center gap-2 bg-[#00f2ff] text-[#131315] font-['Space_Grotesk'] font-bold px-10 py-4 hover:shadow-[0_0_20px_rgba(0,242,255,0.4)] transition-all"
                         >
@@ -68,7 +68,7 @@ const Verify = () => {
                         <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white mb-4 uppercase tracking-tighter">VERIFICATION_FAILURE</h2>
                         <p className="text-red-400 mb-8 text-sm font-mono">[ERROR]: {message}</p>
                         <div className="flex flex-col gap-4">
-                            <Link 
+                            <Link
                                 to="/signup"
                                 className="bg-white text-[#131315] font-['Space_Grotesk'] font-bold px-8 py-3 transition-all hover:bg-[#00f2ff]"
                             >

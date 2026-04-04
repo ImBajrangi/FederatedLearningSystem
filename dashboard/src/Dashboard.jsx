@@ -12,6 +12,7 @@ import { useSecureFederated } from './hooks/useSecureFederated';
 import { Play, RotateCcw, ShieldCheck, Activity, X, Globe, Zap, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
   const {
@@ -39,6 +40,7 @@ function Dashboard() {
   } = useSecureFederated();
 
   const { logout, user } = useAuth();
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState('dashboard');
   const [toasts, setToasts] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(280);
@@ -72,6 +74,7 @@ function Dashboard() {
   };
 
   const startSimulation = async () => {
+    if (!user) { navigate('/login'); return; }
     if (!isConnected) { addToast('Backend connection offline.', 'error'); return; }
     addToast(status === 'IDLE' ? 'Monitoring external backend...' : 'Session already in progress.', 'info');
     await runRound();
@@ -91,7 +94,7 @@ function Dashboard() {
                     <span className="text-[9px] font-bold text-text-main/80 uppercase tracking-widest">0x88F2_SECURE</span>
                   </div>
                   <div className="w-[1px] h-2 bg-border/60" />
-                   <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-[9px] font-medium text-text-muted/40 uppercase tracking-[0.2em]">USER:</span>
                     <span className="text-[9px] font-bold text-primary uppercase tracking-widest">{user?.username || 'ANONYMOUS'}</span>
                   </div>
@@ -122,22 +125,31 @@ function Dashboard() {
 
                 <div className="flex items-center gap-3 h-10">
                   <button
-                    onClick={startSimulation}
-                    disabled={isActive || !isConnected}
-                    className={`h-full bg-primary text-white flex items-center gap-4 shadow-lg active:scale-95 transition-all px-8 text-[11px] font-bold uppercase tracking-[0.25em] ${(!isConnected || isActive) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                    onClick={() => user ? startSimulation() : navigate('/login')}
+                    disabled={user && (isActive || !isConnected)}
+                    className={`h-full bg-primary text-white flex items-center gap-4 shadow-lg active:scale-95 transition-all px-8 text-[11px] font-bold uppercase tracking-[0.25em] ${(user && (!isConnected || isActive)) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                   >
                     <Play size={12} fill="currentColor" className={isActive ? 'animate-pulse' : ''} />
                     <span>
-                      {status === 'IDLE' ? 'Connect Sessions' : status === 'FINISHED' ? 'Report Complete' : 'Synchronized'}
+                      {!user ? 'Login Required' : status === 'IDLE' ? 'Connect Sessions' : status === 'FINISHED' ? 'Report Complete' : 'Synchronized'}
                     </span>
                   </button>
-                  <button
-                    onClick={logout}
-                    title="Logout"
-                    className="h-full px-4 border border-border text-red-500 hover:bg-red-50 transition-all flex items-center justify-center"
-                  >
-                    <X size={14} />
-                  </button>
+                  {user ? (
+                    <button
+                      onClick={logout}
+                      title="Logout"
+                      className="h-full px-4 border border-border text-red-500 hover:bg-red-50 transition-all flex items-center justify-center"
+                    >
+                      <X size={14} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => navigate('/login')}
+                      className="h-full px-6 border border-primary text-primary hover:bg-primary/10 transition-all flex items-center justify-center text-[10px] uppercase font-bold"
+                    >
+                      Sign In To Operate
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -248,7 +260,10 @@ function Dashboard() {
               lossHistory={lossHistory}
               roundHistory={roundHistory}
               onClear={clearLogs}
-              onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
+              onAction={(cmd) => {
+                if (!user) { navigate('/login'); return; }
+                addToast(`Terminal command executed: ${cmd}`, 'info');
+              }}
             />
           </div>
         </main>
