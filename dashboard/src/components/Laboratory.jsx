@@ -42,7 +42,7 @@ export const Laboratory = ({ onAction }) => {
     setStatus('COMPILING');
     addLog('Initiating backend compilation protocol...', 'info');
     setErrorLine(null);
-    
+
     try {
       const response = await fetch('/v1/laboratory/validate', {
         method: 'POST',
@@ -50,7 +50,7 @@ export const Laboratory = ({ onAction }) => {
         body: JSON.stringify({ code })
       });
       const data = await response.json();
-      
+
       if (data.success) {
         setStatus('READY');
         addLog('Compilation successful. Architecture verified.', 'success');
@@ -58,12 +58,12 @@ export const Laboratory = ({ onAction }) => {
         setStatus('ERROR');
         const line = data.line || null;
         setErrorLine(line);
-        
+
         // Detailed Compiler Feedback
         const errorType = data.type || 'Error';
         const errorMsg = data.error || 'Unknown syntax exception';
         const column = data.column ? ` (Col: ${data.column})` : '';
-        
+
         addLog(`[${errorType}] Line ${line || '?'}${column}: ${errorMsg}`, 'error');
         addLog(`System Diagnostic: Execution halted due to architectural misalignment.`, 'error');
       }
@@ -79,10 +79,10 @@ export const Laboratory = ({ onAction }) => {
       onAction('Code must be compiled before deployment.', 'error');
       return;
     }
-    
+
     setStatus('DEPLOYING');
     addLog('Executing hot-swap deployment...', 'info');
-    
+
     try {
       const response = await fetch('/v1/laboratory/deploy', {
         method: 'POST',
@@ -90,7 +90,7 @@ export const Laboratory = ({ onAction }) => {
         body: JSON.stringify({ code })
       });
       const data = await response.json();
-      
+
       if (data.success) {
         setStatus('IDLE');
         addLog('Global model hot-swapped. Synchronizing federation...', 'success');
@@ -123,18 +123,17 @@ export const Laboratory = ({ onAction }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={handleCompile}
             disabled={status === 'COMPILING' || status === 'DEPLOYING'}
-            className={`h-9 px-6 flex items-center gap-3 border transition-all uppercase tracking-widest text-[9px] font-bold ${
-              status === 'READY' ? 'bg-emerald-50 border-emerald-500 text-emerald-600' : 'bg-white border-border text-text-main hover:bg-bg-main'
-            }`}
+            className={`h-9 px-6 flex items-center gap-3 border transition-all uppercase tracking-widest text-[9px] font-bold ${status === 'READY' ? 'bg-emerald-50 border-emerald-500 text-emerald-600' : 'bg-white border-border text-text-main hover:bg-bg-main'
+              }`}
           >
             {status === 'COMPILING' ? <RefreshCw size={12} className="animate-spin" /> : <ShieldCheck size={12} />}
             {status === 'READY' ? 'Architecture Verified' : 'Run Verification'}
           </button>
-          
-          <button 
+
+          <button
             onClick={handleDeploy}
             disabled={status !== 'READY' || status === 'DEPLOYING'}
             className={`h-9 px-6 flex items-center gap-3 bg-text-main text-white shadow-sm transition-all uppercase tracking-widest text-[9px] font-bold active:scale-95 disabled:opacity-30 disabled:grayscale`}
@@ -153,15 +152,15 @@ export const Laboratory = ({ onAction }) => {
             {/* Line Numbers gutter */}
             <div className="w-14 bg-bg-main border-r border-border flex flex-col items-end py-6 pr-4 select-none z-0">
               {lineNumbers.map(num => (
-                <div 
-                  key={num} 
+                <div
+                  key={num}
                   className={`text-[10px] font-mono leading-6 ${errorLine === num ? 'text-red-600 font-bold' : 'text-text-muted/40'}`}
                 >
                   {num}
                 </div>
               ))}
             </div>
-            
+
             {/* Code Textarea */}
             <textarea
               ref={textAreaRef}
@@ -183,55 +182,53 @@ export const Laboratory = ({ onAction }) => {
             {/* Status Panel */}
             <div className="p-8 border-b border-border">
               <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4 block">Interpreter State</span>
-              <div className={`p-4 border rounded-sm flex items-center gap-4 transition-all ${
-                status === 'ERROR' ? 'border-red-200 bg-red-50' : 
-                status === 'READY' ? 'border-emerald-200 bg-emerald-50' : 
-                'border-border bg-white shadow-sm'
-              }`}>
-                {status === 'ERROR' ? <AlertCircle size={14} className="text-red-600" /> : <Terminal size={14} className="text-text-main/50" />}
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${
-                  status === 'ERROR' ? 'text-red-600' : status === 'READY' ? 'text-emerald-700' : 'text-text-main'
+              <div className={`p-4 border rounded-sm flex items-center gap-4 transition-all ${status === 'ERROR' ? 'border-red-200 bg-red-50' :
+                  status === 'READY' ? 'border-emerald-200 bg-emerald-50' :
+                    'border-border bg-white shadow-sm'
                 }`}>
-                  {status === 'IDLE' ? 'System Awaiting Input' : 
-                   status === 'COMPILING' ? 'Validating Layers...' : 
-                   status === 'READY' ? 'Architecture Valid' : 
-                   status === 'ERROR' ? 'Syntax Exception' : 'Deploying...'}
+                {status === 'ERROR' ? <AlertCircle size={14} className="text-red-600" /> : <Terminal size={14} className="text-text-main/50" />}
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${status === 'ERROR' ? 'text-red-600' : status === 'READY' ? 'text-emerald-700' : 'text-text-main'
+                  }`}>
+                  {status === 'IDLE' ? 'System Awaiting Input' :
+                    status === 'COMPILING' ? 'Validating Layers...' :
+                      status === 'READY' ? 'Architecture Valid' :
+                        status === 'ERROR' ? 'Syntax Exception' : 'Deploying...'}
                 </span>
               </div>
             </div>
 
             {/* Console Output */}
             <div className="flex-1 flex flex-col min-h-0">
-               <div className="px-8 py-4 border-b border-border flex items-center justify-between bg-white/50">
-                  <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Lab Console</span>
-                  <button onClick={() => setLogs([])} className="text-[9px] text-text-muted hover:text-text-main uppercase font-bold tracking-widest">Clear</button>
-               </div>
-               <div className="flex-1 overflow-auto p-8 font-mono text-[10px] leading-6 space-y-2 custom-scrollbar-terminal bg-white/30">
-                  {logs.map((log, i) => (
-                    <div key={i} className="flex gap-4">
-                      <span className="text-text-muted/30 shrink-0 select-none">[{log.time}]</span>
-                      <span className={log.type === 'error' ? 'text-red-600 font-bold' : log.type === 'success' ? 'text-emerald-700 font-bold' : 'text-text-main/70'}>
-                         {log.msg}
-                      </span>
-                    </div>
-                  ))}
-                  {logs.length === 0 && <div className="text-text-muted/30 italic">Awaiting local interaction...</div>}
-               </div>
+              <div className="px-8 py-4 border-b border-border flex items-center justify-between bg-white/50">
+                <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Lab Console</span>
+                <button onClick={() => setLogs([])} className="text-[9px] text-text-muted hover:text-text-main uppercase font-bold tracking-widest">Clear</button>
+              </div>
+              <div className="flex-1 overflow-auto p-8 font-mono text-[10px] leading-6 space-y-2 custom-scrollbar-terminal bg-white/30">
+                {logs.map((log, i) => (
+                  <div key={i} className="flex gap-4">
+                    <span className="text-text-muted/30 shrink-0 select-none">[{log.time}]</span>
+                    <span className={log.type === 'error' ? 'text-red-600 font-bold' : log.type === 'success' ? 'text-emerald-700 font-bold' : 'text-text-main/70'}>
+                      {log.msg}
+                    </span>
+                  </div>
+                ))}
+                {logs.length === 0 && <div className="text-text-muted/30 italic">Awaiting local interaction...</div>}
+              </div>
             </div>
           </div>
-          
+
           {/* Hardware Specs */}
           <div className="p-8 border-t border-border bg-white">
-             <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-1">
-                   <div className="text-[8px] font-bold text-text-muted uppercase tracking-widest">Comp Environment</div>
-                   <div className="text-[10px] font-bold text-text-main font-mono">PyTorch 2.1.0</div>
-                </div>
-                <div className="space-y-1">
-                   <div className="text-[8px] font-bold text-text-muted uppercase tracking-widest">Hardware Target</div>
-                   <div className="text-[10px] font-bold text-emerald-600 font-mono">CUDA v11.8</div>
-                </div>
-             </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-1">
+                <div className="text-[8px] font-bold text-text-muted uppercase tracking-widest">Comp Environment</div>
+                <div className="text-[10px] font-bold text-text-main font-mono">PyTorch 2.1.0</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-[8px] font-bold text-text-muted uppercase tracking-widest">Hardware Target</div>
+                <div className="text-[10px] font-bold text-emerald-600 font-mono">CUDA v11.8</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
