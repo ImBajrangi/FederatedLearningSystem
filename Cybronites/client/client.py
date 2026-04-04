@@ -9,21 +9,32 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("GuardianClient")
 
-# Ensure project root is in path
-root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-if root_dir not in sys.path:
-    sys.path.insert(0, root_dir)
+# Ensure project root and package directories are in path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Check for root: either one level up (Cybronites root) or two levels up (Project root)
+root_dir = os.path.abspath(os.path.join(current_dir, ".."))
+project_root = os.path.abspath(os.path.join(current_dir, "../.."))
+
+for p in [current_dir, root_dir, project_root]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 try:
-    from Cybronites.client.model import MNISTNet, train, test
-    from Cybronites.client.dataset import load_data
-    from security.privacy import apply_dp_to_updates, DPSpec
-except ImportError:
-    # Local fallback
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    # Try local submodule imports first (Most common in flattened deployment)
     from model import MNISTNet, train, test
     from dataset import load_data
     from security.privacy import apply_dp_to_updates, DPSpec
+except ImportError:
+    try:
+        # Try package-prefixed imports (Common in local dev with Cybronites root)
+        from client.model import MNISTNet, train, test
+        from client.dataset import load_data
+        from security.privacy import apply_dp_to_updates, DPSpec
+    except ImportError:
+        # Final fallback for legacy Cybronites structure
+        from Cybronites.client.model import MNISTNet, train, test
+        from Cybronites.client.dataset import load_data
+        from security.privacy import apply_dp_to_updates, DPSpec
 
 # Use CPU or GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

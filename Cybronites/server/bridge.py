@@ -44,24 +44,37 @@ class ConnectionManager:
         }
 
     def load_model_code(self):
-        """Reads Cybronites/client/model.py and injects it into local state."""
+        """Reads model.py and injects it into local state."""
         try:
-            # Check relative to root of execution (run_backend.py)
-            model_path = os.path.join(os.getcwd(), "Cybronites", "client", "model.py")
-            if os.path.exists(model_path):
-                with open(model_path, "r") as f:
-                    content = f.read()
-                    # Capture MNISTNet class and main imports
-                    self.state["model_architecture"] = content
-                    logger.info("Model source code loaded for dashboard telemetry.")
+            # Check multiple potential locations (local vs deployed)
+            paths = [
+                os.path.join(os.getcwd(), "Cybronites", "client", "model.py"),
+                os.path.join(os.getcwd(), "client", "model.py"),
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "client", "model.py")
+            ]
+            for model_path in paths:
+                if os.path.exists(model_path):
+                    with open(model_path, "r") as f:
+                        self.state["model_architecture"] = f.read()
+                        logger.info(f"Model source code loaded from {model_path}")
+                        return
         except Exception as e:
             logger.error(f"Failed to load model source: {e}")
 
     def load_db_shards(self):
         """Fetches real institutional shards from guardian.db."""
         try:
-            db_path = os.path.join(os.getcwd(), "Cybronites", "guardian.db")
-            if not os.path.exists(db_path):
+            paths = [
+                os.path.join(os.getcwd(), "Cybronites", "guardian.db"),
+                os.path.join(os.getcwd(), "guardian.db")
+            ]
+            db_path = None
+            for p in paths:
+                if os.path.exists(p):
+                    db_path = p
+                    break
+            
+            if not db_path:
                 return
             
             conn = sqlite3.connect(db_path)
@@ -71,7 +84,7 @@ class ConnectionManager:
             rows = [dict(row) for row in cur.fetchall()]
             self.state["shards"] = rows
             conn.close()
-            logger.info(f"Loaded {len(rows)} real data shards from database.")
+            logger.info(f"Loaded {len(rows)} shards from {db_path}")
         except Exception as e:
             logger.error(f"DB Shard Load Error: {e}")
 
@@ -198,14 +211,18 @@ async def health_check():
     return {"status": "ONLINE", "clients": len(bridge.active_connections)}
 
 # ── Static Dashboard Serving (for Deployment) ──
-DIST_DIR = os.path.join(os.getcwd(), "dist")
-if os.path.exists(DIST_DIR):
-    app.mount("/assets", StaticFiles(directory=os.path.join(DIST_DIR, "assets")), name="assets")
-    
-    @app.get("/{full_path:path}")
-    async def serve_dashboard(full_path: str):
-        # Serve the built React index.html for all non-API/WS routes
-        return FileResponse(os.path.join(DIST_DIR, "index.html"))
+# Look for 'static' (Hugging Face) or 'dist' (Local build)
+static_dirs = [os.path.join(os.getcwd(), "static"), os.path.join(os.getcwd(), "dist")]
+for s_dir in static_dirs:
+    if os.path.exists(s_dir):
+        app.mount("/assets", StaticFiles(directory=os.path.join(s_dir, "assets")), name="assets")
+        
+        @app.get("/{full_path:path}")
+        async def serve_dashboard(full_path: str):
+            # Try to serve index.html from whichever static dir we found
+            return FileResponse(os.path.join(s_dir, "index.html"))
+        logger.info(f"Serving dashboard from {s_dir}")
+        break
 
 def start_bridge(port: int = 7860):
     import uvicorn
