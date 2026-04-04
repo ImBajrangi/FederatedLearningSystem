@@ -102,6 +102,10 @@ export function useSecureFederated() {
     }
   }, [updateClientStatus]);
 
+  const clearLogs = useCallback(() => {
+    setLogs([]);
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     let reconnectTimeout = null;
@@ -162,6 +166,7 @@ export function useSecureFederated() {
     lossHistory,
     rejectedCount,
     logs,
+    clearLogs,
     runRound,
     setIsActive,
     isConnected,

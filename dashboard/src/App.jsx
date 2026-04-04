@@ -21,6 +21,7 @@ function App() {
     lossHistory,
     rejectedCount,
     logs,
+    clearLogs,
     runRound,
     setIsActive,
     clearSimulation,
@@ -269,6 +270,7 @@ function App() {
               accuracyHistory={accuracyHistory}
               lossHistory={lossHistory}
               roundHistory={roundHistory}
+              onClear={clearLogs}
               onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
             />
           </div>

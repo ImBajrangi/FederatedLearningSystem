@@ -1,8 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accuracyHistory = [], lossHistory = [], roundHistory = [] }) => {
+export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accuracyHistory = [], lossHistory = [], roundHistory = [], onClear, onAction }) => {
   const logsRef = useRef(null);
   const [activeTab, setActiveTab] = useState('logs');
+
+  const handleCopy = () => {
+    const text = logs.map(l => `[${new Date().toLocaleTimeString()}] $ ${l.msg}`).join('\n');
+    navigator.clipboard.writeText(text);
+    if (onAction) onAction('LOGS_COPIED');
+  };
 
   // Auto-scroll to bottom on new logs
 
@@ -90,7 +96,9 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
         {/* Terminal Actions (Clear, Scroll, Copy) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
+            <div 
+            onClick={onClear}
+            style={{
               padding: '4px', color: '#64748b', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: '4px', transition: 'all 0.2s'
@@ -101,7 +109,9 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
             </div>
-            <div style={{
+            <div 
+            onClick={handleCopy}
+            style={{
               padding: '4px', color: '#64748b', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: '4px', transition: 'all 0.2s'

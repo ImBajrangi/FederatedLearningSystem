@@ -1,5 +1,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
 from typing import List, Dict, Any, Optional
 import json
 import logging
@@ -195,7 +197,17 @@ async def websocket_endpoint(websocket: WebSocket):
 async def health_check():
     return {"status": "ONLINE", "clients": len(bridge.active_connections)}
 
+# ── Static Dashboard Serving (for Deployment) ──
+DIST_DIR = os.path.join(os.getcwd(), "dist")
+if os.path.exists(DIST_DIR):
+    app.mount("/assets", StaticFiles(directory=os.path.join(DIST_DIR, "assets")), name="assets")
+    
+    @app.get("/{full_path:path}")
+    async def serve_dashboard(full_path: str):
+        # Serve the built React index.html for all non-API/WS routes
+        return FileResponse(os.path.join(DIST_DIR, "index.html"))
+
 def start_bridge(port: int = 7860):
     import uvicorn
     logger.info(f"Launching Guardian Bridge on port {port}...")
-    uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="warning")
