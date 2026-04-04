@@ -23,9 +23,15 @@ const MetricItem = ({ label, value }) => (
   </div>
 );
 
-export const Sidebar = ({ currentView, setView, clients, width, onResize }) => {
+export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {}, rejectedCount = 0, blockchain = [], width, onResize }) => {
+  const activeCount = clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length;
+  const yieldValue = blockchain && blockchain.length > 1 
+    ? (100 - (rejectedCount / (blockchain.length - 1) * 100)).toFixed(1)
+    : "100.0";
+  const powerValue = (activeCount * 0.4 + 0.2).toFixed(1);
+
   return (
-    <aside className="shell-sidebar" style={{ width: width || 280, flexShrink: 0, position: 'relative' }}>
+    <aside className="shell-sidebar flex flex-col h-full bg-white border-r border-border" style={{ width: width || 280, flexShrink: 0, position: 'relative' }}>
       {/* VS Code style resize handle on right edge */}
       <div
         onMouseDown={onResize}
@@ -43,7 +49,7 @@ export const Sidebar = ({ currentView, setView, clients, width, onResize }) => {
         />
       </div>
       {/* Sidebar Navigation */}
-      <div className="sidebar-nav-scroll custom-scrollbar">
+      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto custom-scrollbar">
          <div className="p-10 border-b border-border bg-bg-main/50">
            <span className="type-label text-text-main">Coursework</span>
          </div>
@@ -82,35 +88,35 @@ export const Sidebar = ({ currentView, setView, clients, width, onResize }) => {
           </button>
         </div>
 
-         <div className="p-10 border-b border-border border-t bg-bg-main/50 mt-auto">
+         <div className="p-10 border-b border-border border-t bg-bg-main/50">
            <span className="type-label text-text-main">Statistics</span>
          </div>
 
-        <div className="px-12 space-y-2 pb-20">
+        <div className="p-10 space-y-4 pb-32">
           <MetricItem 
             label="Node Count" 
-            value={clients?.length || 0} 
+            value={Object.keys(nodeRegistry).length || clients.length || 0} 
           />
           <MetricItem 
             label="Verification Yield" 
-            value="98.2%" 
+            value={`${yieldValue}%`} 
           />
           <MetricItem 
             label="Computing Power" 
-            value="1.2 GB/s" 
+            value={`${powerValue} GB/s`} 
           />
         </div>
       </div>
 
       {/* Footer Branding Area */}
-        <div className="p-10 bg-bg-main/80 flex flex-col gap-4 border-t border-border">
+        <div className="p-10 bg-white flex flex-col gap-4 border-t border-border mt-auto shrink-0 z-20">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-sm shadow-sm">
+            <div className="p-2 bg-text-main rounded-sm shadow-sm">
               <Server size={14} className="text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="type-label text-text-main">Research Node</span>
-              <span className="type-label text-emerald-600 opacity-80">Online</span>
+              <span className="type-label text-black font-bold">Research Node</span>
+              <span className="type-label text-emerald-600 font-bold opacity-100">Online</span>
             </div>
           </div>
         </div>

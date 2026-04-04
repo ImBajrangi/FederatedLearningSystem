@@ -48,31 +48,31 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
         borderBottom: '1px solid #1f2937', flexShrink: 0,
       }}>
         {/* Tabs for Terminal / Nodes / Output */}
-        <div style={{ display: 'flex', height: '100%', gap: '2px' }}>
+        <div style={{ display: 'flex', height: '100%', gap: '4px', alignItems: 'flex-end', marginLeft: '8px' }}>
           <div 
             onClick={() => setActiveTab('logs')}
             style={{
-              display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+              padding: '0 16px', height: '28px', display: 'flex', alignItems: 'center', gap: '8px',
               background: activeTab === 'logs' ? '#0b1120' : 'transparent',
-              borderTop: activeTab === 'logs' ? '2px solid #6366f1' : '2px solid transparent',
+              borderRadius: '4px 4px 0 0',
+              borderBottom: activeTab === 'logs' ? '2px solid #6366f1' : '2px solid transparent',
               color: activeTab === 'logs' ? '#e2e8f0' : '#64748b', 
-              fontSize: '10px', fontWeight: activeTab === 'logs' ? 700 : 600,
-              textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
-              transition: 'all 0.2s'
+              fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer',
+              transition: 'all 0.2s', borderTop: 'none'
             }}
           >
-            <span style={{ opacity: 0.6 }}>$</span> Terminal
+            <span style={{ opacity: 0.4 }}>$</span> Terminal
           </div>
           <div 
             onClick={() => setActiveTab('registry')}
             style={{
-              display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+              padding: '0 16px', height: '28px', display: 'flex', alignItems: 'center', gap: '8px',
               background: activeTab === 'registry' ? '#0b1120' : 'transparent',
-              borderTop: activeTab === 'registry' ? '2px solid #6366f1' : '2px solid transparent',
+              borderRadius: '4px 4px 0 0',
+              borderBottom: activeTab === 'registry' ? '2px solid #6366f1' : '2px solid transparent',
               color: activeTab === 'registry' ? '#e2e8f0' : '#64748b', 
-              fontSize: '10px', fontWeight: activeTab === 'registry' ? 700 : 600,
-              textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
-              transition: 'all 0.2s'
+              fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer',
+              transition: 'all 0.2s', borderTop: 'none'
             }}
           >
             Node Registry
@@ -80,13 +80,13 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
           <div 
             onClick={() => setActiveTab('output')}
             style={{
-              display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+              padding: '0 16px', height: '28px', display: 'flex', alignItems: 'center', gap: '8px',
               background: activeTab === 'output' ? '#0b1120' : 'transparent',
-              borderTop: activeTab === 'output' ? '2px solid #6366f1' : '2px solid transparent',
+              borderRadius: '4px 4px 0 0',
+              borderBottom: activeTab === 'output' ? '2px solid #6366f1' : '2px solid transparent',
               color: activeTab === 'output' ? '#e2e8f0' : '#64748b', 
-              fontSize: '10px', fontWeight: activeTab === 'output' ? 700 : 600,
-              textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
-              transition: 'all 0.2s'
+              fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer',
+              transition: 'all 0.2s', borderTop: 'none'
             }}
           >
             Output
@@ -94,12 +94,12 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
         </div>
 
         {/* Terminal Actions (Clear, Scroll, Copy) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingRight: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div 
             onClick={onClear}
             style={{
-              padding: '4px', color: '#64748b', cursor: 'pointer',
+              padding: '6px', color: '#64748b', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: '4px', transition: 'all 0.2s'
             }}
@@ -107,7 +107,7 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; }}
             title="Clear Terminal"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
             </div>
             <div 
             onClick={handleCopy}

@@ -110,8 +110,8 @@ function App() {
       case 'dashboard':
         return (
           <div className="flex-1 p-10 space-y-12 section-fade bg-white">
-            <div className="flex items-center justify-between pb-8 border-b border-border">
-              <div className="space-y-2">
+            <div className="flex items-end justify-between pb-8 border-b border-border">
+              <div className="space-y-4">
                 <h2 className="type-l2 serif text-text-main pr-10 font-medium tracking-tight">Global Orchestrator</h2>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -126,44 +126,39 @@ function App() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6">
-                <div className="text-right pr-8 border-r border-border">
-                  <div className="text-[9px] font-light text-text-muted mb-2 uppercase tracking-[0.3em]">Global Accuracy</div>
-                  <div className="flex items-center justify-end gap-3 px-2">
-                    <span className="type-l2 serif text-text-main font-medium tabular-nums">
+              <div className="flex items-end gap-10">
+                <div className="text-right pr-10 border-r border-border h-10 flex flex-col justify-end">
+                  <div className="text-[9px] font-bold text-text-muted mb-1.5 uppercase tracking-[0.3em] opacity-40">Global Accuracy</div>
+                  <div className="flex items-baseline justify-end gap-3">
+                    <span className="text-2xl serif text-text-main font-medium tabular-nums leading-none">
                       {accuracyHistory && accuracyHistory.length > 0
                         ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
                         : "0.00"}%
                     </span>
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex flex-col items-center justify-center translate-y-[-2px]">
                       <div className={`p-1 rounded-full ${isConnected ? 'bg-emerald-50' : 'bg-red-50'}`}>
                         <Activity size={10} className={isConnected && isActive ? 'text-emerald-500 animate-pulse' : 'text-text-muted'} />
                       </div>
-                      {lastSync && (
-                         <span className="text-[8px] font-mono text-text-muted/60">
-                           SYNC_{lastSync.toLocaleTimeString([], { hour12: false, minute:'2-digit', second:'2-digit' })}
-                         </span>
-                      )}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex items-center gap-3 h-10">
                   <button
                     onClick={startSimulation}
                     disabled={isActive || !isConnected}
-                    className={`institutional-btn-primary flex items-center gap-4 shadow-lg active:scale-95 transition-all px-8 ${(!isConnected || isActive) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                    className={`h-full bg-primary text-white flex items-center gap-4 shadow-lg active:scale-95 transition-all px-8 text-[11px] font-bold uppercase tracking-[0.25em] ${(!isConnected || isActive) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                   >
-                    <Play size={14} className={isActive ? 'animate-pulse' : ''} />
-                    <span className="tracking-[0.25em]">
+                    <Play size={12} fill="currentColor" className={isActive ? 'animate-pulse' : ''} />
+                    <span>
                       {status === 'IDLE' ? 'Connect Sessions' : status === 'FINISHED' ? 'Report Complete' : 'Synchronized'}
                     </span>
                   </button>
                   <button
                     onClick={clearSimulation}
-                    className="p-3 border border-border text-text-muted hover:bg-slate-50 transition-all hover:text-text-main"
+                    className="h-full px-4 border border-border text-text-muted hover:bg-slate-50 transition-all hover:text-text-main flex items-center justify-center"
                   >
-                    <RotateCcw size={15} />
+                    <RotateCcw size={14} />
                   </button>
                 </div>
               </div>
@@ -189,11 +184,15 @@ function App() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <h3 className="type-l2 serif text-text-main whitespace-nowrap">Immutable Node Journal</h3>
-                    <div className="h-[1px] flex-1 bg-border/60" />
+                  <div className="relative flex items-center">
+                    <h3 className="type-l2 serif text-text-main pr-4 bg-white relative z-10">Immutable Node Journal</h3>
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div className="w-full border-t border-border/60"></div>
+                    </div>
                   </div>
-                  <BlockchainRibbon blockchain={blockchain} />
+                  <div className="h-[240px] border border-border/60 rounded-sm overflow-hidden">
+                    <BlockchainRibbon blockchain={blockchain} />
+                  </div>
                 </div>
               </div>
 
@@ -252,6 +251,9 @@ function App() {
           currentView={currentView}
           setView={setCurrentView}
           clients={clients}
+          nodeRegistry={nodeRegistry}
+          rejectedCount={rejectedCount}
+          blockchain={blockchain}
           width={sidebarWidth}
           onResize={startSidebarResize}
         />
