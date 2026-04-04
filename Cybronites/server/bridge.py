@@ -9,6 +9,7 @@ import asyncio
 import os
 import time
 import sqlite3
+from Cybronites.server.auth import router as auth_router
 
 # Setup logging
 logging.basicConfig(
@@ -178,6 +179,9 @@ class ConnectionManager:
 # Singleton instance
 bridge = ConnectionManager()
 app = FastAPI(title="AI Guardian Bridge")
+
+# Include Auth Routes
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
