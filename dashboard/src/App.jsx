@@ -266,6 +266,9 @@ function App() {
               onResize={startTerminalResize}
               isResizing={!!resizingRef.current}
               nodeRegistry={nodeRegistry}
+              accuracyHistory={accuracyHistory}
+              lossHistory={lossHistory}
+              roundHistory={roundHistory}
               onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
             />
           </div>

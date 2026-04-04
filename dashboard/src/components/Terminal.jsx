@@ -1,16 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {} }) => {
+export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accuracyHistory = [], lossHistory = [], roundHistory = [] }) => {
   const logsRef = useRef(null);
-  const registryRef = useRef(null);
-  const [registryHeight, setRegistryHeight] = useState(0);
+  const [activeTab, setActiveTab] = useState('logs');
 
-  // Measure registry height so logs area can fill the rest
-  useEffect(() => {
-    if (registryRef.current) {
-      setRegistryHeight(registryRef.current.offsetHeight);
-    }
-  });
+  // Auto-scroll to bottom on new logs
 
   // Auto-scroll to bottom on new logs
   useEffect(() => {
@@ -49,30 +43,46 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {} }) => {
       }}>
         {/* Tabs for Terminal / Nodes / Output */}
         <div style={{ display: 'flex', height: '100%', gap: '2px' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
-            background: '#0b1120', borderTop: '2px solid #6366f1',
-            color: '#e2e8f0', fontSize: '10px', fontWeight: 700,
-            textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'default'
-          }}>
+          <div 
+            onClick={() => setActiveTab('logs')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+              background: activeTab === 'logs' ? '#0b1120' : 'transparent',
+              borderTop: activeTab === 'logs' ? '2px solid #6366f1' : '2px solid transparent',
+              color: activeTab === 'logs' ? '#e2e8f0' : '#64748b', 
+              fontSize: '10px', fontWeight: activeTab === 'logs' ? 700 : 600,
+              textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
             <span style={{ opacity: 0.6 }}>$</span> Terminal
           </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
-            color: '#64748b', fontSize: '10px', fontWeight: 600,
-            textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#94a3b8'}
-          onMouseLeave={(e) => e.currentTarget.style.color = '#64748b'}
+          <div 
+            onClick={() => setActiveTab('registry')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+              background: activeTab === 'registry' ? '#0b1120' : 'transparent',
+              borderTop: activeTab === 'registry' ? '2px solid #6366f1' : '2px solid transparent',
+              color: activeTab === 'registry' ? '#e2e8f0' : '#64748b', 
+              fontSize: '10px', fontWeight: activeTab === 'registry' ? 700 : 600,
+              textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
           >
             Node Registry
           </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
-            color: '#64748b', fontSize: '10px', fontWeight: 600,
-            textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer'
-          }}>
+          <div 
+            onClick={() => setActiveTab('output')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px',
+              background: activeTab === 'output' ? '#0b1120' : 'transparent',
+              borderTop: activeTab === 'output' ? '2px solid #6366f1' : '2px solid transparent',
+              color: activeTab === 'output' ? '#e2e8f0' : '#64748b', 
+              fontSize: '10px', fontWeight: activeTab === 'output' ? 700 : 600,
+              textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
             Output
           </div>
         </div>
@@ -114,110 +124,77 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {} }) => {
         </div>
       </div>
 
-      {/* ── Node Registry (fixed height, shrinks to content) ── */}
-      <div
-        ref={registryRef}
-        style={{
-          flexShrink: 0, padding: '10px 20px',
-          background: 'rgba(15,23,42,0.8)', borderBottom: '1px solid #1e293b',
-        }}
-      >
-        {/* Header row */}
-        <div style={{
-          display: 'flex', gap: 24, marginBottom: 6, paddingBottom: 6,
-          borderBottom: '1px solid rgba(30,41,59,0.5)',
-          fontFamily: 'monospace', fontSize: 9, fontWeight: 700,
-          textTransform: 'uppercase', letterSpacing: '0.1em', color: '#475569',
-        }}>
-          <span style={{ width: 200, flexShrink: 0 }}>Node_ID (Endpoint)</span>
-          <span style={{ width: 100, flexShrink: 0 }}>Status</span>
-          <span style={{ flex: 1 }}>Last_Model_Hash</span>
-          <span style={{ width: 40, textAlign: 'right', flexShrink: 0 }}>Rep</span>
-        </div>
-        {/* Data rows with better standard formatting */}
-        {Object.entries(nodeRegistry).length === 0 ? (
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#334155', fontStyle: 'italic', paddingTop: 6, textAlign: 'center' }}>
-            [SYSTEM] No active nodes connected. Awaiting secure handshake...
+      {/* ── Tab Content ── */}
+      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        
+        {/* LOGS TAB */}
+        {activeTab === 'logs' && (
+          <div
+            ref={logsRef}
+            style={{
+              flex: 1, overflowY: 'auto', padding: '12px 20px',
+              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+              fontSize: 11, lineHeight: 1.7, color: '#cbd5e1',
+            }}
+          >
+            {logs.map((log, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 2 }}>
+                <span style={{ fontSize: 9, color: '#1e3a5f', flexShrink: 0 }}>{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                <span style={{ color: '#4f46e5', fontWeight: 700 }}>$</span>
+                <span style={{ color: log.color === '#ef4444' ? '#f87171' : '#94a3b8' }}>{log.msg}</span>
+              </div>
+            ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <span style={{ color: '#6366f1', fontWeight: 700 }}>{'>'}</span>
+              <span style={{ display: 'inline-block', width: 8, height: 14, background: '#6366f1', animation: 'blink 1s step-end infinite' }} />
+            </div>
           </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        )}
+
+        {/* REGISTRY TAB */}
+        {activeTab === 'registry' && (
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+            <div style={{
+              display: 'flex', gap: 24, marginBottom: 12, paddingBottom: 8,
+              borderBottom: '1px solid #1e2937', color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase'
+            }}>
+              <span style={{ width: 140 }}>Node_ID</span>
+              <span style={{ width: 100 }}>Status</span>
+              <span style={{ width: 100 }}>Reproduction</span>
+              <span style={{ flex: 1 }}>Security_Hash</span>
+            </div>
             {Object.entries(nodeRegistry).map(([id, info]) => (
-              <div key={id} style={{
-                display: 'flex', alignItems: 'center', gap: 24, fontFamily: 'monospace',
-                fontSize: '10px', color: '#cbd5e1', padding: '4px 8px', borderRadius: '4px',
-                background: 'rgba(30,41,59,0.2)', transition: 'background 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(30,41,59,0.4)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(30,41,59,0.2)'}
-              >
-                <span style={{
-                  width: 200, flexShrink: 0, color: '#818cf8', fontWeight: 600,
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                }} title={id}>{id}</span>
-                <span style={{ width: 100, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{
-                    width: 7, height: 7, borderRadius: '2px', flexShrink: 0,
-                    background: info.status === 'TRAINING' ? '#fbbf24' : info.status === 'COMPLETED' ? '#10b981' : '#475569',
-                    boxShadow: info.status === 'TRAINING' ? '0 0 10px rgba(251,191,36,0.2)' : '',
-                    animation: info.status === 'TRAINING' ? 'pulse 2s infinite' : '',
-                  }} />
-                  <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: info.status === 'TRAINING' ? '#fbbf24' : info.status === 'COMPLETED' ? '#34d399' : '#64748b' }}>
-                    {info.status}
-                  </span>
-                </span>
-                <span style={{ flex: 1, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '9px' }}>
-                  {info.hash || '----------------'}
-                </span>
-                <span style={{ width: 40, textAlign: 'right', flexShrink: 0, color: '#10b981', opacity: 0.6, fontSize: '9px' }}>1.0 REP</span>
+              <div key={id} style={{ display: 'flex', gap: 24, padding: '8px 0', borderBottom: '1px solid #111827', fontSize: 10, color: '#94a3b8' }}>
+                <span style={{ width: 140, color: '#818cf8', fontWeight: 600 }}>{id}</span>
+                <span style={{ width: 100, color: info.status === 'BUSY' ? '#fbbf24' : '#10b981' }}>{info.status || 'ACTIVE'}</span>
+                <span style={{ width: 100 }}>1.00 REP</span>
+                <span style={{ flex: 1, opacity: 0.4 }}>{info.hash || 'Verified on Chain'}</span>
               </div>
             ))}
           </div>
         )}
-      </div>
 
-      {/* ── Logs (fills remaining height, scrollable like a real terminal) ── */}
-      <div
-        ref={logsRef}
-        style={{
-          flex: '1 1 0',       // grows to fill remaining space
-          minHeight: 0,         // CRITICAL: allows flex child to shrink below content height
-          overflowY: 'auto',    // scroll only this zone
-          overflowX: 'hidden',
-          padding: '12px 20px',
-          fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", Menlo, monospace',
-          fontSize: 11,
-          lineHeight: 1.7,
-          color: '#cbd5e1',
-          background: '#0b1120',
-        }}
-      >
-        {logs.map((log, i) => {
-          const color = log.color === '#13ec49' ? '#34d399'
-            : log.color === '#ef4444' ? '#f87171'
-            : log.color === '#facc15' ? '#fbbf24'
-            : '#94a3b8';
-          return (
-            <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 2 }}>
-              <span style={{ fontSize: 9, color: '#1e3a5f', flexShrink: 0, userSelect: 'none', marginTop: 2 }}>
-                {new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-              </span>
-              <span style={{ color: '#4f46e5', fontWeight: 700, flexShrink: 0, fontSize: 11 }}>$</span>
-              <span style={{ color, wordBreak: 'break-all' }}>{log.msg}</span>
+        {/* OUTPUT TAB */}
+        {activeTab === 'output' && (
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+            <div style={{ background: '#111827', border: '1px solid #1e293b', borderRadius: '4px', padding: '20px', marginBottom: 20 }}>
+              <h4 style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', marginBottom: 16 }}>Session Performance Summary</h4>
+              {roundHistory.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {roundHistory.map((r, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: '#0b1120', borderRadius: '4px' }}>
+                      <span style={{ fontSize: 10, color: '#64748b' }}>Round {r.round}</span>
+                      <span style={{ fontSize: 10, color: '#10b981', fontWeight: 700 }}>Accuracy: {(r.acc * 100).toFixed(2)}%</span>
+                      <span style={{ fontSize: 10, color: '#f87171' }}>Loss: {r.loss.toFixed(4)}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ color: '#475569', fontSize: 10, fontStyle: 'italic' }}>No completed rounds recorded in ledger. Start simulation to index metrics.</div>
+              )}
             </div>
-          );
-        })}
-        {/* Blinking cursor */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-          <span style={{ fontSize: 9, color: '#1e3a5f', userSelect: 'none' }}>
-            {new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-          </span>
-          <span style={{ color: '#6366f1', fontWeight: 700 }}>{'>'}</span>
-          <span style={{
-            display: 'inline-block', width: 8, height: 14,
-            background: '#6366f1', opacity: 0.8,
-            animation: 'blink 1s step-end infinite',
-          }} />
-        </div>
+          </div>
+        )}
       </div>
 
       <style>{`
