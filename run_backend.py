@@ -28,12 +28,12 @@ def run_backend(num_clients=2, rounds=5):
 
     try:
         # 1. Start Server
-        print(f"[SYSTEM] Launching Orchestrator (Bridge + Flower)...")
+        print(f"[SYSTEM] Launching Orchestrator (Rounds: {rounds})...")
         server_env = os.environ.copy()
         server_env["PYTHONPATH"] = os.path.abspath(".")
         
         server_proc = subprocess.Popen(
-            [python_exe, "Cybronites/server/server.py"],
+            [python_exe, "Cybronites/server/server.py", "--rounds", str(rounds)],
             env=server_env
         )
         processes.append(server_proc)

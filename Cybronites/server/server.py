@@ -27,14 +27,22 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("GuardianServer")
 
+import argparse
+
 def main():
     """
     Main entry point for the Secure Federated Learning Backend.
     Starts the FastAPI Bridge and the Flower FL Server.
     """
+    # 0. Parse Arguments
+    parser = argparse.ArgumentParser(description="AI Guardian Server")
+    parser.add_argument("--rounds", type=int, default=100, help="Number of FL rounds")
+    parser.add_argument("--flower_port", type=int, default=8080, help="Flower gRPC port")
+    args = parser.parse_args()
+
     # 1. Initialize Components
-    logger.info("Initializing Blockchain Ledger and Reputation Manager...")
-    ledger = Blockchain(difficulty=1) # Low difficulty for simulation speed
+    logger.info(f"Initializing Orchestrator (Rounds: {args.rounds})...")
+    ledger = Blockchain(difficulty=1)
     reputation = ReputationManager()
 
     # 2. Start Dashboard Bridge (FastAPI) in background
@@ -46,8 +54,8 @@ def main():
     )
     bridge_thread.start()
     
-    time.sleep(2) # Grace period for bridge startup
-    bridge.broadcast_sync("LOG", "Backend components initialized. Waiting for clients...")
+    time.sleep(2)
+    bridge.broadcast_sync("LOG", "Backend components initialized. Waiting for secure nodes...")
 
     # 3. Configure Secure Strategy
     strategy = SecureFedAvg(
@@ -59,10 +67,10 @@ def main():
     )
 
     # 4. Launch Flower gRPC Server
-    flower_port = int(os.environ.get("FLOWER_PORT", 8080))
+    flower_port = args.flower_port
     logger.info(f"Launching Flower Server on port {flower_port}...")
     
-    server_config = fl.server.ServerConfig(num_rounds=5)
+    server_config = fl.server.ServerConfig(num_rounds=args.rounds)
     
     try:
         # Increase gRPC max message size for "global use" (larger models/updates)
