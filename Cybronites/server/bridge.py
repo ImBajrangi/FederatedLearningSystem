@@ -10,6 +10,7 @@ import os
 import time
 import sqlite3
 from Cybronites.server.auth import router as auth_router
+from Cybronites.utils.structured_logging import setup_structured_logging
 
 # Setup logging
 logging.basicConfig(
@@ -18,6 +19,7 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 logger = logging.getLogger("GuardianBridge")
+setup_structured_logging("GuardianBridge")
 
 class ConnectionManager:
     """Manages active WebSocket connections to the Institutional Dashboard."""
@@ -162,7 +164,8 @@ class ConnectionManager:
             # Diagnostic for history persistence
             if "accuracy_history" in payload:
                 hist_size = len(payload["accuracy_history"])
-                logger.info(f"Broadcasting STAT_UPDATE. Accuracy History Size: {hist_size}")
+                logger.info(f"Broadcasting STAT_UPDATE. Accuracy History Size: {hist_size}", 
+                            extra={"type": "telemetry", "round": payload.get("round"), "history_size": hist_size})
             
         elif message_type == "LOG":
             self.log_buffer.append(payload)

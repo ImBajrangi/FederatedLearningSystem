@@ -17,8 +17,10 @@ from blockchain.ledger import Blockchain, Transaction
 from blockchain.reputation import ReputationManager
 from blockchain.smart_contract import ValidationContract
 import time
+from Cybronites.utils.structured_logging import setup_structured_logging
 
 logger = logging.getLogger("SecureStrategy")
+setup_structured_logging("SecureStrategy")
 
 class SecureFedAvg(fl.server.strategy.FedAvg):
     """
@@ -210,6 +212,8 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         })
         
         bridge.broadcast_sync("LOG", f"Round {server_round} Synced (Acc: {avg_acc:.2%})")
+        logger.info(f"Round {server_round} Synced (Acc: {avg_acc:.2%})", 
+                    extra={"type": "round_sync", "round": server_round, "accuracy": avg_acc, "loss": avg_loss})
 
         # Updated metrics to return 
         metrics = {"accuracy": avg_acc, "loss": avg_loss}

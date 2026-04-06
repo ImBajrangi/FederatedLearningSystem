@@ -71,6 +71,10 @@ def main():
     # 1. Launch Server & Bridge
     print(f"\n  [1/3] Starting Bridge (:{BRIDGE_PORT}) + Flower Server (:{FLOWER_PORT})...")
     log_file = open("backend.log", "w")
+    # Initialize/Clear JSON log
+    with open("backend.json", "w") as f:
+        f.write("") 
+    
     server_proc = subprocess.Popen(
         [python_path, "-m", "server.server", "--flower_port", str(FLOWER_PORT)],
         env=env,

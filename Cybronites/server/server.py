@@ -23,9 +23,12 @@ except ImportError:
     from blockchain.ledger import Blockchain
     from blockchain.reputation import ReputationManager
 
+from Cybronites.utils.structured_logging import setup_structured_logging
+
 # Setup logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("GuardianServer")
+setup_structured_logging("GuardianServer")
 
 import argparse
 

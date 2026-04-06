@@ -4,10 +4,12 @@ import numpy as np
 import sys
 import os
 import logging
+from Cybronites.utils.structured_logging import setup_structured_logging
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("GuardianClient")
+setup_structured_logging("GuardianClient")
 
 # Ensure project root and package directories are in path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -68,7 +70,8 @@ class FlowerClient(fl.client.NumPyClient):
         self.set_parameters(parameters)
         
         optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
-        logger.info(f"Client {self.client_id} | Training locally...")
+        logger.info(f"Client {self.client_id} | Training locally...", 
+                    extra={"type": "training", "client_id": self.client_id, "status": "STARTED"})
         last_loss, last_acc = train(self.model, self.train_loader, optimizer, epochs=1, device=device)
         
         # Compute Parameter Update (Delta)
@@ -78,7 +81,8 @@ class FlowerClient(fl.client.NumPyClient):
              updates_dict[name] = new_params[i] - initial_params[i].cpu()
 
         # Apply Differential Privacy
-        logger.info(f"Client {self.client_id} | Applying DP Noise (ε-privacy)...")
+        logger.info(f"Client {self.client_id} | Applying DP Noise (ε-privacy)...", 
+                    extra={"type": "privacy", "client_id": self.client_id, "dp_applied": True})
         dp_updates = apply_dp_to_updates(updates_dict, self.dp_spec)
         
         # Reconstruct final parameters: initial + dp_delta
@@ -92,7 +96,8 @@ class FlowerClient(fl.client.NumPyClient):
     def evaluate(self, parameters, config):
         self.set_parameters(parameters)
         loss, accuracy = test(self.model, self.test_loader, device=device)
-        logger.info(f"Client {self.client_id} | Accuracy: {accuracy:.4f}")
+        logger.info(f"Client {self.client_id} | Accuracy: {accuracy:.4f}", 
+                    extra={"type": "evaluation", "client_id": self.client_id, "accuracy": accuracy})
         return float(loss), len(self.test_loader.dataset), {"accuracy": float(accuracy)}
 
 def main():

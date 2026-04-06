@@ -1,0 +1,4 @@
+{"timestamp":"2026-04-06 15:49:24","level":"INFO","component":"GuardianServer","message":"Initializing Orchestrator (Rounds: 100)...","epoch":1775470764.697676}
+{"timestamp":"2026-04-06 15:49:24","level":"INFO","component":"GuardianBridge","message":"Launching Guardian Bridge on port 7880...","epoch":1775470764.714026}
+{"timestamp":"2026-04-06 15:49:24","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775470764.751425}
+{"timestamp":"2026-04-06 15:49:24","level":"INFO","component":"GuardianBridge","message":"Guardian Bridge Event Loop context captured.","epoch":1775470764.751669}
