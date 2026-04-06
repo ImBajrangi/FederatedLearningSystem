@@ -85,3 +85,146 @@ DEBUG flwr 2026-04-06 15:00:31,383 | server.py:232 | fit_round 2 received 2 resu
 DEBUG flwr 2026-04-06 15:00:31,393 | server.py:168 | evaluate_round 2: strategy sampled 2 clients (out of 2)
 15:00:31 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 2
 15:00:31 [DEBUG] flwr: evaluate_round 2: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Accuracy: 0.5481
+INFO:GuardianClient:Client 0 | Accuracy: 0.5481
+DEBUG flwr 2026-04-06 15:00:33,176 | server.py:182 | evaluate_round 2 received 2 results and 0 failures
+15:00:33 [DEBUG] flwr: evaluate_round 2 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:00:33,176 | server.py:218 | fit_round 3: strategy sampled 2 clients (out of 2)
+15:00:33 [DEBUG] flwr: fit_round 3: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:00:45,513 | server.py:232 | fit_round 3 received 2 results and 0 failures
+15:00:45 [DEBUG] flwr: fit_round 3 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:00:45,523 | server.py:168 | evaluate_round 3: strategy sampled 2 clients (out of 2)
+15:00:45 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 3
+15:00:45 [DEBUG] flwr: evaluate_round 3: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 0 | Accuracy: 0.7953
+INFO:GuardianClient:Client 1 | Accuracy: 0.7953
+DEBUG flwr 2026-04-06 15:00:47,416 | server.py:182 | evaluate_round 3 received 2 results and 0 failures
+15:00:47 [DEBUG] flwr: evaluate_round 3 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:00:47,416 | server.py:218 | fit_round 4: strategy sampled 2 clients (out of 2)
+15:00:47 [DEBUG] flwr: fit_round 4: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:00:58,997 | server.py:232 | fit_round 4 received 2 results and 0 failures
+15:00:58 [DEBUG] flwr: fit_round 4 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:00:59,005 | server.py:168 | evaluate_round 4: strategy sampled 2 clients (out of 2)
+15:00:59 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 4
+15:00:59 [DEBUG] flwr: evaluate_round 4: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 0 | Accuracy: 0.9026
+INFO:GuardianClient:Client 1 | Accuracy: 0.9026
+DEBUG flwr 2026-04-06 15:01:00,730 | server.py:182 | evaluate_round 4 received 2 results and 0 failures
+15:01:00 [DEBUG] flwr: evaluate_round 4 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:00,730 | server.py:218 | fit_round 5: strategy sampled 2 clients (out of 2)
+15:01:00 [DEBUG] flwr: fit_round 5: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:01:10,761 | server.py:232 | fit_round 5 received 2 results and 0 failures
+15:01:10 [DEBUG] flwr: fit_round 5 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:10,768 | server.py:168 | evaluate_round 5: strategy sampled 2 clients (out of 2)
+15:01:10 [DEBUG] flwr: evaluate_round 5: strategy sampled 2 clients (out of 2)
+15:01:10 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 5
+INFO:GuardianClient:Client 0 | Accuracy: 0.9487
+INFO:GuardianClient:Client 1 | Accuracy: 0.9487
+DEBUG flwr 2026-04-06 15:01:12,131 | server.py:182 | evaluate_round 5 received 2 results and 0 failures
+15:01:12 [DEBUG] flwr: evaluate_round 5 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:12,131 | server.py:218 | fit_round 6: strategy sampled 2 clients (out of 2)
+15:01:12 [DEBUG] flwr: fit_round 6: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:01:21,947 | server.py:232 | fit_round 6 received 2 results and 0 failures
+15:01:21 [DEBUG] flwr: fit_round 6 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:21,957 | server.py:168 | evaluate_round 6: strategy sampled 2 clients (out of 2)
+15:01:21 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 6
+15:01:21 [DEBUG] flwr: evaluate_round 6: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 0 | Accuracy: 0.9619
+INFO:GuardianClient:Client 1 | Accuracy: 0.9619
+DEBUG flwr 2026-04-06 15:01:23,317 | server.py:182 | evaluate_round 6 received 2 results and 0 failures
+15:01:23 [DEBUG] flwr: evaluate_round 6 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:23,317 | server.py:218 | fit_round 7: strategy sampled 2 clients (out of 2)
+15:01:23 [DEBUG] flwr: fit_round 7: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:01:32,634 | server.py:232 | fit_round 7 received 2 results and 0 failures
+15:01:32 [DEBUG] flwr: fit_round 7 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:32,642 | server.py:168 | evaluate_round 7: strategy sampled 2 clients (out of 2)
+15:01:32 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 7
+15:01:32 [DEBUG] flwr: evaluate_round 7: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 0 | Accuracy: 0.9714
+INFO:GuardianClient:Client 1 | Accuracy: 0.9714
+DEBUG flwr 2026-04-06 15:01:34,027 | server.py:182 | evaluate_round 7 received 2 results and 0 failures
+15:01:34 [DEBUG] flwr: evaluate_round 7 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:34,027 | server.py:218 | fit_round 8: strategy sampled 2 clients (out of 2)
+15:01:34 [DEBUG] flwr: fit_round 8: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:01:46,365 | server.py:232 | fit_round 8 received 2 results and 0 failures
+15:01:46 [DEBUG] flwr: fit_round 8 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:46,381 | server.py:168 | evaluate_round 8: strategy sampled 2 clients (out of 2)
+15:01:46 [DEBUG] flwr: evaluate_round 8: strategy sampled 2 clients (out of 2)
+15:01:46 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 8
+INFO:GuardianClient:Client 0 | Accuracy: 0.9739
+INFO:GuardianClient:Client 1 | Accuracy: 0.9739
+DEBUG flwr 2026-04-06 15:01:47,813 | server.py:182 | evaluate_round 8 received 2 results and 0 failures
+15:01:47 [DEBUG] flwr: evaluate_round 8 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:47,813 | server.py:218 | fit_round 9: strategy sampled 2 clients (out of 2)
+15:01:47 [DEBUG] flwr: fit_round 9: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:01:58,257 | server.py:232 | fit_round 9 received 2 results and 0 failures
+15:01:58 [DEBUG] flwr: fit_round 9 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:58,266 | server.py:168 | evaluate_round 9: strategy sampled 2 clients (out of 2)
+15:01:58 [DEBUG] flwr: evaluate_round 9: strategy sampled 2 clients (out of 2)
+15:01:58 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 9
+INFO:GuardianClient:Client 0 | Accuracy: 0.9748
+INFO:GuardianClient:Client 1 | Accuracy: 0.9748
+DEBUG flwr 2026-04-06 15:01:59,700 | server.py:182 | evaluate_round 9 received 2 results and 0 failures
+15:01:59 [DEBUG] flwr: evaluate_round 9 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:01:59,700 | server.py:218 | fit_round 10: strategy sampled 2 clients (out of 2)
+15:01:59 [DEBUG] flwr: fit_round 10: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:02:09,241 | server.py:232 | fit_round 10 received 2 results and 0 failures
+15:02:09 [DEBUG] flwr: fit_round 10 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:02:09,249 | server.py:168 | evaluate_round 10: strategy sampled 2 clients (out of 2)
+15:02:09 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 10
+15:02:09 [DEBUG] flwr: evaluate_round 10: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 0 | Accuracy: 0.9777
+INFO:GuardianClient:Client 1 | Accuracy: 0.9777
+DEBUG flwr 2026-04-06 15:02:10,632 | server.py:182 | evaluate_round 10 received 2 results and 0 failures
+15:02:10 [DEBUG] flwr: evaluate_round 10 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:02:10,632 | server.py:218 | fit_round 11: strategy sampled 2 clients (out of 2)
+15:02:10 [DEBUG] flwr: fit_round 11: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
+INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-06 15:02:20,992 | server.py:232 | fit_round 11 received 2 results and 0 failures
+15:02:20 [DEBUG] flwr: fit_round 11 received 2 results and 0 failures
+15:02:21 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 11
+DEBUG flwr 2026-04-06 15:02:21,002 | server.py:168 | evaluate_round 11: strategy sampled 2 clients (out of 2)
+15:02:21 [DEBUG] flwr: evaluate_round 11: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 0 | Accuracy: 0.9792
+INFO:GuardianClient:Client 1 | Accuracy: 0.9792
+DEBUG flwr 2026-04-06 15:02:22,857 | server.py:182 | evaluate_round 11 received 2 results and 0 failures
+15:02:22 [DEBUG] flwr: evaluate_round 11 received 2 results and 0 failures
+DEBUG flwr 2026-04-06 15:02:22,857 | server.py:218 | fit_round 12: strategy sampled 2 clients (out of 2)
+15:02:22 [DEBUG] flwr: fit_round 12: strategy sampled 2 clients (out of 2)
+INFO:GuardianClient:Client 1 | Training locally...
+INFO:GuardianClient:Client 0 | Training locally...
