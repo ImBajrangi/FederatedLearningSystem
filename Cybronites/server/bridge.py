@@ -211,6 +211,7 @@ async def websocket_endpoint(websocket: WebSocket):
         bridge.disconnect(websocket)
 
 @app.get("/api/health")
+@app.get("/status")
 async def health_check():
     return {"status": "ONLINE", "clients": len(bridge.active_connections)}
 

@@ -31,7 +31,8 @@ def wait_for_bridge(port, timeout=15):
     """Wait until the bridge HTTP endpoint is reachable."""
     for i in range(timeout):
         try:
-            r = urllib.request.urlopen(f"http://localhost:{port}/status", timeout=1)
+            # Use /api/health as defined in bridge.py
+            r = urllib.request.urlopen(f"http://localhost:{port}/api/health", timeout=1)
             if r.status == 200:
                 return True
         except Exception:
@@ -71,7 +72,7 @@ def main():
     print(f"\n  [1/3] Starting Bridge (:{BRIDGE_PORT}) + Flower Server (:{FLOWER_PORT})...")
     log_file = open("backend.log", "w")
     server_proc = subprocess.Popen(
-        [python_path, "-m", "server.server"],
+        [python_path, "-m", "server.server", "--flower_port", str(FLOWER_PORT)],
         env=env,
         cwd=os.path.join(cwd, "Cybronites"),
         stdout=log_file,
