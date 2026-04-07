@@ -254,6 +254,26 @@ async def startup():
     bridge.loop = asyncio.get_running_loop()
     bridge.load_model_code()
     bridge.fetch_public_ip()
+    
+    # Initialize Orchestrator and start Log Listener thread
+    from Cybronites.server.orchestrator import get_orchestrator
+    orchestrator = get_orchestrator()
+    
+    def log_listener_worker():
+        """Background thread to pipe logs from multiprocessing.Queue to bridge.broadcast_sync."""
+        logger.info("IPC Log Listener thread started.")
+        while True:
+            try:
+                # Blocking read from queue
+                message_type, payload = orchestrator.log_queue.get()
+                bridge.broadcast_sync(message_type, payload)
+            except Exception as e:
+                logger.error(f"IPC Log Tunnel Error: {e}")
+                time.sleep(1)
+
+    import threading
+    threading.Thread(target=log_listener_worker, daemon=True).start()
+    
     logger.info("Guardian Bridge Event Loop context captured.")
 
 @app.websocket("/ws")
@@ -277,10 +297,17 @@ async def health_check():
 @app.post("/api/v1/federated/start")
 async def start_federated_training():
     """Triggers or synchronizes the federated training cycle."""
-    logger.info("Federated Training Initiation Signal Received.")
-    # On Hugging Face, training typically auto-starts, so this returns success
-    # to acknowledge the UI's synchronization request.
-    return {"success": True, "message": "Federated training cycle synchronized."}
+    from Cybronites.server.orchestrator import get_orchestrator
+    orchestrator = get_orchestrator()
+    success, message = orchestrator.start_simulation()
+    
+    if success:
+        logger.info(f"Federated Training Initiation: {message}")
+        await bridge.broadcast("LOG", f"SYSTEM: {message}")
+    else:
+        logger.warning(f"Initiation skipped: {message}")
+        
+    return {"success": success, "message": message}
 
 @app.post("/api/v1/laboratory/validate")
 async def validate_code(data: Dict[str, str]):

@@ -1,5 +1,5 @@
 import flwr as fl
-from typing import List, Tuple, Union, Optional, Dict
+from typing import List, Tuple, Union, Optional, Dict, Any
 from dataclasses import asdict
 from flwr.common import (
     Parameters,
@@ -39,6 +39,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         min_fit_clients: int = 2,
         min_available_clients: int = 2,
         aggregation_method: str = "median",
+        log_queue: Optional[object] = None, # multiprocess.Queue
         **kwargs,
     ):
         super().__init__(
@@ -49,6 +50,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         self.blockchain = blockchain
         self.reputation = reputation
         self.aggregation_method = aggregation_method
+        self.log_queue = log_queue
         self.current_round = 0
         self.accuracy_history = []
         self.loss_history = []
@@ -67,6 +69,21 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             "max_rounds": 5
         }
 
+    def _broadcast(self, msg_type: str, payload: Any):
+        """Unified broadcast helper with IPC queue support."""
+        if self.log_queue:
+            self.log_queue.put((msg_type, payload))
+        else:
+            bridge.broadcast_sync(msg_type, payload)
+
+    def configure_fit(
+        self, server_round: int, parameters: Parameters, client_manager: fl.server.client_manager.ClientManager
+    ) -> List[Tuple[ClientProxy, fl.common.FitIns]]:
+        """Hook to update UI as soon as a round starts."""
+        self._broadcast("LOG", f"Round {server_round}: Dispatching training tasks...")
+        self._broadcast("STAT_UPDATE", {"status": "TRAINING", "round": server_round})
+        return super().configure_fit(server_round, parameters, client_manager)
+
     def aggregate_fit(
         self,
         server_round: int,
@@ -80,8 +97,8 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             return None, {}
 
         # 1. Telemetry: Notify Bridge
-        bridge.broadcast_sync("LOG", f"Round {server_round}: Aggregating {len(results)} updates...")
-        bridge.broadcast_sync("STAT_UPDATE", {"status": "AGGREGATING", "round": server_round})
+        self._broadcast("LOG", f"Round {server_round}: Aggregating {len(results)} updates...")
+        self._broadcast("STAT_UPDATE", {"status": "AGGREGATING", "round": server_round})
 
         # 2. Extract weights and perform robust aggregation
         weights_results = [
@@ -127,11 +144,11 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
                 new_score = self.reputation.record_valid_update(cid)
                 valid_ndarrays.append((weights, fit_res.num_examples, cid))
                 status = "VALID"
-                bridge.broadcast_sync("LOG", f"  ✅ {cid}: Update VALID (norm={tx.l2_norm:.2f})")
+                self._broadcast("LOG", f"  ✅ {cid}: Update VALID (norm={tx.l2_norm:.2f})")
             else:
                 new_score = self.reputation.record_malicious_update(cid)
                 status = "REJECTED"
-                bridge.broadcast_sync("LOG", f"  ❌ {cid}: REJECTED - {tx.rejection_reason}")
+                self._broadcast("LOG", f"  ❌ {cid}: REJECTED - {tx.rejection_reason}")
 
             # Extract Metrics and Reported Metadata
             m_acc = float(fit_res.metrics.get("accuracy", 0.0)) if fit_res.metrics else 0.0
@@ -179,7 +196,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
                 aggregated_ndarrays = self._aggregate_weighted_avg(valid_ndarrays)
         else:
              # Skip if no valid updates
-             bridge.broadcast_sync("LOG", f"  ⚠️ Round {server_round}: NO VALID UPDATES. Skipping aggregation.")
+             self._broadcast("LOG", f"  ⚠️ Round {server_round}: NO VALID UPDATES. Skipping aggregation.")
              return None, {}
 
         # 5. Mine the block
@@ -201,7 +218,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             serialized_chain = []
 
         # 6. Synchronous Broadcast
-        bridge.broadcast_sync("STAT_UPDATE", {
+        self._broadcast("STAT_UPDATE", {
             "status": "IDLE",
             "round": server_round,
             "total_blocks": len(self.blockchain.chain),
@@ -216,7 +233,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
             "heartbeat": time.time()
         })
         
-        bridge.broadcast_sync("LOG", f"Round {server_round} Synced (Acc: {avg_acc:.2%})")
+        self._broadcast("LOG", f"Round {server_round} Synced (Acc: {avg_acc:.2%})")
         logger.info(f"Round {server_round} Synced (Acc: {avg_acc:.2%})", 
                     extra={"type": "round_sync", "round": server_round, "accuracy": avg_acc, "loss": avg_loss})
 

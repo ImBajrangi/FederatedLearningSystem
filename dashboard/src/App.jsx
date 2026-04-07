@@ -135,7 +135,7 @@ function App() {
       return;
     }
 
-    addToast(status === 'IDLE' ? 'Monitoring external backend...' : 'Session already in progress.', 'info');
+    addToast(status === 'IDLE' ? 'Initiating Federated Session...' : 'Session already in progress.', 'info');
     // In our new architecture, run_backend.py starts the rounds. 
     // The button acts as a "Synchonize/Monitor" state.
     await runRound();
