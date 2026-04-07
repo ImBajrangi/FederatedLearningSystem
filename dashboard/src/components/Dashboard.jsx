@@ -422,10 +422,11 @@ export const Dashboard = ({
           opacity: 0.6;
         }
         .dash-journal-container {
-          height: 240px;
+          height: 320px;
           border: 1px solid var(--border);
-          background: #fff;
-          overflow: hidden;
+          background: #000;
+          display: flex;
+          flex-direction: column;
         }
 
         /* ─── Responsive ─── */

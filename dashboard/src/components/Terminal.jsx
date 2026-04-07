@@ -166,9 +166,9 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
           >
             {logs.map((log, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 2 }}>
-                <span style={{ fontSize: 9, color: '#1e3a5f', flexShrink: 0 }}>{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-                <span style={{ color: '#4f46e5', fontWeight: 700 }}>$</span>
-                <span style={{ color: log.color === '#ef4444' ? '#f87171' : '#94a3b8' }}>{log.msg}</span>
+                <span style={{ fontSize: 9, color: '#334155', flexShrink: 0 }}>{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                <span style={{ color: '#6366f1', fontWeight: 700 }}>$</span>
+                <span style={{ color: log.color === '#ef4444' ? '#f87171' : '#ffffff' }}>{log.msg}</span>
               </div>
             ))}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>

@@ -77,9 +77,11 @@ export const BlockchainRibbon = ({ blockchain }) => {
             </div>
 
             {/* Signature Hash */}
-            <div className="px-4 overflow-hidden">
+            <div className="px-4 overflow-hidden min-w-0 flex items-center">
               <div className="font-mono text-[9px] text-white/30 tracking-tighter truncate opacity-60 group-hover:opacity-100 transition-opacity">
-                {block.hash !== 'null' && block.hash.length > 10 ? block.hash : '0x00000000_SEED_PROTOCOL'}
+                {block.hash !== 'null' && block.hash.length > 16
+                  ? `${block.hash.substring(0, 10)}...${block.hash.substring(block.hash.length - 8)}`
+                  : block.hash === 'null' ? '0x00000000_SEED_PROTOCOL' : block.hash}
               </div>
             </div>
 
