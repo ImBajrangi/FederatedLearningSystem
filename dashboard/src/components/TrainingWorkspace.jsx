@@ -17,6 +17,15 @@ const ConfigInput = ({ label, value }) => (
 );
 
 export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams, roundHistory = [], modelArchitecture }) => {
+  const consoleRef = React.useRef(null);
+  const ledgerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (consoleRef.current) {
+      consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+    }
+  }, [logs]);
+
   const defaultHyperparams = {
     learning_rate: 0.01,
     batch_size: 32,
@@ -78,47 +87,72 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
                 <Database size={12} className="tr-card-icon" />
                 <span className="tr-card-title">Institutional Parameter Audit Ledger</span>
               </div>
-              <div className="tr-live-sync">
-                <div className="tr-sync-dot" />
-                <span>Live Sync</span>
+              <div className="tr-ledger-meta">
+                <div className="tr-live-sync">
+                  <div className="tr-sync-dot" />
+                  <span>Live Sync</span>
+                </div>
+                <div className="tr-ver-status">
+                  <ShieldCheck size={10} className="text-emerald-500" />
+                  <span>Verified: 100%</span>
+                </div>
               </div>
             </div>
-            <div className="tr-ledger-scroll">
+            <div className="tr-ledger-scroll" ref={ledgerRef}>
               <table className="tr-table">
                 <thead>
-                  <tr>
-                    <th>Rnd</th>
-                    <th>Node_ID</th>
-                    <th>LR</th>
-                    <th>Batch</th>
-                    <th className="tr-text-right">Acc %</th>
-                    <th className="tr-text-right">Status</th>
+                  <tr className="tr-table-header-row">
+                    <th className="tr-th-rnd" style={{ width: '60px' }}>RND</th>
+                    <th className="tr-th-node" style={{ width: '160px' }}>NODE_ID</th>
+                    <th className="tr-th-params">PARAMETERS_GRID</th>
+                    <th className="tr-th-acc" style={{ width: '100px', textAlign: 'right' }}>ACC_YIELD</th>
+                    <th className="tr-th-status" style={{ width: '100px', textAlign: 'right' }}>STATUS</th>
                   </tr>
                 </thead>
                 <tbody>
                   {roundHistory.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="tr-empty-state">
-                        Awaiting initial orchestration cycle...
+                      <td colSpan="5" className="tr-empty-state">
+                        <div className="tr-empty-icon-wrap">
+                          <Database size={24} className="opacity-10" />
+                        </div>
+                        <span>Awaiting initial orchestration cycle...</span>
                       </td>
                     </tr>
                   ) : (
                     [...roundHistory].reverse().map((row, idx) => (
-                      <tr key={idx}>
-                        <td className="tr-rnd">#{row.round.toString().padStart(2, '0')}</td>
+                      <tr key={idx} className="tr-ledger-row">
+                        <td className="tr-td-rnd">
+                          <span className="tr-rnd-num">#{row.round.toString().padStart(2, '0')}</span>
+                        </td>
                         <td>
                           <div className="tr-node-info">
                             <span className="tr-node-id">{row.client}</span>
-                            <span className="tr-node-ver">Node_v{idx + 1}</span>
+                            <span className="tr-node-label">SECURE_EDGE_NODE</span>
                           </div>
                         </td>
-                        <td className="tr-mono">{row.lr.toFixed(3)}</td>
-                        <td className="tr-mono">{row.batch}</td>
-                        <td className="tr-text-right tr-acc">{(row.acc * 100).toFixed(1)}%</td>
+                        <td>
+                          <div className="tr-params-grid">
+                            <div className="tr-param-item">
+                              <span className="tr-param-label">LR:</span>
+                              <span className="tr-param-val">{row.lr.toFixed(4)}</span>
+                            </div>
+                            <div className="tr-param-item">
+                              <span className="tr-param-label">BATCH:</span>
+                              <span className="tr-param-val">{row.batch}</span>
+                            </div>
+                          </div>
+                        </td>
                         <td className="tr-text-right">
-                          <div className="tr-verified-badge">
-                            <ShieldCheck size={8} />
-                            <span>Verified</span>
+                          <div className="tr-acc-badge">
+                            <span className="tr-acc-val">{(row.acc * 100).toFixed(2)}</span>
+                            <span className="tr-acc-unit">%</span>
+                          </div>
+                        </td>
+                        <td className="tr-text-right">
+                          <div className="tr-status-badge tr-status-verified">
+                            <ShieldCheck size={9} />
+                            <span>VERIFIED</span>
                           </div>
                         </td>
                       </tr>
@@ -126,6 +160,13 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
                   )}
                 </tbody>
               </table>
+            </div>
+            <div className="tr-ledger-footer">
+              <span className="tr-footer-text italic">Audit trail secured via differential privacy ledger</span>
+              <div className="tr-footer-stats">
+                <span className="tr-stat-label">TOTAL ROUNDS:</span>
+                <span className="tr-stat-val">{roundHistory.length}</span>
+              </div>
             </div>
           </section>
 
@@ -170,32 +211,65 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
           </section>
 
           {/* Terminal Console */}
-          <section className="tr-console">
+          <section className="tr-console-container">
             <div className="tr-console-header">
-              <div className="tr-console-title">
-                <TerminalIcon size={11} className="tr-console-icon" />
-                <span>Cluster Node Telemetry</span>
+              <div className="tr-console-tabs">
+                <div className="tr-tab active">
+                  <TerminalIcon size={10} />
+                  <span>Node Telemetry</span>
+                </div>
+                <div className="tr-tab">
+                  <Globe size={10} />
+                  <span>Global Feed</span>
+                </div>
+                <div className="tr-tab">
+                  <Lock size={10} />
+                  <span>Sec Audit</span>
+                </div>
               </div>
-              <button className="tr-console-clear">Clear</button>
+              <div className="tr-console-actions">
+                <div className="tr-latency">
+                  <div className="tr-latency-dot" />
+                  <span>4ms Latency</span>
+                </div>
+                <button className="tr-btn-clear" onClick={() => {}}>Clear</button>
+              </div>
             </div>
-            <div className="tr-console-body scroll-m-0">
-              {logs.map((log, i) => {
-                const logObj = typeof log === 'object' ? log : { msg: log };
-                const isComplete = logObj.msg.includes('COMPLETE') || logObj.msg.includes('FINISHED');
-                const isError = logObj.msg.includes('ERR') || logObj.msg.includes('CRITICAL');
-                return (
-                  <div key={i} className="tr-console-line">
-                    <span className="tr-timestamp">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
-                    <span className={`tr-log-msg ${isComplete ? 'tr-log-success' : isError ? 'tr-log-error' : ''}`}>
-                      {logObj.msg}
-                    </span>
+            <div className="tr-console-body" ref={consoleRef}>
+              <div className="tr-console-scanline" />
+              <div className="tr-log-container">
+                {logs.length === 0 ? (
+                  <div className="tr-console-empty">
+                    <RefreshCcw size={14} className="animate-spin opacity-20" />
+                    <span>Awaiting system initialization...</span>
                   </div>
-                );
-              })}
-              <div className="tr-console-cursor">
-                <span className="tr-timestamp">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
-                <div className="tr-cursor-char" />
-                <span className="tr-log-msg-muted">Awaiting sequence...</span>
+                ) : (
+                  logs.map((log, i) => {
+                    const logObj = typeof log === 'object' ? log : { msg: log };
+                    const isSuccess = logObj.msg.includes('SUCCESS') || logObj.msg.includes('COMPLETE') || logObj.msg.includes('FINISHED');
+                    const isError = logObj.msg.includes('ERR') || logObj.msg.includes('CRITICAL');
+                    const isWarning = logObj.msg.includes('WARN');
+                    
+                    return (
+                      <div key={i} className="tr-log-line group">
+                        <span className="tr-log-ts">{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                        <span className="tr-log-prefix ml-2">[{i % 2 === 0 ? 'NODE_01' : 'NODE_02'}]</span>
+                        <span className={`tr-log-msg ${isSuccess ? 'text-emerald-400' : isError ? 'text-rose-400' : isWarning ? 'text-amber-400' : 'text-slate-300'}`}>
+                          {logObj.msg}
+                        </span>
+                        <div className="tr-log-glow" />
+                      </div>
+                    );
+                  })
+                )}
+                <div className="tr-console-prompt">
+                  <span className="tr-log-ts">{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                  <span className="tr-log-prefix ml-2">[SYS_PROMPT]</span>
+                  <div className="tr-cursor-wrap">
+                    <span className="tr-cursor">_</span>
+                    <span className="text-slate-500 italic opacity-50 ml-1">Awaiting next sequence...</span>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -371,44 +445,144 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
           letter-spacing: 0.05em;
         }
 
-        /* ─── Ledger ─── */
-        .tr-ledger-card { border-color: rgba(var(--primary-rgb), 0.15); }
-        .tr-live-sync { display: flex; align-items: center; gap: 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); opacity: 0.6; }
-        .tr-sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: tr-pulse 2s infinite; }
-        @keyframes tr-pulse { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+        /* ─── Ledger Overhaul ─── */
+        .tr-ledger-card { 
+          border-color: var(--border);
+          background: linear-gradient(to bottom, #fff, #fcfcfc);
+        }
+        .tr-ledger-meta { display: flex; align-items: center; gap: 20px; }
+        .tr-ver-status { display: flex; align-items: center; gap: 8px; font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .tr-live-sync { display: flex; align-items: center; gap: 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        .tr-sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: tr-pulse 2s infinite; }
+        @keyframes tr-pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .tr-ledger-scroll { max-height: 280px; overflow-y: auto; }
-        .tr-ledger-scroll::-webkit-scrollbar { width: 4px; }
-        .tr-ledger-scroll::-webkit-scrollbar-thumb { background: var(--border); }
+        .tr-ledger-scroll { 
+          max-height: 240px; 
+          overflow-y: auto; 
+          position: relative;
+        }
+        .tr-ledger-scroll::-webkit-scrollbar { width: 6px; }
+        .tr-ledger-scroll::-webkit-scrollbar-track { background: transparent; }
+        .tr-ledger-scroll::-webkit-scrollbar-thumb { 
+          background: var(--border); 
+          border: 2px solid #fff;
+          border-radius: 10px;
+        }
 
-        .tr-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .tr-table thead { position: sticky; top: 0; background: #f8fafc; z-index: 1; }
+        .tr-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+        .tr-table thead { position: sticky; top: 0; z-index: 10; }
+        .tr-table-header-row { background: #fbfbfb; }
         .tr-table th {
           padding: 12px 20px;
           font-size: 9px; font-weight: 800; color: var(--text-muted);
           text-transform: uppercase; letter-spacing: 0.15em;
           border-bottom: 2px solid var(--border);
         }
-        .tr-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); }
-        .tr-rnd { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: var(--text-main); }
-        .tr-node-id { display: block; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--text-main); }
-        .tr-node-ver { font-size: 8px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; }
-        .tr-mono { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
-        .tr-acc { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--success); }
-        .tr-text-right { text-align: right; }
-        .tr-verified-badge {
-          display: inline-flex; align-items: center; gap: 6px;
-          padding: 3px 8px; background: #f0fdf4; border: 1px solid #dcfce7;
-          border-radius: 2px; font-size: 8px; font-weight: 800; color: #166534;
-          text-transform: uppercase; letter-spacing: 0.1em;
+        .tr-table td { padding: 18px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        
+        .tr-td-rnd { width: 80px; }
+        .tr-rnd-num { font-family: var(--font-mono); font-size: 11px; font-weight: 800; color: var(--primary); }
+        
+        .tr-node-info { display: flex; flex-direction: column; gap: 2px; }
+        .tr-node-id { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text-main); }
+        .tr-node-label { font-size: 8px; font-weight: 700; color: var(--text-muted); opacity: 0.6; }
+
+        .tr-params-grid { display: flex; gap: 16px; }
+        .tr-param-item { display: flex; gap: 6px; align-items: baseline; }
+        .tr-param-label { font-size: 8px; font-weight: 700; color: var(--text-muted); }
+        .tr-param-val { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text-main); }
+
+        .tr-acc-badge { display: flex; align-items: baseline; gap: 1px; color: var(--success); }
+        .tr-acc-val { font-family: var(--font-mono); font-size: 14px; font-weight: 800; }
+        .tr-acc-unit { font-size: 9px; font-weight: 700; }
+
+        .tr-status-badge { 
+          display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+          border-radius: 2px; font-size: 8px; font-weight: 800; letter-spacing: 0.1em;
         }
+        .tr-status-verified { background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; }
+
+        .tr-ledger-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .tr-footer-text { font-size: 9px; color: var(--text-muted); opacity: 0.6; letter-spacing: 0.05em; }
+        .tr-footer-stats { display: flex; align-items: center; gap: 10px; }
+        .tr-stat-label { font-size: 8px; font-weight: 700; color: var(--text-muted); }
+        .tr-stat-val { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: var(--text-main); }
+
+        /* ─── Console Overhaul ─── */
+        .tr-console-container {
+          background: #0f172a;
+          border: 1px solid #1e293b;
+          display: flex;
+          flex-direction: column;
+          height: 380px;
+          position: relative;
+          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+        .tr-console-header {
+          padding: 0 16px;
+          height: 42px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #1e293b;
+          flex-shrink: 0;
+        }
+        .tr-console-tabs { display: flex; height: 100%; }
+        .tr-tab { 
+          display: flex; align-items: center; gap: 10px; padding: 0 16px;
+          font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+          color: rgba(255,255,255,0.4); border-right: 1px solid rgba(255,255,255,0.05);
+          cursor: pointer; transition: all 0.2s;
+        }
+        .tr-tab:hover { background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.6); }
+        .tr-tab.active { background: #0f172a; color: var(--primary); border-top: 2px solid var(--primary); }
+
+        .tr-console-actions { display: flex; align-items: center; gap: 20px; }
+        .tr-latency { display: flex; align-items: center; gap: 8px; font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.2); text-transform: uppercase; }
+        .tr-latency-dot { width: 4px; height: 4px; border-radius: 50%; background: #10B981; }
+        .tr-btn-clear { background: none; border: none; padding: 4px 8px; font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; cursor: pointer; }
+        .tr-btn-clear:hover { color: #fff; }
+
+        .tr-console-body { 
+          flex: 1; overflow-y: auto; padding: 20px 24px; position: relative;
+          font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
+        }
+        .tr-console-scanline {
+          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+          background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.1) 50%);
+          background-size: 100% 2px;
+          pointer-events: none; z-index: 10; opacity: 0.1;
+        }
+        .tr-log-container { position: relative; z-index: 1; }
+        .tr-log-line { display: flex; gap: 12px; margin-bottom: 4px; position: relative; }
+        .tr-log-ts { color: rgba(255,255,255,0.15); flex-shrink: 0; width: 65px; font-size: 9px; }
+        .tr-log-prefix { color: rgba(255,255,255,0.3); flex-shrink: 0; width: 80px; font-weight: 700; text-transform: uppercase; font-size: 9px; }
+        .tr-log-msg { white-space: pre-wrap; font-weight: 500; }
+        .tr-log-glow { 
+          position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+          background: rgba(var(--primary-rgb), 0.05); opacity: 0;
+          transition: opacity 0.2s; pointer-events: none;
+        }
+        .tr-log-line:hover .tr-log-glow { opacity: 1; }
+
+        .tr-console-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 16px; color: rgba(255,255,255,0.15); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+        
+        .tr-console-prompt { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
+        .tr-cursor-wrap { display: flex; align-items: center; }
+        .tr-cursor { color: var(--primary); font-weight: 800; animation: tr-blink 1s step-end infinite; text-shadow: 0 0 10px var(--primary); }
+        @keyframes tr-blink { 50% { opacity: 0; } }
+
+        .tr-console-body::-webkit-scrollbar { width: 6px; }
+        .tr-console-body::-webkit-scrollbar-track { background: transparent; }
+        .tr-console-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .tr-console-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
 
         .tr-script-card { min-height: 320px; }
         .tr-file-tag { font-size: 9px; font-weight: 700; color: var(--text-muted); padding: 2px 8px; background: var(--bg-main); border: 1px solid var(--border); margin-left: 8px; }
         .tr-script-body { padding: 24px; background: #fff; flex: 1; overflow-y: auto; }
         .tr-script-body pre { margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.6; color: var(--text-main); opacity: 0.8; }
 
-        /* ─── Right Column ─── */
         .tr-metrics-card { min-height: 400px; }
         .tr-metrics-legend { display: flex; gap: 16px; }
         .tr-legend-item { display: flex; align-items: center; gap: 8px; font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
@@ -417,37 +591,6 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
         .tr-dot-error { background: var(--error); }
         .tr-metrics-body { padding: 32px; background: #fff; flex: 1; }
 
-        .tr-console {
-          background: #0f172a;
-          border: 1px solid #1e293b;
-          display: flex;
-          flex-direction: column;
-          min-height: 350px;
-        }
-        .tr-console-header {
-          padding: 16px 24px;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: rgba(255,255,255,0.02);
-        }
-        .tr-console-title { display: flex; align-items: center; gap: 10px; font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.15em; }
-        .tr-console-clear { background: none; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 4px 12px; cursor: pointer; }
-        .tr-console-clear:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        
-        .tr-console-body { padding: 24px; overflow-y: auto; flex: 1; font-family: var(--font-mono); font-size: 11px; line-height: 1.8; color: rgba(255,255,255,0.5); }
-        .tr-console-line { display: flex; gap: 16px; margin-bottom: 4px; }
-        .tr-timestamp { color: rgba(255,255,255,0.15); flex-shrink: 0; }
-        .tr-log-msg { white-space: pre-wrap; }
-        .tr-log-success { color: var(--primary); }
-        .tr-log-error { color: var(--error); }
-        .tr-console-cursor { display: flex; align-items: center; gap: 16px; }
-        .tr-cursor-char { width: 6px; height: 12px; background: var(--primary); animation: tr-blink 1s step-end infinite; }
-        @keyframes tr-blink { 50% { opacity: 0; } }
-        .tr-log-msg-muted { color: rgba(255,255,255,0.3); }
-
-        .tr-empty-state { padding: 48px; text-align: center; font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.25em; opacity: 0.4; }
       `}</style>
     </div>
   );

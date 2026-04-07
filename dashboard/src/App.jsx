@@ -43,6 +43,7 @@ function App() {
   const [toasts, setToasts] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [footerHeight, setFooterHeight] = useState(280);
+  const [isTerminalMinimized, setIsTerminalMinimized] = useState(false);
   const resizingRef = useRef(null); // 'terminal' | 'sidebar' | null
 
   // Universal resize handler using refs (no stale closures)
@@ -159,7 +160,16 @@ function App() {
             {renderView()}
           </div>
 
-          <div style={{ height: footerHeight, flexShrink: 0 }}>
+          <div 
+            className="transition-all duration-300 ease-in-out"
+            style={{ 
+              height: (currentView === 'training' || currentView === 'laboratory') 
+                ? 0 
+                : (isTerminalMinimized ? 36 : footerHeight), 
+              flexShrink: 0,
+              overflow: 'hidden'
+            }}
+          >
             <Terminal
               logs={logs}
               onResize={startTerminalResize}
@@ -170,6 +180,8 @@ function App() {
               roundHistory={roundHistory}
               onClear={clearLogs}
               onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
+              isMinimized={isTerminalMinimized}
+              onToggleMinimize={() => setIsTerminalMinimized(!isTerminalMinimized)}
             />
           </div>
         </main>

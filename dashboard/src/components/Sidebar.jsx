@@ -188,21 +188,21 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
         .sb-nav-active .sb-nav-label { color: var(--text-main); }
         .sb-nav-chevron { margin-left: auto; color: var(--primary); opacity: 0.5; }
 
-        .sb-metrics { padding: 8px 32px 48px; display: flex; flex-direction: column; gap: 4px; }
+        .sb-metrics { padding: 8px 24px 24px; display: flex; flex-direction: column; gap: 2px; }
         .sb-metric-item {
           display: flex;
           align-items: center;
-          gap: 16px;
-          padding: 14px 0;
+          gap: 12px;
+          padding: 8px 0;
           border-bottom: 1px solid var(--border);
           position: relative;
           transition: all 0.2s;
         }
         .sb-metric-item:last-child { border-bottom: none; }
-        .sb-metric-item:hover { transform: translateX(4px); }
+        .sb-metric-item:hover { transform: translateX(2px); }
         
         .sb-metric-icon-wrap {
-          width: 32px; height: 32px;
+          width: 28px; height: 28px;
           display: flex; align-items: center; justify-content: center;
           background: var(--bg-main);
           border: 1px solid var(--border);

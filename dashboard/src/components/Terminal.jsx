@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accuracyHistory = [], lossHistory = [], roundHistory = [], onClear, onAction }) => {
+export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accuracyHistory = [], lossHistory = [], roundHistory = [], onClear, onAction, isMinimized, onToggleMinimize }) => {
   const logsRef = useRef(null);
   const [activeTab, setActiveTab] = useState('logs');
 
@@ -131,11 +131,28 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
             node-bridge:7880
           </div>
+          <button 
+            onClick={onToggleMinimize}
+            style={{
+              background: '#1e293b', border: '1px solid #334155', color: '#94a3b8',
+              width: '24px', height: '24px', borderRadius: '4px', display: 'flex',
+              alignItems: 'center', justifyCenter: 'center', cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            title={isMinimized ? "Maximize Terminal" : "Minimize Terminal"}
+          >
+            {isMinimized ? (
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            ) : (
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            )}
+          </button>
         </div>
       </div>
 
       {/* ── Tab Content ── */}
-      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {!isMinimized && (
+        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         
         {/* LOGS TAB */}
         {activeTab === 'logs' && (
@@ -207,7 +224,8 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
             </div>
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 0.8; } 50% { opacity: 0; } }

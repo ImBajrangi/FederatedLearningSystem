@@ -255,3 +255,89 @@ INFO flwr 2026-04-07 17:36:55,675 | app.py:222 | app_fit: metrics_centralized {}
 17:57:28 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
 17:57:28 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
 17:57:28 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:02:13 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:02:13 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:02:13 [ERROR] GuardianBridge: WS Serialization/Send Error: 
+18:02:13 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:02:13 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:02:13 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
+18:02:13 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:02:13 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:02:13 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:03:46 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:03:46 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 1
+18:03:46 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:03:46 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:03:46 [ERROR] GuardianBridge: WS Serialization/Send Error: 
+18:03:46 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 1
+18:03:46 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 1
+18:03:46 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
+18:03:46 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:03:46 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:03:46 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:03:46 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:03:46 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:03:46 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:03:47 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:03:47 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:03:47 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:03:47 [ERROR] GuardianBridge: WS Serialization/Send Error: 
+18:03:47 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:03:47 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:03:47 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
+18:03:47 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:03:47 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:03:47 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:09:41 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:09:41 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:09:41 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:09:41 [ERROR] GuardianBridge: WS Serialization/Send Error: 
+18:09:41 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:09:41 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:09:41 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
+18:09:41 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:09:41 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:09:41 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:11:14 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:11:14 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:11:14 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:11:14 [ERROR] GuardianBridge: WS Serialization/Send Error: 
+18:11:14 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:11:14 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:11:14 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
+18:11:14 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:11:14 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:11:14 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:14:15 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:14:15 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 1
+18:14:15 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:14:15 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:14:15 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:14:15 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:14:15 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:14:15 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:14:15 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:14:15 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:14:15 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:14:15 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:15:07 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:15:07 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:15:07 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:15:07 [ERROR] GuardianBridge: WS Serialization/Send Error: 
+18:15:07 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:15:07 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:15:07 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
+18:15:07 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:15:07 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:15:07 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:15:41 [ERROR] TrainingEngine: Training Error: Module [MNISTNet] is missing the required "forward" function
+18:17:24 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:17:25 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:17:25 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:17:25 [ERROR] GuardianBridge: WS Serialization/Send Error: 
+18:17:25 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:17:25 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:17:25 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
+18:17:25 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:17:25 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:17:25 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3

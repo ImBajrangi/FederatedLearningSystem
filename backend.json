@@ -143,3 +143,88 @@
 {"timestamp":"2026-04-07 17:57:28","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775564848.242095}
 {"timestamp":"2026-04-07 17:57:28","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775564848.243017}
 {"timestamp":"2026-04-07 17:57:28","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775564848.2441201}
+{"timestamp":"2026-04-07 18:02:13","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565133.859463}
+{"timestamp":"2026-04-07 18:02:13","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565133.8686929}
+{"timestamp":"2026-04-07 18:02:13","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775565133.8698828}
+{"timestamp":"2026-04-07 18:02:13","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565133.869995}
+{"timestamp":"2026-04-07 18:02:13","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775565133.8700988}
+{"timestamp":"2026-04-07 18:02:13","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775565133.870213}
+{"timestamp":"2026-04-07 18:02:13","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565133.871862}
+{"timestamp":"2026-04-07 18:02:13","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565133.872992}
+{"timestamp":"2026-04-07 18:02:13","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565133.879262}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565226.3633459}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 1","epoch":1775565226.414337}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565226.7035992}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565226.7073998}
+{"timestamp":"2026-04-07 18:03:46","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775565226.712408}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 1","epoch":1775565226.712621}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 1","epoch":1775565226.712824}
+{"timestamp":"2026-04-07 18:03:46","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775565226.712949}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565226.71469}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565226.716449}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775565226.719695}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565226.733614}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565226.7362392}
+{"timestamp":"2026-04-07 18:03:46","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565226.7381089}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565227.381519}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565227.703209}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565227.7040682}
+{"timestamp":"2026-04-07 18:03:47","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775565227.7051818}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565227.705285}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775565227.705353}
+{"timestamp":"2026-04-07 18:03:47","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775565227.7054331}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565227.706478}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565227.706969}
+{"timestamp":"2026-04-07 18:03:47","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565227.707745}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565581.200109}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565581.349422}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565581.358947}
+{"timestamp":"2026-04-07 18:09:41","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775565581.36781}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565581.3679202}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775565581.367967}
+{"timestamp":"2026-04-07 18:09:41","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775565581.368006}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565581.3688571}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565581.369285}
+{"timestamp":"2026-04-07 18:09:41","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565581.369866}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565674.412087}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565674.883394}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565674.886848}
+{"timestamp":"2026-04-07 18:11:14","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775565674.895194}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565674.895314}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775565674.895361}
+{"timestamp":"2026-04-07 18:11:14","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775565674.8954}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565674.8963861}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565674.896889}
+{"timestamp":"2026-04-07 18:11:14","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565674.905461}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565855.475774}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 1","epoch":1775565855.478063}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565855.49827}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565855.501235}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775565855.51005}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565855.526933}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565855.529558}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565855.53332}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565855.714287}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565855.773406}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565855.773956}
+{"timestamp":"2026-04-07 18:14:15","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565855.774615}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565907.047314}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565907.160949}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565907.1638982}
+{"timestamp":"2026-04-07 18:15:07","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775565907.1658702}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775565907.165996}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775565907.166044}
+{"timestamp":"2026-04-07 18:15:07","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775565907.166121}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775565907.174133}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775565907.174672}
+{"timestamp":"2026-04-07 18:15:07","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775565907.1755}
+{"timestamp":"2026-04-07 18:17:24","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775566044.9106402}
+{"timestamp":"2026-04-07 18:17:25","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775566045.026088}
+{"timestamp":"2026-04-07 18:17:25","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775566045.028706}
+{"timestamp":"2026-04-07 18:17:25","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775566045.032908}
+{"timestamp":"2026-04-07 18:17:25","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775566045.0330298}
+{"timestamp":"2026-04-07 18:17:25","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775566045.033076}
+{"timestamp":"2026-04-07 18:17:25","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775566045.033115}
+{"timestamp":"2026-04-07 18:17:25","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775566045.038492}
+{"timestamp":"2026-04-07 18:17:25","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775566045.0389602}
+{"timestamp":"2026-04-07 18:17:25","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775566045.039893}

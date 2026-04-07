@@ -21,22 +21,19 @@ export const MetricsChart = ({ data = [], lossData = [] }) => {
   const lossReduced = lossData.length > 1 ? lossData[lossData.length-1] <= lossData[lossData.length-2] : true;
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
-        <div className="flex items-center gap-3">
-          <Activity size={13} className="text-primary/70" />
-          <h3 className="type-l3 text-text-main tracking-tight">
-            Institutional Training Analysis
-          </h3>
+    <div className="w-full h-full flex flex-col">
+      <div className="flex items-center justify-between mb-6 pb-3 border-b border-border shrink-0">
+        <div className="flex items-center gap-2">
+          <Activity size={12} className="text-primary" />
+          <span className="text-[10px] font-bold text-text-main uppercase tracking-widest">
+            Institutional Convergence Metrics
+          </span>
         </div>
-        <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mt-1 font-mono">
-          Federated Convergence Metrics
-        </p>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 px-4 py-1.5 bg-emerald-50 border border-emerald-100/50 rounded-sm">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
-            <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest tabular-nums">
-              {currentAcc}% Accuracy
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100/50">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-[9px] font-extrabold text-emerald-800 uppercase tracking-widest tabular-nums">
+              {currentAcc}%
             </span>
           </div>
         </div>
