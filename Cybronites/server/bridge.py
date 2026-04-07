@@ -254,26 +254,6 @@ async def startup():
     bridge.loop = asyncio.get_running_loop()
     bridge.load_model_code()
     bridge.fetch_public_ip()
-    
-    # Initialize Orchestrator and start Log Listener thread
-    from Cybronites.server.orchestrator import get_orchestrator
-    orchestrator = get_orchestrator()
-    
-    def log_listener_worker():
-        """Background thread to pipe logs from multiprocessing.Queue to bridge.broadcast_sync."""
-        logger.info("IPC Log Listener thread started.")
-        while True:
-            try:
-                # Blocking read from queue
-                message_type, payload = orchestrator.log_queue.get()
-                bridge.broadcast_sync(message_type, payload)
-            except Exception as e:
-                logger.error(f"IPC Log Tunnel Error: {e}")
-                time.sleep(1)
-
-    import threading
-    threading.Thread(target=log_listener_worker, daemon=True).start()
-    
     logger.info("Guardian Bridge Event Loop context captured.")
 
 @app.websocket("/ws")
