@@ -1,173 +1,1906 @@
-10:46:35 [INFO] GuardianServer: Initializing Orchestrator (Rounds: 5)...
-10:46:35 [INFO] GuardianBridge: Launching Guardian Bridge on port 7880...
-10:46:35 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
-10:46:35 [INFO] GuardianBridge: Public IP fetched: 103.196.213.3
-10:46:35 [INFO] GuardianBridge: Guardian Bridge Event Loop context captured.
-10:46:37 [INFO] GuardianServer: Launching Flower Server on port 8095...
-INFO flwr 2026-04-07 10:46:37,106 | app.py:148 | Starting Flower server, config: ServerConfig(num_rounds=5, round_timeout=None)
-10:46:37 [INFO] flwr: Starting Flower server, config: ServerConfig(num_rounds=5, round_timeout=None)
-I0407 10:46:37.125640  129038 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-INFO flwr 2026-04-07 10:46:37,132 | app.py:168 | Flower ECE: gRPC server running (5 rounds), SSL is disabled
-10:46:37 [INFO] flwr: Flower ECE: gRPC server running (5 rounds), SSL is disabled
-INFO flwr 2026-04-07 10:46:37,133 | server.py:86 | Initializing global parameters
-10:46:37 [INFO] flwr: Initializing global parameters
-INFO flwr 2026-04-07 10:46:37,133 | server.py:273 | Requesting initial parameters from one random client
-10:46:37 [INFO] flwr: Requesting initial parameters from one random client
-I0407 10:46:37.142671  129038 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+15:05:34 [INFO] GuardianServer: Initializing Orchestrator (Rounds: 5)...
+15:05:34 [INFO] GuardianBridge: Launching Guardian Bridge on port 7880...
+15:05:34 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+15:05:34 [INFO] GuardianBridge: Public IP fetched: 103.196.215.121
+15:05:34 [INFO] GuardianBridge: Guardian Bridge Event Loop context captured.
+15:05:36 [INFO] GuardianServer: Launching Flower Server on port 8095...
+INFO flwr 2026-04-07 15:05:36,123 | app.py:148 | Starting Flower server, config: ServerConfig(num_rounds=5, round_timeout=None)
+15:05:36 [INFO] flwr: Starting Flower server, config: ServerConfig(num_rounds=5, round_timeout=None)
+INFO flwr 2026-04-07 15:05:36,152 | app.py:168 | Flower ECE: gRPC server running (5 rounds), SSL is disabled
+15:05:36 [INFO] flwr: Flower ECE: gRPC server running (5 rounds), SSL is disabled
+INFO flwr 2026-04-07 15:05:36,152 | server.py:86 | Initializing global parameters
+15:05:36 [INFO] flwr: Initializing global parameters
+INFO flwr 2026-04-07 15:05:36,152 | server.py:273 | Requesting initial parameters from one random client
+15:05:36 [INFO] flwr: Requesting initial parameters from one random client
+I0407 15:05:36.156069  328366 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
   [CLIENT 0] INFO:GuardianClient:Starting Guardian Client 0...
   [CLIENT 0] INFO:GuardianClient:Connecting to Secure Server at 127.0.0.1:8095 (Attempt 1)...
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Public IP: 103.196.213.3
-  [CLIENT 0] INFO flwr 2026-04-07 10:46:39,557 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Public IP: 103.196.215.121
+  [CLIENT 0] INFO flwr 2026-04-07 15:05:38,583 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
   [CLIENT 0] INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
-  [CLIENT 0] DEBUG flwr 2026-04-07 10:46:39,559 | connection.py:39 | ChannelConnectivity.IDLE
+  [CLIENT 0] DEBUG flwr 2026-04-07 15:05:38,585 | connection.py:39 | ChannelConnectivity.IDLE
   [CLIENT 0] DEBUG:flwr:ChannelConnectivity.IDLE
-  [CLIENT 0] DEBUG flwr 2026-04-07 10:46:39,559 | connection.py:39 | ChannelConnectivity.CONNECTING
+  [CLIENT 0] DEBUG flwr 2026-04-07 15:05:38,585 | connection.py:39 | ChannelConnectivity.CONNECTING
   [CLIENT 0] DEBUG:flwr:ChannelConnectivity.CONNECTING
-  [CLIENT 0] DEBUG flwr 2026-04-07 10:46:39,562 | connection.py:39 | ChannelConnectivity.READY
+  [CLIENT 0] I0407 15:05:38.588087  328573 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+  [CLIENT 0] DEBUG flwr 2026-04-07 15:05:38,592 | connection.py:39 | ChannelConnectivity.READY
   [CLIENT 0] DEBUG:flwr:ChannelConnectivity.READY
-  [CLIENT 0] I0407 10:46:39.563447  129153 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-INFO flwr 2026-04-07 10:46:39,573 | server.py:277 | Received initial parameters from one random client
-10:46:39 [INFO] flwr: Received initial parameters from one random client
-INFO flwr 2026-04-07 10:46:39,573 | server.py:88 | Evaluating initial parameters
-10:46:39 [INFO] flwr: Evaluating initial parameters
-INFO flwr 2026-04-07 10:46:39,573 | server.py:101 | FL starting
-10:46:39 [INFO] flwr: FL starting
-  [CLIENT 0] I0407 10:46:39.576360  129153 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+INFO flwr 2026-04-07 15:05:38,599 | server.py:277 | Received initial parameters from one random client
+  [CLIENT 0] I0407 15:05:38.600001  328573 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+15:05:38 [INFO] flwr: Received initial parameters from one random client
+INFO flwr 2026-04-07 15:05:38,599 | server.py:88 | Evaluating initial parameters
+15:05:38 [INFO] flwr: Evaluating initial parameters
+INFO flwr 2026-04-07 15:05:38,599 | server.py:101 | FL starting
+15:05:38 [INFO] flwr: FL starting
   [CLIENT 1] INFO:GuardianClient:Starting Guardian Client 1...
   [CLIENT 1] INFO:GuardianClient:Connecting to Secure Server at 127.0.0.1:8095 (Attempt 1)...
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Public IP: 103.196.213.3
-  [CLIENT 1] INFO flwr 2026-04-07 10:46:41,277 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Public IP: 103.196.215.121
+  [CLIENT 1] INFO flwr 2026-04-07 15:05:39,922 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
   [CLIENT 1] INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
-  [CLIENT 1] DEBUG flwr 2026-04-07 10:46:41,279 | connection.py:39 | ChannelConnectivity.IDLE
+  [CLIENT 1] DEBUG flwr 2026-04-07 15:05:39,923 | connection.py:39 | ChannelConnectivity.IDLE
   [CLIENT 1] DEBUG:flwr:ChannelConnectivity.IDLE
-  [CLIENT 1] DEBUG flwr 2026-04-07 10:46:41,280 | connection.py:39 | ChannelConnectivity.CONNECTING
+  [CLIENT 1] DEBUG flwr 2026-04-07 15:05:39,923 | connection.py:39 | ChannelConnectivity.CONNECTING
   [CLIENT 1] DEBUG:flwr:ChannelConnectivity.CONNECTING
-  [CLIENT 1] DEBUG flwr 2026-04-07 10:46:41,281 | connection.py:39 | ChannelConnectivity.READY
+DEBUG flwr 2026-04-07 15:05:39,924 | server.py:218 | fit_round 1: strategy sampled 2 clients (out of 2)
+15:05:39 [DEBUG] flwr: fit_round 1: strategy sampled 2 clients (out of 2)
+  [CLIENT 1] DEBUG flwr 2026-04-07 15:05:39,924 | connection.py:39 | ChannelConnectivity.READY
   [CLIENT 1] DEBUG:flwr:ChannelConnectivity.READY
-DEBUG flwr 2026-04-07 10:46:41,281 | server.py:218 | fit_round 1: strategy sampled 2 clients (out of 2)
-10:46:41 [DEBUG] flwr: fit_round 1: strategy sampled 2 clients (out of 2)
-  [CLIENT 1] I0407 10:46:41.287217  129242 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
-  [CLIENT 1] I0407 10:46:41.294075  129282 ev_poll_posix.cc:593] FD from fork parent still in poll list: fd(13, generation: 1)
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
-  [CLIENT 1] I0407 10:46:41.301701  129242 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
-DEBUG flwr 2026-04-07 10:46:51,468 | server.py:232 | fit_round 1 received 2 results and 0 failures
-10:46:51 [DEBUG] flwr: fit_round 1 received 2 results and 0 failures
-10:46:51 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50850 persisted to database with IP 103.196.213.3.
-10:46:51 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50854 persisted to database with IP 103.196.213.3.
-10:46:51 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 1
-10:46:51 [INFO] SecureStrategy: Round 1 Synced (Acc: 79.05%)
-DEBUG flwr 2026-04-07 10:46:51,483 | server.py:168 | evaluate_round 1: strategy sampled 2 clients (out of 2)
-10:46:51 [DEBUG] flwr: evaluate_round 1: strategy sampled 2 clients (out of 2)
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.4140
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.4140
-DEBUG flwr 2026-04-07 10:46:52,854 | server.py:182 | evaluate_round 1 received 2 results and 0 failures
-10:46:52 [DEBUG] flwr: evaluate_round 1 received 2 results and 0 failures
-WARNING flwr 2026-04-07 10:46:52,854 | fedavg.py:274 | No evaluate_metrics_aggregation_fn provided
-10:46:52 [WARNING] flwr: No evaluate_metrics_aggregation_fn provided
-DEBUG flwr 2026-04-07 10:46:52,854 | server.py:218 | fit_round 2: strategy sampled 2 clients (out of 2)
-10:46:52 [DEBUG] flwr: fit_round 2: strategy sampled 2 clients (out of 2)
+  [CLIENT 1] I0407 15:05:39.929989  328691 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
   [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
   [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
-10:47:02 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
-10:47:02 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
-10:47:02 [ERROR] GuardianBridge: WS Serialization/Send Error: 
-10:47:02 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
-10:47:02 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 0
-10:47:02 [ERROR] GuardianBridge: WS Runtime Error: WebSocket is not connected. Need to call "accept" first.
-10:47:02 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
-10:47:02 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
-10:47:02 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 1
+  [CLIENT 1] I0407 15:05:39.943619  328691 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+15:05:45 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+15:05:45 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+15:05:45 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 1
+15:05:45 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+15:05:45 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+15:05:45 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+15:05:45 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 1
   [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
   [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
-DEBUG flwr 2026-04-07 10:47:04,411 | server.py:232 | fit_round 2 received 2 results and 0 failures
-10:47:04 [DEBUG] flwr: fit_round 2 received 2 results and 0 failures
-10:47:04 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50854 persisted to database with IP 103.196.213.3.
-10:47:04 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50850 persisted to database with IP 103.196.213.3.
-10:47:04 [INFO] SecureStrategy: Round 2 Synced (Acc: 84.39%)
-DEBUG flwr 2026-04-07 10:47:04,427 | server.py:168 | evaluate_round 2: strategy sampled 2 clients (out of 2)
-10:47:04 [DEBUG] flwr: evaluate_round 2: strategy sampled 2 clients (out of 2)
-10:47:04 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 2
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.6499
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.6499
-DEBUG flwr 2026-04-07 10:47:06,260 | server.py:182 | evaluate_round 2 received 2 results and 0 failures
-10:47:06 [DEBUG] flwr: evaluate_round 2 received 2 results and 0 failures
-DEBUG flwr 2026-04-07 10:47:06,260 | server.py:218 | fit_round 3: strategy sampled 2 clients (out of 2)
-10:47:06 [DEBUG] flwr: fit_round 3: strategy sampled 2 clients (out of 2)
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
-DEBUG flwr 2026-04-07 10:47:16,331 | server.py:232 | fit_round 3 received 2 results and 0 failures
-10:47:16 [DEBUG] flwr: fit_round 3 received 2 results and 0 failures
-10:47:16 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50854 persisted to database with IP 103.196.213.3.
-10:47:16 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50850 persisted to database with IP 103.196.213.3.
-10:47:16 [INFO] SecureStrategy: Round 3 Synced (Acc: 86.60%)
-DEBUG flwr 2026-04-07 10:47:16,346 | server.py:168 | evaluate_round 3: strategy sampled 2 clients (out of 2)
-10:47:16 [DEBUG] flwr: evaluate_round 3: strategy sampled 2 clients (out of 2)
-10:47:16 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 3
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.8660
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.8660
-DEBUG flwr 2026-04-07 10:47:17,731 | server.py:182 | evaluate_round 3 received 2 results and 0 failures
-10:47:17 [DEBUG] flwr: evaluate_round 3 received 2 results and 0 failures
-DEBUG flwr 2026-04-07 10:47:17,731 | server.py:218 | fit_round 4: strategy sampled 2 clients (out of 2)
-10:47:17 [DEBUG] flwr: fit_round 4: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-07 15:05:47,317 | server.py:232 | fit_round 1 received 2 results and 0 failures
+15:05:47 [DEBUG] flwr: fit_round 1 received 2 results and 0 failures
+15:05:47 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52947 persisted to database with IP 103.196.215.121.
+15:05:47 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52951 persisted to database with IP 103.196.215.121.
+15:05:47 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 1
+15:05:47 [INFO] SecureStrategy: Round 1 Synced (Acc: 78.26%)
+DEBUG flwr 2026-04-07 15:05:47,338 | server.py:168 | evaluate_round 1: strategy sampled 2 clients (out of 2)
+15:05:47 [DEBUG] flwr: evaluate_round 1: strategy sampled 2 clients (out of 2)
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.3032
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.3032
+DEBUG flwr 2026-04-07 15:05:48,224 | server.py:182 | evaluate_round 1 received 2 results and 0 failures
+15:05:48 [DEBUG] flwr: evaluate_round 1 received 2 results and 0 failures
+WARNING flwr 2026-04-07 15:05:48,224 | fedavg.py:274 | No evaluate_metrics_aggregation_fn provided
+15:05:48 [WARNING] flwr: No evaluate_metrics_aggregation_fn provided
+DEBUG flwr 2026-04-07 15:05:48,224 | server.py:218 | fit_round 2: strategy sampled 2 clients (out of 2)
+15:05:48 [DEBUG] flwr: fit_round 2: strategy sampled 2 clients (out of 2)
   [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
   [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
   [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
   [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
-DEBUG flwr 2026-04-07 10:47:27,617 | server.py:232 | fit_round 4 received 2 results and 0 failures
-10:47:27 [DEBUG] flwr: fit_round 4 received 2 results and 0 failures
-10:47:27 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50850 persisted to database with IP 103.196.213.3.
-10:47:27 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50854 persisted to database with IP 103.196.213.3.
-10:47:27 [INFO] SecureStrategy: Round 4 Synced (Acc: 87.97%)
-DEBUG flwr 2026-04-07 10:47:27,627 | server.py:168 | evaluate_round 4: strategy sampled 2 clients (out of 2)
-10:47:27 [DEBUG] flwr: evaluate_round 4: strategy sampled 2 clients (out of 2)
-10:47:27 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 4
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.9345
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.9345
-DEBUG flwr 2026-04-07 10:47:29,121 | server.py:182 | evaluate_round 4 received 2 results and 0 failures
-10:47:29 [DEBUG] flwr: evaluate_round 4 received 2 results and 0 failures
-DEBUG flwr 2026-04-07 10:47:29,121 | server.py:218 | fit_round 5: strategy sampled 2 clients (out of 2)
-10:47:29 [DEBUG] flwr: fit_round 5: strategy sampled 2 clients (out of 2)
+DEBUG flwr 2026-04-07 15:05:54,818 | server.py:232 | fit_round 2 received 2 results and 0 failures
+15:05:54 [DEBUG] flwr: fit_round 2 received 2 results and 0 failures
+15:05:54 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52947 persisted to database with IP 103.196.215.121.
+15:05:54 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52951 persisted to database with IP 103.196.215.121.
+15:05:54 [INFO] SecureStrategy: Round 2 Synced (Acc: 83.67%)
+DEBUG flwr 2026-04-07 15:05:54,827 | server.py:168 | evaluate_round 2: strategy sampled 2 clients (out of 2)
+15:05:54 [DEBUG] flwr: evaluate_round 2: strategy sampled 2 clients (out of 2)
+15:05:54 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 2
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.6656
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.6656
+DEBUG flwr 2026-04-07 15:05:55,695 | server.py:182 | evaluate_round 2 received 2 results and 0 failures
+15:05:55 [DEBUG] flwr: evaluate_round 2 received 2 results and 0 failures
+DEBUG flwr 2026-04-07 15:05:55,695 | server.py:218 | fit_round 3: strategy sampled 2 clients (out of 2)
+15:05:55 [DEBUG] flwr: fit_round 3: strategy sampled 2 clients (out of 2)
   [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
   [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
   [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
   [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
-DEBUG flwr 2026-04-07 10:47:39,805 | server.py:232 | fit_round 5 received 2 results and 0 failures
-10:47:39 [DEBUG] flwr: fit_round 5 received 2 results and 0 failures
-10:47:39 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50854 persisted to database with IP 103.196.213.3.
-10:47:39 [INFO] GuardianBridge: Node ipv4:127.0.0.1:50850 persisted to database with IP 103.196.213.3.
-10:47:39 [INFO] SecureStrategy: Round 5 Synced (Acc: 89.23%)
-10:47:39 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 5
-DEBUG flwr 2026-04-07 10:47:39,816 | server.py:168 | evaluate_round 5: strategy sampled 2 clients (out of 2)
-10:47:39 [DEBUG] flwr: evaluate_round 5: strategy sampled 2 clients (out of 2)
-  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.9570
-  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.9570
-DEBUG flwr 2026-04-07 10:47:41,116 | server.py:182 | evaluate_round 5 received 2 results and 0 failures
-10:47:41 [DEBUG] flwr: evaluate_round 5 received 2 results and 0 failures
-INFO flwr 2026-04-07 10:47:41,116 | server.py:147 | FL finished in 61.530338666000006
-10:47:41 [INFO] flwr: FL finished in 61.530338666000006
-INFO flwr 2026-04-07 10:47:41,117 | app.py:218 | app_fit: losses_distributed [(1, 2.1852777004241943), (2, 2.0155229568481445), (3, 1.744315266609192), (4, 1.4355580806732178), (5, 1.057499885559082)]
-10:47:41 [INFO] flwr: app_fit: losses_distributed [(1, 2.1852777004241943), (2, 2.0155229568481445), (3, 1.744315266609192), (4, 1.4355580806732178), (5, 1.057499885559082)]
-INFO flwr 2026-04-07 10:47:41,117 | app.py:219 | app_fit: metrics_distributed_fit {'accuracy': [(1, 0.7905333333333333), (2, 0.8439000000000001), (3, 0.866), (4, 0.8796999999999999), (5, 0.8923166666666666)], 'loss': [(1, 0.37431982159614563), (2, 0.16168739646673203), (3, 0.16499824821949005), (4, 0.7829769253730774), (5, 0.2780725955963135)]}
-10:47:41 [INFO] flwr: app_fit: metrics_distributed_fit {'accuracy': [(1, 0.7905333333333333), (2, 0.8439000000000001), (3, 0.866), (4, 0.8796999999999999), (5, 0.8923166666666666)], 'loss': [(1, 0.37431982159614563), (2, 0.16168739646673203), (3, 0.16499824821949005), (4, 0.7829769253730774), (5, 0.2780725955963135)]}
-INFO flwr 2026-04-07 10:47:41,117 | app.py:220 | app_fit: metrics_distributed {}
-10:47:41 [INFO] flwr: app_fit: metrics_distributed {}
-INFO flwr 2026-04-07 10:47:41,117 | app.py:221 | app_fit: losses_centralized []
-10:47:41 [INFO] flwr: app_fit: losses_centralized []
-INFO flwr 2026-04-07 10:47:41,117 | app.py:222 | app_fit: metrics_centralized {}
-10:47:41 [INFO] flwr: app_fit: metrics_centralized {}
-10:47:41 [INFO] GuardianServer: Training session complete. Maintaining dashboard bridge...
-I0407 10:47:41.127913  129038 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
-  [CLIENT 1] DEBUG flwr 2026-04-07 10:47:41,130 | connection.py:113 | gRPC channel closed
-  [CLIENT 0] DEBUG flwr 2026-04-07 10:47:41,130 | connection.py:113 | gRPC channel closed
-  [CLIENT 0] DEBUG:flwr:gRPC channel closed
+DEBUG flwr 2026-04-07 15:06:02,029 | server.py:232 | fit_round 3 received 2 results and 0 failures
+15:06:02 [DEBUG] flwr: fit_round 3 received 2 results and 0 failures
+15:06:02 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52947 persisted to database with IP 103.196.215.121.
+15:06:02 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52951 persisted to database with IP 103.196.215.121.
+15:06:02 [INFO] SecureStrategy: Round 3 Synced (Acc: 86.16%)
+15:06:02 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 3
+DEBUG flwr 2026-04-07 15:06:02,036 | server.py:168 | evaluate_round 3: strategy sampled 2 clients (out of 2)
+15:06:02 [DEBUG] flwr: evaluate_round 3: strategy sampled 2 clients (out of 2)
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.7861
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.7861
+DEBUG flwr 2026-04-07 15:06:02,903 | server.py:182 | evaluate_round 3 received 2 results and 0 failures
+15:06:02 [DEBUG] flwr: evaluate_round 3 received 2 results and 0 failures
+DEBUG flwr 2026-04-07 15:06:02,903 | server.py:218 | fit_round 4: strategy sampled 2 clients (out of 2)
+15:06:02 [DEBUG] flwr: fit_round 4: strategy sampled 2 clients (out of 2)
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-07 15:06:10,052 | server.py:232 | fit_round 4 received 2 results and 0 failures
+15:06:10 [DEBUG] flwr: fit_round 4 received 2 results and 0 failures
+15:06:10 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52951 persisted to database with IP 103.196.215.121.
+15:06:10 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52947 persisted to database with IP 103.196.215.121.
+15:06:10 [INFO] SecureStrategy: Round 4 Synced (Acc: 87.82%)
+15:06:10 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 4
+DEBUG flwr 2026-04-07 15:06:10,062 | server.py:168 | evaluate_round 4: strategy sampled 2 clients (out of 2)
+15:06:10 [DEBUG] flwr: evaluate_round 4: strategy sampled 2 clients (out of 2)
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.9037
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.9037
+DEBUG flwr 2026-04-07 15:06:10,905 | server.py:182 | evaluate_round 4 received 2 results and 0 failures
+15:06:10 [DEBUG] flwr: evaluate_round 4 received 2 results and 0 failures
+DEBUG flwr 2026-04-07 15:06:10,905 | server.py:218 | fit_round 5: strategy sampled 2 clients (out of 2)
+15:06:10 [DEBUG] flwr: fit_round 5: strategy sampled 2 clients (out of 2)
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
+15:06:15 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-07 15:06:17,215 | server.py:232 | fit_round 5 received 2 results and 0 failures
+15:06:17 [DEBUG] flwr: fit_round 5 received 2 results and 0 failures
+15:06:17 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52947 persisted to database with IP 103.196.215.121.
+15:06:17 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52951 persisted to database with IP 103.196.215.121.
+15:06:17 [INFO] SecureStrategy: Round 5 Synced (Acc: 88.85%)
+15:06:17 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 5
+DEBUG flwr 2026-04-07 15:06:17,222 | server.py:168 | evaluate_round 5: strategy sampled 2 clients (out of 2)
+15:06:17 [DEBUG] flwr: evaluate_round 5: strategy sampled 2 clients (out of 2)
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.9478
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.9478
+DEBUG flwr 2026-04-07 15:06:18,071 | server.py:182 | evaluate_round 5 received 2 results and 0 failures
+15:06:18 [DEBUG] flwr: evaluate_round 5 received 2 results and 0 failures
+INFO flwr 2026-04-07 15:06:18,071 | server.py:147 | FL finished in 39.473380334
+15:06:18 [INFO] flwr: FL finished in 39.473380334
+INFO flwr 2026-04-07 15:06:18,071 | app.py:218 | app_fit: losses_distributed [(1, 2.222349166870117), (2, 2.073050022125244), (3, 1.8537683486938477), (4, 1.5325945615768433), (5, 1.161994218826294)]
+15:06:18 [INFO] flwr: app_fit: losses_distributed [(1, 2.222349166870117), (2, 2.073050022125244), (3, 1.8537683486938477), (4, 1.5325945615768433), (5, 1.161994218826294)]
+INFO flwr 2026-04-07 15:06:18,071 | app.py:219 | app_fit: metrics_distributed_fit {'accuracy': [(1, 0.7826166666666666), (2, 0.8367166666666667), (3, 0.8616333333333333), (4, 0.8782333333333333), (5, 0.8884666666666666)], 'loss': [(1, 1.033091962337494), (2, 0.21260078996419907), (3, 0.461321696639061), (4, 0.16694940626621246), (5, 0.26727356761693954)]}
+15:06:18 [INFO] flwr: app_fit: metrics_distributed_fit {'accuracy': [(1, 0.7826166666666666), (2, 0.8367166666666667), (3, 0.8616333333333333), (4, 0.8782333333333333), (5, 0.8884666666666666)], 'loss': [(1, 1.033091962337494), (2, 0.21260078996419907), (3, 0.461321696639061), (4, 0.16694940626621246), (5, 0.26727356761693954)]}
+INFO flwr 2026-04-07 15:06:18,071 | app.py:220 | app_fit: metrics_distributed {}
+15:06:18 [INFO] flwr: app_fit: metrics_distributed {}
+INFO flwr 2026-04-07 15:06:18,071 | app.py:221 | app_fit: losses_centralized []
+15:06:18 [INFO] flwr: app_fit: losses_centralized []
+INFO flwr 2026-04-07 15:06:18,071 | app.py:222 | app_fit: metrics_centralized {}
+15:06:18 [INFO] flwr: app_fit: metrics_centralized {}
+15:06:18 [INFO] GuardianServer: Training session complete. Maintaining dashboard bridge...
+  [CLIENT 1] DEBUG flwr 2026-04-07 15:06:18,080 | connection.py:113 | gRPC channel closed
   [CLIENT 1] DEBUG:flwr:gRPC channel closed
-  [CLIENT 0] INFO flwr 2026-04-07 10:47:41,130 | app.py:185 | Disconnect and shut down
-  [CLIENT 0] INFO:flwr:Disconnect and shut down
-  [CLIENT 1] INFO flwr 2026-04-07 10:47:41,130 | app.py:185 | Disconnect and shut down
+  [CLIENT 1] INFO flwr 2026-04-07 15:06:18,080 | app.py:185 | Disconnect and shut down
   [CLIENT 1] INFO:flwr:Disconnect and shut down
-11:59:07 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
+  [CLIENT 0] DEBUG flwr 2026-04-07 15:06:18,080 | connection.py:113 | gRPC channel closed
+  [CLIENT 0] DEBUG:flwr:gRPC channel closed
+  [CLIENT 0] INFO flwr 2026-04-07 15:06:18,080 | app.py:185 | Disconnect and shut down
+  [CLIENT 0] INFO:flwr:Disconnect and shut down
+15:07:22 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:07:59 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:08:10 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:08:10 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:08:11 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:08:11 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:54 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:54 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:55 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:55 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:55 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:55 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:55 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:55 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:55 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:56 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:56 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:56 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:56 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:10:56 [WARNING] passlib.handlers.bcrypt: (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/protocols/http/h11_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/applications.py", line 1138, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 121, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 107, in app
+    response = await f(request)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 426, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/fastapi/routing.py", line 314, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 94, in register
+    hashed_password = get_password_hash(user.password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/server/auth.py", line 45, in get_password_hash
+    return pwd_context.hash(password)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/utils/handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+  File "/Users/sakhi/Code/secure_federated_learning/Cybronites/venv_mac/lib/python3.9/site-packages/passlib/handlers/bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])
+15:11:05 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
+15:11:05 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+15:11:05 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+15:11:05 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 1
+15:11:05 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
+15:11:05 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+15:11:05 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+15:11:05 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 1
+15:11:12 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
+15:11:12 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+15:11:12 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+15:11:12 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 1
+15:11:12 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
+15:11:12 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+15:11:12 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+15:11:12 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 1
+15:29:49 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
