@@ -169,15 +169,17 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, accura
               borderBottom: '1px solid #1e2937', color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase'
             }}>
               <span style={{ width: 140 }}>Node_ID</span>
+              <span style={{ width: 120 }}>IP_Address</span>
               <span style={{ width: 100 }}>Status</span>
-              <span style={{ width: 100 }}>Reproduction</span>
+              <span style={{ width: 100 }}>Reputation</span>
               <span style={{ flex: 1 }}>Security_Hash</span>
             </div>
             {Object.entries(nodeRegistry).map(([id, info]) => (
               <div key={id} style={{ display: 'flex', gap: 24, padding: '8px 0', borderBottom: '1px solid #111827', fontSize: 10, color: '#94a3b8' }}>
                 <span style={{ width: 140, color: '#818cf8', fontWeight: 600 }}>{id}</span>
-                <span style={{ width: 100, color: info.status === 'BUSY' ? '#fbbf24' : '#10b981' }}>{info.status || 'ACTIVE'}</span>
-                <span style={{ width: 100 }}>1.00 REP</span>
+                <span style={{ width: 120, fontFamily: 'monospace', fontSize: 9 }}>{info.ip || '127.0.0.1'}</span>
+                <span style={{ width: 100, color: info.status === 'REJECTED' ? '#ef4444' : info.status === 'BUSY' ? '#fbbf24' : '#10b981' }}>{info.status || 'ACTIVE'}</span>
+                <span style={{ width: 100 }}>{info.reputation ? info.reputation.toFixed(2) : '1.00'} REP</span>
                 <span style={{ flex: 1, opacity: 0.4 }}>{info.hash || 'Verified on Chain'}</span>
               </div>
             ))}

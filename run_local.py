@@ -109,9 +109,9 @@ def main():
     for i in range(num_clients):
         print(f"  [2/3] Starting Client {i}...")
         client_proc = subprocess.Popen(
-            [python_path, "-m", "client.client", str(i), str(num_clients)],
+            [python_path, "-m", "Cybronites.client.client", str(i), str(num_clients)],
             env=env,
-            cwd=os.path.join(cwd, "Cybronites"),
+            cwd=cwd,
             stdout=subprocess.PIPE, 
             stderr=subprocess.STDOUT,
             text=True,

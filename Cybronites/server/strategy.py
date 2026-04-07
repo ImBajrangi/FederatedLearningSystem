@@ -141,9 +141,10 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
                 acc_list.append(m_acc)
                 loss_list.append(m_loss)
 
-            # Update Node Registry
+            # Update Node Registry with institutional metadata
             self.node_registry[cid] = {
                 "status": status,
+                "ip": bridge.state.get("server_ip", "127.0.0.1"),
                 "hash": f"0x{weight_hash[:12]}...",
                 "reputation": new_score
             }

@@ -9,6 +9,7 @@ import asyncio
 import os
 import time
 import sqlite3
+import urllib.request
 from Cybronites.server.auth import router as auth_router
 from Cybronites.utils.structured_logging import setup_structured_logging
 
@@ -37,7 +38,8 @@ class ConnectionManager:
             "loss_history": [],
             "chain": [],
             "shards": [],
-            "model_architecture": "# Loading Source Code..." 
+            "model_architecture": "# Loading Source Code...",
+            "server_ip": "127.0.0.1" 
         }
         self.log_buffer: List[str] = []
         self.cache = {
@@ -64,6 +66,18 @@ class ConnectionManager:
         except Exception as e:
             logger.error(f"Failed to load model source: {e}")
 
+    def fetch_public_ip(self):
+        """Fetches the external IP address (for Hugging Face deployment visualization)."""
+        try:
+            # Use public IP discovery service
+            with urllib.request.urlopen("https://api.ipify.org", timeout=2) as response:
+                ip = response.read().decode('utf-8')
+                self.state["server_ip"] = ip
+                logger.info(f"Public IP fetched: {ip}")
+        except Exception as e:
+            logger.warning(f"Could not fetch public IP (offline/firewalled): {e}")
+            # Fallback to local
+            self.state["server_ip"] = "127.0.0.1"
     def load_db_shards(self):
         """Fetches real institutional shards from guardian.db."""
         try:
@@ -198,6 +212,7 @@ app.add_middleware(
 async def startup():
     bridge.loop = asyncio.get_running_loop()
     bridge.load_model_code()
+    bridge.fetch_public_ip()
     logger.info("Guardian Bridge Event Loop context captured.")
 
 @app.websocket("/ws")
