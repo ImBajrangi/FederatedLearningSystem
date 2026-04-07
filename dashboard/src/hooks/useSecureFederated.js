@@ -177,9 +177,10 @@ export function useSecureFederated() {
 
   const runRound = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/health`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/federated/start`, { method: 'POST' });
       if (!response.ok) throw new Error('Backend Offline');
-      return true;
+      const data = await response.json();
+      return data.success;
     } catch (err) {
       console.error("Round Execution Error:", err);
       return false;

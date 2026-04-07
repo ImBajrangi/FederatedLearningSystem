@@ -79,3 +79,112 @@ DEBUG flwr 2026-04-07 19:49:51,870 | server.py:218 | fit_round 2: strategy sampl
 19:49:51 [DEBUG] flwr: fit_round 2: strategy sampled 2 clients (out of 2)
   [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
   [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-07 19:50:23,431 | server.py:232 | fit_round 2 received 2 results and 0 failures
+19:50:23 [DEBUG] flwr: fit_round 2 received 2 results and 0 failures
+19:50:23 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52282 persisted to database with IP 103.93.179.42.
+19:50:23 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52278 persisted to database with IP 103.93.179.42.
+19:50:23 [INFO] SecureStrategy: Round 2 Synced (Acc: 84.37%)
+DEBUG flwr 2026-04-07 19:50:23,501 | server.py:168 | evaluate_round 2: strategy sampled 2 clients (out of 2)
+19:50:23 [DEBUG] flwr: evaluate_round 2: strategy sampled 2 clients (out of 2)
+19:50:23 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 2
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.5358
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.5358
+DEBUG flwr 2026-04-07 19:50:26,092 | server.py:182 | evaluate_round 2 received 2 results and 0 failures
+19:50:26 [DEBUG] flwr: evaluate_round 2 received 2 results and 0 failures
+DEBUG flwr 2026-04-07 19:50:26,093 | server.py:218 | fit_round 3: strategy sampled 2 clients (out of 2)
+19:50:26 [DEBUG] flwr: fit_round 3: strategy sampled 2 clients (out of 2)
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-07 19:50:37,225 | server.py:232 | fit_round 3 received 2 results and 0 failures
+19:50:37 [DEBUG] flwr: fit_round 3 received 2 results and 0 failures
+19:50:37 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52282 persisted to database with IP 103.93.179.42.
+19:50:37 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52278 persisted to database with IP 103.93.179.42.
+19:50:37 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 3
+19:50:37 [INFO] SecureStrategy: Round 3 Synced (Acc: 86.96%)
+DEBUG flwr 2026-04-07 19:50:37,290 | server.py:168 | evaluate_round 3: strategy sampled 2 clients (out of 2)
+19:50:37 [DEBUG] flwr: evaluate_round 3: strategy sampled 2 clients (out of 2)
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.8224
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.8224
+DEBUG flwr 2026-04-07 19:50:39,353 | server.py:182 | evaluate_round 3 received 2 results and 0 failures
+19:50:39 [DEBUG] flwr: evaluate_round 3 received 2 results and 0 failures
+DEBUG flwr 2026-04-07 19:50:39,357 | server.py:218 | fit_round 4: strategy sampled 2 clients (out of 2)
+19:50:39 [DEBUG] flwr: fit_round 4: strategy sampled 2 clients (out of 2)
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-07 19:50:51,553 | server.py:232 | fit_round 4 received 2 results and 0 failures
+19:50:51 [DEBUG] flwr: fit_round 4 received 2 results and 0 failures
+19:50:51 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52282 persisted to database with IP 103.93.179.42.
+19:50:51 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52278 persisted to database with IP 103.93.179.42.
+19:50:51 [INFO] SecureStrategy: Round 4 Synced (Acc: 88.27%)
+DEBUG flwr 2026-04-07 19:50:51,591 | server.py:168 | evaluate_round 4: strategy sampled 2 clients (out of 2)
+19:50:51 [DEBUG] flwr: evaluate_round 4: strategy sampled 2 clients (out of 2)
+19:50:51 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 4
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.9267
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.9267
+DEBUG flwr 2026-04-07 19:50:53,441 | server.py:182 | evaluate_round 4 received 2 results and 0 failures
+19:50:53 [DEBUG] flwr: evaluate_round 4 received 2 results and 0 failures
+DEBUG flwr 2026-04-07 19:50:53,441 | server.py:218 | fit_round 5: strategy sampled 2 clients (out of 2)
+19:50:53 [DEBUG] flwr: fit_round 5: strategy sampled 2 clients (out of 2)
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
+19:51:13 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+19:51:13 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+19:51:13 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+19:51:13 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+19:51:13 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+19:51:13 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+19:51:13 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+19:51:13 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Applying DP Noise (ε-privacy)...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Applying DP Noise (ε-privacy)...
+DEBUG flwr 2026-04-07 19:51:14,191 | server.py:232 | fit_round 5 received 2 results and 0 failures
+19:51:14 [DEBUG] flwr: fit_round 5 received 2 results and 0 failures
+19:51:14 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52278 persisted to database with IP 103.93.179.42.
+19:51:14 [INFO] GuardianBridge: Node ipv4:127.0.0.1:52282 persisted to database with IP 103.93.179.42.
+19:51:14 [INFO] SecureStrategy: Round 5 Synced (Acc: 89.48%)
+DEBUG flwr 2026-04-07 19:51:14,230 | server.py:168 | evaluate_round 5: strategy sampled 2 clients (out of 2)
+19:51:14 [DEBUG] flwr: evaluate_round 5: strategy sampled 2 clients (out of 2)
+19:51:14 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 5
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.9521
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.9521
+DEBUG flwr 2026-04-07 19:51:16,394 | server.py:182 | evaluate_round 5 received 2 results and 0 failures
+19:51:16 [DEBUG] flwr: evaluate_round 5 received 2 results and 0 failures
+INFO flwr 2026-04-07 19:51:16,395 | server.py:147 | FL finished in 100.031384
+19:51:16 [INFO] flwr: FL finished in 100.031384
+INFO flwr 2026-04-07 19:51:16,399 | app.py:218 | app_fit: losses_distributed [(1, 2.2303168773651123), (2, 2.104680299758911), (3, 1.8869620561599731), (4, 1.5703322887420654), (5, 1.2185817956924438)]
+19:51:16 [INFO] flwr: app_fit: losses_distributed [(1, 2.2303168773651123), (2, 2.104680299758911), (3, 1.8869620561599731), (4, 1.5703322887420654), (5, 1.2185817956924438)]
+INFO flwr 2026-04-07 19:51:16,399 | app.py:219 | app_fit: metrics_distributed_fit {'accuracy': [(1, 0.78745), (2, 0.8436833333333333), (3, 0.8696333333333334), (4, 0.8826666666666667), (5, 0.8947666666666667)], 'loss': [(1, 0.4798988699913025), (2, 0.46329229325056076), (3, 0.5710745751857758), (4, 0.5287380218505859), (5, 0.30266619473695755)]}
+19:51:16 [INFO] flwr: app_fit: metrics_distributed_fit {'accuracy': [(1, 0.78745), (2, 0.8436833333333333), (3, 0.8696333333333334), (4, 0.8826666666666667), (5, 0.8947666666666667)], 'loss': [(1, 0.4798988699913025), (2, 0.46329229325056076), (3, 0.5710745751857758), (4, 0.5287380218505859), (5, 0.30266619473695755)]}
+INFO flwr 2026-04-07 19:51:16,399 | app.py:220 | app_fit: metrics_distributed {}
+19:51:16 [INFO] flwr: app_fit: metrics_distributed {}
+INFO flwr 2026-04-07 19:51:16,399 | app.py:221 | app_fit: losses_centralized []
+19:51:16 [INFO] flwr: app_fit: losses_centralized []
+INFO flwr 2026-04-07 19:51:16,399 | app.py:222 | app_fit: metrics_centralized {}
+19:51:16 [INFO] flwr: app_fit: metrics_centralized {}
+  [CLIENT 1] DEBUG flwr 2026-04-07 19:51:16,411 | connection.py:113 | gRPC channel closed
+19:51:16 [INFO] GuardianServer: Training session complete. Maintaining dashboard bridge...
+  [CLIENT 1] DEBUG:flwr:gRPC channel closed
+  [CLIENT 1] INFO flwr 2026-04-07 19:51:16,412 | app.py:185 | Disconnect and shut down
+  [CLIENT 1] INFO:flwr:Disconnect and shut down
+  [CLIENT 0] DEBUG flwr 2026-04-07 19:51:16,412 | connection.py:113 | gRPC channel closed
+  [CLIENT 0] DEBUG:flwr:gRPC channel closed
+  [CLIENT 0] INFO flwr 2026-04-07 19:51:16,413 | app.py:185 | Disconnect and shut down
+  [CLIENT 0] INFO:flwr:Disconnect and shut down
+19:51:20 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+19:51:20 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+19:51:20 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+19:51:20 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+19:51:20 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+19:51:20 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+19:51:20 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+19:51:20 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+19:51:50 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+19:51:50 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+19:51:50 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 3
+19:51:50 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3

@@ -178,7 +178,20 @@ function App() {
       case 'architecture':
         return <ArchitectureBuilder onAction={addToast} />;
       case 'training':
-        return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} hyperparams={hyperparams} roundHistory={roundHistory} modelArchitecture={modelArchitecture} onClear={clearLogs} />;
+        return (
+          <TrainingWorkspace 
+            clients={clients} 
+            logs={logs} 
+            accuracyHistory={accuracyHistory} 
+            lossHistory={lossHistory} 
+            hyperparams={hyperparams} 
+            roundHistory={roundHistory} 
+            modelArchitecture={modelArchitecture} 
+            onClear={clearLogs} 
+            onInitiate={startSimulation}
+            isActive={isActive}
+          />
+        );
       case 'datasets':
         return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
       case 'laboratory':

@@ -16,7 +16,18 @@ const ConfigInput = ({ label, value }) => (
   </div>
 );
 
-export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams, roundHistory = [], modelArchitecture, onClear }) => {
+export const TrainingWorkspace = ({ 
+  clients, 
+  logs = [], 
+  accuracyHistory = [], 
+  lossHistory = [], 
+  hyperparams, 
+  roundHistory = [], 
+  modelArchitecture, 
+  onClear,
+  onInitiate,
+  isActive 
+}) => {
   const consoleRef = React.useRef(null);
   const [activeTab, setActiveTab] = useState('telemetry');
   const ledgerRef = React.useRef(null);
@@ -50,12 +61,16 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
         
         <div className="tr-header-right">
           <div className="tr-status-card">
-            <div className="tr-status-dot" />
-            <span className="tr-status-text">GPU CLUSTER: READY</span>
+            <div className={`tr-status-dot ${isActive ? 'tr-status-active' : ''}`} />
+            <span className="tr-status-text">GPU CLUSTER: {isActive ? 'COMMITED' : 'READY'}</span>
           </div>
-          <button className="tr-run-btn group">
+          <button 
+            onClick={onInitiate}
+            disabled={isActive}
+            className={`tr-run-btn group ${isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
             <Zap size={14} fill="currentColor" />
-            <span>Initiate Training</span>
+            <span>{isActive ? 'Training Active' : 'Initiate Training'}</span>
             <div className="tr-btn-line group-hover:w-8" />
           </button>
         </div>
