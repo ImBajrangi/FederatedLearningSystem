@@ -42,7 +42,7 @@ function App() {
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('federated_auth') === 'true';
+    return localStorage.getItem('federated_token') !== null;
   });
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('federated_user');
@@ -97,6 +97,30 @@ function App() {
     document.body.style.userSelect = 'none';
   }, []);
 
+
+  // Session Recovery
+  useEffect(() => {
+    const recoverSession = async () => {
+      const token = localStorage.getItem('federated_token');
+      if (!token) return;
+
+      try {
+        const port = import.meta.env.VITE_BACKEND_PORT || '7880';
+        const response = await fetch(`http://localhost:${port}/api/auth/me?token=${token}`);
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+          setIsAuthenticated(true);
+        } else {
+          handleLogout();
+        }
+      } catch (err) {
+        console.error("Session recovery failed:", err);
+      }
+    };
+    recoverSession();
+  }, []);
+
   const addToast = (msg, type = 'success') => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts(prev => [...prev, { id, msg, type }]);
@@ -117,18 +141,19 @@ function App() {
     await runRound();
   };
 
-  const handleLogin = (userData) => {
+  const handleLogin = (data) => {
+    const { access_token, user: userData } = data;
     setIsAuthenticated(true);
     setUser(userData);
-    localStorage.setItem('federated_auth', 'true');
+    localStorage.setItem('federated_token', access_token);
     localStorage.setItem('federated_user', JSON.stringify(userData));
-    addToast(`Access Granted: Welcome ${userData.id}`, 'success');
+    addToast(`Access Granted: Welcome ${userData.username || userData.id}`, 'success');
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUser(null);
-    localStorage.removeItem('federated_auth');
+    localStorage.removeItem('federated_token');
     localStorage.removeItem('federated_user');
     addToast('Session Terminated.', 'info');
   };

@@ -232,9 +232,7 @@ class ConnectionManager:
 bridge = ConnectionManager()
 app = FastAPI(title="AI Guardian Bridge")
 
-# Include Auth Routes
-app.include_router(auth_router)
-
+# Mandatory middleware initialization BEFORE including routers for consistent CORS headers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -242,6 +240,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include Auth Routes after middleware
+app.include_router(auth_router)
 
 @app.on_event("startup")
 async def startup():

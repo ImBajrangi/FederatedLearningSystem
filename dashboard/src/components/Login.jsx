@@ -1,27 +1,73 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, ShieldCheck, Cpu, Key, ChevronRight, Activity, Terminal } from 'lucide-react';
+import { Lock, ShieldCheck, Cpu, Key, ChevronRight, Activity, Terminal, Mail, UserPlus, LogIn } from 'lucide-react';
 
 export const Login = ({ onLogin }) => {
+  const [isSignUp, setIsSignUp] = useState(false);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [authStep, setAuthStep] = useState(0); // 0: Idle, 1: Scanning, 2: Finalizing
+  const [authStep, setAuthStep] = useState(0); // 0: Idle, 1: Connecting, 2: Validating
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const getApiUrl = () => {
+    const port = import.meta.env.VITE_BACKEND_PORT || '7880';
+    return `http://localhost:${port}`;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) return;
+    setError('');
+    
+    if (!username || !password || (isSignUp && !email)) {
+      setError('Please fill in all mandatory fields.');
+      return;
+    }
 
     setIsAuthenticating(true);
     setAuthStep(1);
 
-    // Simulate Institutional Handshake
-    setTimeout(() => {
+    try {
+      const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login';
+      const body = isSignUp 
+        ? { username, email, password } 
+        : { identity: username, password };
+
+      const response = await fetch(`${getApiUrl()}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errMsg = typeof data.detail === 'string' 
+          ? data.detail 
+          : (data.detail?.[0]?.msg || JSON.stringify(data.detail) || 'Authentication failed');
+        throw new Error(errMsg);
+      }
+
       setAuthStep(2);
+
+      // Simulation delay for aesthetic
       setTimeout(() => {
-        onLogin({ id: username, role: 'Senior Researcher', node: 'NODE_07' });
+        if (isSignUp) {
+          // If signup success, switch to login or auto-login
+          setIsSignUp(false);
+          setIsAuthenticating(false);
+          // Show success state briefly
+          setError('Account created. Please sign in.');
+        } else {
+          onLogin(data); // data contains { access_token, user }
+        }
       }, 800);
-    }, 1500);
+
+    } catch (err) {
+      setError(err.message);
+      setIsAuthenticating(false);
+    }
   };
 
   return (
@@ -41,13 +87,13 @@ export const Login = ({ onLogin }) => {
               <ShieldCheck size={24} style={{ color: '#364E68' }} />
             </div>
             <div className="login-title-group">
-              <h1 className="login-h1">Secure Access Portal</h1>
+              <h1 className="login-h1">{isSignUp ? 'Create Researcher Account' : 'Secure Access Portal'}</h1>
               <span className="login-subtitle">Federated Learning Institutional Node</span>
             </div>
           </div>
           <div className="login-status-badge">
             <div className="login-dot pulse" />
-            <span>ENCRYPTED</span>
+            <span>{isSignUp ? 'ENROLLMENT' : 'ENCRYPTED'}</span>
           </div>
         </header>
 
@@ -63,19 +109,42 @@ export const Login = ({ onLogin }) => {
                 onSubmit={handleSubmit}
                 className="login-form"
               >
+                {error && (
+                  <div className="login-error-banner">
+                    <Activity size={12} />
+                    <span>{error}</span>
+                  </div>
+                )}
+
                 <div className="login-field-group">
                   <label className="login-label">Institutional Identity</label>
                   <div className="login-input-wrap">
                     <Cpu size={14} className="login-input-icon" />
                     <input 
                       type="text" 
-                      placeholder="e.g. RESEARCHER_ID"
+                      placeholder={isSignUp ? "Choose a username" : "Username or Email"}
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       className="login-input"
                     />
                   </div>
                 </div>
+
+                {isSignUp && (
+                  <div className="login-field-group">
+                    <label className="login-label">Email Address</label>
+                    <div className="login-input-wrap">
+                      <Mail size={14} className="login-input-icon" />
+                      <input 
+                        type="email" 
+                        placeholder="researcher@institution.edu"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="login-input"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div className="login-field-group">
                   <label className="login-label">Access Key</label>
@@ -91,11 +160,29 @@ export const Login = ({ onLogin }) => {
                   </div>
                 </div>
 
-                <button type="submit" className="login-submit-btn">
-                  <span>Sign In</span>
-                  <ChevronRight size={14} />
-                  <div className="login-btn-glimmer" />
-                </button>
+                <div className="login-actions">
+                  <button type="submit" className="login-submit-btn">
+                    <span>{isSignUp ? 'Register' : 'Sign In'}</span>
+                    <ChevronRight size={14} />
+                    <div className="login-btn-glimmer" />
+                  </button>
+
+                  <button 
+                    type="button" 
+                    className="login-toggle-btn"
+                    onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
+                  >
+                    {isSignUp ? (
+                      <span className="flex items-center gap-2">
+                        <LogIn size={12} /> Already have an account? Sign In
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <UserPlus size={12} /> New Researcher? Create Account
+                      </span>
+                    )}
+                  </button>
+                </div>
               </motion.form>
             ) : (
               <motion.div 
@@ -116,7 +203,7 @@ export const Login = ({ onLogin }) => {
                 <div className="login-auth-logs">
                   <div className={`login-log-line ${authStep >= 1 ? 'active' : ''}`}>
                     <span className="log-prefix">CC-01:</span>
-                    <span className="log-msg">Scanning credentials...</span>
+                    <span className="log-msg">Contacting Authorization Server...</span>
                   </div>
                   <div className={`login-log-line ${authStep >= 2 ? 'active' : ''}`}>
                     <span className="log-prefix">CC-02:</span>
@@ -132,11 +219,11 @@ export const Login = ({ onLogin }) => {
         <footer className="login-footer">
           <div className="login-footer-item">
             <Activity size={10} />
-            <span>SESSION: 4MS LATENCY</span>
+            <span>SESSION: DB_CONNECTED</span>
           </div>
           <div className="login-footer-item">
             <Lock size={10} />
-            <span>V_2.4 CRYPTO BRIDGE</span>
+            <span>SQLITE_V3_SECURE</span>
           </div>
         </footer>
       </motion.div>
@@ -169,7 +256,7 @@ export const Login = ({ onLogin }) => {
         }
 
         .login-container {
-          width: 420px;
+          width: 440px;
           background: #fff;
           border: 1px solid var(--border);
           box-shadow: 0 40px 100px -20px rgba(0,0,0,0.08);
@@ -195,8 +282,8 @@ export const Login = ({ onLogin }) => {
         }
 
         .login-title-group { display: flex; flex-direction: column; gap: 2px; }
-        .login-h1 { font-size: 20px; margin: 0; color: var(--text-main); font-weight: 500; font-family: var(--font-serif); }
-        .login-subtitle { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); opacity: 0.6; }
+        .login-h1 { font-size: 18px; margin: 0; color: var(--text-main); font-weight: 500; font-family: var(--font-serif); }
+        .login-subtitle { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); opacity: 0.6; }
 
         .login-status-badge {
           display: flex; align-items: center; gap: 8px;
@@ -209,15 +296,27 @@ export const Login = ({ onLogin }) => {
           letter-spacing: 0.1em;
         }
 
-        .login-body { padding: 40px 32px; min-height: 280px; }
+        .login-body { padding: 32px 32px; min-height: 320px; }
 
-        .login-form { display: flex; flex-direction: column; gap: 24px; }
-        .login-field-group { display: flex; flex-direction: column; gap: 8px; }
+        .login-form { display: flex; flex-direction: column; gap: 20px; }
+        .login-field-group { display: flex; flex-direction: column; gap: 6px; }
         .login-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
+
+        .login-error-banner {
+          background: #fef2f2;
+          border: 1px solid #fee2e2;
+          padding: 10px 12px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 11px;
+          color: #ef4444;
+          font-weight: 600;
+        }
 
         .login-input-wrap {
           position: relative;
-          height: 48px;
+          height: 44px;
           display: flex;
           align-items: center;
           border-bottom: 2px solid var(--border);
@@ -225,7 +324,7 @@ export const Login = ({ onLogin }) => {
         }
         .login-input-wrap:focus-within { border-color: var(--primary); }
 
-        .login-input-icon { margin-right: 16px; color: var(--text-muted); opacity: 0.5; }
+        .login-input-icon { margin-right: 12px; color: var(--text-muted); opacity: 0.5; }
         .login-input {
           flex: 1;
           height: 100%;
@@ -238,8 +337,10 @@ export const Login = ({ onLogin }) => {
         .login-input:focus { outline: none; }
         .login-input::placeholder { color: var(--text-muted); opacity: 0.3; }
 
+        .login-actions { display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
+
         .login-submit-btn {
-          height: 52px;
+          height: 48px;
           background: var(--primary);
           color: #fff;
           border: none;
@@ -255,10 +356,23 @@ export const Login = ({ onLogin }) => {
           position: relative;
           overflow: hidden;
           transition: all 0.2s;
-          margin-top: 8px;
         }
         .login-submit-btn:hover { background: #1e3a5f; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(54,78,104,0.2); }
         .login-submit-btn:active { transform: translateY(0); }
+
+        .login-toggle-btn {
+          background: none;
+          border: none;
+          font-size: 10px;
+          font-weight: 700;
+          color: var(--text-muted);
+          cursor: pointer;
+          opacity: 0.6;
+          transition: all 0.2s;
+          display: flex;
+          justify-content: center;
+        }
+        .login-toggle-btn:hover { opacity: 1; color: var(--primary); }
 
         .login-auth-status {
           display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 32px;
