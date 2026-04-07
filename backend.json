@@ -70,3 +70,5 @@
 {"timestamp":"2026-04-07 10:47:41","level":"INFO","component":"GuardianClient","message":"Client 0 | Accuracy: 0.9570","epoch":1775539061.1151261,"type":"evaluation","client_id":"0","accuracy":0.957}
 {"timestamp":"2026-04-07 10:47:41","level":"INFO","component":"GuardianClient","message":"Client 1 | Accuracy: 0.9570","epoch":1775539061.115506,"type":"evaluation","client_id":"1","accuracy":0.957}
 {"timestamp":"2026-04-07 10:47:41","level":"INFO","component":"GuardianServer","message":"Training session complete. Maintaining dashboard bridge...","epoch":1775539061.125794}
+{"timestamp":"2026-04-07 11:59:07","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 0","epoch":1775543347.576072}
+{"timestamp":"2026-04-07 12:05:15","level":"INFO","component":"GuardianServer","message":"Shutting down Guardian Server...","epoch":1775543715.611254}

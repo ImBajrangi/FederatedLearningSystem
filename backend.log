@@ -170,3 +170,4 @@ I0407 10:47:41.127913  129038 fork_posix.cc:71] Other threads are currently call
   [CLIENT 0] INFO:flwr:Disconnect and shut down
   [CLIENT 1] INFO flwr 2026-04-07 10:47:41,130 | app.py:185 | Disconnect and shut down
   [CLIENT 1] INFO:flwr:Disconnect and shut down
+11:59:07 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 0
