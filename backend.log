@@ -69,3 +69,13 @@ DEBUG flwr 2026-04-07 19:49:48,173 | server.py:232 | fit_round 1 received 2 resu
 DEBUG flwr 2026-04-07 19:49:48,236 | server.py:168 | evaluate_round 1: strategy sampled 2 clients (out of 2)
 19:49:48 [DEBUG] flwr: evaluate_round 1: strategy sampled 2 clients (out of 2)
 19:49:48 [INFO] GuardianBridge: Broadcasting STAT_UPDATE. Accuracy History Size: 1
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Accuracy: 0.1989
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Accuracy: 0.1989
+DEBUG flwr 2026-04-07 19:49:51,866 | server.py:182 | evaluate_round 1 received 2 results and 0 failures
+19:49:51 [DEBUG] flwr: evaluate_round 1 received 2 results and 0 failures
+WARNING flwr 2026-04-07 19:49:51,869 | fedavg.py:274 | No evaluate_metrics_aggregation_fn provided
+19:49:51 [WARNING] flwr: No evaluate_metrics_aggregation_fn provided
+DEBUG flwr 2026-04-07 19:49:51,870 | server.py:218 | fit_round 2: strategy sampled 2 clients (out of 2)
+19:49:51 [DEBUG] flwr: fit_round 2: strategy sampled 2 clients (out of 2)
+  [CLIENT 0] INFO:GuardianClient:Client 0 | Training locally...
+  [CLIENT 1] INFO:GuardianClient:Client 1 | Training locally...

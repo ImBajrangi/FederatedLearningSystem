@@ -27,3 +27,7 @@
 {"timestamp":"2026-04-07 19:49:48","level":"INFO","component":"GuardianBridge","message":"Node ipv4:127.0.0.1:52278 persisted to database with IP 103.93.179.42.","epoch":1775571588.220188}
 {"timestamp":"2026-04-07 19:49:48","level":"INFO","component":"SecureStrategy","message":"Round 1 Synced (Acc: 78.75%)","epoch":1775571588.234294,"type":"round_sync","round":1,"accuracy":0.78745,"loss":0.4798988699913025}
 {"timestamp":"2026-04-07 19:49:48","level":"INFO","component":"GuardianBridge","message":"Broadcasting STAT_UPDATE. Accuracy History Size: 1","epoch":1775571588.239779,"type":"telemetry","round":1,"history_size":1}
+{"timestamp":"2026-04-07 19:49:51","level":"INFO","component":"GuardianClient","message":"Client 1 | Accuracy: 0.1989","epoch":1775571591.822088,"type":"evaluation","client_id":"1","accuracy":0.1989}
+{"timestamp":"2026-04-07 19:49:51","level":"INFO","component":"GuardianClient","message":"Client 0 | Accuracy: 0.1989","epoch":1775571591.8583958,"type":"evaluation","client_id":"0","accuracy":0.1989}
+{"timestamp":"2026-04-07 19:49:51","level":"INFO","component":"GuardianClient","message":"Client 0 | Training locally...","epoch":1775571591.8793979,"type":"training","client_id":"0","status":"STARTED"}
+{"timestamp":"2026-04-07 19:49:51","level":"INFO","component":"GuardianClient","message":"Client 1 | Training locally...","epoch":1775571591.884147,"type":"training","client_id":"1","status":"STARTED"}
