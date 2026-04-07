@@ -184,15 +184,20 @@ class ConnectionManager:
 
     def broadcast_sync(self, message_type: str, payload: Any):
         """Thread-safe synchronous broadcast for use from Flower threads."""
-        if not self.loop:
-            try: self.loop = asyncio.get_event_loop()
-            except Exception: pass
-        
-        if self.loop:
-            asyncio.run_coroutine_threadsafe(
-                self.broadcast(message_type, payload), 
-                self.loop
-            )
+        if self.loop and self.loop.is_running():
+            try:
+                asyncio.run_coroutine_threadsafe(
+                    self.broadcast(message_type, payload), 
+                    self.loop
+                )
+            except Exception as e:
+                logger.warning(f"Thread-safe broadcast failed: {e}")
+        else:
+            # Fallback for early startup: just buffer it
+            if message_type == "LOG":
+                self.log_buffer.append(payload)
+                if len(self.log_buffer) > 200: self.log_buffer.pop(0)
+            logger.debug(f"Broadcast deferred (loop not ready): {message_type}")
 
     async def broadcast(self, message_type: str, payload: Any):
         """Reactive broadcast engine."""
@@ -269,7 +274,7 @@ async def websocket_endpoint(websocket: WebSocket):
 async def health_check():
     return {"status": "ONLINE", "clients": len(bridge.active_connections)}
 
-@app.post("/v1/laboratory/validate")
+@app.post("/api/v1/laboratory/validate")
 async def validate_code(data: Dict[str, str]):
     code = data.get("code", "")
     try:
@@ -298,7 +303,7 @@ async def validate_code(data: Dict[str, str]):
         logger.error(f"Laboratory Validation Error: {e}")
         return {"success": False, "error": str(e), "type": type(e).__name__}
 
-@app.post("/v1/laboratory/deploy")
+@app.post("/api/v1/laboratory/deploy")
 async def deploy_model(data: Dict[str, str]):
     code = data.get("code", "")
     try:
@@ -327,7 +332,7 @@ async def deploy_model(data: Dict[str, str]):
         logger.error(f"Local Deployment Error: {e}")
         return {"success": False, "error": str(e)}
 
-@app.post("/v1/laboratory/train")
+@app.post("/api/v1/laboratory/train")
 async def start_lab_training(data: Dict[str, Any]):
     code = data.get("code", "")
     hyperparams = data.get("hyperparams", {})
@@ -338,16 +343,16 @@ async def start_lab_training(data: Dict[str, Any]):
     success, msg = engine.start_training(code, hyperparams, bridge.broadcast_sync)
     return {"success": success, "message": msg}
 
-@app.post("/v1/laboratory/abort")
+@app.post("/api/v1/laboratory/abort")
 async def abort_lab_training():
     success = engine.abort_training()
     return {"success": success}
 
-@app.get("/v1/laboratory/status")
+@app.get("/api/v1/laboratory/status")
 async def get_lab_status():
     return engine.get_session_status()
 
-@app.get("/v1/laboratory/download/{file_format}")
+@app.get("/api/v1/laboratory/download/{file_format}")
 async def download_model(file_format: str):
     session = engine._current_session
     if not session or not session.model_path:
@@ -369,13 +374,25 @@ async def download_model(file_format: str):
 
 # ── Static Dashboard Serving (for Deployment) ──
 # Look for 'static' (Hugging Face) or 'dist' (Local build)
-static_dirs = [os.path.join(os.getcwd(), "static"), os.path.join(os.getcwd(), "dist")]
-for s_dir in static_dirs:
-    if os.path.exists(s_dir):
-        app.mount("/assets", StaticFiles(directory=os.path.join(s_dir, "assets")), name="assets")
+paths_to_check = [
+    os.path.join(os.getcwd(), "static"),
+    os.path.join(os.getcwd(), "dist"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dist")
+]
+
+for s_dir in paths_to_check:
+    if os.path.exists(s_dir) and os.path.isdir(s_dir):
+        assets_dir = os.path.join(s_dir, "assets")
+        if os.path.exists(assets_dir):
+            app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
         
         @app.get("/{full_path:path}")
         async def serve_dashboard(full_path: str):
+            # Block internal API/WS from being caught by static server
+            if full_path.startswith("api") or full_path.startswith("ws"):
+                from fastapi import HTTPException
+                raise HTTPException(status_code=404)
             # Try to serve index.html from whichever static dir we found
             return FileResponse(os.path.join(s_dir, "index.html"))
         logger.info(f"Serving dashboard from {s_dir}")

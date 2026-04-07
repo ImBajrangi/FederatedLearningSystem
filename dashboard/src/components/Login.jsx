@@ -12,6 +12,11 @@ export const Login = ({ onLogin }) => {
   const [error, setError] = useState('');
 
   const getApiUrl = () => {
+    // In production (Hugging Face / Deployment), we use relative paths or the window origin
+    // In development, we use the VITE_BACKEND_PORT environment variable
+    if (import.meta.env.PROD) {
+      return window.location.origin;
+    }
     const port = import.meta.env.VITE_BACKEND_PORT || '7880';
     return `http://localhost:${port}`;
   };

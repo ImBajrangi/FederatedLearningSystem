@@ -5,6 +5,7 @@ import {
   AlertCircle, RefreshCw, Download, BarChart2, 
   Activity, Settings, CheckCircle2, StopCircle, Cpu
 } from 'lucide-react';
+import { API_BASE_URL } from '../hooks/useSecureFederated';
 
 const DEFAULT_MODEL_CODE = `import torch
 import torch.nn as nn
@@ -75,7 +76,7 @@ export const Laboratory = ({ onAction, labState }) => {
     addLog('Initiating backend compilation protocol...', 'info');
     setErrorLine(null);
     try {
-      const response = await fetch('/api/v1/laboratory/validate', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })
@@ -103,7 +104,7 @@ export const Laboratory = ({ onAction, labState }) => {
     setStatus('TRAINING');
     addLog(`Starting training (Epochs: ${epochs}, LR: ${lr}, Batch: ${batchSize})...`, 'info');
     try {
-      const response = await fetch('/api/v1/laboratory/train', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/train`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, hyperparams: { epochs, lr, batch_size: batchSize } })
@@ -121,7 +122,7 @@ export const Laboratory = ({ onAction, labState }) => {
 
   const handleAbort = async () => {
     try {
-      await fetch('/api/v1/laboratory/abort', { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/v1/laboratory/abort`, { method: 'POST' });
       setStatus('IDLE');
       addLog('Training abort signal sent.', 'warning');
     } catch (err) {
@@ -130,7 +131,7 @@ export const Laboratory = ({ onAction, labState }) => {
   };
 
   const handleDownload = (format) => {
-    window.open(`/api/v1/laboratory/download/${format}`, '_blank');
+    window.open(`${API_BASE_URL}/api/v1/laboratory/download/${format}`, '_blank');
     addLog(`Initiating ${format.toUpperCase()} model download...`, 'info');
   };
 

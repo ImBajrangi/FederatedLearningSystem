@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const isProd = import.meta.env.PROD;
-const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7861';
-const API_BASE_URL = isProd ? window.location.origin : `http://127.0.0.1:${BACKEND_PORT}`;
-const WS_URL = isProd 
+export const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7861';
+export const API_BASE_URL = isProd ? window.location.origin : `http://127.0.0.1:${BACKEND_PORT}`;
+export const WS_URL = isProd 
   ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws` 
   : `ws://127.0.0.1:${BACKEND_PORT}/ws`;
 

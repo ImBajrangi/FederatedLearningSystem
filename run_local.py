@@ -78,9 +78,9 @@ def main():
         f.write("") 
     
     server_proc = subprocess.Popen(
-        [python_path, "-m", "server.server", "--flower_port", str(FLOWER_PORT), "--rounds", str(ROUNDS)],
+        [python_path, "-m", "Cybronites.server.server", "--flower_port", str(FLOWER_PORT), "--rounds", str(ROUNDS)],
         env=env,
-        cwd=os.path.join(cwd, "Cybronites"),
+        cwd=cwd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -132,7 +132,7 @@ def main():
     print(f"\n{'=' * 60}")
     print(f"  ALL SYSTEMS ONLINE")
     print(f"  Bridge:    http://localhost:{BRIDGE_PORT}")
-    print(f"  WebSocket: ws://localhost:{BRIDGE_PORT}/bridge/ws")
+    print(f"  WebSocket: ws://localhost:{BRIDGE_PORT}/ws")
     print(f"  Dashboard: Open http://localhost:5173 (or 5174)")
     print(f"  Logs:      tail -f backend.log")
     print(f"{'=' * 60}")

@@ -53,6 +53,40 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+
+        # Create nodes table for telemetry
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS nodes (
+                id TEXT PRIMARY KEY,
+                name TEXT,
+                last_seen TIMESTAMP,
+                trust_score REAL,
+                ip_address TEXT
+            )
+        """)
+
+        # Create shards table for registry
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS shards (
+                id TEXT PRIMARY KEY,
+                name TEXT,
+                region TEXT,
+                load REAL,
+                status TEXT,
+                encryption TEXT
+            )
+        """)
+        
+        # Seed default shards if empty
+        cursor.execute("SELECT COUNT(*) FROM shards")
+        if cursor.fetchone()[0] == 0:
+            shards = [
+                ('SHARD-001', 'Institutional_Core', 'US-East', 0.45, 'ACTIVE', 'AES-256'),
+                ('SHARD-002', 'Federated_Relay', 'EU-West', 0.12, 'ACTIVE', 'AES-256'),
+                ('SHARD-003', 'Audit_Vault', 'Global', 0.89, 'FULL', 'AES-256')
+            ]
+            cursor.executemany("INSERT INTO shards (id, name, region, load, status, encryption) VALUES (?, ?, ?, ?, ?, ?)", shards)
+            print("  [DB_INIT] Default institutional shards seeded.")
         
         # Seed default admin if table is empty
         cursor.execute("SELECT COUNT(*) FROM users")
