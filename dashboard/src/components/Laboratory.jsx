@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code, Play, ShieldCheck, Terminal, Save, Zap, AlertCircle, RefreshCw, Cpu, Database } from 'lucide-react';
+import { 
+  Code, Play, ShieldCheck, Terminal, Zap, 
+  AlertCircle, RefreshCw, Download, BarChart2, 
+  Activity, Settings, CheckCircle2, StopCircle, Cpu
+} from 'lucide-react';
 
 const DEFAULT_MODEL_CODE = `import torch
 import torch.nn as nn
@@ -27,217 +31,836 @@ class MNISTNet(nn.Module):
         return F.log_softmax(x, dim=1)
 `;
 
-export const Laboratory = ({ onAction }) => {
+export const Laboratory = ({ onAction, labState }) => {
   const [code, setCode] = useState(DEFAULT_MODEL_CODE);
-  const [status, setStatus] = useState('IDLE'); // IDLE, COMPILING, READY, ERROR, DEPLOYING
+  const [status, setStatus] = useState('IDLE');
   const [logs, setLogs] = useState([]);
   const [errorLine, setErrorLine] = useState(null);
   const textAreaRef = useRef(null);
+  const gutterRef = useRef(null);
+
+  const [epochs, setEpochs] = useState(5);
+  const [lr, setLr] = useState(0.001);
+  const [batchSize, setBatchSize] = useState(32);
 
   const addLog = (msg, type = 'info') => {
     setLogs(prev => [{ msg, type, time: new Date().toLocaleTimeString() }, ...prev].slice(0, 50));
   };
 
+  // Sync scroll between gutter and textarea
+  useEffect(() => {
+    const textarea = textAreaRef.current;
+    const gutter = gutterRef.current;
+    if (!textarea || !gutter) return;
+    const handleScroll = () => { gutter.scrollTop = textarea.scrollTop; };
+    textarea.addEventListener('scroll', handleScroll);
+    return () => textarea.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!labState) return;
+    if (labState.status === 'TRAINING') {
+      setStatus('TRAINING');
+    } else if (labState.status === 'COMPLETE') {
+      setStatus('COMPLETE');
+      addLog('Training session finalized. Model prepared for download.', 'success');
+    } else if (labState.status === 'ERROR') {
+      setStatus('ERROR');
+      addLog(`Training Error: ${labState.error}`, 'error');
+    }
+  }, [labState]);
+
   const handleCompile = async () => {
     setStatus('COMPILING');
     addLog('Initiating backend compilation protocol...', 'info');
     setErrorLine(null);
-
     try {
-      const response = await fetch('/v1/laboratory/validate', {
+      const response = await fetch('/api/v1/laboratory/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })
       });
       const data = await response.json();
-
       if (data.success) {
         setStatus('READY');
         addLog('Compilation successful. Architecture verified.', 'success');
       } else {
         setStatus('ERROR');
-        const line = data.line || null;
-        setErrorLine(line);
-
-        // Detailed Compiler Feedback
-        const errorType = data.type || 'Error';
-        const errorMsg = data.error || 'Unknown syntax exception';
-        const column = data.column ? ` (Col: ${data.column})` : '';
-
-        addLog(`[${errorType}] Line ${line || '?'}${column}: ${errorMsg}`, 'error');
-        addLog(`System Diagnostic: Execution halted due to architectural misalignment.`, 'error');
+        setErrorLine(data.line || null);
+        addLog(`[${data.type || 'Error'}] Line ${data.line || '?'}: ${data.error}`, 'error');
       }
     } catch (err) {
       setStatus('ERROR');
       addLog('FATAL: Could not connect to Institutional Compiler Service.', 'error');
-      addLog(`Debug Info: ${err.message}`, 'error');
     }
   };
 
-  const handleDeploy = async () => {
-    if (status !== 'READY') {
-      onAction('Code must be compiled before deployment.', 'error');
+  const handleTrain = async () => {
+    if (status !== 'READY' && status !== 'COMPLETE' && status !== 'IDLE') {
+      onAction('Code must be verified before training.', 'error');
       return;
     }
-
-    setStatus('DEPLOYING');
-    addLog('Executing hot-swap deployment...', 'info');
-
+    setStatus('TRAINING');
+    addLog(`Starting training (Epochs: ${epochs}, LR: ${lr}, Batch: ${batchSize})...`, 'info');
     try {
-      const response = await fetch('/v1/laboratory/deploy', {
+      const response = await fetch('/api/v1/laboratory/train', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code, hyperparams: { epochs, lr, batch_size: batchSize } })
       });
       const data = await response.json();
-
-      if (data.success) {
-        setStatus('IDLE');
-        addLog('Global model hot-swapped. Synchronizing federation...', 'success');
-        onAction('Model Architecture Updated Successfully', 'success');
-      } else {
+      if (!data.success) {
         setStatus('ERROR');
-        addLog(`Deployment Failed: ${data.error}`, 'error');
+        addLog(`Failed to start training: ${data.message}`, 'error');
       }
     } catch (err) {
       setStatus('ERROR');
-      addLog('Deployment service unavailable.', 'error');
+      addLog('Training service unreachable.', 'error');
     }
   };
 
+  const handleAbort = async () => {
+    try {
+      await fetch('/api/v1/laboratory/abort', { method: 'POST' });
+      setStatus('IDLE');
+      addLog('Training abort signal sent.', 'warning');
+    } catch (err) {
+      addLog('Failed to abort training session.', 'error');
+    }
+  };
+
+  const handleDownload = (format) => {
+    window.open(`/api/v1/laboratory/download/${format}`, '_blank');
+    addLog(`Initiating ${format.toUpperCase()} model download...`, 'info');
+  };
+
   const lineCount = code.split('\n').length;
-  const lineNumbers = Array.from({ length: Math.max(lineCount, 25) }, (_, i) => i + 1);
+  const lineNumbers = Array.from({ length: Math.max(lineCount, 30) }, (_, i) => i + 1);
+  const progress = labState?.progress || 0;
+
+  const statusColor = status === 'READY' || status === 'COMPLETE' ? 'var(--success)' 
+    : status === 'ERROR' ? 'var(--error)' 
+    : status === 'TRAINING' ? 'var(--accent)' 
+    : 'var(--text-muted)';
+
+  const statusLabel = {
+    IDLE: 'Awaiting Input',
+    COMPILING: 'Validating...',
+    READY: 'Architecture Verified',
+    TRAINING: `Training — Epoch ${labState?.epoch || 0}/${epochs}`,
+    COMPLETE: 'Training Complete',
+    ERROR: 'Exception Raised'
+  }[status] || status;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-white section-fade overflow-hidden">
-      {/* Header Bar */}
-      <div className="h-16 border-b border-border flex items-center justify-between px-8 bg-bg-main/30">
-        <div className="flex items-center gap-4">
-          <div className="p-2 bg-text-main rounded-sm shadow-sm">
-            <Code size={16} className="text-white" />
+    <div className="lab-root">
+      {/* ─── Compact Header Bar ─── */}
+      <div className="lab-header">
+        <div className="lab-header-left">
+          <div className="lab-icon-box">
+            <Code size={16} strokeWidth={2.5} />
           </div>
-          <div className="flex flex-col">
-            <h2 className="text-xs font-bold text-text-main uppercase tracking-widest">Research Laboratory</h2>
-            <span className="text-[10px] text-text-muted uppercase font-mono tracking-tighter">Interpreter & Compiler v1.2</span>
+          <div className="lab-header-titles">
+            <h2 className="lab-title">Research Laboratory</h2>
+            <span className="lab-subtitle">Interpreter &amp; Compiler v1.5</span>
+          </div>
+          <div className="lab-status-pill" style={{ '--pill-color': statusColor }}>
+            {status === 'COMPILING' || status === 'TRAINING' ? (
+              <RefreshCw size={10} className="lab-spin" />
+            ) : status === 'READY' || status === 'COMPLETE' ? (
+              <CheckCircle2 size={10} />
+            ) : status === 'ERROR' ? (
+              <AlertCircle size={10} />
+            ) : (
+              <Cpu size={10} />
+            )}
+            <span>{statusLabel}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="lab-header-actions">
           <button
             onClick={handleCompile}
-            disabled={status === 'COMPILING' || status === 'DEPLOYING'}
-            className={`h-9 px-6 flex items-center gap-3 border transition-all uppercase tracking-widest text-[9px] font-bold ${status === 'READY' ? 'bg-emerald-50 border-emerald-500 text-emerald-600' : 'bg-white border-border text-text-main hover:bg-bg-main'
-              }`}
+            disabled={status === 'COMPILING' || status === 'TRAINING'}
+            className={`lab-btn lab-btn-outline ${(status === 'READY' || status === 'COMPLETE') ? 'lab-btn-verified' : ''}`}
           >
-            {status === 'COMPILING' ? <RefreshCw size={12} className="animate-spin" /> : <ShieldCheck size={12} />}
-            {status === 'READY' ? 'Architecture Verified' : 'Run Verification'}
+            <ShieldCheck size={14} />
+            <span>{status === 'READY' || status === 'COMPLETE' ? 'Verified' : 'Verify Code'}</span>
           </button>
 
           <button
-            onClick={handleDeploy}
-            disabled={status !== 'READY' || status === 'DEPLOYING'}
-            className={`h-9 px-6 flex items-center gap-3 bg-text-main text-white shadow-sm transition-all uppercase tracking-widest text-[9px] font-bold active:scale-95 disabled:opacity-30 disabled:grayscale`}
+            onClick={status === 'TRAINING' ? handleAbort : handleTrain}
+            disabled={status === 'COMPILING'}
+            className={`lab-btn ${status === 'TRAINING' ? 'lab-btn-danger' : 'lab-btn-primary'}`}
           >
-            <Zap size={12} fill="currentColor" />
-            Initiate Training
+            {status === 'TRAINING' ? <StopCircle size={14} /> : <Zap size={14} />}
+            <span>{status === 'TRAINING' ? 'Abort' : 'Train Model'}</span>
           </button>
         </div>
       </div>
 
-      {/* Main Workspace */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* IDE Section */}
-        <div className="flex-1 flex flex-col border-r border-border overflow-hidden bg-white">
-          <div className="flex-1 relative flex overflow-hidden">
-            {/* Line Numbers gutter */}
-            <div className="w-14 bg-bg-main border-r border-border flex flex-col items-end py-6 pr-4 select-none z-0">
+      {/* ─── Progress Strip (only during training/complete) ─── */}
+      <AnimatePresence>
+        {(status === 'TRAINING' || status === 'COMPLETE') && (
+          <motion.div 
+            className="lab-progress-strip"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="lab-progress-bar-track">
+              <motion.div 
+                className="lab-progress-bar-fill"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              />
+            </div>
+            <div className="lab-progress-stats">
+              <div className="lab-stat">
+                <span className="lab-stat-label">Epoch</span>
+                <span className="lab-stat-value">{labState?.epoch || 0}/{epochs}</span>
+              </div>
+              <div className="lab-stat">
+                <span className="lab-stat-label">Loss</span>
+                <span className="lab-stat-value lab-stat-loss">{(labState?.loss || 0).toFixed(4)}</span>
+              </div>
+              <div className="lab-stat">
+                <span className="lab-stat-label">Accuracy</span>
+                <span className="lab-stat-value lab-stat-acc">{((labState?.accuracy || 0) * 100).toFixed(2)}%</span>
+              </div>
+              <div className="lab-stat">
+                <span className="lab-stat-label">Progress</span>
+                <span className="lab-stat-value">{progress.toFixed(0)}%</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Main Workspace ─── */}
+      <div className="lab-workspace">
+        {/* === Code Editor === */}
+        <div className="lab-editor-panel">
+          <div className="lab-editor-wrap">
+            {/* Gutter */}
+            <div className="lab-gutter" ref={gutterRef}>
               {lineNumbers.map(num => (
                 <div
                   key={num}
-                  className={`text-[10px] font-mono leading-6 ${errorLine === num ? 'text-red-600 font-bold' : 'text-text-muted/40'}`}
+                  className={`lab-gutter-line ${errorLine === num ? 'lab-gutter-error' : ''}`}
                 >
                   {num}
                 </div>
               ))}
             </div>
-
-            {/* Code Textarea */}
+            {/* Textarea */}
             <textarea
               ref={textAreaRef}
               value={code}
               onChange={(e) => {
                 setCode(e.target.value);
-                if (status === 'READY') setStatus('IDLE');
+                if (status === 'READY' || status === 'COMPLETE') setStatus('IDLE');
               }}
               spellCheck={false}
-              className="flex-1 bg-white p-6 font-mono text-[12px] leading-6 text-black resize-none outline-none caret-blue-600 custom-scrollbar-ide z-10"
-              style={{ fontWeight: 500 }}
+              className="lab-textarea"
             />
           </div>
         </div>
 
-        {/* Sidebar Panel: Console & Specs */}
-        <div className="w-96 flex flex-col bg-bg-main/20">
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Status Panel */}
-            <div className="p-8 border-b border-border">
-              <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-4 block">Interpreter State</span>
-              <div className={`p-4 border rounded-sm flex items-center gap-4 transition-all ${status === 'ERROR' ? 'border-red-200 bg-red-50' :
-                  status === 'READY' ? 'border-emerald-200 bg-emerald-50' :
-                    'border-border bg-white shadow-sm'
-                }`}>
-                {status === 'ERROR' ? <AlertCircle size={14} className="text-red-600" /> : <Terminal size={14} className="text-text-main/50" />}
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${status === 'ERROR' ? 'text-red-600' : status === 'READY' ? 'text-emerald-700' : 'text-text-main'
-                  }`}>
-                  {status === 'IDLE' ? 'System Awaiting Input' :
-                    status === 'COMPILING' ? 'Validating Layers...' :
-                      status === 'READY' ? 'Architecture Valid' :
-                        status === 'ERROR' ? 'Syntax Exception' : 'Deploying...'}
-                </span>
-              </div>
+        {/* === Right Panel === */}
+        <div className="lab-sidebar">
+          {/* Training Parameters */}
+          <div className="lab-panel">
+            <div className="lab-panel-header">
+              <Settings size={14} />
+              <span>Training Parameters</span>
             </div>
-
-            {/* Console Output */}
-            <div className="flex-1 flex flex-col min-h-0">
-              <div className="px-8 py-4 border-b border-border flex items-center justify-between bg-white/50">
-                <span className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Lab Console</span>
-                <button onClick={() => setLogs([])} className="text-[9px] text-text-muted hover:text-text-main uppercase font-bold tracking-widest">Clear</button>
+            <div className="lab-panel-body">
+              <div className="lab-param-group">
+                <div className="lab-param-row">
+                  <label className="lab-param-label">Target Epochs</label>
+                  <span className="lab-param-badge">{epochs}</span>
+                </div>
+                <input 
+                  type="range" min="1" max="20" step="1" 
+                  value={epochs} onChange={(e) => setEpochs(parseInt(e.target.value))}
+                  className="lab-slider"
+                />
               </div>
-              <div className="flex-1 overflow-auto p-8 font-mono text-[10px] leading-6 space-y-2 custom-scrollbar-terminal bg-white/30">
-                {logs.map((log, i) => (
-                  <div key={i} className="flex gap-4">
-                    <span className="text-text-muted/30 shrink-0 select-none">[{log.time}]</span>
-                    <span className={log.type === 'error' ? 'text-red-600 font-bold' : log.type === 'success' ? 'text-emerald-700 font-bold' : 'text-text-main/70'}>
-                      {log.msg}
-                    </span>
-                  </div>
-                ))}
-                {logs.length === 0 && <div className="text-text-muted/30 italic">Awaiting local interaction...</div>}
+              <div className="lab-param-grid">
+                <div className="lab-param-group">
+                  <label className="lab-param-label">Learning Rate</label>
+                  <select 
+                    value={lr} onChange={(e) => setLr(parseFloat(e.target.value))}
+                    className="lab-select"
+                  >
+                    <option value={0.1}>0.1</option>
+                    <option value={0.01}>0.01</option>
+                    <option value={0.001}>0.001</option>
+                    <option value={0.0001}>0.0001</option>
+                  </select>
+                </div>
+                <div className="lab-param-group">
+                  <label className="lab-param-label">Batch Size</label>
+                  <select 
+                    value={batchSize} onChange={(e) => setBatchSize(parseInt(e.target.value))}
+                    className="lab-select"
+                  >
+                    <option value={16}>16</option>
+                    <option value={32}>32</option>
+                    <option value={64}>64</option>
+                    <option value={128}>128</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="lab-env-row">
+                <div>
+                  <span className="lab-env-label">Runtime</span>
+                  <span className="lab-env-value">PyTorch 2.1</span>
+                </div>
+                <div>
+                  <span className="lab-env-label">Device</span>
+                  <span className="lab-env-value lab-env-device">CPU / CUDA</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Hardware Specs */}
-          <div className="p-8 border-t border-border bg-white">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <div className="text-[8px] font-bold text-text-muted uppercase tracking-widest">Comp Environment</div>
-                <div className="text-[10px] font-bold text-text-main font-mono">PyTorch 2.1.0</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-[8px] font-bold text-text-muted uppercase tracking-widest">Hardware Target</div>
-                <div className="text-[10px] font-bold text-emerald-600 font-mono">CUDA v11.8</div>
-              </div>
+          {/* ─── Model Download Panel ─── */}
+          <AnimatePresence>
+            {status === 'COMPLETE' && (
+              <motion.div 
+                className="lab-panel lab-download-panel"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <div className="lab-panel-header lab-panel-header-success">
+                  <CheckCircle2 size={14} />
+                  <span>Model Assets Ready</span>
+                </div>
+                <div className="lab-panel-body lab-download-body">
+                  <button className="lab-download-btn" onClick={() => handleDownload('pt')}>
+                    <Download size={14} />
+                    <span>Download Weights (.pt)</span>
+                  </button>
+                  <button className="lab-download-btn" onClick={() => handleDownload('onnx')}>
+                    <BarChart2 size={14} />
+                    <span>Export Model (.onnx)</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ─── Compiler Console ─── */}
+          <div className="lab-panel lab-console-panel">
+            <div className="lab-panel-header">
+              <Terminal size={14} />
+              <span>Compiler Console</span>
+              <button onClick={() => setLogs([])} className="lab-clear-btn">Clear</button>
+            </div>
+            <div className="lab-console-body">
+              {logs.map((log, i) => (
+                <div key={i} className="lab-log-line">
+                  <span className="lab-log-time">[{log.time}]</span>
+                  <span className={`lab-log-msg ${log.type === 'error' ? 'lab-log-error' : log.type === 'success' ? 'lab-log-success' : log.type === 'warning' ? 'lab-log-warn' : ''}`}>
+                    {log.msg}
+                  </span>
+                </div>
+              ))}
+              {logs.length === 0 && (
+                <div className="lab-console-empty">Awaiting researcher interaction...</div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       <style>{`
-        .custom-scrollbar-ide::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar-ide::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar-ide::-webkit-scrollbar-thumb { background: #222; }
-        .custom-scrollbar-ide { scroll-behavior: smooth; }
+        /* ═══════════════════════════════════════════════════════════
+           LABORATORY SCOPED STYLES
+           Uses project design tokens from :root
+        ═══════════════════════════════════════════════════════════ */
+
+        .lab-root {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          overflow: hidden;
+          background: var(--bg-surface);
+          font-family: var(--font-sans);
+        }
+
+        /* ─── Header ─── */
+        .lab-header {
+          height: 56px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 24px;
+          border-bottom: 1px solid var(--border);
+          background: var(--bg-surface);
+        }
+        .lab-header-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .lab-icon-box {
+          width: 32px; height: 32px;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--primary);
+          color: #fff;
+        }
+        .lab-header-titles {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.2;
+        }
+        .lab-title {
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--text-main);
+        }
+        .lab-subtitle {
+          font-size: 10px;
+          font-family: var(--font-mono);
+          color: var(--text-muted);
+          letter-spacing: 0.05em;
+        }
+        .lab-status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 3px 12px;
+          font-size: 9px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--pill-color);
+          background: color-mix(in srgb, var(--pill-color) 8%, transparent);
+          border: 1px solid color-mix(in srgb, var(--pill-color) 20%, transparent);
+          margin-left: 12px;
+        }
+        .lab-spin { animation: lab-spin-anim 1s linear infinite; }
+        @keyframes lab-spin-anim { to { transform: rotate(360deg); } }
+
+        .lab-header-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        /* ─── Buttons ─── */
+        .lab-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          height: 36px;
+          padding: 0 20px;
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          border: none;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          font-family: var(--font-sans);
+        }
+        .lab-btn:disabled {
+          opacity: 0.35;
+          cursor: not-allowed;
+        }
+        .lab-btn-outline {
+          background: var(--bg-surface);
+          color: var(--text-main);
+          border: 1px solid var(--border);
+        }
+        .lab-btn-outline:hover:not(:disabled) {
+          border-color: var(--primary);
+          color: var(--primary);
+        }
+        .lab-btn-verified {
+          background: #f0fdf4;
+          border-color: var(--success) !important;
+          color: var(--success) !important;
+        }
+        .lab-btn-primary {
+          background: var(--primary);
+          color: #fff;
+        }
+        .lab-btn-primary:hover:not(:disabled) {
+          opacity: 0.9;
+          transform: translateY(-1px);
+        }
+        .lab-btn-primary:active:not(:disabled) {
+          transform: scale(0.97);
+        }
+        .lab-btn-danger {
+          background: var(--error);
+          color: #fff;
+        }
+        .lab-btn-danger:hover:not(:disabled) {
+          opacity: 0.9;
+        }
+
+        /* ─── Progress Strip ─── */
+        .lab-progress-strip {
+          flex-shrink: 0;
+          border-bottom: 1px solid var(--border);
+          background: var(--bg-main);
+          padding: 10px 24px;
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          overflow: hidden;
+        }
+        .lab-progress-bar-track {
+          flex: 1;
+          height: 4px;
+          background: var(--border);
+          overflow: hidden;
+        }
+        .lab-progress-bar-fill {
+          height: 100%;
+          background: var(--primary);
+          transition: width 0.5s ease;
+        }
+        .lab-progress-stats {
+          display: flex;
+          gap: 20px;
+          flex-shrink: 0;
+        }
+        .lab-stat {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-width: 60px;
+        }
+        .lab-stat-label {
+          font-size: 8px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--text-muted);
+        }
+        .lab-stat-value {
+          font-size: 13px;
+          font-weight: 600;
+          font-family: var(--font-mono);
+          color: var(--text-main);
+        }
+        .lab-stat-loss { color: var(--error); }
+        .lab-stat-acc { color: var(--success); }
+
+        /* ─── Main Workspace ─── */
+        .lab-workspace {
+          flex: 1;
+          display: flex;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        /* ─── Editor Panel ─── */
+        .lab-editor-panel {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+          border-right: 1px solid var(--border);
+        }
+        .lab-editor-wrap {
+          flex: 1;
+          display: flex;
+          overflow: hidden;
+        }
+        .lab-gutter {
+          width: 52px;
+          flex-shrink: 0;
+          background: var(--bg-main);
+          border-right: 1px solid var(--border);
+          padding: 16px 0;
+          overflow: hidden;
+          user-select: none;
+        }
+        .lab-gutter-line {
+          height: 24px;
+          line-height: 24px;
+          text-align: right;
+          padding-right: 16px;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          color: #c4c8cc;
+        }
+        .lab-gutter-error {
+          color: var(--error);
+          font-weight: 700;
+          background: rgba(239, 68, 68, 0.06);
+        }
+        .lab-textarea {
+          flex: 1;
+          border: none;
+          outline: none;
+          resize: none;
+          padding: 16px 20px;
+          margin: 0;
+          font-family: var(--font-mono);
+          font-size: 13px;
+          line-height: 24px;
+          color: var(--text-main);
+          background: var(--bg-surface);
+          caret-color: var(--accent);
+          tab-size: 4;
+        }
+        .lab-textarea::selection {
+          background: color-mix(in srgb, var(--primary) 12%, transparent);
+        }
+
+        /* ─── Side Panel ─── */
+        .lab-sidebar {
+          width: 340px;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          background: var(--bg-main);
+          overflow-y: auto;
+        }
+        .lab-sidebar::-webkit-scrollbar { width: 4px; }
+        .lab-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .lab-sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+        .lab-panel {
+          border-bottom: 1px solid var(--border);
+        }
+        .lab-panel-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 14px 20px;
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.18em;
+          color: var(--text-muted);
+          border-bottom: 1px solid var(--border);
+          background: var(--bg-surface);
+        }
+        .lab-panel-header-success {
+          color: var(--success);
+          background: #f0fdf4;
+        }
+        .lab-panel-body {
+          padding: 20px;
+        }
+
+        /* ─── Parameters ─── */
+        .lab-param-group {
+          margin-bottom: 16px;
+        }
+        .lab-param-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .lab-param-label {
+          font-size: 9px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--text-muted);
+        }
+        .lab-param-badge {
+          font-size: 11px;
+          font-weight: 700;
+          font-family: var(--font-mono);
+          color: var(--primary);
+          background: color-mix(in srgb, var(--primary) 8%, transparent);
+          padding: 2px 10px;
+        }
+        .lab-slider {
+          width: 100%;
+          height: 4px;
+          appearance: none;
+          -webkit-appearance: none;
+          background: var(--border);
+          outline: none;
+          cursor: pointer;
+        }
+        .lab-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 14px; height: 14px;
+          background: var(--primary);
+          border-radius: 50%;
+          cursor: pointer;
+        }
+        .lab-param-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+        .lab-select {
+          width: 100%;
+          height: 36px;
+          padding: 0 10px;
+          font-size: 12px;
+          font-family: var(--font-mono);
+          border: 1px solid var(--border);
+          background: var(--bg-surface);
+          color: var(--text-main);
+          outline: none;
+          cursor: pointer;
+          transition: border-color 0.15s;
+        }
+        .lab-select:focus {
+          border-color: var(--primary);
+        }
+
+        .lab-env-row {
+          display: flex;
+          gap: 20px;
+          padding-top: 14px;
+          border-top: 1px solid var(--border);
+        }
+        .lab-env-row > div {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .lab-env-label {
+          font-size: 8px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--text-muted);
+        }
+        .lab-env-value {
+          font-size: 11px;
+          font-weight: 600;
+          font-family: var(--font-mono);
+          color: var(--text-main);
+        }
+        .lab-env-device {
+          color: var(--success);
+        }
+
+        /* ─── Download Panel ─── */
+        .lab-download-body {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .lab-download-btn {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          height: 40px;
+          padding: 0 16px;
+          background: var(--bg-surface);
+          border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+          color: #166534;
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          cursor: pointer;
+          transition: all 0.15s;
+          font-family: var(--font-sans);
+        }
+        .lab-download-btn:hover {
+          background: #f0fdf4;
+          border-color: var(--success);
+          transform: translateX(2px);
+        }
+
+        /* ─── Console ─── */
+        .lab-console-panel {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 200px;
+        }
+        .lab-clear-btn {
+          margin-left: auto;
+          font-size: 9px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--text-muted);
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 2px 6px;
+          transition: color 0.15s;
+          font-family: var(--font-sans);
+        }
+        .lab-clear-btn:hover {
+          color: var(--text-main);
+        }
+        .lab-console-body {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+          padding: 12px 20px;
+          font-family: var(--font-mono);
+          font-size: 10px;
+          line-height: 22px;
+          background: var(--bg-surface);
+        }
+        .lab-console-body::-webkit-scrollbar { width: 3px; }
+        .lab-console-body::-webkit-scrollbar-track { background: transparent; }
+        .lab-console-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+        .lab-log-line {
+          display: flex;
+          gap: 10px;
+          align-items: start;
+        }
+        .lab-log-time {
+          color: #c4c8cc;
+          flex-shrink: 0;
+          font-size: 9px;
+          padding-top: 1px;
+          user-select: none;
+        }
+        .lab-log-msg {
+          color: var(--text-main);
+          opacity: 0.7;
+          word-break: break-word;
+        }
+        .lab-log-error {
+          color: var(--error);
+          opacity: 1;
+          font-weight: 600;
+        }
+        .lab-log-success {
+          color: var(--success);
+          opacity: 1;
+          font-weight: 600;
+        }
+        .lab-log-warn {
+          color: var(--warning);
+          opacity: 1;
+        }
+        .lab-console-empty {
+          color: #c4c8cc;
+          font-style: italic;
+          text-align: center;
+          padding: 40px 0;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+        }
       `}</style>
     </div>
   );

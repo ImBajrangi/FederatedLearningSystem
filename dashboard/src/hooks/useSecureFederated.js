@@ -31,6 +31,7 @@ export function useSecureFederated() {
   const [roundHistory, setRoundHistory] = useState([]);
   const [shards, setShards] = useState([]); // NEW STATE
   const [modelArchitecture, setModelArchitecture] = useState('# Loading Model source...'); 
+  const [labState, setLabState] = useState({ status: 'IDLE', progress: 0, epoch: 0, loss: 0, accuracy: 0, ptPath: null, onnxPath: null });
 
   const ws = useRef(null);
 
@@ -91,6 +92,34 @@ export function useSecureFederated() {
           case 'LOG': {
             const isError = payload.includes('ERROR') || payload.includes('CRITICAL');
             setLogs(prev => [...prev.slice(-199), { msg: `${payload}`, color: isError ? '#ef4444' : '#64748b' }]);
+            break;
+          }
+
+          case 'LAB_PROGRESS': {
+            setLabState(prev => ({ 
+              ...prev, 
+              status: 'TRAINING',
+              progress: payload.progress,
+              epoch: payload.epoch,
+              loss: payload.loss,
+              accuracy: payload.accuracy
+            }));
+            break;
+          }
+
+          case 'LAB_COMPLETE': {
+            setLabState(prev => ({ 
+              ...prev, 
+              status: 'COMPLETE',
+              progress: 100,
+              ptPath: payload.pt_path,
+              onnxPath: payload.onnx_path
+            }));
+            break;
+          }
+
+          case 'LAB_ERROR': {
+            setLabState(prev => ({ ...prev, status: 'ERROR', error: payload.error }));
             break;
           }
 
@@ -177,6 +206,7 @@ export function useSecureFederated() {
     roundHistory,
     modelArchitecture,
     shards,
-    clientsActive
+    clientsActive,
+    labState
   };
 }

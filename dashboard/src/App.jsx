@@ -34,7 +34,8 @@ function App() {
     roundHistory,
     modelArchitecture,
     shards,
-    clientsActive
+    clientsActive,
+    labState
   } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState('dashboard');
@@ -239,7 +240,7 @@ function App() {
       case 'datasets':
         return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
       case 'laboratory':
-        return <Laboratory onAction={addToast} />;
+        return <Laboratory onAction={addToast} labState={labState} />;
       default:
         return <div>View not found</div>;
     }

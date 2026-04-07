@@ -12,6 +12,7 @@ import sqlite3
 import urllib.request
 from Cybronites.server.auth import router as auth_router
 from Cybronites.utils.structured_logging import setup_structured_logging
+import Cybronites.server.training_engine as engine
 
 # Setup logging
 logging.basicConfig(
@@ -324,6 +325,46 @@ async def deploy_model(data: Dict[str, str]):
     except Exception as e:
         logger.error(f"Local Deployment Error: {e}")
         return {"success": False, "error": str(e)}
+
+@app.post("/v1/laboratory/train")
+async def start_lab_training(data: Dict[str, Any]):
+    code = data.get("code", "")
+    hyperparams = data.get("hyperparams", {})
+    
+    if not code:
+        return {"success": False, "error": "No code provided."}
+    
+    success, msg = engine.start_training(code, hyperparams, bridge.broadcast_sync)
+    return {"success": success, "message": msg}
+
+@app.post("/v1/laboratory/abort")
+async def abort_lab_training():
+    success = engine.abort_training()
+    return {"success": success}
+
+@app.get("/v1/laboratory/status")
+async def get_lab_status():
+    return engine.get_session_status()
+
+@app.get("/v1/laboratory/download/{file_format}")
+async def download_model(file_format: str):
+    session = engine._current_session
+    if not session or not session.model_path:
+        return {"error": "No model available for download."}
+    
+    if file_format == "pt":
+        path = session.model_path
+        filename = "model_weights.pt"
+    elif file_format == "onnx":
+        path = session.model_path.replace(".pt", ".onnx")
+        filename = "model_weights.onnx"
+    else:
+        return {"error": "Invalid format. Use 'pt' or 'onnx'."}
+        
+    if not os.path.exists(path):
+        return {"error": f"File {filename} not found."}
+        
+    return FileResponse(path, filename=filename)
 
 # ── Static Dashboard Serving (for Deployment) ──
 # Look for 'static' (Hugging Face) or 'dist' (Local build)
