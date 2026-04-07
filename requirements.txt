@@ -4,11 +4,13 @@ numpy>=1.24.0
 matplotlib>=3.7.0
 fastapi
 uvicorn
-motor
+flwr
 bcrypt
 python-jose[cryptography]
 passlib[bcrypt]
 fastapi-mail
-pydantic-settings
+email-validator
 python-multipart
 python-dotenv
+pydantic-settings
+requests

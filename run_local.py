@@ -11,9 +11,10 @@ import urllib.request
 #   2. Flower FL Server (Orchestrator)
 #   3. Federated Clients (x2)
 
-BRIDGE_PORT = 7880
-FLOWER_PORT = 8095
-ROUNDS = 5
+# Dynamically detect port from environment (HF default is 7860, local default 7880)
+BRIDGE_PORT = int(os.environ.get("PORT", 7880))
+FLOWER_PORT = int(os.environ.get("FLOWER_PORT", 8095))
+ROUNDS = int(os.environ.get("ROUNDS", 5))
 
 processes = []
 
