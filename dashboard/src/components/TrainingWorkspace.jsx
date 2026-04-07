@@ -254,7 +254,7 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
                       <div key={i} className="tr-log-line group">
                         <span className="tr-log-ts">{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                         <span className="tr-log-prefix ml-2">[{i % 2 === 0 ? 'NODE_01' : 'NODE_02'}]</span>
-                        <span className={`tr-log-msg ${isSuccess ? 'text-emerald-400' : isError ? 'text-rose-400' : isWarning ? 'text-amber-400' : 'text-slate-300'}`}>
+                        <span className={`tr-log-msg ${isSuccess ? 'text-emerald-400' : isError ? 'text-rose-400' : isWarning ? 'text-amber-400' : 'text-white'}`}>
                           {logObj.msg}
                         </span>
                         <div className="tr-log-glow" />
