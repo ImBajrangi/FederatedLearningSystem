@@ -1,136 +1,251 @@
 import React from 'react';
 import { 
-  LayoutDashboard, 
-  Database, 
-  ShieldCheck, 
-  Terminal, 
-  Activity, 
-  Layers,
-  History,
-  Workflow,
-  Cpu,
-  BookOpen,
-  PieChart,
-  Server
+  LayoutDashboard, Database, ShieldCheck, Terminal, Activity, Layers,
+  History, Workflow, Cpu, BookOpen, PieChart, Server, ChevronRight
 } from 'lucide-react';
 
-const MetricItem = ({ label, value }) => (
-  <div className="flex items-center justify-between py-3 border-b border-border group">
-    <div className="flex flex-col">
-      <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest mb-1">{label}</span>
-      <span className="text-xs font-bold text-text-main tabular-nums">{value}</span>
+const MetricItem = ({ label, value, icon: Icon, color }) => (
+  <div className="sb-metric-item group">
+    <div className={`sb-metric-icon-wrap ${color ? `sb-icon-${color}` : ''}`}>
+      {Icon && <Icon size={12} />}
     </div>
+    <div className="sb-metric-content">
+      <span className="sb-metric-label">{label}</span>
+      <span className="sb-metric-value">{value}</span>
+    </div>
+    <div className="sb-metric-indicator" />
   </div>
 );
 
 export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {}, rejectedCount = 0, blockchain = [], width, onResize }) => {
   const activeCount = clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length;
+  const nodeCount = Object.keys(nodeRegistry).length || clients.length || 0;
+  
   const yieldValue = blockchain && blockchain.length > 1 
     ? (100 - (rejectedCount / (blockchain.length - 1) * 100)).toFixed(1)
     : "100.0";
   const powerValue = (activeCount * 0.4 + 0.2).toFixed(1);
 
+  const navItems = [
+    { id: 'dashboard', label: 'Academic Progress', num: '01', icon: LayoutDashboard },
+    { id: 'training', label: 'Training Cluster', num: '02', icon: Activity },
+    { id: 'datasets', label: 'Shard Registry', num: '03', icon: Database },
+    { id: 'architecture', label: 'Model Library', num: '04', icon: Layers },
+    { id: 'laboratory', label: 'Code Laboratory', num: '05', icon: Terminal },
+  ];
+
   return (
-    <aside className="shell-sidebar flex flex-col h-full bg-white border-r border-border" style={{ width: width || 280, flexShrink: 0, position: 'relative' }}>
-      {/* VS Code style resize handle on right edge */}
-      <div
-        onMouseDown={onResize}
-        style={{
-          position: 'absolute', top: 0, right: -3, bottom: 0, width: 6,
-          cursor: 'col-resize', zIndex: 100,
-        }}
-      >
-        <div style={{
-          position: 'absolute', top: 0, bottom: 0, left: 2, width: 2,
-          background: 'transparent', transition: 'background 0.2s',
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.background = '#3b82f6'}
-        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-        />
+    <aside className="sb-root" style={{ width: width || 260 }}>
+      {/* Resize Handle */}
+      <div onMouseDown={onResize} className="sb-resizer">
+        <div className="sb-resizer-line" />
       </div>
-      {/* Sidebar Navigation */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto custom-scrollbar">
-         <div className="p-10 border-b border-border bg-bg-main/50">
-           <span className="type-label text-text-main">Coursework</span>
-         </div>
+
+      {/* Navigation Section */}
+      <div className="sb-scroll">
+        <div className="sb-section-header">
+          <BookOpen size={12} />
+          <span>Coursework</span>
+        </div>
         
-        <div className="flex flex-col">
-          <button 
-            onClick={() => setView('dashboard')}
-            className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">01</span>
-            Academic Progress
-          </button>
-          
-          <button 
-            onClick={() => setView('training')}
-            className={`nav-item ${currentView === 'training' ? 'active' : ''}`}
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">02</span>
-            Training Cluster
-          </button>
+        <nav className="sb-nav">
+          {navItems.map((item) => (
+            <button 
+              key={item.id}
+              onClick={() => setView(item.id)}
+              className={`sb-nav-btn ${currentView === item.id ? 'sb-nav-active' : ''}`}
+            >
+              <span className="sb-nav-num">{item.num}</span>
+              <span className="sb-nav-label">{item.label}</span>
+              {currentView === item.id && <ChevronRight size={10} className="sb-nav-chevron" />}
+            </button>
+          ))}
+        </nav>
 
-          <button 
-            onClick={() => setView('datasets')}
-            className={`nav-item ${currentView === 'datasets' ? 'active' : ''}`}
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">03</span>
-            Shard Registry
-          </button>
-
-          <button 
-            onClick={() => setView('architecture')}
-            className={`nav-item ${currentView === 'architecture' ? 'active' : ''}`}
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">04</span>
-            Model Library
-          </button>
-
-          <button 
-            onClick={() => setView('laboratory')}
-            className={`nav-item ${currentView === 'laboratory' ? 'active' : ''}`}
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 mr-4">05</span>
-            Code Laboratory
-          </button>
+        <div className="sb-section-header sb-section-stats">
+          <Activity size={12} />
+          <span>System Telemetry</span>
         </div>
 
-         <div className="p-10 border-b border-border border-t bg-bg-main/50">
-           <span className="type-label text-text-main">Statistics</span>
-         </div>
-
-        <div className="p-10 space-y-4 pb-48">
+        <div className="sb-metrics">
           <MetricItem 
             label="Node Count" 
-            value={Object.keys(nodeRegistry).length || clients.length || 0} 
+            value={nodeCount} 
+            icon={Server}
+            color="primary"
           />
           <MetricItem 
             label="Verification Yield" 
             value={`${yieldValue}%`} 
+            icon={ShieldCheck}
+            color="success"
           />
           <MetricItem 
             label="Computing Power" 
-            value={`${powerValue} GB/s`} 
+            value={`${powerValue} GB/S`} 
+            icon={Cpu}
+            color="accent"
           />
         </div>
       </div>
 
-      {/* Footer Branding Area: Institutional Pinned Bar */}
-      <div className="p-10 bg-white flex flex-col gap-4 border-t border-border shrink-0 z-20">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-text-main rounded-sm shadow-sm ring-1 ring-black/5">
-            <Server size={14} className="text-white" />
+      {/* User Branding */}
+      <footer className="sb-footer">
+        <div className="sb-footer-inner">
+          <div className="sb-user-avatar">
+            <Server size={14} />
           </div>
-          <div className="flex flex-col">
-            <span className="type-label text-black font-bold">Research Node</span>
-            <span className="type-label text-emerald-600 font-bold opacity-100 flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Operational
-            </span>
+          <div className="sb-user-info">
+            <span className="sb-user-name">Research Node</span>
+            <div className="sb-user-status">
+              <div className="sb-status-dot" />
+              <span>Operational</span>
+            </div>
           </div>
         </div>
-      </div>
+      </footer>
+
+      <style>{`
+        .sb-root {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          background: #fff;
+          border-right: 1px solid var(--border);
+          position: relative;
+          flex-shrink: 0;
+          font-family: var(--font-sans);
+        }
+
+        .sb-resizer {
+          position: absolute; top: 0; right: -3px; bottom: 0; width: 6px;
+          cursor: col-resize; z-index: 100;
+        }
+        .sb-resizer-line {
+          position: absolute; top: 0; bottom: 0; left: 2px; width: 2px;
+          background: transparent; transition: background 0.2s;
+        }
+        .sb-resizer:hover .sb-resizer-line { background: var(--primary); }
+
+        .sb-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .sb-scroll::-webkit-scrollbar { width: 3px; }
+        .sb-scroll::-webkit-scrollbar-thumb { background: var(--border); }
+
+        .sb-section-header {
+          padding: 32px 32px 16px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 10px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--text-muted);
+          opacity: 0.5;
+        }
+        .sb-section-stats { margin-top: 16px; }
+
+        .sb-nav { display: flex; flex-direction: column; }
+        .sb-nav-btn {
+          height: 48px;
+          padding: 0 32px;
+          display: flex;
+          align-items: center;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s;
+          position: relative;
+          text-align: left;
+        }
+        .sb-nav-btn:hover { background: var(--bg-main); }
+        .sb-nav-active { background: color-mix(in srgb, var(--primary) 5%, transparent); }
+        .sb-nav-active::before {
+          content: '';
+          position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px;
+          background: var(--primary);
+        }
+
+        .sb-nav-num {
+          font-family: var(--font-mono);
+          font-size: 9px;
+          font-weight: 800;
+          color: var(--primary);
+          opacity: 0.4;
+          width: 32px;
+          letter-spacing: 0.1em;
+        }
+        .sb-nav-active .sb-nav-num { opacity: 1; }
+
+        .sb-nav-label {
+          font-size: 11px;
+          font-weight: 700;
+          color: var(--text-muted);
+          transition: color 0.15s;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .sb-nav-active .sb-nav-label { color: var(--text-main); }
+        .sb-nav-chevron { margin-left: auto; color: var(--primary); opacity: 0.5; }
+
+        .sb-metrics { padding: 8px 32px 48px; display: flex; flex-direction: column; gap: 4px; }
+        .sb-metric-item {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 14px 0;
+          border-bottom: 1px solid var(--border);
+          position: relative;
+          transition: all 0.2s;
+        }
+        .sb-metric-item:last-child { border-bottom: none; }
+        .sb-metric-item:hover { transform: translateX(4px); }
+        
+        .sb-metric-icon-wrap {
+          width: 32px; height: 32px;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--bg-main);
+          border: 1px solid var(--border);
+          color: var(--text-muted);
+          opacity: 0.6;
+          transition: all 0.2s;
+        }
+        .sb-icon-primary { color: var(--primary); }
+        .sb-icon-success { color: var(--success); }
+        .sb-icon-accent { color: #f59e0b; }
+        .sb-metric-item:hover .sb-metric-icon-wrap { border-color: var(--primary); opacity: 1; }
+
+        .sb-metric-content { display: flex; flex-direction: column; gap: 2px; }
+        .sb-metric-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; }
+        .sb-metric-value { font-family: var(--font-mono); font-size: 12px; font-weight: 800; color: var(--text-main); tabular-nums: true; }
+        
+        .sb-metric-indicator {
+          position: absolute; right: 0; width: 0; height: 2px;
+          background: var(--primary); opacity: 0; transition: all 0.2s;
+        }
+        .sb-metric-item:hover .sb-metric-indicator { width: 12px; opacity: 0.4; }
+
+        .sb-footer {
+          padding: 24px 32px; 
+          background: #fff; 
+          border-top: 1px solid var(--border);
+          flex-shrink: 0;
+        }
+        .sb-footer-inner { display: flex; align-items: center; gap: 16px; }
+        .sb-user-avatar {
+          width: 36px; height: 36px;
+          display: flex; align-items: center; justify-content: center;
+          background: #0f172a;
+          color: #fff;
+          border-radius: 2px;
+        }
+        .sb-user-info { display: flex; flex-direction: column; gap: 2px; }
+        .sb-user-name { font-size: 11px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.05em; }
+        .sb-user-status { display: flex; align-items: center; gap: 8px; }
+        .sb-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: sb-blink 2s infinite; }
+        @keyframes sb-blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .sb-user-status span { font-size: 9px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 0.1em; }
+      `}</style>
     </aside>
   );
 };

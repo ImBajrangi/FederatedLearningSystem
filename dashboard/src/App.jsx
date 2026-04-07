@@ -8,6 +8,7 @@ import { BlockchainRibbon } from './components/BlockchainExplorer';
 import { TrainingWorkspace } from './components/TrainingWorkspace';
 import { DatasetExplorer } from './components/DatasetExplorer';
 import { Laboratory } from './components/Laboratory';
+import { Dashboard } from './components/Dashboard';
 import { useSecureFederated } from './hooks/useSecureFederated';
 import { Play, RotateCcw, ShieldCheck, Info, X, Zap, Activity, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -111,127 +112,18 @@ function App() {
     switch (currentView) {
       case 'dashboard':
         return (
-          <div className="flex-1 p-10 space-y-12 section-fade bg-white">
-            <div className="flex items-end justify-between pb-8 border-b border-border">
-              <div className="space-y-4">
-                <h2 className="type-l2 serif text-text-main pr-10 font-medium tracking-tight">Global Orchestrator</h2>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-medium text-text-muted/40 uppercase tracking-[0.2em]">NODE_ID:</span>
-                    <span className="text-[9px] font-bold text-text-main/80 uppercase tracking-widest">0x88F2_SECURE</span>
-                  </div>
-                  <div className="w-[1px] h-2 bg-border/60" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-medium text-text-muted/40 uppercase tracking-[0.2em]">MODE:</span>
-                    <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Institutional Production</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-end gap-10">
-                <div className="text-right pr-10 border-r border-border h-10 flex flex-col justify-end">
-                  <div className="text-[9px] font-bold text-text-muted mb-1.5 uppercase tracking-[0.3em] opacity-40">Global Accuracy</div>
-                  <div className="flex items-baseline justify-end gap-3">
-                    <span className="text-2xl serif text-text-main font-medium tabular-nums leading-none">
-                      {accuracyHistory && accuracyHistory.length > 0
-                        ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
-                        : "0.00"}%
-                    </span>
-                    <div className="flex flex-col items-center justify-center translate-y-[-2px]">
-                      <div className={`p-1 rounded-full ${isConnected ? 'bg-emerald-50' : 'bg-red-50'}`}>
-                        <Activity size={10} className={isConnected && isActive ? 'text-emerald-500 animate-pulse' : 'text-text-muted'} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 h-10">
-                  <button
-                    onClick={startSimulation}
-                    disabled={isActive || !isConnected}
-                    className={`h-full bg-primary text-white flex items-center gap-4 shadow-lg active:scale-95 transition-all px-8 text-[11px] font-bold uppercase tracking-[0.25em] ${(!isConnected || isActive) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
-                  >
-                    <Play size={12} fill="currentColor" className={isActive ? 'animate-pulse' : ''} />
-                    <span>
-                      {status === 'IDLE' ? 'Connect Sessions' : status === 'FINISHED' ? 'Report Complete' : 'Synchronized'}
-                    </span>
-                  </button>
-                  <button
-                    onClick={clearSimulation}
-                    className="h-full px-4 border border-border text-text-muted hover:bg-slate-50 transition-all hover:text-text-main flex items-center justify-center"
-                  >
-                    <RotateCcw size={14} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-              <div className="xl:col-span-2 space-y-10">
-                <div className="institutional-card">
-                  <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-bg-surface/50">
-                    <div className="flex items-center gap-4">
-                      <Activity size={14} className="text-primary opacity-60" />
-                      <span className="text-[10px] font-bold text-text-main uppercase tracking-[0.2em] pr-10">Real-Time Model Convergence</span>
-                    </div>
-                    <div className="flex items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-text-muted/60 font-sans">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-1 bg-primary" /> Converged Accuracy
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-8 h-[340px]">
-                    <MetricsChart data={accuracyHistory} isActive={isActive} />
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="relative flex items-center">
-                    <h3 className="type-l2 serif text-text-main pr-4 bg-white relative z-10">Immutable Node Journal</h3>
-                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                      <div className="w-full border-t border-border/60"></div>
-                    </div>
-                  </div>
-                  <div className="h-[240px] border border-border/60 rounded-sm overflow-hidden">
-                    <BlockchainRibbon blockchain={blockchain} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-10">
-                <div className="institutional-card bg-primary text-white border-none overflow-hidden group">
-                  <div className="p-8 relative z-10">
-                    <ShieldCheck className="mb-6 opacity-40 group-hover:scale-110 transition-transform" size={24} />
-                    <h3 className="type-l2 serif mb-4">Security Policy Active</h3>
-                    <p className="text-[11px] leading-relaxed opacity-80 uppercase tracking-tight font-sans">
-                      Differential Privacy calibration enabled (L2-Clip=1.0, Noise=0.01). Coordination via Secure gRPC Tunnel.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="institutional-card">
-                  <div className="px-6 py-4 border-b border-border flex items-center gap-3 bg-bg-surface/50">
-                    <Activity size={14} className="text-primary" />
-                    <span className="type-label text-text-main font-bold">Network Resilience</span>
-                  </div>
-                  <div className="p-8 space-y-6">
-                    <div className="flex justify-between items-center pb-6 border-b border-border/50">
-                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Active Shards</span>
-                      <span className="type-label text-primary font-bold">{clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length} / 8</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-6 border-b border-border/50">
-                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Rounds Synced</span>
-                      <span className="type-label text-primary font-bold">{round}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Integrity Alerts</span>
-                      <span className={`type-label font-bold ${rejectedCount > 0 ? 'text-red-600' : 'text-emerald-600'}`}>{rejectedCount}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Dashboard 
+            accuracyHistory={accuracyHistory}
+            isConnected={isConnected}
+            isActive={isActive}
+            status={status}
+            startSimulation={startSimulation}
+            clearSimulation={clearSimulation}
+            blockchain={blockchain}
+            clients={clients}
+            rejectedCount={rejectedCount}
+            round={round}
+          />
         );
       case 'architecture':
         return <ArchitectureBuilder onAction={addToast} />;
