@@ -1,76 +1,28 @@
-import subprocess
-import time
-import sys
 import os
-import argparse
+import sys
+import subprocess
 
-def get_python_executable():
-    """Detect the best python executable to use (prefers venv_mac)."""
-    venv_path = os.path.abspath("Cybronites/venv_mac/bin/python3")
-    if os.path.exists(venv_path):
-        return venv_path
-    return sys.executable
-
-def run_backend(num_clients=2, rounds=5):
+def main():
     """
-    Orchestrates the full Federated Learning Backend.
-    1. Launches Server (FastAPI Bridge + Flower Server)
-    2. Launches N Clients
+    Wrapper for run_local.py to maintain backward compatibility 
+    and ensure unified orchestration.
     """
-    print("\n" + "="*60)
-    print("  🛡️  AI GUARDIAN: UNIFIED FEDERATED BACKEND LAUNCHER")
-    print("="*60 + "\n")
-
-    python_exe = get_python_executable()
-    print(f"[SYSTEM] Using Python: {python_exe}")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    run_local_path = os.path.join(script_dir, "run_local.py")
     
-    processes = []
-
+    if not os.path.exists(run_local_path):
+        print(f"Error: {run_local_path} not found.")
+        sys.exit(1)
+        
+    print("\n[UNIFIED] Redirecting to run_local.py for synchronized backend orchestration...")
+    
+    # Forward all arguments to run_local.py (though run_local.py currently uses defaults)
     try:
-        # 1. Start Server
-        print(f"[SYSTEM] Launching Orchestrator (Rounds: {rounds})...")
-        server_env = os.environ.copy()
-        server_env["PYTHONPATH"] = os.path.abspath(".")
-        
-        server_proc = subprocess.Popen(
-            [python_exe, "Cybronites/server/server.py", "--rounds", str(rounds)],
-            env=server_env
-        )
-        processes.append(server_proc)
-        
-        # Give server time to bind ports
-        time.sleep(5)
-
-        # 2. Start Clients
-        for i in range(num_clients):
-            print(f"[SYSTEM] Launching Secure Client {i}...")
-            client_proc = subprocess.Popen(
-                [python_exe, "Cybronites/client/client.py", str(i), str(num_clients)],
-                env=server_env
-            )
-            processes.append(client_proc)
-            time.sleep(1)
-
-        print(f"\n[SUCCESS] All components active. Dashboard available at http://localhost:7861")
-        print(f"[INFO] Press Ctrl+C to terminate the session.\n")
-
-        # Keep main thread alive
-        while True:
-            if server_proc.poll() is not None:
-                print("\n[ALERT] Server process terminated.")
-                break
-            time.sleep(1)
-
+        subprocess.run([sys.executable, run_local_path] + sys.argv[1:], check=True)
     except KeyboardInterrupt:
-        print(f"\n[TERMINATING] Shutting down all processes safely...")
-        for p in processes:
-            p.terminate()
-        print("[DONE] Cleanup complete.")
+        pass
+    except subprocess.CalledProcessError as e:
+        sys.exit(e.returncode)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="AI Guardian Backend Launcher")
-    parser.add_argument("--clients", type=int, default=2, help="Number of clients to spawn")
-    parser.add_argument("--rounds", type=int, default=5, help="Number of training rounds")
-    args = parser.parse_args()
-    
-    run_backend(num_clients=args.clients, rounds=args.rounds)
+    main()

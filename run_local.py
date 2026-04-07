@@ -13,6 +13,7 @@ import urllib.request
 
 BRIDGE_PORT = 7880
 FLOWER_PORT = 8095
+ROUNDS = 5
 
 processes = []
 
@@ -49,7 +50,8 @@ def main():
     
     # Environment setup
     env = os.environ.copy()
-    env["PYTHONPATH"] = f"{cwd}/Cybronites:{env.get('PYTHONPATH', '')}"
+    # PYTHONPATH should be project root to find Cybronites package
+    env["PYTHONPATH"] = f"{cwd}:{env.get('PYTHONPATH', '')}"
     env["PORT"] = str(BRIDGE_PORT)
     env["FLOWER_PORT"] = str(FLOWER_PORT)
 
@@ -68,7 +70,6 @@ def main():
         python_path = sys.executable
     print(f"  [PYTHON] {python_path}")
     
-    # 1. Launch Server & Bridge
     print(f"\n  [1/3] Starting Bridge (:{BRIDGE_PORT}) + Flower Server (:{FLOWER_PORT})...")
     log_file = open("backend.log", "w")
     # Initialize/Clear JSON log
@@ -76,13 +77,25 @@ def main():
         f.write("") 
     
     server_proc = subprocess.Popen(
-        [python_path, "-m", "server.server", "--flower_port", str(FLOWER_PORT)],
+        [python_path, "-m", "server.server", "--flower_port", str(FLOWER_PORT), "--rounds", str(ROUNDS)],
         env=env,
         cwd=os.path.join(cwd, "Cybronites"),
-        stdout=log_file,
-        stderr=log_file
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1
     )
     processes.append(server_proc)
+
+    def stream_logs(proc, file):
+        for line in iter(proc.stdout.readline, ""):
+            print(f"  [SERVER] {line.strip()}")
+            file.write(line)
+            file.flush()
+
+    import threading
+    log_thread = threading.Thread(target=stream_logs, args=(server_proc, log_file), daemon=True)
+    log_thread.start()
 
     # 2. Wait for bridge to be ready (not just a sleep)
     print("  [WAIT] Waiting for bridge to come online...", end="", flush=True)
@@ -99,11 +112,21 @@ def main():
             [python_path, "-m", "client.client", str(i), str(num_clients)],
             env=env,
             cwd=os.path.join(cwd, "Cybronites"),
-            stdout=log_file,
-            stderr=log_file
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
         )
         processes.append(client_proc)
-        time.sleep(1)
+        
+        def stream_client_logs(proc, index, file):
+            for line in iter(proc.stdout.readline, ""):
+                print(f"  [CLIENT {index}] {line.strip()}")
+                file.write(f"  [CLIENT {index}] {line.strip()}\n")
+                file.flush()
+        
+        threading.Thread(target=stream_client_logs, args=(client_proc, i, log_file), daemon=True).start()
+        time.sleep(2) # Increased delay to avoid race on server binding
 
     print(f"\n{'=' * 60}")
     print(f"  ALL SYSTEMS ONLINE")
