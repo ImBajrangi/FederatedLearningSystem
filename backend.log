@@ -363,3 +363,24 @@ INFO flwr 2026-04-07 17:36:55,675 | app.py:222 | app_fit: metrics_centralized {}
 18:28:50 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
 18:28:50 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
 18:28:50 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:30:52 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:30:52 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 1
+18:30:52 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:30:52 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:30:52 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 2
+18:30:52 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:30:52 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:30:52 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:31:16 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:31:16 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:31:16 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:31:16 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:31:22 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:31:22 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:31:22 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:31:22 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:31:22 [INFO] GuardianBridge: Dashboard disconnected. Remaining: 2
+18:31:22 [INFO] GuardianBridge: Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py
+18:31:22 [INFO] GuardianBridge: Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db
+18:31:22 [INFO] GuardianBridge: Dashboard connected. Total subscribers: 3
+18:33:45 [INFO] TrainingEngine: Epoch 1: Loss 0.0752, Acc 0.9241

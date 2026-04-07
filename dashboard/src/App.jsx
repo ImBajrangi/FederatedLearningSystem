@@ -9,6 +9,7 @@ import { TrainingWorkspace } from './components/TrainingWorkspace';
 import { DatasetExplorer } from './components/DatasetExplorer';
 import { Laboratory } from './components/Laboratory';
 import { Dashboard } from './components/Dashboard';
+import { Login } from './components/Login';
 import { useSecureFederated } from './hooks/useSecureFederated';
 import { Play, RotateCcw, ShieldCheck, Info, X, Zap, Activity, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,6 +41,13 @@ function App() {
   } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState('dashboard');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('federated_auth') === 'true';
+  });
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('federated_user');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [toasts, setToasts] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [footerHeight, setFooterHeight] = useState(280);
@@ -109,6 +117,22 @@ function App() {
     await runRound();
   };
 
+  const handleLogin = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    localStorage.setItem('federated_auth', 'true');
+    localStorage.setItem('federated_user', JSON.stringify(userData));
+    addToast(`Access Granted: Welcome ${userData.id}`, 'success');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    localStorage.removeItem('federated_auth');
+    localStorage.removeItem('federated_user');
+    addToast('Session Terminated.', 'info');
+  };
+
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
@@ -139,6 +163,10 @@ function App() {
     }
   };
 
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <div className={`shell-container selection:bg-primary/10 bg-white`}>
       <Header status={isConnected ? (isActive ? 'TRAINING' : status || 'CONNECTED') : 'OFFLINE'} />
@@ -153,6 +181,7 @@ function App() {
           blockchain={blockchain}
           width={sidebarWidth}
           onResize={startSidebarResize}
+          onLogout={handleLogout}
         />
 
         <main className="flex-1 flex flex-col" style={{ minWidth: 0, overflow: 'hidden' }}>

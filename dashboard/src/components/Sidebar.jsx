@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   LayoutDashboard, Database, ShieldCheck, Terminal, Activity, Layers,
-  History, Workflow, Cpu, BookOpen, PieChart, Server, ChevronRight
+  History, Workflow, Cpu, BookOpen, PieChart, Server, ChevronRight, LogOut
 } from 'lucide-react';
 
 const MetricItem = ({ label, value, icon: Icon, color }) => (
@@ -17,7 +17,7 @@ const MetricItem = ({ label, value, icon: Icon, color }) => (
   </div>
 );
 
-export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {}, rejectedCount = 0, blockchain = [], width, onResize }) => {
+export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {}, rejectedCount = 0, blockchain = [], width, onResize, onLogout }) => {
   const activeCount = clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length;
   const nodeCount = Object.keys(nodeRegistry).length || clients.length || 0;
   
@@ -102,6 +102,9 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
               <span>Operational</span>
             </div>
           </div>
+          <button className="sb-logout-btn" onClick={onLogout} title="Terminate Session">
+            <LogOut size={14} />
+          </button>
         </div>
       </footer>
 
@@ -245,6 +248,26 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
         .sb-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: sb-blink 2s infinite; }
         @keyframes sb-blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         .sb-user-status span { font-size: 9px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 0.1em; }
+
+        .sb-logout-btn {
+          margin-left: auto;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: transparent;
+          border: 1px solid var(--border);
+          color: var(--text-muted);
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .sb-logout-btn:hover {
+          background: #fef2f2;
+          border-color: #fecaca;
+          color: #ef4444;
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+        }
       `}</style>
     </aside>
   );
