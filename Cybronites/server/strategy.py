@@ -133,18 +133,19 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
                 status = "REJECTED"
                 bridge.broadcast_sync("LOG", f"  ❌ {cid}: REJECTED - {tx.rejection_reason}")
 
-            # Extract Metrics
+            # Extract Metrics and Reported Metadata
             m_acc = float(fit_res.metrics.get("accuracy", 0.0)) if fit_res.metrics else 0.0
             m_loss = float(fit_res.metrics.get("loss", 2.0)) if fit_res.metrics else 2.0
+            m_ip = str(fit_res.metrics.get("ip", bridge.state.get("server_ip", "127.0.0.1"))) if fit_res.metrics else "127.0.0.1"
             
             if is_valid:
                 acc_list.append(m_acc)
                 loss_list.append(m_loss)
 
-            # Update Node Registry with institutional metadata
+            # Update Node Registry with real-time node metadata
             self.node_registry[cid] = {
                 "status": status,
-                "ip": bridge.state.get("server_ip", "127.0.0.1"),
+                "ip": m_ip,
                 "hash": f"0x{weight_hash[:12]}...",
                 "reputation": new_score
             }

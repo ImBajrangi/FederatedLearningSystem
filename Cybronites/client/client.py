@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import os
 import logging
+import urllib.request
 from Cybronites.utils.structured_logging import setup_structured_logging
 
 # Setup logging
@@ -51,7 +52,18 @@ class FlowerClient(fl.client.NumPyClient):
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.dp_spec = DPSpec(l2_norm_clip=1.0, noise_multiplier=0.01)
-        self.local_cache = {} # Cache for local intermediate results if needed
+        self.local_cache = {} 
+        self.ip_address = self._get_public_ip()
+
+    def _get_public_ip(self):
+        """Fetch node's public IP address for institutional auditing."""
+        try:
+            with urllib.request.urlopen("https://api.ipify.org", timeout=2) as response:
+                ip = response.read().decode('utf-8')
+                logger.info(f"Client {self.client_id} | Public IP: {ip}")
+                return ip
+        except Exception:
+            return "127.0.0.1"
 
     def get_parameters(self, config):
         return [val.cpu().numpy() for _, val in self.model.state_dict().items()]
@@ -91,14 +103,14 @@ class FlowerClient(fl.client.NumPyClient):
             param_with_noise = initial_params[i].cpu() + dp_updates[name]
             final_params.append(param_with_noise.numpy())
 
-        return final_params, len(self.train_loader.dataset), {"accuracy": float(last_acc), "loss": float(last_loss)}
+        return final_params, len(self.train_loader.dataset), {"accuracy": float(last_acc), "loss": float(last_loss), "ip": self.ip_address}
 
     def evaluate(self, parameters, config):
         self.set_parameters(parameters)
         loss, accuracy = test(self.model, self.test_loader, device=device)
         logger.info(f"Client {self.client_id} | Accuracy: {accuracy:.4f}", 
                     extra={"type": "evaluation", "client_id": self.client_id, "accuracy": accuracy})
-        return float(loss), len(self.test_loader.dataset), {"accuracy": float(accuracy)}
+        return float(loss), len(self.test_loader.dataset), {"accuracy": float(accuracy), "ip": self.ip_address}
 
 def main():
     client_id = sys.argv[1] if len(sys.argv) > 1 else "0"
