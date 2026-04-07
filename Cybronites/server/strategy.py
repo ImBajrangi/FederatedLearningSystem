@@ -150,6 +150,9 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
                 "reputation": new_score
             }
             
+            # Persist to Database on server
+            bridge.save_node_to_db(cid, m_ip, new_score)
+            
             # Add to Institutional Audit History
             self.round_history.append({
                 "round": server_round,

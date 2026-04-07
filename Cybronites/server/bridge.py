@@ -105,6 +105,40 @@ class ConnectionManager:
         except Exception as e:
             logger.error(f"DB Shard Load Error: {e}")
 
+    def save_node_to_db(self, node_id, ip, trust_score):
+        """Persist node metadata to the institutional record."""
+        try:
+            paths = [
+                os.path.join(os.getcwd(), "Cybronites", "guardian.db"),
+                os.path.join(os.getcwd(), "guardian.db")
+            ]
+            db_path = None
+            for p in paths:
+                if os.path.exists(p):
+                    db_path = p
+                    break
+            
+            if not db_path: return
+
+            conn = sqlite3.connect(db_path)
+            cur = conn.cursor()
+            
+            # Upsert logic (insert or update on id)
+            cur.execute("""
+                INSERT INTO nodes (id, name, last_seen, trust_score, ip_address) 
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET 
+                    last_seen=excluded.last_seen,
+                    trust_score=excluded.trust_score,
+                    ip_address=excluded.ip_address
+            """, (node_id, f"Node_{node_id[:4]}", time.strftime('%Y-%m-%d %H:%M:%S'), trust_score, ip))
+            
+            conn.commit()
+            conn.close()
+            logger.info(f"Node {node_id} persisted to database with IP {ip}.")
+        except Exception as e:
+            logger.warning(f"Database Persistence Failed for node {node_id}: {e}")
+
     async def connect(self, websocket: WebSocket):
         try:
             await websocket.accept()
