@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Cpu, Activity, ShieldCheck, Server, Globe, Zap, 
@@ -16,8 +16,9 @@ const ConfigInput = ({ label, value }) => (
   </div>
 );
 
-export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams, roundHistory = [], modelArchitecture }) => {
+export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lossHistory = [], hyperparams, roundHistory = [], modelArchitecture, onClear }) => {
   const consoleRef = React.useRef(null);
+  const [activeTab, setActiveTab] = useState('telemetry');
   const ledgerRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -214,15 +215,24 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
           <section className="tr-console-container">
             <div className="tr-console-header">
               <div className="tr-console-tabs">
-                <div className="tr-tab active">
+                <div 
+                  className={`tr-tab ${activeTab === 'telemetry' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('telemetry')}
+                >
                   <TerminalIcon size={10} />
                   <span>Node Telemetry</span>
                 </div>
-                <div className="tr-tab">
+                <div 
+                  className={`tr-tab ${activeTab === 'feed' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('feed')}
+                >
                   <Globe size={10} />
                   <span>Global Feed</span>
                 </div>
-                <div className="tr-tab">
+                <div 
+                  className={`tr-tab ${activeTab === 'audit' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('audit')}
+                >
                   <Lock size={10} />
                   <span>Sec Audit</span>
                 </div>
@@ -230,9 +240,9 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
               <div className="tr-console-actions">
                 <div className="tr-latency">
                   <div className="tr-latency-dot" />
-                  <span>4ms Latency</span>
+                  <span>{Math.floor(Math.random() * 5 + 2)}MS LATENCY</span>
                 </div>
-                <button className="tr-btn-clear" onClick={() => {}}>Clear</button>
+                <button className="tr-btn-clear" onClick={onClear}>Clear</button>
               </div>
             </div>
             <div className="tr-console-body" ref={consoleRef}>
@@ -244,23 +254,34 @@ export const TrainingWorkspace = ({ clients, logs = [], accuracyHistory = [], lo
                     <span>Awaiting system initialization...</span>
                   </div>
                 ) : (
-                  logs.map((log, i) => {
-                    const logObj = typeof log === 'object' ? log : { msg: log };
-                    const isSuccess = logObj.msg.includes('SUCCESS') || logObj.msg.includes('COMPLETE') || logObj.msg.includes('FINISHED');
-                    const isError = logObj.msg.includes('ERR') || logObj.msg.includes('CRITICAL');
-                    const isWarning = logObj.msg.includes('WARN');
-                    
-                    return (
-                      <div key={i} className="tr-log-line group">
-                        <span className="tr-log-ts">{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-                        <span className="tr-log-prefix ml-2">[{i % 2 === 0 ? 'NODE_01' : 'NODE_02'}]</span>
-                        <span className={`tr-log-msg ${isSuccess ? 'text-emerald-400' : isError ? 'text-rose-400' : isWarning ? 'text-amber-400' : 'text-white'}`}>
-                          {logObj.msg}
-                        </span>
-                        <div className="tr-log-glow" />
-                      </div>
-                    );
-                  })
+                  logs
+                    .filter(log => {
+                      if (activeTab === 'feed') return true;
+                      const logMsg = (typeof log === 'object' ? log.msg : log).toUpperCase();
+                      if (activeTab === 'audit') return logMsg.includes('SECURE') || logMsg.includes('VERIFIED') || logMsg.includes('AUDIT') || logMsg.includes('BLOCK');
+                      return logMsg.includes('UPDATE') || logMsg.includes('AGGREGATING') || logMsg.includes('ROUND') || logMsg.includes('NODE');
+                    })
+                    .map((log, i) => {
+                      const logObj = typeof log === 'object' ? log : { msg: log };
+                      const msgUpper = logObj.msg.toUpperCase();
+                      const isSuccess = msgUpper.includes('SUCCESS') || msgUpper.includes('COMPLETE') || msgUpper.includes('FINISHED') || msgUpper.includes('SYNCED');
+                      const isError = msgUpper.includes('ERR') || msgUpper.includes('CRITICAL') || msgUpper.includes('FAIL');
+                      const isWarning = msgUpper.includes('WARN');
+                      
+                      // Using Hex for reliability on darker terminal backgrounds
+                      const msgColor = isSuccess ? '#10b981' : isError ? '#f87171' : isWarning ? '#fbbf24' : '#ffffff';
+                      
+                      return (
+                        <div key={i} className="tr-log-line group">
+                          <span className="tr-log-ts" style={{ color: 'rgba(255,255,255,0.3)' }}>{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                          <span className="tr-log-prefix ml-2" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>[{i % 2 === 0 ? 'NODE_01' : 'NODE_02'}]</span>
+                          <span className="tr-log-msg" style={{ color: msgColor, textShadow: isSuccess ? '0 0 10px rgba(16,185,129,0.3)' : 'none' }}>
+                            {logObj.msg}
+                          </span>
+                          <div className="tr-log-glow" />
+                        </div>
+                      );
+                    })
                 )}
                 <div className="tr-console-prompt">
                   <span className="tr-log-ts">{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>

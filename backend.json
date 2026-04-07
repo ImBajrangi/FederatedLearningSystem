@@ -238,3 +238,15 @@
 {"timestamp":"2026-04-07 18:21:59","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775566319.974205}
 {"timestamp":"2026-04-07 18:21:59","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775566319.9746208}
 {"timestamp":"2026-04-07 18:21:59","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775566319.978838}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775566681.9126668}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775566681.9576461}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775566681.9597068}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775566681.963448}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775566681.963604}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775566681.977111}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775566681.97758}
+{"timestamp":"2026-04-07 18:28:01","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775566681.978157}
+{"timestamp":"2026-04-07 18:28:50","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1775566730.430943}
+{"timestamp":"2026-04-07 18:28:50","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775566730.4801579}
+{"timestamp":"2026-04-07 18:28:50","level":"INFO","component":"GuardianBridge","message":"Loaded 8 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775566730.486609}
+{"timestamp":"2026-04-07 18:28:50","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1775566730.495574}
