@@ -26,7 +26,7 @@ export const PrivacyVault = () => {
         if (!selectedDataset) return;
         setIsLaunching(true);
         try {
-            await submitJob(selectedDataset.id, "CNN", {
+            await submitJob(selectedDataset.id, "SimpleCNN", {
                 epochs: 5,
                 batch_size: 32,
                 learning_rate: 0.001
@@ -67,7 +67,7 @@ export const PrivacyVault = () => {
                     <div className="text-right pr-6 border-r border-border h-10 flex flex-col justify-end">
                         <div className="text-[9px] font-bold text-text-muted mb-1.5 uppercase tracking-[0.3em] opacity-40">Processed Entropy</div>
                         <span className="text-xl serif text-text-main font-medium tabular-nums leading-none">
-                            {(datasets.reduce((acc, d) => acc + d.dataset_size, 0) / (1024 * 1024)).toFixed(1)} MB
+                            {(Array.isArray(datasets) ? datasets.reduce((acc, d) => acc + (d.dataset_size || 0), 0) : 0 / (1024 * 1024)).toFixed(1)} MB
                         </span>
                     </div>
                     <button 
@@ -89,7 +89,7 @@ export const PrivacyVault = () => {
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {datasets.map(ds => (
+                            {Array.isArray(datasets) && datasets.map(ds => (
                                 <motion.div 
                                     key={ds.id}
                                     whileHover={{ y: -4 }}
@@ -139,7 +139,7 @@ export const PrivacyVault = () => {
 
                         <div className="institutional-card overflow-hidden">
                             <div className="p-8 space-y-6">
-                                {jobs.length === 0 ? (
+                                {(!Array.isArray(jobs) || jobs.length === 0) ? (
                                     <div className="flex flex-col items-center justify-center py-12 text-text-muted/40 border-2 border-dashed border-border/40 rounded-sm">
                                         <Zap size={24} className="mb-4 opacity-20" />
                                         <span className="text-[10px] font-bold uppercase tracking-[0.25em]">No Active Training Jobs</span>
@@ -230,7 +230,7 @@ export const PrivacyVault = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {models.length === 0 ? (
+                            {(!Array.isArray(models) || models.length === 0) ? (
                                 <div className="p-8 border border-border border-dashed text-text-muted/40 text-[9px] font-bold uppercase tracking-widest text-center">
                                     Registry Empty
                                 </div>

@@ -15,7 +15,8 @@ export const useSecureTraining = () => {
             const res = await fetch(`${SECURE_BASE_URL}/api/v1/datasets`);
             if (!res.ok) throw new Error('Failed to fetch datasets');
             const data = await res.json();
-            setDatasets(data);
+            // Backend returns { count: X, datasets: [...] }
+            setDatasets(Array.isArray(data.datasets) ? data.datasets : []);
             setError(null);
         } catch (err) {
             setError(err.message);
@@ -26,10 +27,11 @@ export const useSecureTraining = () => {
 
     const fetchJobs = useCallback(async () => {
         try {
-            const res = await fetch(`${SECURE_BASE_URL}/api/v1/training/jobs`);
+            const res = await fetch(`${SECURE_BASE_URL}/api/v1/training_jobs`);
             if (!res.ok) throw new Error('Failed to fetch jobs');
             const data = await res.json();
-            setJobs(data);
+             // Backend returns { count: X, jobs: [...] }
+            setJobs(Array.isArray(data.jobs) ? data.jobs : []);
         } catch (err) {
             console.error(err);
         }
@@ -40,7 +42,8 @@ export const useSecureTraining = () => {
             const res = await fetch(`${SECURE_BASE_URL}/api/v1/models`);
             if (!res.ok) throw new Error('Failed to fetch models');
             const data = await res.json();
-            setModels(data);
+            // Backend returns list directly for models
+            setModels(Array.isArray(data) ? data : (data.models || []));
         } catch (err) {
             console.error(err);
         }
@@ -48,10 +51,14 @@ export const useSecureTraining = () => {
 
     const submitJob = async (datasetId, modelType, hyperparams) => {
         try {
-            const res = await fetch(`${SECURE_BASE_URL}/api/v1/training/submit`, {
+            const res = await fetch(`${SECURE_BASE_URL}/api/v1/train`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dataset_id: datasetId, model_type: modelType, hyperparams })
+                body: JSON.stringify({ 
+                    dataset_id: datasetId, 
+                    model_type: modelType, 
+                    ...hyperparams 
+                })
             });
             if (!res.ok) throw new Error('Failed to submit job');
             const data = await res.json();
@@ -65,7 +72,7 @@ export const useSecureTraining = () => {
 
     // Auto-poll for jobs if any are active
     useEffect(() => {
-        const active = jobs.some(j => j.status === 'QUEUED' || j.status === 'RUNNING');
+        const active = Array.isArray(jobs) && jobs.some(j => j.status === 'QUEUED' || j.status === 'RUNNING');
         if (active) {
             const interval = setInterval(fetchJobs, 2000);
             return () => clearInterval(interval);
