@@ -4,6 +4,7 @@ Key Manager — Secure storage and access control for encryption keys.
 Keys are double-encrypted: dataset AES keys are encrypted with a master key
 before being stored in the database. Only authorized roles can retrieve keys.
 """
+from __future__ import annotations
 
 import os
 import uuid
@@ -53,14 +54,15 @@ class KeyManager:
         logger.warning("Using development master key — NOT FOR PRODUCTION")
         return key
 
-    def store_key(self, dataset_id: str, raw_key: bytes) -> str:
+    def store_key(self, dataset_id: str, raw_key: bytes, key_id: str | None = None) -> str:
         """
         Encrypt a dataset key with the master key and store it.
         
         Returns:
             key_id for referencing this key.
         """
-        key_id = str(uuid.uuid4())
+        if key_id is None:
+            key_id = str(uuid.uuid4())
 
         # Encrypt the dataset key with master key
         aesgcm = AESGCM(self._master_key)

@@ -31,6 +31,7 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
     { id: 'training', label: 'Training Cluster', num: '02', icon: Activity },
     { id: 'datasets', label: 'Shard Registry', num: '03', icon: Database },
     { id: 'architecture', label: 'Model Library', num: '04', icon: Layers },
+    { id: 'privacy_vault', label: 'Privacy Vault', num: '06', icon: ShieldCheck },
     { id: 'laboratory', label: 'Code Laboratory', num: '05', icon: Terminal },
   ];
 

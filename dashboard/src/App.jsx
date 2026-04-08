@@ -8,6 +8,7 @@ import { BlockchainRibbon } from './components/BlockchainExplorer';
 import { TrainingWorkspace } from './components/TrainingWorkspace';
 import { DatasetExplorer } from './components/DatasetExplorer';
 import { Laboratory } from './components/Laboratory';
+import { PrivacyVault } from './components/PrivacyVault';
 import { Dashboard } from './components/Dashboard';
 import { Login } from './components/Login';
 import { useSecureFederated } from './hooks/useSecureFederated';
@@ -196,6 +197,8 @@ function App() {
         return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
       case 'laboratory':
         return <Laboratory onAction={addToast} labState={labState} />;
+      case 'privacy_vault':
+        return <PrivacyVault />;
       default:
         return <div>View not found</div>;
     }

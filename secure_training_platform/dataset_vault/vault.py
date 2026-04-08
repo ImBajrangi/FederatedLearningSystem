@@ -47,7 +47,10 @@ class DatasetVault:
         5. Insert metadata into DB
         6. Return dataset ID
         """
+        # Generate unique IDs
         dataset_id = str(uuid.uuid4())
+        key_id = str(uuid.uuid4())
+        
         input_shape = input_shape or [1, 28, 28]
 
         # Generate encryption key and encrypt data
@@ -60,10 +63,7 @@ class DatasetVault:
         enc_path.write_bytes(encrypted_data)
         file_size = enc_path.stat().st_size
 
-        # Store key securely via Key Manager
-        key_id = self.key_manager.store_key(dataset_id, raw_key)
-
-        # Register in database
+        # 1. Register metadata in database first (to satisfy FK in keys table)
         execute_insert(
             """INSERT INTO datasets 
                (id, name, description, encrypted_file_path, encryption_key_id,
@@ -75,6 +75,9 @@ class DatasetVault:
                 json.dumps(input_shape), num_samples
             )
         )
+
+        # 2. Store key securely via Key Manager (refers to existing dataset_id)
+        self.key_manager.store_key(dataset_id, raw_key, key_id=key_id)
 
         # Securely wipe the raw key from local scope
         raw_key = b'\x00' * len(raw_key)
