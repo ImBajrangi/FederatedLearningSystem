@@ -75,6 +75,17 @@ class TrainingSandbox:
             decrypted_buffer = self.vault.decrypt_dataset_to_memory(
                 dataset_id, requester="training_worker"
             )
+
+            # Audit log for decryption event
+            execute_insert(
+                """INSERT INTO audit_log (event_type, actor, details)
+                   VALUES (?, ?, ?)""",
+                ("DATA_DECRYPTION", "sandbox", json.dumps({
+                    "job_id": job_id,
+                    "dataset_id": dataset_id,
+                    "timestamp": datetime.utcnow().isoformat()
+                }))
+            )
             
             # ── Step 2: Parse bytes into tensors ───────────────
             logger.info(f"[Job {job_id}] Parsing decrypted data into tensors...")
@@ -234,6 +245,17 @@ class TrainingSandbox:
                 secure_wipe_tensor(train_data)
             if train_labels is not None:
                 secure_wipe_tensor(train_labels)
+            
+            # Audit log for secure wipe
+            execute_insert(
+                """INSERT INTO audit_log (event_type, actor, details)
+                   VALUES (?, ?, ?)""",
+                ("MEMORY_WIPE", "sandbox", json.dumps({
+                    "job_id": job_id,
+                    "status": "success",
+                    "timestamp": datetime.utcnow().isoformat()
+                }))
+            )
             
             # Force garbage collection
             import gc
