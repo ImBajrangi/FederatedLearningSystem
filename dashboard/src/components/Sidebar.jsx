@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import {
   LayoutDashboard, Database, ShieldCheck, Terminal, Activity, Layers,
   History, Workflow, Cpu, BookOpen, PieChart, Server, ChevronRight, LogOut
 } from 'lucide-react';
@@ -20,8 +20,8 @@ const MetricItem = ({ label, value, icon: Icon, color }) => (
 export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {}, rejectedCount = 0, blockchain = [], width, onResize, onLogout }) => {
   const activeCount = clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length;
   const nodeCount = Object.keys(nodeRegistry).length || clients.length || 0;
-  
-  const yieldValue = blockchain && blockchain.length > 1 
+
+  const yieldValue = blockchain && blockchain.length > 1
     ? (100 - (rejectedCount / (blockchain.length - 1) * 100)).toFixed(1)
     : "100.0";
   const powerValue = (activeCount * 0.4 + 0.2).toFixed(1);
@@ -48,10 +48,10 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
           <BookOpen size={12} />
           <span>Coursework</span>
         </div>
-        
+
         <nav className="sb-nav">
           {navItems.map((item) => (
-            <button 
+            <button
               key={item.id}
               onClick={() => setView(item.id)}
               className={`sb-nav-btn ${currentView === item.id ? 'sb-nav-active' : ''}`}
@@ -69,21 +69,21 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
         </div>
 
         <div className="sb-metrics">
-          <MetricItem 
-            label="Node Count" 
-            value={nodeCount} 
+          <MetricItem
+            label="Node Count"
+            value={nodeCount}
             icon={Server}
             color="primary"
           />
-          <MetricItem 
-            label="Verification Yield" 
-            value={`${yieldValue}%`} 
+          <MetricItem
+            label="Verification Yield"
+            value={`${yieldValue}%`}
             icon={ShieldCheck}
             color="success"
           />
-          <MetricItem 
-            label="Computing Power" 
-            value={`${powerValue} GB/S`} 
+          <MetricItem
+            label="Computing Power"
+            value={`${powerValue} GB/S`}
             icon={Cpu}
             color="accent"
           />

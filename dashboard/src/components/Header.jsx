@@ -7,7 +7,7 @@ export const Header = ({ status }) => {
       <div className="flex items-center gap-4">
         <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center text-white font-serif text-lg">FL</div>
         <h1 className="type-l2 serif text-text-main leading-tight tracking-tight">
-          Institutional Monitoring Console
+          AI Guardian Professional Dashboard
         </h1>
       </div>
       
