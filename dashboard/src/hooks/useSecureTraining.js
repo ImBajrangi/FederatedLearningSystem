@@ -1,6 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 
-const SECURE_BASE_URL = `http://localhost:${import.meta.env.VITE_SECURE_PORT || '8100'}`;
+const isProd = import.meta.env.PROD;
+const SECURE_BASE_URL = isProd 
+    ? `${window.location.origin}/api/secure`
+    : `http://localhost:${import.meta.env.VITE_SECURE_PORT || '8100'}`;
 
 export const useSecureTraining = () => {
     const [datasets, setDatasets] = useState([]);
