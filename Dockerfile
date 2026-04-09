@@ -38,20 +38,21 @@ COPY run_local.py ./
 # Import built dashboard from Stage 1
 COPY --from=frontend-builder /app/dashboard/dist ./dist
 
-# Finalize deployment scripts
-COPY start.sh ./
-RUN chmod +x start.sh
-
-# Deployment Configuration
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PORT=7860
-ENV FLOWER_PORT=8095
-ENV GUARDIAN_DB_PATH="/app/Cybronites/guardian.db"
-ENV PYTHONPATH="/app"
-
 # Exposed Ports: Dashboard (7860) & FL Orchestrator (8095)
 EXPOSE 7860 8095
+
+# Set up user for Hugging Face (UID 1000)
+RUN useradd -m -u 1000 user
+USER user
+ENV HOME=/home/user \
+	PATH=/home/user/.local/bin:$PATH
+
+WORKDIR $HOME/app
+
+COPY --chown=user . $HOME/app
+COPY --chown=user --from=frontend-builder /app/dashboard/dist $HOME/app/dist
+
+RUN chmod +x start.sh
 
 # Entrypoint via the unified Guardian Startup Hub
 ENTRYPOINT ["./start.sh"]

@@ -637,3 +637,8 @@ def start_bridge(port: int = 7860):
     import uvicorn
     logger.info(f"Launching Guardian Bridge on port {port}...")
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="warning")
+
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 7860))
+    start_bridge(port=port)

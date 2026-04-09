@@ -40,11 +40,11 @@ export const Dashboard = ({
         </div>
 
         <div className="dash-header-controls">
-          <div className="dash-stat-group">
-            <span className="dash-stat-label">Global Accuracy</span>
+          <div className="dash-stat-group border-r border-border/50">
+            <span className="dash-stat-label">Convergence</span>
             <div className="dash-stat-value-wrap">
-              <span className="dash-stat-value">{currentAccuracy}%</span>
-              <div className={`dash-status-dot ${isConnected && isActive ? 'dash-status-active' : ''}`}>
+              <span className="dash-stat-value text-accent-glow font-serif">{currentAccuracy}%</span>
+              <div className={`dash-status-dot ${isConnected && isActive ? 'dash-status-active' : ''} shadow-inner`}>
                 <Activity size={10} />
               </div>
             </div>
@@ -69,10 +69,10 @@ export const Dashboard = ({
       {/* ─── Top Metrics Grid ─── */}
       <div className="dash-grid">
         {/* Main Chart */}
-        <div className="dash-card dash-card-main">
-          <div className="dash-card-header">
+        <div className="dash-card dash-card-main card-shadow-premium bg-white border-border/40">
+          <div className="dash-card-header bg-slate-50/50 backdrop-blur-sm">
             <div className="dash-card-title-wrap">
-              <Activity size={14} className="dash-card-icon" />
+              <Activity size={14} className="text-accent" />
               <span className="dash-card-title">Real-Time Model Convergence</span>
             </div>
             <div className="dash-card-legend">
@@ -90,10 +90,13 @@ export const Dashboard = ({
         {/* Right Sidebar Stats */}
         <div className="dash-sidebar-stats">
           {/* Security Policy */}
-          <div className="dash-card dash-card-accent">
-            <ShieldCheck size={20} className="dash-accent-icon" />
-            <h3 className="dash-accent-title">Security Policy Active</h3>
-            <p className="dash-accent-text">Differential Privacy calibration enabled (L2-Clip=1.0, Noise=0.01). Coordination via Secure gRPC Tunnel.</p>
+          <div className="dash-card dash-card-accent bg-primary shadow-xl overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                <ShieldCheck size={80} />
+            </div>
+            <ShieldCheck size={20} className="text-accent mb-6" />
+            <h3 className="dash-accent-title serif">Security Policy Active</h3>
+            <p className="dash-accent-text opacity-70">Differential Privacy calibration active. Coordination via Secure gRPC Tunnel.</p>
           </div>
 
           {/* Network Resilience */}

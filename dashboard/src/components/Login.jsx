@@ -63,9 +63,9 @@ export const Login = ({ onLogin }) => {
       <div className="login-grid" />
 
       <motion.div 
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="login-container"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="login-container glass-panel card-shadow-premium"
       >
         {/* Header Block */}
         <header className="login-header">
@@ -96,10 +96,15 @@ export const Login = ({ onLogin }) => {
                 className="login-form-container"
               >
                 <form onSubmit={handleSubmit} className="login-form">
-                  {error && (
-                    <div className="login-error-banner">
+                  {error ? (
+                    <div className="login-error-banner bg-red-50 border-red-100 text-red-600">
                       <Activity size={12} />
                       <span>{error}</span>
+                    </div>
+                  ) : (
+                    <div className="login-error-banner bg-accent/5 border-accent/20 text-accent font-bold">
+                       <ShieldCheck size={12} />
+                       <span>GUARDIAN GUEST MODE ACTIVE</span>
                     </div>
                   )}
 
