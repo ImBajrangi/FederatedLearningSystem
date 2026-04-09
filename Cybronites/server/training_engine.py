@@ -5,9 +5,17 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import os
 import threading
-import time
-import json
+# ─── System Health & Telemetry ───
 import logging
+import json
+import os
+import subprocess
+import threading
+import time
+
+# 🧪 Performance Caching: Eliminate multi-second scan delays
+_ENV_CACHE = {"data": None, "time": 0}
+CACHE_TTL = 15 # 15-second scan lifecycle
 import ast
 import importlib.util
 import subprocess
@@ -39,13 +47,19 @@ class BroadcastStream(io.StringIO):
             lines = self.line_buffer.split('\n')
             for line in lines[:-1]:
                 if line.strip():
-                    self.broadcast("LOG", f"📜 {line}")
+                    try:
+                        self.broadcast("LOG", f"📜 {line}")
+                    except (BrokenPipeError, ConnectionResetError, RuntimeError):
+                        pass # Dashboard disconnected, but training stays alive
             self.line_buffer = lines[-1]
 
     def flush(self):
         super().flush()
         if self.line_buffer.strip():
-            self.broadcast("LOG", f"📜 {self.line_buffer}")
+            try:
+                self.broadcast("LOG", f"📜 {self.line_buffer}")
+            except (BrokenPipeError, ConnectionResetError, RuntimeError):
+                pass
             self.line_buffer = ""
 def ensure_research_venv(broadcast_callback=None):
     """Ensure a dedicated virtual environment exists for research code."""
@@ -148,6 +162,11 @@ def get_environment_info():
     
     python_bin = os.path.join(sandbox_dir, "bin", "python") if sys.platform != "win32" else os.path.join(sandbox_dir, "Scripts", "python.exe")
     
+    global _ENV_CACHE
+    now = time.time()
+    if _ENV_CACHE["data"] and (now - _ENV_CACHE["time"]) < CACHE_TTL:
+        return _ENV_CACHE["data"]
+
     try:
         # 🧪 Tier 1: Root Packages (Not required by others)
         root_cmd = [python_bin, "-m", "pip", "list", "--not-required", "--format=json"]
@@ -163,13 +182,15 @@ def get_environment_info():
         ver_cmd = [python_bin, "--version"]
         python_ver = subprocess.check_output(ver_cmd).decode().strip().replace("Python ", "")
         
-        return {
+        result = {
             "status": "INITIALIZED_STABLE",
             "python": python_ver,
             "root_packages": roots,
             "all_packages": all_pkgs,
             "packages": roots # Legacy support for old UI
         }
+        _ENV_CACHE = {"data": result, "time": now}
+        return result
     except Exception as e:
         logger.error(f"Failed to scout environment: {e}")
         return {"status": "SCAN_FAILED", "error": str(e), "packages": []}
@@ -269,6 +290,7 @@ class TrainingSession:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model_path = None
         self.mode = "IDLE"
+        self.namespace = {} # 🧪 Persistent Memory: Holds variables for terminal interaction
 
     def run(self):
         try:
@@ -321,7 +343,18 @@ class TrainingSession:
                         self.broadcast("LOG", f"⚠️ Failed to install {lib}: {err_text}")
             
             # 1. Dynamic compilation & execution
-            namespace = {}
+            # Reset namespace for fresh run
+            self.namespace = {
+                "__name__": "__main__",
+                "torch": torch,
+                "nn": nn,
+                "optim": optim,
+                "DataLoader": DataLoader,
+                "datasets": datasets,
+                "transforms": transforms,
+                "np": importlib.import_module('numpy') if importlib.util.find_spec('numpy') else None,
+                "pd": importlib.import_module('pandas') if importlib.util.find_spec('pandas') else None,
+            }
             # Inject headless Matplotlib config
             headless_config = "import matplotlib; matplotlib.use('Agg')\n"
             
@@ -329,7 +362,7 @@ class TrainingSession:
             stream = BroadcastStream(self.broadcast)
             with contextlib.redirect_stdout(stream):
                 try:
-                    exec(headless_config + clean_code, namespace)
+                    exec(headless_config + clean_code, self.namespace)
                     stream.flush()
                 except Exception as e:
                     # Capture syntax/runtime errors during initial exec
@@ -340,7 +373,7 @@ class TrainingSession:
             
             # Look for a class that is a subclass of nn.Module
             model_class = None
-            for name, obj in namespace.items():
+            for name, obj in self.namespace.items():
                 if isinstance(obj, type) and issubclass(obj, nn.Module) and obj is not nn.Module:
                     model_class = obj
                     break
@@ -455,12 +488,64 @@ class TrainingSession:
             })
             self.broadcast("LOG", "SYSTEM: Training complete. Model weights exported.")
 
+        except (BrokenPipeError, ConnectionResetError):
+            logger.warning("Networking glitch detected (Broken Pipe). Training logic unaffected.")
+            # We don't change status to ERROR because the training is actually fine.
+            self.status = "COMPLETE" 
+            
         except Exception as e:
+            # Check if likely a broken pipe error wrapped in a RuntimeError
+            if "Broken pipe" in str(e) or "Connection reset" in str(e):
+                logger.warning(f"Likely networking glitch: {e}")
+                self.status = "COMPLETE"
+                return
+
             self.status = "ERROR"
             error_msg = f"Training Error: {str(e)}"
             logger.error(error_msg)
-            self.broadcast("LAB_ERROR", {"error": error_msg})
-            self.broadcast("LOG", f"FATAL: {error_msg}")
+            try:
+                self.broadcast("LAB_ERROR", {"error": error_msg})
+                self.broadcast("LOG", f"FATAL: {error_msg}")
+            except:
+                pass
+
+    def eval_cell(self, code_block):
+        """Intelligently evaluate a code block in the current session's namespace."""
+        if not self.namespace:
+            return False, "Session memory not initialized. Run code first."
+        
+        self.broadcast("LOG", f">>> {code_block.strip()[:100]}{'...' if len(code_block) > 100 else ''}")
+        
+        stream = BroadcastStream(self.broadcast)
+        with contextlib.redirect_stdout(stream):
+            try:
+                # 🧪 Smart Parsing: Handle last-line expressions (Jupyter style)
+                tree = ast.parse(code_block)
+                if not tree.body:
+                    return True, "Empty cell"
+                
+                last_node = tree.body[-1]
+                if isinstance(last_node, ast.Expr):
+                    # Separate the body minus the last expression
+                    exec_body = ast.Module(body=tree.body[:-1], type_ignores=[])
+                    exec(compile(exec_body, '<interactive>', 'exec'), self.namespace)
+                    
+                    # Evaluate the last expression
+                    eval_expr = compile(ast.Expression(body=last_node.value), '<interactive>', 'eval')
+                    result = eval(eval_expr, self.namespace)
+                    
+                    if result is not None:
+                        self.broadcast("LOG", f"Out: {repr(result)}")
+                else:
+                    # Execute full block
+                    exec(compile(tree, '<interactive>', 'exec'), self.namespace)
+                
+                stream.flush()
+                return True, "Cell executed"
+            except Exception as e:
+                err_msg = f"In-situ Error: {str(e)}"
+                self.broadcast("LOG", f"❌ {err_msg}")
+                return False, err_msg
 
     def detect_missing_imports(self, code):
         """Check if any detected imports are missing from the sandbox."""

@@ -209,6 +209,20 @@ export function useSecureFederated() {
     }
   };
 
+  const evalLaboratoryCode = async (code) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/eval`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      return await response.json();
+    } catch (err) {
+      console.error("REPL Evaluation Error:", err);
+      return { success: false, error: "Network Error" };
+    }
+  };
+
   return {
     round,
     isActive,

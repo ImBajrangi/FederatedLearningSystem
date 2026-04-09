@@ -10,6 +10,7 @@ import os
 import time
 import sqlite3
 import urllib.request
+import ast
 from Cybronites.server.auth import router as auth_router
 from Cybronites.utils.structured_logging import setup_structured_logging
 import Cybronites.server.training_engine as engine
@@ -179,8 +180,11 @@ class ConnectionManager:
             # Only send if the websocket is actively connected
             if websocket.client_state.name == "CONNECTED":
                 await websocket.send_json(data)
+        except (BrokenPipeError, ConnectionResetError, RuntimeError):
+            # Silent handling of broken connections
+            self.disconnect(websocket)
         except Exception as e:
-            logger.error(f"WS Serialization/Send Error: {e}")
+            logger.debug(f"WS Serialization/Send Alert: {e}")
             self.disconnect(websocket)
 
     def broadcast_sync(self, message_type: str, payload: Any):
@@ -191,8 +195,10 @@ class ConnectionManager:
                     self.broadcast(message_type, payload), 
                     self.loop
                 )
+            except (BrokenPipeError, ConnectionResetError, RuntimeError):
+                pass # Scheduled coroutine to a dying loop/socket is expected and ignored
             except Exception as e:
-                logger.warning(f"Thread-safe broadcast failed: {e}")
+                logger.debug(f"Thread-safe broadcast deferred: {e}")
         else:
             # Fallback for early startup: just buffer it
             if message_type == "LOG":
@@ -540,6 +546,21 @@ async def run_laboratory_shell(data: Dict[str, str]):
     # Run synchronously (it will broadcast progress via broadcast_sync)
     success = engine.run_sandbox_command(command, bridge.broadcast_sync)
     return {"success": success}
+
+@app.post("/api/v1/laboratory/eval")
+async def laboratory_eval_cell(data: Dict[str, str]):
+    """Evaluates a code cell in the active laboratory session's namespace."""
+    code = data.get("code", "").strip()
+    if not code:
+        return {"success": False, "error": "Empty cell."}
+    
+    session = engine._current_session
+    if not session:
+        return {"success": False, "error": "No active research session found. Run code first."}
+    
+    # Run synchronously as it targets the worker thread's namespace
+    success, msg = session.eval_cell(code)
+    return {"success": success, "message": msg}
 
 @app.post("/api/v1/laboratory/inspect")
 async def inspect_laboratory_code(data: Dict[str, str]):

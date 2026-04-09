@@ -7,7 +7,7 @@ import { Terminal } from './components/Terminal';
 import { BlockchainRibbon } from './components/BlockchainExplorer';
 import { TrainingWorkspace } from './components/TrainingWorkspace';
 import { DatasetExplorer } from './components/DatasetExplorer';
-import { Laboratory } from './components/Laboratory';
+import Laboratory from './components/Laboratory';
 import { PrivacyVault } from './components/PrivacyVault';
 import { Dashboard } from './components/Dashboard';
 import { Login } from './components/Login';
@@ -39,16 +39,28 @@ function App() {
     shards,
     clientsActive,
     labState,
-    executeDashboardCommand
+    executeDashboardCommand,
+    evalLaboratoryCode,
   } = useSecureFederated();
 
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentView, setCurrentView] = useState(() => {
+    try {
+      const saved = localStorage.getItem('federated_view');
+      return saved || 'dashboard';
+    } catch {
+      return 'dashboard';
+    }
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('federated_token') !== null;
   });
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('federated_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('federated_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
   const [toasts, setToasts] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(280);
@@ -202,6 +214,7 @@ function App() {
             onAction={addToast} 
             labState={labState} 
             onExecuteCommand={executeDashboardCommand}
+            onEvalCode={evalLaboratoryCode}
           />
         );
       case 'privacy_vault':
