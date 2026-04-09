@@ -140,6 +140,40 @@ def cleanup_research_sandbox():
             return False
     return True
 
+def get_environment_info():
+    """Returns structured info about the sandbox environment (Root vs All packages)."""
+    sandbox_dir = os.path.join(os.getcwd(), "research_sandbox")
+    if not os.path.exists(sandbox_dir):
+        return {"status": "NOT_INITIALIZED", "packages": []}
+    
+    python_bin = os.path.join(sandbox_dir, "bin", "python") if sys.platform != "win32" else os.path.join(sandbox_dir, "Scripts", "python.exe")
+    
+    try:
+        # 🧪 Tier 1: Root Packages (Not required by others)
+        root_cmd = [python_bin, "-m", "pip", "list", "--not-required", "--format=json"]
+        roots_raw = subprocess.check_output(root_cmd).decode()
+        roots = json.loads(roots_raw)
+        
+        # 🧪 Tier 2: Full Dependency Mesh
+        all_cmd = [python_bin, "-m", "pip", "list", "--format=json"]
+        all_raw = subprocess.check_output(all_cmd).decode()
+        all_pkgs = json.loads(all_raw)
+        
+        # Identify Python Version
+        ver_cmd = [python_bin, "--version"]
+        python_ver = subprocess.check_output(ver_cmd).decode().strip().replace("Python ", "")
+        
+        return {
+            "status": "INITIALIZED_STABLE",
+            "python": python_ver,
+            "root_packages": roots,
+            "all_packages": all_pkgs,
+            "packages": roots # Legacy support for old UI
+        }
+    except Exception as e:
+        logger.error(f"Failed to scout environment: {e}")
+        return {"status": "SCAN_FAILED", "error": str(e), "packages": []}
+
 def inspect_dependencies(code):
     """Parses code to find all required top-level imports."""
     try:
@@ -165,45 +199,60 @@ def inspect_dependencies(code):
     return sorted(list(needed))
 
 def inspect_parameters(code):
-    """Detects which standard hyper-parameters are used in the code."""
+    """Parses code to find hyper-parameter assignments and their locations."""
     try:
         import ast
         tree = ast.parse(code)
-    except SyntaxError:
+    except Exception:
         return []
 
-    detected = set()
-    targets = {'epochs', 'lr', 'learning_rate', 'batch_size', 'batchsize'}
+    # Extended list of research parameters to track
+    target_params = {
+        'epochs', 'learning_rate', 'lr', 'batch_size', 'batchsize',
+        'dropout', 'momentum', 'weight_decay', 'privacy_epsilon', 'ε'
+    }
+    
+    # Normalization mapping
     mapping = {'learning_rate': 'lr', 'batchsize': 'batch_size'}
-
+    
+    found = []
+    
     for node in ast.walk(tree):
-        # 1. Check Function Arguments (train, fit, etc.)
-        if isinstance(node, ast.FunctionDef):
-            for arg in node.args.args:
-                if arg.arg.lower() in targets:
-                    norm = mapping.get(arg.arg.lower(), arg.arg.lower())
-                    detected.add(norm)
+        # 🧪 Track Variable Assignments (e.g., epochs = 5)
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id.lower() in target_params:
+                    # Capture value if it's a simple number
+                    val = None
+                    if isinstance(node.value, ast.Constant):
+                        val = node.value.value
+                    elif hasattr(node.value, 'n'): # Py3.7-
+                        val = node.value.n
+                    
+                    found.append({
+                        "name": mapping.get(target.id.lower(), target.id.lower()),
+                        "value": val,
+                        "lineno": node.lineno,
+                    })
         
-        # 2. Check Dictionary Lookups (e.g., hyperparams['epochs'])
-        if isinstance(node, ast.Subscript):
-            if isinstance(node.slice, ast.Constant) and isinstance(node.slice.value, str):
-                val = node.slice.value.lower()
-                if val in targets:
-                    norm = mapping.get(val, val)
-                    detected.add(norm)
-            elif hasattr(node.slice, 'value') and isinstance(node.slice.value, ast.Constant): # Py3.8 compat
-                val = node.slice.value.value.lower()
-                if val in targets:
-                    norm = mapping.get(val, val)
-                    detected.add(norm)
-        
-        # 3. Check Variable Usage (e.g., for i in range(epochs))
-        if isinstance(node, ast.Name):
-            if node.id.lower() in targets:
-                norm = mapping.get(node.id.lower(), node.id.lower())
-                detected.add(norm)
+        # 🧪 Track Keyword Arguments (e.g., train(epochs=5))
+        elif isinstance(node, ast.Call):
+            for kw in node.keywords:
+                if kw.arg and kw.arg.lower() in target_params:
+                    val = None
+                    if isinstance(kw.value, ast.Constant):
+                        val = kw.value.value
+                    found.append({
+                        "name": mapping.get(kw.arg.lower(), kw.arg.lower()),
+                        "value": val,
+                        "lineno": node.lineno,
+                    })
 
-    return sorted(list(detected))
+    unique = {}
+    for p in found:
+        unique[p['name']] = p
+        
+    return list(unique.values())
 
 class TrainingSession:
     def __init__(self, code, hyperparams, bridge_broadcast_callback):

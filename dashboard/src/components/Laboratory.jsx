@@ -46,8 +46,13 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
   const [envData, setEnvData] = useState(null);
   const [isEnvLoading, setIsEnvLoading] = useState(false);
   const [detectedDeps, setDetectedDeps] = useState([]);
-  const [neededParams, setNeededParams] = useState(['epochs', 'lr', 'batch_size']); // Default to all
+  const [neededParams, setNeededParams] = useState([
+    { name: 'epochs', value: 5, lineno: null },
+    { name: 'lr', value: 0.001, lineno: null },
+    { name: 'batch_size', value: 32, lineno: null }
+  ]);
   const [isInspecting, setIsInspecting] = useState(false);
+  const [isDeepScan, setIsDeepScan] = useState(false);
 
   const addLog = (msg, type = 'info') => {
     setLogs(prev => [{ msg, type, time: new Date().toLocaleTimeString() }, ...prev].slice(0, 50));
@@ -66,10 +71,8 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
     if (!labState) return;
     if (labState.status === 'TRAINING') {
       setStatus('TRAINING');
-      setProgress(labState.progress);
     } else if (labState.status === 'COMPLETE') {
       setStatus('COMPLETE');
-      setProgress(100);
     } else if (labState.status === 'ERROR') {
       setStatus('ERROR');
       addLog(`Backend Error: ${labState.error}`, 'error');
@@ -106,8 +109,16 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
         setDetectedDeps(data.dependencies);
         if (data.parameters && data.parameters.length > 0) {
           setNeededParams(data.parameters);
+          
+          // Sync state values to detected code values if they differ
+          data.parameters.forEach(p => {
+            if (p.value !== null) {
+              if (p.name === 'epochs') setEpochs(p.value);
+              if (p.name === 'lr') setLr(p.value);
+              if (p.name === 'batch_size') setBatchSize(p.value);
+            }
+          });
         } else if (code.trim()) {
-          // If code exists but no params found, might be hardcoded
           setNeededParams([]);
         }
       }
@@ -129,6 +140,30 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
     const timer = setTimeout(inspectDependencies, 800);
     return () => clearTimeout(timer);
   }, [code]);
+
+  const syncParamToSource = (paramName, newValue) => {
+    const param = neededParams.find(p => p.name === paramName);
+    if (!param || !param.lineno) return;
+
+    const lines = code.split('\n');
+    const lineIndex = param.lineno - 1;
+    const line = lines[lineIndex];
+
+    if (line) {
+      // Robust regex for variable assignment: name = value
+      // Matches: epochs=5, epochs = 5, epochs= 5.0, etc.
+      const regex = new RegExp(`(${paramName}\\s*=\\s*)[0-9\\.e\\-]+`);
+      if (regex.test(line)) {
+        lines[lineIndex] = line.replace(regex, `$1${newValue}`);
+        setCode(lines.join('\n'));
+      }
+    }
+  };
+
+  const handleParamChange = (name, value, setter) => {
+    setter(value);
+    syncParamToSource(name, value);
+  };
 
   const handlePurgeSandbox = async () => {
     if (!window.confirm("🧺 LIQUIDATE RESOURCE? This will delete all installed libraries in the sandbox to reclaim disk space. You will need to wait for a warm-up on next execution.")) return;
@@ -351,63 +386,76 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
 
         {/* === Right Panel === */}
         <div className="lab-sidebar">
-          {/* ⚙️ Training Parameters (Adaptive) */}
+          {/* ⚙️ Academic Control Console (Adaptive) */}
           <div className="lab-panel">
-            <div className="lab-panel-header flex justify-between items-center">
+            <div className="lab-panel-header flex justify-between items-center px-4 py-2 border-b border-border">
               <div className="flex items-center gap-2">
                 <Settings size={14} className="text-primary" />
-                <span>Training Parameters</span>
+                <span className="type-label text-[10px]">Model_Regulation</span>
               </div>
             </div>
             
-            <div className="p-5 space-y-6">
-              <div className={`lab-param-group transition-opacity ${neededParams.includes('epochs') ? 'opacity-100' : 'opacity-40'}`}>
-                <div className="flex justify-between items-center mb-4">
-                  <label className="lab-param-label">Target Epochs</label>
-                  <div className="flex items-center gap-2">
-                    {neededParams.includes('epochs') ? (
-                      <span className="text-[7px] bg-primary/10 text-primary px-1 font-bold">LIVE_SYNC</span>
-                    ) : (
-                      <span className="text-[7px] bg-gray-500/10 text-gray-500 px-1 font-bold">IGNORING_UI</span>
-                    )}
-                    <span className="lab-param-value">{epochs}</span>
-                  </div>
-                </div>
-                <input
-                  type="range" min="1" max="50" value={epochs}
-                  onChange={(e) => setEpochs(parseInt(e.target.value))}
-                  className="lab-range"
-                />
-              </div>
+            <div className="p-6 space-y-8 bg-surface overflow-y-auto max-h-[600px]">
+              
+              {/* Dynamic Parameter Instruments */}
+              {neededParams.map((p, idx) => {
+                const isCore = ['epochs', 'lr', 'batch_size'].includes(p.name);
+                const isSlider = ['epochs', 'dropout', 'momentum', 'weight_decay', 'privacy_epsilon'].includes(p.name);
+                
+                // Determine value and setter mapping
+                let val, setter, min=0, max=100, step=1;
+                if (p.name === 'epochs') { val = epochs; setter = setEpochs; min=1; max=50; step=1; }
+                else if (p.name === 'lr') { val = lr; setter = setLr; min=0.0001; max=1; step=0.0001; }
+                else if (p.name === 'batch_size') { val = batchSize; setter = setBatchSize; min=16; max=128; step=16; }
+                else {
+                  // Fallback for dynamic extra params
+                  val = p.value || 0;
+                  setter = (v) => syncParamToSource(p.name, v);
+                  min=0; max=1; step=0.01;
+                }
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className={`lab-param-group transition-opacity ${neededParams.includes('lr') ? 'opacity-100' : 'opacity-40'}`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="lab-param-label">Learning Rate</label>
-                    {neededParams.includes('lr') && <div className="w-1 h-1 rounded-full bg-primary" />}
+                return (
+                  <div key={idx} className="transition-all opacity-100 group">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="link-indicator active" />
+                        <span className="text-[10px] font-bold uppercase tracking-wide text-text-main">
+                          {p.name?.replace('_', ' ') || 'PARAM'}
+                        </span>
+                      </div>
+                      <span className="instrument-readout">
+                        {typeof val === 'number' ? (p.name === 'epochs' ? val.toString().padStart(2, '0') : val.toFixed(4)) : (val || '0.00')}
+                      </span>
+                    </div>
+                    
+                    {isSlider ? (
+                      <input
+                        type="range" min={min} max={max} step={step} value={val || 0}
+                        onChange={(e) => handleParamChange(p.name, parseFloat(e.target.value), setter)}
+                        className="instrument-slider"
+                      />
+                    ) : (
+                      <div className="flex gap-2">
+                         <input
+                          type={typeof val === 'number' ? "number" : "text"}
+                          step={step} value={val || ''}
+                          onChange={(e) => handleParamChange(p.name, e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value, setter)}
+                          className="w-full bg-transparent border-b border-border text-[12px] font-mono py-1 focus:border-primary outline-none transition-all"
+                        />
+                      </div>
+                    )}
+                    <div className="mt-1 text-[7px] font-mono text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                      SYNCED_TO_SOURCE:LINE_{p.lineno || 'AUTO'}
+                    </div>
                   </div>
-                  <input
-                    type="number" step="0.0001" value={lr}
-                    onChange={(e) => setLr(parseFloat(e.target.value))}
-                    className="lab-input"
-                  />
+                );
+              })}
+
+              {neededParams.length === 0 && (
+                <div className="py-10 text-center border border-dashed border-border rounded">
+                  <span className="text-[10px] text-text-muted italic">NO_LIVE_PARAMETERS_DETECTED</span>
                 </div>
-                <div className={`lab-param-group transition-opacity ${neededParams.includes('batch_size') ? 'opacity-100' : 'opacity-40'}`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="lab-param-label">Batch Size</label>
-                    {neededParams.includes('batch_size') && <div className="w-1 h-1 rounded-full bg-primary" />}
-                  </div>
-                  <select
-                    value={batchSize} onChange={(e) => setBatchSize(parseInt(e.target.value))}
-                    className="lab-select"
-                  >
-                    <option value={16}>16</option>
-                    <option value={32}>32</option>
-                    <option value={64}>64</option>
-                    <option value={128}>128</option>
-                  </select>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -469,22 +517,46 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
 
                 <div className="flex flex-col gap-2">
                   <span className="text-[8px] text-[#444] font-bold tracking-widest mb-1">INSTALLED_PACKAGES</span>
-                  <div className="max-h-[140px] overflow-y-auto pr-2 space-y-1">
-                    {envData?.packages?.slice(0, 10).map((pkg, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-2 bg-[#050505] border border-[#111]">
-                        <span className="text-[10px] text-primary font-mono">{pkg.name}</span>
-                        <span className="text-[10px] text-[#444] font-mono">{pkg.version}</span>
-                      </div>
-                    ))}
-                    {(envData?.packages?.length > 10) && (
-                      <div className="text-[8px] text-[#333] text-center italic py-1">
-                        + {envData.packages.length - 10} MORE NODES
-                      </div>
-                    )}
+                  <div className="max-h-[240px] overflow-y-auto pr-2 space-y-1">
+                    {(() => {
+                      const all = isDeepScan ? (envData?.all_packages || []) : (envData?.root_packages || envData?.packages || []);
+                      
+                      // Sort: Active imports at top
+                      const sorted = [...all].sort((a, b) => {
+                        const aActive = detectedDeps.includes(a.name);
+                        const bActive = detectedDeps.includes(b.name);
+                        if (aActive && !bActive) return -1;
+                        if (!aActive && bActive) return 1;
+                        return a.name.localeCompare(b.name);
+                      });
+
+                      return sorted.map((pkg, idx) => {
+                        const isActive = detectedDeps.includes(pkg.name);
+                        return (
+                          <div key={idx} className={`flex justify-between items-center p-2 bg-[#050505] border ${isActive ? 'border-primary shadow-[0_0_5px_rgba(0,255,65,0.1)]' : 'border-[#111]'} transition-all`}>
+                            <div className="flex items-center gap-2">
+                              {isActive && <div className="w-1 h-1 rounded-full bg-primary animate-pulse" />}
+                              <span className={`text-[10px] font-mono ${isActive ? 'text-primary font-bold' : 'text-gray-400'}`}>
+                                {pkg.name}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-[#444] font-mono">{pkg.version}</span>
+                          </div>
+                        );
+                      });
+                    })()}
+                    
                     {(!envData?.packages || envData.packages.length === 0) && (
-                       <div className="text-[9px] text-[#333] italic py-4 text-center">INITIALIZING_VENV...</div>
+                       <div className="text-[9px] text-[#333] italic py-4 text-center">INITIALIZING_SCOUT...</div>
                     )}
                   </div>
+
+                  <button 
+                    onClick={() => setIsDeepScan(!isDeepScan)}
+                    className="w-full mt-2 py-1 border border-border/30 hover:border-primary/50 text-[8px] font-mono text-gray-500 hover:text-primary transition-all uppercase tracking-widest text-center"
+                  >
+                    {isDeepScan ? '[ DEACTIVATE_DEEP_SCAN ]' : `[ SHOW_${(envData?.all_packages?.length || 0) - (envData?.root_packages?.length || 0)}_DEPENDENCY_NODES ]`}
+                  </button>
                 </div>
 
                 <div className="flex flex-col gap-2">
