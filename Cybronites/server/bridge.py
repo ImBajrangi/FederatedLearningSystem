@@ -285,6 +285,13 @@ async def startup():
     threading.Thread(target=log_listener_worker, daemon=True).start()
     
     logger.info("Guardian Bridge Event Loop context captured.")
+    
+@app.on_event("shutdown")
+def shutdown_event():
+    """Mandatory resource liquidation on system shutdown."""
+    from Cybronites.server.training_engine import cleanup_research_sandbox
+    cleanup_research_sandbox()
+    logger.info("🛑 Guardian Bridge shutdown complete. Resources liquidated.")
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -549,6 +556,15 @@ async def inspect_laboratory_code(data: Dict[str, str]):
         "dependencies": deps,
         "parameters": params
     }
+
+@app.post("/api/v1/laboratory/purge")
+async def purge_laboratory_sandbox():
+    """Manually triggers sandbox liquidation to reclaim disk space."""
+    success = engine.cleanup_research_sandbox()
+    if success:
+        bridge.broadcast_sync("LOG", "🧺 SANDBOX_PURGED: All dynamic resources liquidated. Storage reclaimed.")
+        return {"success": True}
+    return {"success": False, "error": "Purge failed. Sandbox may be in use."}
 
 @app.get("/api/v1/laboratory/download/{file_format}")
 async def download_model(file_format: str):

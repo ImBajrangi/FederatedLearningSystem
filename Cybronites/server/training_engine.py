@@ -16,6 +16,7 @@ import io
 import importlib
 import venv
 import sys
+import shutil
 
 # Resolve Matplotlib config permission warnings by using a writable path
 os.environ['MPLCONFIGDIR'] = os.path.join(os.getcwd(), 'tmp/matplotlib')
@@ -118,6 +119,27 @@ def run_sandbox_command(cmd, broadcast_callback):
             broadcast_callback("LOG", f"❌ Execution failed with code {process.returncode}")
             return False
     except Exception as e:
+        broadcast_callback("LOG", f"❌ Sandbox Execution Error: {str(e)}")
+    return False
+
+def cleanup_research_sandbox():
+    """Robustly removes the research sandbox and its virtual environment."""
+    sandbox_dir = os.path.join(os.getcwd(), "research_sandbox")
+    if os.path.exists(sandbox_dir):
+        logger.info(f"🧺 LIQUIDATING_SANDBOX: Reclaiming resources at {sandbox_dir}...")
+        try:
+            # On Windows/Mac, some files might stay locked for a second
+            shutil.rmtree(sandbox_dir, ignore_errors=True)
+            # Second attempt if still exists
+            if os.path.exists(sandbox_dir):
+                time.sleep(1)
+                shutil.rmtree(sandbox_dir, ignore_errors=True)
+            return not os.path.exists(sandbox_dir)
+        except Exception as e:
+            logger.error(f"❌ Sandbox Liquidation Failed: {e}")
+            return False
+    return True
+
 def inspect_dependencies(code):
     """Parses code to find all required top-level imports."""
     try:

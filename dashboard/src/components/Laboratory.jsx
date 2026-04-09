@@ -46,6 +46,7 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
   const [envData, setEnvData] = useState(null);
   const [isEnvLoading, setIsEnvLoading] = useState(false);
   const [detectedDeps, setDetectedDeps] = useState([]);
+  const [neededParams, setNeededParams] = useState(['epochs', 'lr', 'batch_size']); // Default to all
   const [isInspecting, setIsInspecting] = useState(false);
 
   const addLog = (msg, type = 'info') => {
@@ -103,6 +104,12 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
       const data = await response.json();
       if (data.success) {
         setDetectedDeps(data.dependencies);
+        if (data.parameters && data.parameters.length > 0) {
+          setNeededParams(data.parameters);
+        } else if (code.trim()) {
+          // If code exists but no params found, might be hardcoded
+          setNeededParams([]);
+        }
       }
     } catch (err) {
       console.error("Dependency inspection failed:", err);
@@ -122,6 +129,22 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
     const timer = setTimeout(inspectDependencies, 800);
     return () => clearTimeout(timer);
   }, [code]);
+
+  const handlePurgeSandbox = async () => {
+    if (!window.confirm("🧺 LIQUIDATE RESOURCE? This will delete all installed libraries in the sandbox to reclaim disk space. You will need to wait for a warm-up on next execution.")) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/purge`, { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        addLog("Sandbox resources liquidated successfully.", "warning");
+        fetchEnvironment(); // Refresh env status
+      } else {
+        addLog(data.error || "Purge failed.", "error");
+      }
+    } catch (err) {
+      addLog("Failed to connect to liquidation engine.", "error");
+    }
+  };
 
   const handleCompile = async () => {
     setStatus('COMPILING');
@@ -328,39 +351,52 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
 
         {/* === Right Panel === */}
         <div className="lab-sidebar">
-          {/* Training Parameters */}
+          {/* ⚙️ Training Parameters (Adaptive) */}
           <div className="lab-panel">
-            <div className="lab-panel-header">
-              <Settings size={14} />
-              <span>Training Parameters</span>
+            <div className="lab-panel-header flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Settings size={14} className="text-primary" />
+                <span>Training Parameters</span>
+              </div>
             </div>
-            <div className="lab-panel-body">
-              <div className="lab-param-group">
-                <div className="lab-param-row">
+            
+            <div className="p-5 space-y-6">
+              <div className={`lab-param-group transition-opacity ${neededParams.includes('epochs') ? 'opacity-100' : 'opacity-40'}`}>
+                <div className="flex justify-between items-center mb-4">
                   <label className="lab-param-label">Target Epochs</label>
-                  <span className="lab-param-badge">{epochs}</span>
+                  <div className="flex items-center gap-2">
+                    {neededParams.includes('epochs') ? (
+                      <span className="text-[7px] bg-primary/10 text-primary px-1 font-bold">LIVE_SYNC</span>
+                    ) : (
+                      <span className="text-[7px] bg-gray-500/10 text-gray-500 px-1 font-bold">IGNORING_UI</span>
+                    )}
+                    <span className="lab-param-value">{epochs}</span>
+                  </div>
                 </div>
                 <input
-                  type="range" min="1" max="20" step="1"
-                  value={epochs} onChange={(e) => setEpochs(parseInt(e.target.value))}
-                  className="lab-slider"
+                  type="range" min="1" max="50" value={epochs}
+                  onChange={(e) => setEpochs(parseInt(e.target.value))}
+                  className="lab-range"
                 />
               </div>
-              <div className="lab-param-grid">
-                <div className="lab-param-group">
-                  <label className="lab-param-label">Learning Rate</label>
-                  <select
-                    value={lr} onChange={(e) => setLr(parseFloat(e.target.value))}
-                    className="lab-select"
-                  >
-                    <option value={0.1}>0.1</option>
-                    <option value={0.01}>0.01</option>
-                    <option value={0.001}>0.001</option>
-                    <option value={0.0001}>0.0001</option>
-                  </select>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className={`lab-param-group transition-opacity ${neededParams.includes('lr') ? 'opacity-100' : 'opacity-40'}`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="lab-param-label">Learning Rate</label>
+                    {neededParams.includes('lr') && <div className="w-1 h-1 rounded-full bg-primary" />}
+                  </div>
+                  <input
+                    type="number" step="0.0001" value={lr}
+                    onChange={(e) => setLr(parseFloat(e.target.value))}
+                    className="lab-input"
+                  />
                 </div>
-                <div className="lab-param-group">
-                  <label className="lab-param-label">Batch Size</label>
+                <div className={`lab-param-group transition-opacity ${neededParams.includes('batch_size') ? 'opacity-100' : 'opacity-40'}`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="lab-param-label">Batch Size</label>
+                    {neededParams.includes('batch_size') && <div className="w-1 h-1 rounded-full bg-primary" />}
+                  </div>
                   <select
                     value={batchSize} onChange={(e) => setBatchSize(parseInt(e.target.value))}
                     className="lab-select"
@@ -389,6 +425,34 @@ export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
               >
                 <RefreshCw size={10} className={isEnvLoading ? 'lab-spin' : ''} />
               </button>
+            </div>
+            <div className="p-4 bg-dark-grounding/20 border-t border-border/5 space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">Sandbox Health</span>
+                  <span className={`text-[11px] font-mono ${envData ? 'text-primary' : 'text-gray-500'}`}>
+                    {envData ? 'INITIALIZED_STABLE' : 'NOT_INITIALIZED / PURGED'}
+                  </span>
+                </div>
+                {envData && (
+                  <button 
+                    onClick={handlePurgeSandbox}
+                    className="px-2 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 text-[9px] font-mono uppercase transition-all"
+                  >
+                    Purge_Storage
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={fetchEnvironment}
+                  disabled={isEnvLoading}
+                  className="flex-1 py-1.5 bg-primary/5 hover:bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-2"
+                >
+                  <RefreshCw size={10} className={isEnvLoading ? 'lab-spin' : ''} />
+                  {isEnvLoading ? 'SCANNING...' : 'Refresh_Health'}
+                </button>
+              </div>
             </div>
             <div className="lab-panel-body">
               <div className="flex flex-col gap-4">
