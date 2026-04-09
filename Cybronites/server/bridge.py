@@ -403,10 +403,10 @@ async def start_federated_training():
                     loss, acc = _test(self.model, test_loader, device=device)
                     return float(loss), len(test_loader.dataset), {"accuracy": float(acc), "ip": ip}
             
-            fl.client.start_numpy_client(
+            fl.client.start_client(
                 server_address=f"127.0.0.1:{FLOWER_PORT}",
-                client=_Client(),
-                grpc_max_message_length=512 * 1024 * 1024,
+                client=_Client().to_client(),
+                grpc_max_message_length=512 * 1024 * 1024
             )
         except Exception as e:
             logger.error(f"Client {cid} error: {e}")

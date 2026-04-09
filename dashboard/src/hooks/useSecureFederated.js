@@ -244,7 +244,8 @@ export function useSecureFederated() {
     modelArchitecture,
     shards,
     clientsActive,
-    labState,
-    executeDashboardCommand
+    executeDashboardCommand,
+    evalLaboratoryCode,
+    labState
   };
 }

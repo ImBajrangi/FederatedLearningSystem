@@ -132,9 +132,9 @@ def main():
     for attempt in range(max_retries):
         try:
             logger.info(f"Connecting to Secure Server at {server_address} (Attempt {attempt+1})...")
-            fl.client.start_numpy_client(
+            fl.client.start_client(
                 server_address=server_address,
-                client=FlowerClient(client_id, train_loader, test_loader),
+                client=FlowerClient(client_id, train_loader, test_loader).to_client(),
                 grpc_max_message_length=512 * 1024 * 1024 # 512 MB
             )
             break

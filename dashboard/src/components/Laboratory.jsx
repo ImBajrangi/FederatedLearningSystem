@@ -289,11 +289,16 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
       setTerminalHistory(prev => [cmd, ...prev]);
       setHistoryIndex(-1);
       
+      addLog(cmd, 'user'); // Distinguished User Echo
+      
       try {
         if (cmd.startsWith('!')) {
           await onExecuteCommand(cmd);
         } else {
-          await onEvalCode(cmd);
+          const result = await onEvalCode(cmd);
+          if (result && !result.success && result.error) {
+            addLog(`❌ Error: ${result.error}`, 'error');
+          }
         }
         setTerminalInput('');
         // Scroll console to bottom
@@ -1258,6 +1263,14 @@ return (
           color: var(--warning);
           opacity: 1;
         }
+        .lab-log-user {
+          color: var(--primary);
+          opacity: 1;
+          background: rgba(0, 255, 65, 0.05);
+          padding: 0 4px;
+          border-radius: 2px;
+          font-weight: 700;
+        }
         .lab-console-empty {
           color: #c4c8cc;
           font-style: italic;
@@ -1305,6 +1318,28 @@ return (
           color: #333;
           text-align: right;
           font-weight: 700;
+        }
+
+        /* 📱 Market-Ready Responsiveness */
+        @media (max-width: 1024px) {
+          .lab-workspace {
+            flex-direction: column;
+            overflow-y: auto;
+          }
+          .lab-sidebar {
+            width: 100%;
+            border-left: none;
+            border-top: 1px solid var(--border);
+            height: auto;
+            flex-shrink: 0;
+          }
+          .lab-editor-panel {
+            min-height: 500px;
+            flex: none;
+          }
+          .lab-console-panel {
+            min-height: 300px;
+          }
         }
       `}</style>
     </div>

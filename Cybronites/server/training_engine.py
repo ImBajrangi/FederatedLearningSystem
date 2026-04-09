@@ -46,16 +46,16 @@ class BroadcastStream(io.StringIO):
         if '\n' in self.line_buffer:
             lines = self.line_buffer.split('\n')
             for line in lines[:-1]:
-                if line.strip():
-                    try:
-                        self.broadcast("LOG", f"📜 {line}")
-                    except (BrokenPipeError, ConnectionResetError, RuntimeError):
-                        pass # Dashboard disconnected, but training stays alive
+                # Send every line that was completed by a newline
+                try:
+                    self.broadcast("LOG", f"📜 {line}")
+                except (BrokenPipeError, ConnectionResetError, RuntimeError):
+                    pass
             self.line_buffer = lines[-1]
 
     def flush(self):
         super().flush()
-        if self.line_buffer.strip():
+        if self.line_buffer:
             try:
                 self.broadcast("LOG", f"📜 {self.line_buffer}")
             except (BrokenPipeError, ConnectionResetError, RuntimeError):
