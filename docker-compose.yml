@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  orchestrator:
+    build: .
+    image: ai-guardian:latest
+    container_name: guardian_orchestrator
+    environment:
+      - ROLE=SERVER
+      - PORT=7860
+      - FLOWER_PORT=8095
+      - ROUNDS=5
+    ports:
+      - "7860:7860"
+      - "8095:8095"
+    networks:
+      - fl-network
+    volumes:
+      - ./data:/app/data
+      - ./backend.log:/app/backend.log
+
+  client-1:
+    image: ai-guardian:latest
+    container_name: guardian_client_1
+    depends_on:
+      - orchestrator
+    environment:
+      - ROLE=CLIENT
+      - CLIENT_ID=1
+      - NUM_CLIENTS=2
+      - SERVER_IP=orchestrator
+      - FLOWER_PORT=8095
+    networks:
+      - fl-network
+    restart: on-failure
+
+  client-2:
+    image: ai-guardian:latest
+    container_name: guardian_client_2
+    depends_on:
+      - orchestrator
+    environment:
+      - ROLE=CLIENT
+      - CLIENT_ID=2
+      - NUM_CLIENTS=2
+      - SERVER_IP=orchestrator
+      - FLOWER_PORT=8095
+    networks:
+      - fl-network
+    restart: on-failure
+
+networks:
+  fl-network:
+    driver: bridge
+
+volumes:
+  data:

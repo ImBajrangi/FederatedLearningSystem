@@ -1,51 +1,57 @@
-# Stage 1: Build Frontend
+# Stage 1: Build Frontend (Institutional Dashboard)
 FROM node:20-slim AS frontend-builder
 WORKDIR /app/dashboard
 COPY dashboard/package*.json ./
-# Use --legacy-peer-deps if needed for specific institutional environments
+# Use --legacy-peer-deps for complex institutional dependency trees
 RUN npm install
 COPY dashboard/ ./
 RUN npm run build
 
-# Stage 2: Build Backend & Final Image
+# Stage 2: Final Production Image
 FROM python:3.10-slim
+LABEL maintainer="AI Guardian Team"
+LABEL version="2.0.0"
+LABEL description="Secure Federated Learning Infrastructure"
+
 WORKDIR /app
 
-# Install system dependencies
+# Install critical system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     sqlite3 \
-    && rm -rf /var/lib/apt-cache/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy backend requirements first for caching
-# We use the root requirements.txt as the source of truth for all modules
+# Optimize layer caching: Install core requirements first
 COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code structures
+# Copy backend architecture
 COPY Cybronites/ ./Cybronites/
 COPY blockchain/ ./blockchain/
 COPY security/ ./security/
 COPY utils/ ./utils/
 COPY core/ ./core/
+COPY run_local.py ./
 
-# Copy built frontend from Stage 1 to the location bridge.py expects it (dist)
+# Import built dashboard from Stage 1
 COPY --from=frontend-builder /app/dashboard/dist ./dist
 
-# Create a startup script
+# Finalize deployment scripts
 COPY start.sh ./
 RUN chmod +x start.sh
 
-# Environment variables
+# Deployment Configuration
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PORT=7860
-# HF-specific path markers
+ENV FLOWER_PORT=8095
 ENV GUARDIAN_DB_PATH="/app/Cybronites/guardian.db"
+ENV PYTHONPATH="/app"
 
-# Hugging Face Spaces use port 7860 by default
-EXPOSE 7860
+# Exposed Ports: Dashboard (7860) & FL Orchestrator (8095)
+EXPOSE 7860 8095
 
-# Use a startup script to run multi-process orchestrator (Bridge + FL Stack)
-CMD ["./start.sh"]
+# Entrypoint via the unified Guardian Startup Hub
+ENTRYPOINT ["./start.sh"]

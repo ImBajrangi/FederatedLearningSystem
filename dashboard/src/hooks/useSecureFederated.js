@@ -2,10 +2,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 const isProd = import.meta.env.PROD;
 export const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7861';
-export const API_BASE_URL = isProd ? window.location.origin : `http://127.0.0.1:${BACKEND_PORT}`;
+export const BACKEND_IP = import.meta.env.VITE_BACKEND_IP || '127.0.0.1';
+export const API_BASE_URL = isProd ? window.location.origin : `http://${BACKEND_IP}:${BACKEND_PORT}`;
 export const WS_URL = isProd 
   ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws` 
-  : `ws://127.0.0.1:${BACKEND_PORT}/ws`;
+  : `ws://${BACKEND_IP}:${BACKEND_PORT}/ws`;
 
 export function useSecureFederated() {
   const [round, setRound] = useState(0);

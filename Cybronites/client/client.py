@@ -119,8 +119,14 @@ def main():
     logger.info(f"Starting Guardian Client {client_id}...")
     train_loader, test_loader = load_data(client_id=int(client_id), num_clients=num_clients)
     
-    flower_port = int(os.environ.get("FLOWER_PORT", 8080))
-    server_address = f"127.0.0.1:{flower_port}"
+    flower_port = int(os.environ.get("FLOWER_PORT", 8095))
+    server_ip = os.environ.get("FL_SERVER_IP", "127.0.0.1")
+    
+    # Priority: Command Line Arg 3 > Env Var > Default
+    if len(sys.argv) > 3:
+        server_ip = sys.argv[3]
+        
+    server_address = f"{server_ip}:{flower_port}"
     
     max_retries = 5
     for attempt in range(max_retries):
