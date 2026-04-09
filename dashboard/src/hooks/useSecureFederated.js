@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const isProd = import.meta.env.PROD;
-export const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7861';
+export const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7880';
 export const BACKEND_IP = import.meta.env.VITE_BACKEND_IP || '127.0.0.1';
 export const API_BASE_URL = isProd ? window.location.origin : `http://${BACKEND_IP}:${BACKEND_PORT}`;
 export const WS_URL = isProd

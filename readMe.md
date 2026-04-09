@@ -1,37 +1,40 @@
-# 🛡️ Secure Federated Learning — Blockchain & SMPC
+# 🛡️ AI Guardian | Secure Federated Learning Laboratory
 
-A premium, research-grade platform for **Blockchain-Based Secure Federated Learning (BCFL)**. This project implements a comprehensive decentralized ML framework that prioritizes **Privacy**, **Security**, and **Accountability**.
+A premium, institutional-grade platform for **Secure Federated Learning (SFL)**. This project transforms complex decentralized training into a high-performance research IDE, prioritizing **Privacy**, **Stability**, and **Intuitive AI Development**.
 
 ---
 
 ## 🚀 Key Features
 
-*   **🔒 Privacy-Preserving Training**: Integrated **Local Differential Privacy (DP)** with L2-norm clipping and Gaussian noise injection.
-*   **⛓️ Blockchain Distributed Ledger**: In-memory PoW blockchain providing an immutable audit trail for every model update and transaction.
-*   **🧩 Secure Multi-Party Computation**: SMPC-based **Secure Aggregation** using Additive Secret Sharing to protect client updates from the central server.
-*   **⚖️ Reputation & Governance**: Advanced scoring system that rewards honest participants and blacklists malicious actors based on smart contract validation.
-*   **🛡️ Poisoning Defense**: Multi-stage verification (L2-norm metrics + Cosine Similarity) against model poisoning and Sybil attacks.
-*   **📊 Interactive Dashboard**: A [standalone research visualizer](dashboard/index.html) built for high-level simulation and architectural demonstrations.
+*   **🔒 Privacy-Preserving Training**: Integrated **Local Differential Privacy (DP)** with Gaussian noise injection and institutional ε-privacy shielding.
+*   **🧪 Research Laboratory**: A fully integrated IDE and **Interactive Research Shell (REPL)** for real-time Python model experimentation and dependency management.
+*   **⛓️ Blockchain Integrity**: In-memory PoW blockchain providing a permanent, immutable audit trail for all federated weight updates.
+*   **⚛️ Terminal Chic Dashboard**: A state-of-the-art React dashboard with real-time WebSockets, glassmorphism aesthetics, and "600ms Ultra-Low Latency" telemetry.
+*   **🛡️ Nuclear Safety Hardening**: Engineered against networking failures (Broken Pipe), malformed inputs, and sandbox instability.
 
 ---
 
 ## 🛠️ Quick Start
 
 ### 1. Prerequisites
-Ensure you have Python 3.9+ installed. This project uses `torch` for machine learning.
+- Python 3.9+
+- Node.js 18+ (for Dashboard)
 
 ### 2. Installation
-Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/ImBajrangi/FederatedLearningSystem.git
 cd secure_federated_learning
 pip install -r requirements.txt
+cd dashboard && npm install
 ```
 
-### 3. Run the Simulation
-Launch the full simulation demo to witness the decentralized training process:
+### 3. Launch the Stack
 ```bash
-python demo.py
+# Terminal 1: Start the Backend (Server & Federated Clients)
+python3 run_local.py
+
+# Terminal 2: Start the Research Dashboard
+cd dashboard && npm run dev
 ```
 
 ---
@@ -39,35 +42,30 @@ python demo.py
 ## 🏗️ Architecture
 
 ```mermaid
-graph LR
-    A[Clients] -- "DP-Noise Weights" --> B[Secure Aggregator]
-    B -- "Aggregated Gradient" --> C[Global Server]
-    C -- "Validation" --> D[Smart Contract]
-    D -- "Commit" --> E[Blockchain Ledger]
-    E -- "Reputation State" --> A
+graph TD
+    A[Researcher IDE] <--> B[Guardian Bridge]
+    B <--> C[Flower Server]
+    C <--> D[Federated Client 0]
+    C <--> E[Federated Client 1]
+    D -.-> F[Differential Privacy]
+    E -.-> F
+    F -.-> G[Blockchain Ledger]
 ```
 
-For a deeper dive into the system design, please refer to the detailed documentation:
+---
 
-*   📘 **[Architecture Overview](docs/ARCHITECTURE.md)** — Lifecycle and component interactions.
-*   🔐 **[Security Framework](docs/SECURITY.md)** — Deep dive into DP, SMPC, and defense mechanisms.
-*   📖 **[API Reference](docs/API_REFERENCE.md)** — Documentation for core classes and methods.
+## 📘 Documentation
+For a deep dive into the system mechanics, see:
+- 📖 **[System Documentation](documentation.md)**: Architecture, Safety Protocols, and "Script vs Model" modalities.
+- 🧪 **[Research Shell Guide](documentation.md#2-the-research-laboratory-ide)**: How to use the interactive terminal.
 
 ---
 
 ## 🎨 Visualization Dashboard
-
-The dashboard provides a visual layer to the complex underlying simulation. Open `dashboard/index.html` in any modern browser to see:
-- Real-time convergence of global model accuracy.
-- Live blockchain mining events and transaction logs.
-- Client reputation leaderboard and status tracking.
-
----
-
-## 📝 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+The new **Laboratory Dashboard** (replacing the legacy static visualizer) provides:
+- **Real-time Metrics**: Live convergence curves for global loss and accuracy.
+- **Node Health**: Live telemetry from the virtual sandbox and system environment.
+- **Model Export**: One-click download of converged weights in `.pt` and `.onnx` formats.
 
 ---
-
-> [!TIP]
-> This system is designed for **Research and Prototyping**. For production deployments, we recommend integrating with a production-grade blockchain like Hyperledger Fabric or Ethereum for persistence.
+*© 2026 Cybronites Institutional Research. Optimized for High-Security Environments.*

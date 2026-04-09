@@ -56,14 +56,29 @@ def main():
     env["PORT"] = str(BRIDGE_PORT)
     env["FLOWER_PORT"] = str(FLOWER_PORT)
 
-    # Write .env.local for dashboard auto-discovery
+    # Update .env.local for dashboard auto-discovery while preserving other keys
     try:
         env_path = os.path.join(cwd, "dashboard", ".env.local")
+        content = ""
+        if os.path.exists(env_path):
+            with open(env_path, "r") as f:
+                content = f.read()
+        
+        # Regex update or append VITE_BACKEND_PORT
+        import re
+        port_pattern = r"VITE_BACKEND_PORT=\d+"
+        new_line = f"VITE_BACKEND_PORT={BRIDGE_PORT}"
+        
+        if re.search(port_pattern, content):
+            new_content = re.sub(port_pattern, new_line, content)
+        else:
+            new_content = content.strip() + f"\n{new_line}\n"
+            
         with open(env_path, "w") as f:
-            f.write(f"VITE_BACKEND_PORT={BRIDGE_PORT}\n")
-        print(f"  [SYNC] Dashboard .env.local -> Port {BRIDGE_PORT}")
+            f.write(new_content)
+        print(f"  [SYNC] Dashboard .env.local -> Port {BRIDGE_PORT} (Other keys preserved)")
     except Exception as e:
-        print(f"  [WARN] Could not write .env.local: {e}")
+        print(f"  [WARN] Could not update .env.local: {e}")
 
     # Find Python interpreter
     paths_to_check = [

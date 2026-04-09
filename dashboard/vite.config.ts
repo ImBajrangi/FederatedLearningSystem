@@ -12,16 +12,10 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: `http://localhost:${backendPort}`,
+          target: `http://127.0.0.1:${backendPort}`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
-        '/bridge/ws': {
-          target: `http://localhost:${backendPort}`,
-          ws: true,
-          changeOrigin: true,
-          secure: false
-        }
       }
     }
   }

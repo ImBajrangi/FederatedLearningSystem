@@ -12,10 +12,12 @@ import { PrivacyVault } from './components/PrivacyVault';
 import { Dashboard } from './components/Dashboard';
 import { Login } from './components/Login';
 import { useSecureFederated } from './hooks/useSecureFederated';
+import { useAuth } from './context/AuthContext';
 import { Play, RotateCcw, ShieldCheck, Info, X, Zap, Activity, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
+  const { user, logout, loading } = useAuth();
   const {
     round,
     isActive,
@@ -51,17 +53,7 @@ function App() {
       return 'dashboard';
     }
   });
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('federated_token') !== null;
-  });
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('federated_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
+
   const [toasts, setToasts] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [footerHeight, setFooterHeight] = useState(280);
@@ -112,29 +104,6 @@ function App() {
   }, []);
 
 
-  // Session Recovery
-  useEffect(() => {
-    const recoverSession = async () => {
-      const token = localStorage.getItem('federated_token');
-      if (!token) return;
-
-      try {
-        const baseUrl = import.meta.env.PROD ? window.location.origin : `http://localhost:${import.meta.env.VITE_BACKEND_PORT || '7880'}`;
-        const response = await fetch(`${baseUrl}/api/auth/me?token=${token}`);
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-          setIsAuthenticated(true);
-        } else {
-          handleLogout();
-        }
-      } catch (err) {
-        console.error("Session recovery failed:", err);
-      }
-    };
-    recoverSession();
-  }, []);
-
   const addToast = (msg, type = 'success') => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts(prev => [...prev, { id, msg, type }]);
@@ -150,27 +119,28 @@ function App() {
     }
 
     addToast(status === 'IDLE' ? 'Initiating Federated Session...' : 'Session already in progress.', 'info');
-    // In our new architecture, run_backend.py starts the rounds. 
-    // The button acts as a "Synchonize/Monitor" state.
     await runRound();
   };
 
-  const handleLogin = (data) => {
-    const { access_token, user: userData } = data;
-    setIsAuthenticated(true);
-    setUser(userData);
-    localStorage.setItem('federated_token', access_token);
-    localStorage.setItem('federated_user', JSON.stringify(userData));
-    addToast(`Access Granted: Welcome ${userData.username || userData.id}`, 'success');
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    localStorage.removeItem('federated_token');
-    localStorage.removeItem('federated_user');
+  const handleLogout = async () => {
+    await logout();
     addToast('Session Terminated.', 'info');
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#fdfdfb]">
+        <div className="flex flex-col items-center gap-4">
+          <ShieldCheck size={48} className="animate-pulse text-primary opacity-20" />
+          <span className="text-[10px] font-bold tracking-[0.2em] text-[#364E68] opacity-40">VERIFYING CREDENTIALS...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
+  }
 
   const renderView = () => {
     switch (currentView) {
@@ -224,9 +194,6 @@ function App() {
     }
   };
 
-  if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
-  }
 
   return (
     <div className={`shell-container selection:bg-primary/10 bg-white`}>

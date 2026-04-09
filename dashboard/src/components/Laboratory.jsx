@@ -70,6 +70,8 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
   ]);
   const [isInspecting, setIsInspecting] = useState(false);
   const [isDeepScan, setIsDeepScan] = useState(false);
+  const [isLiveSyncEnabled, setIsLiveSyncEnabled] = useState(true);
+  const [syncingLines, setSyncingLines] = useState([]); // Track lines being updated
 
   // Terminal State
   const [terminalInput, setTerminalInput] = useState('');
@@ -177,6 +179,8 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
   }, [code]);
 
   const syncParamToSource = (paramName, newValue) => {
+    if (!isLiveSyncEnabled) return;
+
     const param = neededParams.find(p => p.name === paramName);
     if (!param || !param.lineno) return;
 
@@ -185,19 +189,50 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
     const line = lines[lineIndex];
 
     if (line) {
-      // Robust regex for variable assignment: name = value
-      // Matches: epochs=5, epochs = 5, epochs= 5.0, etc.
-      const regex = new RegExp(`(${ paramName }\\s *=\\s *)[0 - 9\\.e\\-]+`);
+      // Robust regex for variable assignment/dictionary mapping
+      // Captures group 1 (everything up to the value) and follows with the numeric value
+      const regex = new RegExp(`(${paramName}[^\\n]*?[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
       if (regex.test(line)) {
-        lines[lineIndex] = line.replace(regex, `$1${ newValue } `);
+        lines[lineIndex] = line.replace(regex, `$1${newValue}`);
         setCode(lines.join('\n'));
+        
+        // Trigger visual sync indicator
+        setSyncingLines(prev => [...new Set([...prev, param.lineno])]);
+        setTimeout(() => {
+          setSyncingLines(prev => prev.filter(l => l !== param.lineno));
+        }, 1200);
+      }
+    }
+  };
+
+  const pushParamToSource = (paramName, newValue) => {
+    const param = neededParams.find(p => p.name === paramName);
+    if (!param || !param.lineno) return;
+
+    const lines = code.split('\n');
+    const lineIndex = param.lineno - 1;
+    const line = lines[lineIndex];
+
+    if (line) {
+      const regex = new RegExp(`(${paramName}[^\\n]*?[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
+      if (regex.test(line)) {
+        lines[lineIndex] = line.replace(regex, `$1${newValue}`);
+        setCode(lines.join('\n'));
+        addLog(`Pushed ${paramName}=${newValue} to source line ${param.lineno}.`, 'success');
+        
+        setSyncingLines(prev => [...new Set([...prev, param.lineno])]);
+        setTimeout(() => {
+          setSyncingLines(prev => prev.filter(l => l !== param.lineno));
+        }, 1200);
       }
     }
   };
 
   const handleParamChange = (name, value, setter) => {
     setter(value);
-    syncParamToSource(name, value);
+    if (isLiveSyncEnabled) {
+      syncParamToSource(name, value);
+    }
   };
 
   const handlePurgeSandbox = async () => {
@@ -444,14 +479,25 @@ return (
         <div className="lab-editor-wrap">
           {/* Gutter */}
           <div className="lab-gutter" ref={gutterRef}>
-            {lineNumbers.map(num => (
-              <div
-                key={num}
-                className={`lab-gutter-line ${errorLine === num ? 'lab-gutter-error' : ''}`}
-              >
-                {num}
-              </div>
-            ))}
+            {lineNumbers.map(num => {
+              const isSyncing = syncingLines.includes(num);
+              return (
+                <div
+                  key={num}
+                  className={`lab-gutter-line ${errorLine === num ? 'lab-gutter-error' : ''} ${isSyncing ? 'lab-gutter-syncing' : ''}`}
+                >
+                  {isSyncing ? (
+                    <motion.div 
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="lab-sync-indicator"
+                    >
+                      <Zap size={8} />
+                    </motion.div>
+                  ) : num}
+                </div>
+              );
+            })}
           </div>
           {/* Textarea */}
           <textarea
@@ -503,6 +549,18 @@ return (
               <Settings size={14} className="text-primary" />
               <span className="type-label text-[10px]">Model_Regulation</span>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] font-bold opacity-40 uppercase tracking-tighter">Live_Sync</span>
+              <button 
+                onClick={() => setIsLiveSyncEnabled(!isLiveSyncEnabled)}
+                className={`w-8 h-4 rounded-full relative transition-colors ${isLiveSyncEnabled ? 'bg-primary/20' : 'bg-white/5 border border-white/10'}`}
+              >
+                <motion.div 
+                  animate={{ x: isLiveSyncEnabled ? 16 : 2 }}
+                  className={`w-2.5 h-2.5 rounded-full absolute top-[3px] ${isLiveSyncEnabled ? 'bg-primary' : 'bg-gray-600'}`}
+                />
+              </button>
+            </div>
           </div>
 
           <div className="p-6 space-y-8 bg-surface overflow-y-auto max-h-[600px]">
@@ -528,14 +586,24 @@ return (
                 <div key={idx} className="transition-all opacity-100 group">
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-2">
-                      <div className="link-indicator active"></div>
+                      <div className={`link-indicator ${isLiveSyncEnabled ? 'active' : ''}`}></div>
                       <span className="text-[10px] font-bold uppercase tracking-wide text-text-main">
                         {p.name?.replace('_', ' ') || 'PARAM'}
                       </span>
                     </div>
-                    <span className="instrument-readout">
-                      {typeof val === 'number' ? (p.name === 'epochs' ? val.toString().padStart(2, '0') : val.toFixed(4)) : (val || '0.00')}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {!isLiveSyncEnabled && (
+                        <button 
+                          onClick={() => pushParamToSource(p.name, val)}
+                          className="px-2 py-0.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-[7px] font-bold uppercase transition-all"
+                        >
+                          Push
+                        </button>
+                      )}
+                      <span className="instrument-readout">
+                        {typeof val === 'number' ? (p.name === 'epochs' ? val.toString().padStart(2, '0') : val.toFixed(4)) : (val || '0.00')}
+                      </span>
+                    </div>
                   </div>
 
                   {isSlider ? (
@@ -1016,6 +1084,17 @@ return (
           font-weight: 700;
           background: rgba(239, 68, 68, 0.06);
         }
+        .lab-gutter-syncing {
+          background: color-mix(in srgb, var(--primary) 10%, transparent);
+          color: var(--primary);
+        }
+        .lab-sync-indicator {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          color: var(--primary);
+        }
         .lab-textarea {
           flex: 1;
           border: none;
@@ -1096,6 +1175,16 @@ return (
           color: var(--primary);
           background: color-mix(in srgb, var(--primary) 8%, transparent);
           padding: 2px 10px;
+        }
+        .link-indicator {
+          width: 4px; height: 4px;
+          border-radius: 50%;
+          background: var(--border);
+          transition: all 0.2s;
+        }
+        .link-indicator.active {
+          background: var(--primary);
+          box-shadow: 0 0 5px var(--primary);
         }
         .lab-slider {
           width: 100%;
