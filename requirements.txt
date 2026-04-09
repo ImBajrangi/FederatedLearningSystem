@@ -16,3 +16,5 @@ python-multipart
 python-dotenv
 pydantic-settings
 requests
+# scikit-learn
+onnx

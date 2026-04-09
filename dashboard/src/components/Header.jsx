@@ -10,7 +10,7 @@ export const Header = ({ status }) => {
           AI Guardian Professional Dashboard
         </h1>
       </div>
-      
+
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-sm">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />

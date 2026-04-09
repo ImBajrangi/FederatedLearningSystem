@@ -38,7 +38,8 @@ function App() {
     modelArchitecture,
     shards,
     clientsActive,
-    labState
+    labState,
+    executeDashboardCommand
   } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState('dashboard');
@@ -163,7 +164,7 @@ function App() {
     switch (currentView) {
       case 'dashboard':
         return (
-          <Dashboard 
+          <Dashboard
             accuracyHistory={accuracyHistory}
             isConnected={isConnected}
             isActive={isActive}
@@ -180,15 +181,15 @@ function App() {
         return <ArchitectureBuilder onAction={addToast} />;
       case 'training':
         return (
-          <TrainingWorkspace 
-            clients={clients} 
-            logs={logs} 
-            accuracyHistory={accuracyHistory} 
-            lossHistory={lossHistory} 
-            hyperparams={hyperparams} 
-            roundHistory={roundHistory} 
-            modelArchitecture={modelArchitecture} 
-            onClear={clearLogs} 
+          <TrainingWorkspace
+            clients={clients}
+            logs={logs}
+            accuracyHistory={accuracyHistory}
+            lossHistory={lossHistory}
+            hyperparams={hyperparams}
+            roundHistory={roundHistory}
+            modelArchitecture={modelArchitecture}
+            onClear={clearLogs}
             onInitiate={startSimulation}
             isActive={isActive}
           />
@@ -196,7 +197,13 @@ function App() {
       case 'datasets':
         return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
       case 'laboratory':
-        return <Laboratory onAction={addToast} labState={labState} />;
+        return (
+          <Laboratory 
+            onAction={addToast} 
+            labState={labState} 
+            onExecuteCommand={executeDashboardCommand}
+          />
+        );
       case 'privacy_vault':
         return <PrivacyVault />;
       default:
@@ -230,12 +237,12 @@ function App() {
             {renderView()}
           </div>
 
-          <div 
+          <div
             className="transition-all duration-300 ease-in-out"
-            style={{ 
-              height: (currentView === 'training' || currentView === 'laboratory') 
-                ? 0 
-                : (isTerminalMinimized ? 36 : footerHeight), 
+            style={{
+              height: (currentView === 'training' || currentView === 'laboratory')
+                ? 0
+                : (isTerminalMinimized ? 36 : footerHeight),
               flexShrink: 0,
               overflow: 'hidden'
             }}
@@ -245,13 +252,12 @@ function App() {
               onResize={startTerminalResize}
               isResizing={!!resizingRef.current}
               nodeRegistry={nodeRegistry}
-              accuracyHistory={accuracyHistory}
-              lossHistory={lossHistory}
               roundHistory={roundHistory}
               onClear={clearLogs}
               onAction={(cmd) => addToast(`Terminal command executed: ${cmd}`, 'info')}
               isMinimized={isTerminalMinimized}
               onToggleMinimize={() => setIsTerminalMinimized(!isTerminalMinimized)}
+              onExecuteCommand={executeDashboardCommand}
             />
           </div>
         </main>

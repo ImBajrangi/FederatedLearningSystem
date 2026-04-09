@@ -8,9 +8,180 @@ import threading
 import time
 import json
 import logging
+import ast
+import importlib.util
+import subprocess
+import contextlib
 import io
+import importlib
+import venv
+import sys
+
+# Resolve Matplotlib config permission warnings by using a writable path
+os.environ['MPLCONFIGDIR'] = os.path.join(os.getcwd(), 'tmp/matplotlib')
+if not os.path.exists(os.environ['MPLCONFIGDIR']):
+    os.makedirs(os.environ['MPLCONFIGDIR'], exist_ok=True)
 
 logger = logging.getLogger("TrainingEngine")
+
+class BroadcastStream(io.StringIO):
+    """Custom stream that redirects output to the dashboard in real-time."""
+    def __init__(self, broadcast_callback):
+        super().__init__()
+        self.broadcast = broadcast_callback
+        self.line_buffer = ""
+
+    def write(self, data):
+        super().write(data)
+        self.line_buffer += data
+        if '\n' in self.line_buffer:
+            lines = self.line_buffer.split('\n')
+            for line in lines[:-1]:
+                if line.strip():
+                    self.broadcast("LOG", f"📜 {line}")
+            self.line_buffer = lines[-1]
+
+    def flush(self):
+        super().flush()
+        if self.line_buffer.strip():
+            self.broadcast("LOG", f"📜 {self.line_buffer}")
+            self.line_buffer = ""
+def ensure_research_venv(broadcast_callback=None):
+    """Ensure a dedicated virtual environment exists for research code."""
+    sandbox_dir = os.path.join(os.getcwd(), "research_sandbox")
+    if os.name == 'nt':
+        python_exec = os.path.join(sandbox_dir, "Scripts", "python.exe")
+    else:
+        python_exec = os.path.join(sandbox_dir, "bin", "python")
+        
+    if not os.path.exists(python_exec):
+        if broadcast_callback: 
+            broadcast_callback("LOG", "🔭 INITIALIZING_RESEARCH_SANDBOX...")
+            broadcast_callback("LOG", "📦 PRE_SEEDING_LIBRARIES: [torch, matplotlib, scikit-learn, torchvision]")
+        
+        # Create VENV
+        venv.create(sandbox_dir, with_pip=True)
+        
+        # Pre-seed essential libraries
+        try:
+            subprocess.run([python_exec, "-m", "pip", "install", "torch", "matplotlib", "scikit-learn", "torchvision"], check=True, capture_output=True)
+            if broadcast_callback: broadcast_callback("LOG", "✅ Sandbox environment successfully seeded.")
+        except Exception as e:
+            if broadcast_callback: broadcast_callback("LOG", f"⚠️ Sandbox seeding warning: {str(e)}")
+            
+    # Resolve site-packages path
+    if os.name == 'nt':
+        site_packages = os.path.join(sandbox_dir, "Lib", "site-packages")
+    else:
+        # Search for the site-packages in lib/pythonX.Y/site-packages
+        lib_dir = os.path.join(sandbox_dir, "lib")
+        if os.path.exists(lib_dir):
+            py_dirs = [d for d in os.listdir(lib_dir) if d.startswith("python")]
+            if py_dirs:
+                site_packages = os.path.join(lib_dir, py_dirs[0], "site-packages")
+            else:
+                site_packages = ""
+        else:
+            site_packages = ""
+            
+    return python_exec, site_packages
+
+def run_sandbox_command(cmd, broadcast_callback):
+    """Standalone utility to execute a shell command in the research sandbox."""
+    python_exec, _ = ensure_research_venv()
+    
+    # 🧪 VENV Contextualization
+    # If the command starts with '!', strip it for the execution
+    processed_cmd = cmd.strip()
+    if processed_cmd.startswith('!'):
+        processed_cmd = processed_cmd[1:].strip()
+        
+    if processed_cmd.startswith('pip'):
+        processed_cmd = f'"{python_exec}" -m {processed_cmd}'
+    elif processed_cmd.startswith('python'):
+        processed_cmd = f'"{python_exec}" {processed_cmd[6:].strip()}'
+    
+    broadcast_callback("LOG", f"🐚 SANDBOX_EXEC: {cmd}")
+    try:
+        process = subprocess.Popen(
+            processed_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
+        )
+        if process.stdout:
+            for out_line in process.stdout:
+                if out_line.strip():
+                    broadcast_callback("LOG", f"🐚 {out_line.strip()}")
+        process.wait()
+        if process.returncode == 0:
+            importlib.invalidate_caches()
+            return True
+        else:
+            broadcast_callback("LOG", f"❌ Execution failed with code {process.returncode}")
+            return False
+    except Exception as e:
+def inspect_dependencies(code):
+    """Parses code to find all required top-level imports."""
+    try:
+        import ast
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+
+    needed = set()
+    # Common mapping for pypi vs import name
+    mapping = {"sklearn": "scikit-learn", "cv2": "opencv-python", "PIL": "pillow"}
+    
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for n in node.names:
+                pkg = n.name.split('.')[0]
+                needed.add(mapping.get(pkg, pkg))
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                pkg = node.module.split('.')[0]
+                needed.add(mapping.get(pkg, pkg))
+    
+    return sorted(list(needed))
+
+def inspect_parameters(code):
+    """Detects which standard hyper-parameters are used in the code."""
+    try:
+        import ast
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+
+    detected = set()
+    targets = {'epochs', 'lr', 'learning_rate', 'batch_size', 'batchsize'}
+    mapping = {'learning_rate': 'lr', 'batchsize': 'batch_size'}
+
+    for node in ast.walk(tree):
+        # 1. Check Function Arguments (train, fit, etc.)
+        if isinstance(node, ast.FunctionDef):
+            for arg in node.args.args:
+                if arg.arg.lower() in targets:
+                    norm = mapping.get(arg.arg.lower(), arg.arg.lower())
+                    detected.add(norm)
+        
+        # 2. Check Dictionary Lookups (e.g., hyperparams['epochs'])
+        if isinstance(node, ast.Subscript):
+            if isinstance(node.slice, ast.Constant) and isinstance(node.slice.value, str):
+                val = node.slice.value.lower()
+                if val in targets:
+                    norm = mapping.get(val, val)
+                    detected.add(norm)
+            elif hasattr(node.slice, 'value') and isinstance(node.slice.value, ast.Constant): # Py3.8 compat
+                val = node.slice.value.value.lower()
+                if val in targets:
+                    norm = mapping.get(val, val)
+                    detected.add(norm)
+        
+        # 3. Check Variable Usage (e.g., for i in range(epochs))
+        if isinstance(node, ast.Name):
+            if node.id.lower() in targets:
+                norm = mapping.get(node.id.lower(), node.id.lower())
+                detected.add(norm)
+
+    return sorted(list(detected))
 
 class TrainingSession:
     def __init__(self, code, hyperparams, bridge_broadcast_callback):
@@ -26,15 +197,75 @@ class TrainingSession:
         self.metrics = {"loss": [], "accuracy": []}
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model_path = None
+        self.mode = "IDLE"
 
     def run(self):
         try:
             self.status = "TRAINING"
-            self.broadcast("LOG", f"SYSTEM: Starting training on {self.device}...")
+            # Ensure Sandbox is ready and get its interpreter
+            self.research_python, self.site_packages = ensure_research_venv(self.broadcast)
             
-            # 1. Dynamic compilation
+            # 🧪 VENV INJECTION: Add sandbox site-packages to sys.path
+            if self.site_packages and self.site_packages not in sys.path:
+                sys.path.insert(0, self.site_packages)
+                self.broadcast("LOG", f"✅ VENV_INJECTED: {self.site_packages}")
+            
+            self.broadcast("LOG", f"🔍 Sandbox Launcher: {self.research_python}")
+            self.broadcast("LOG", f"SYSTEM: Starting execution on {self.device}...")
+            
+            # 0. Magic Commands (!) and Implicit CLI
+            lines = self.code.split('\n')
+            remaining_code_lines = []
+            install_occurred = False
+            for line in lines:
+                l_stripped = line.strip()
+                # Intercept '!' or lines starting with 'pip' / 'python' (implicit magic)
+                if l_stripped.startswith('!') or l_stripped.lower().startswith('pip install ') or l_stripped.lower().startswith('python '):
+                    magic_line = l_stripped if l_stripped.startswith('!') else f"!{l_stripped}"
+                    success = self.execute_magic(magic_line, self.research_python)
+                    if not success:
+                        raise ValueError(f"Environment Command failed: {line}")
+                    install_occurred = True
+                else:
+                    remaining_code_lines.append(line)
+            
+            if install_occurred:
+                importlib.invalidate_caches()
+            
+            clean_code = '\n'.join(remaining_code_lines)
+
+            # 0.1 Resolve Dependencies (JIT Pip for imports)
+            self.broadcast("LOG", "📦 Analyzing research dependencies...")
+            missing_libs = self.detect_missing_imports(clean_code)
+            if missing_libs:
+                for lib in missing_libs:
+                    self.broadcast("LOG", f"📥 Installing missing dependency: {lib}...")
+                    try:
+                        # Use the sandbox python
+                        subprocess.run([self.research_python, "-m", "pip", "install", lib], check=True, capture_output=True)
+                        self.broadcast("LOG", f"✅ Successfully installed {lib}")
+                        importlib.invalidate_caches()
+                    except subprocess.CalledProcessError as e:
+                        err_text = e.stderr.decode() if e.stderr else str(e)
+                        self.broadcast("LOG", f"⚠️ Failed to install {lib}: {err_text}")
+            
+            # 1. Dynamic compilation & execution
             namespace = {}
-            exec(self.code, namespace)
+            # Inject headless Matplotlib config
+            headless_config = "import matplotlib; matplotlib.use('Agg')\n"
+            
+            # Use real-time stream broadcast
+            stream = BroadcastStream(self.broadcast)
+            with contextlib.redirect_stdout(stream):
+                try:
+                    exec(headless_config + clean_code, namespace)
+                    stream.flush()
+                except Exception as e:
+                    # Capture syntax/runtime errors during initial exec
+                    logger.error(f"Exec failure: {e}")
+                    raise e
+
+            # Initial logs and dependency analysis are handled already.
             
             # Look for a class that is a subclass of nn.Module
             model_class = None
@@ -43,9 +274,19 @@ class TrainingSession:
                     model_class = obj
                     break
             
+            # MODE DETECTION: General Script vs Deep Learning Model
             if not model_class:
-                raise ValueError("No nn.Module subclass found in submitted code.")
-            
+                self.mode = "SCRIPT"
+                self.broadcast("LOG", "✅ Standalone script execution finalized.")
+                self.status = "COMPLETE"
+                self.broadcast("LAB_COMPLETE", {
+                    "status": "COMPLETE",
+                    "mode": "SCRIPT"
+                })
+                return
+
+            self.mode = "MODEL"
+            self.broadcast("LOG", "🤖 Neural architecture detected. Starting Deep Learning sequence...")
             self.model = model_class().to(self.device)
             optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
             criterion = nn.Cross_entropy if hasattr(nn, 'Cross_entropy') else nn.functional.cross_entropy
@@ -106,8 +347,12 @@ class TrainingSession:
                     "loss": avg_loss,
                     "accuracy": accuracy,
                     "progress": self.progress,
-                    "status": "TRAINING"
+                    "status": "TRAINING",
+                    "mode": "MODEL"
                 })
+                
+                # Also pipe to global LOG channel for total awareness
+                self.broadcast("LOG", f"LAB_ENGINE: Epoch {epoch+1}/{self.epochs} - Loss: {avg_loss:.4f}, Acc: {accuracy:.4f}")
                 
                 logger.info(f"Epoch {epoch+1}: Loss {avg_loss:.4f}, Acc {accuracy:.4f}")
 
@@ -134,7 +379,8 @@ class TrainingSession:
                 "status": "COMPLETE",
                 "pt_path": self.model_path,
                 "onnx_path": onnx_path,
-                "metrics": self.metrics
+                "metrics": self.metrics,
+                "mode": "MODEL"
             })
             self.broadcast("LOG", "SYSTEM: Training complete. Model weights exported.")
 
@@ -144,6 +390,22 @@ class TrainingSession:
             logger.error(error_msg)
             self.broadcast("LAB_ERROR", {"error": error_msg})
             self.broadcast("LOG", f"FATAL: {error_msg}")
+
+    def detect_missing_imports(self, code):
+        """Check if any detected imports are missing from the sandbox."""
+        needed = inspect_dependencies(code)
+        missing = []
+        for lib in needed:
+            # Check if module exists in site-packages or current path
+            # Simple check for now: can we find the spec?
+            if importlib.util.find_spec(lib.replace("-", "_")) is None:
+                # Double check mapping
+                missing.append(lib)
+        return missing
+
+    def execute_magic(self, line, python_exec=None):
+        """Execute a shell command starting with '!' and stream output."""
+        return run_sandbox_command(line, self.broadcast)
 
     def abort(self):
         self.stop_event.set()
@@ -173,6 +435,7 @@ def get_session_status():
         return {
             "status": _current_session.status,
             "progress": _current_session.progress,
-            "metrics": _current_session.metrics
+            "metrics": _current_session.metrics,
+            "mode": _current_session.mode
         }
     return {"status": "IDLE"}

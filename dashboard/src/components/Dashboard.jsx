@@ -4,19 +4,19 @@ import { Activity, ShieldCheck, Zap, Globe, Lock, Cpu, Server, TrendingUp, Alert
 import { MetricsChart } from './MetricsChart';
 import { BlockchainRibbon } from './BlockchainExplorer';
 
-export const Dashboard = ({ 
-  accuracyHistory = [], 
-  isConnected, 
-  isActive, 
-  status, 
-  startSimulation, 
+export const Dashboard = ({
+  accuracyHistory = [],
+  isConnected,
+  isActive,
+  status,
+  startSimulation,
   clearSimulation,
   blockchain = [],
   clients = [],
   rejectedCount = 0,
   round = 0
 }) => {
-  const currentAccuracy = accuracyHistory.length > 0 
+  const currentAccuracy = accuracyHistory.length > 0
     ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
     : "0.00";
 

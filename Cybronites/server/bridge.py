@@ -40,7 +40,8 @@ class ConnectionManager:
             "chain": [],
             "shards": [],
             "model_architecture": "# Loading Source Code...",
-            "server_ip": "127.0.0.1" 
+            "server_ip": "127.0.0.1",
+            "lab_state": {"status": "IDLE", "progress": 0, "epoch": 0, "loss": 0, "accuracy": 0}
         }
         self.log_buffer: List[str] = []
         self.cache = {
@@ -224,6 +225,15 @@ class ConnectionManager:
         elif message_type == "LOG":
             self.log_buffer.append(payload)
             if len(self.log_buffer) > 200: self.log_buffer.pop(0)
+        
+        elif message_type in ["LAB_PROGRESS", "LAB_COMPLETE", "LAB_ERROR"]:
+            # Sync lab state with global registry
+            if message_type == "LAB_PROGRESS":
+                self.state["lab_state"].update(payload)
+            elif message_type == "LAB_COMPLETE":
+                self.state["lab_state"].update({"status": "COMPLETE", "progress": 100})
+            elif message_type == "LAB_ERROR":
+                self.state["lab_state"].update({"status": "ERROR", "error": payload.get("error")})
 
         # Create output packet
         data = {"type": message_type, "payload": payload}
@@ -404,12 +414,15 @@ async def validate_code(data: Dict[str, str]):
         if not code.strip():
             return {"success": False, "error": "Empty source code submitted."}
             
+        # 🧪 Magic Filtering: Preserve line numbers by blanking out '!' lines
+        clean_code = "\n".join([line if not line.strip().startswith('!') else "" for line in code.split('\n')])
+        
         # 1. Syntactic analysis
         import ast
-        ast.parse(code)
+        ast.parse(clean_code)
         
-        # 2. Compilation check (Catching PyTorch import context errors)
-        compile(code, '<laboratory>', 'exec')
+        # 2. Compilation check
+        compile(clean_code, '<laboratory>', 'exec')
         
         return {"success": True}
     except SyntaxError as e:
@@ -457,11 +470,22 @@ async def deploy_model(data: Dict[str, str]):
 
 @app.post("/api/v1/laboratory/train")
 async def start_lab_training(data: Dict[str, Any]):
-    code = data.get("code", "")
+    code = data.get("code", "").strip()
     hyperparams = data.get("hyperparams", {})
     
     if not code:
         return {"success": False, "error": "No code provided."}
+        
+    # 🧪 Magic Filtering: Preserve line numbers for accurate error reporting
+    clean_code = "\n".join([line if not line.strip().startswith('!') else "" for line in code.split('\n')])
+    
+    # 🛡️ Mandatory Guardian Validation (AST Security Scan)
+    try:
+        import ast
+        ast.parse(clean_code)
+    except SyntaxError as e:
+        bridge.broadcast_sync("LOG", f"❌ SECURITY_BREACH: Structural anomaly detected in submitted code (Line {e.lineno}). Reverting...")
+        return {"success": False, "error": f"AST Validation Failed: {str(e.msg)}"}
     
     success, msg = engine.start_training(code, hyperparams, bridge.broadcast_sync)
     return {"success": success, "message": msg}
@@ -474,6 +498,57 @@ async def abort_lab_training():
 @app.get("/api/v1/laboratory/status")
 async def get_lab_status():
     return engine.get_session_status()
+
+@app.get("/api/v1/laboratory/environment")
+async def get_lab_environment():
+    """Returns metadata about the research sandbox virtual environment."""
+    sandbox_dir = os.path.join(os.getcwd(), "research_sandbox")
+    python_exec, site_packages = engine.ensure_research_venv()
+    
+    # 🧪 Query installed packages using the sandbox python
+    packages = []
+    try:
+        import subprocess
+        result = subprocess.run([python_exec, "-m", "pip", "list", "--format=json"], capture_output=True, text=True)
+        if result.returncode == 0:
+            packages = json.loads(result.stdout)
+    except Exception as e:
+        logger.warning(f"Failed to query sandbox packages: {e}")
+
+    return {
+        "status": "READY" if os.path.exists(python_exec) else "NOT_INITIALIZED",
+        "python": "3.9.6", # Hardcoded for this env, could be dynamic
+        "path": sandbox_dir,
+        "site_packages": site_packages,
+        "packages": packages
+    }
+
+@app.post("/api/v1/laboratory/shell")
+async def run_laboratory_shell(data: Dict[str, str]):
+    """Executes a generic command in the research sandbox context."""
+    command = data.get("command", "").strip()
+    if not command:
+        return {"success": False, "error": "Empty command."}
+        
+    # Run synchronously (it will broadcast progress via broadcast_sync)
+    success = engine.run_sandbox_command(command, bridge.broadcast_sync)
+    return {"success": success}
+
+@app.post("/api/v1/laboratory/inspect")
+async def inspect_laboratory_code(data: Dict[str, str]):
+    """Returns a list of detected dependencies and hyper-parameters from the submitted code."""
+    code = data.get("code", "")
+    # 🧪 Magic Filtering: Preserve lines for AST inspection
+    clean_code = "\n".join([line if not line.strip().startswith('!') else "" for line in code.split('\n')])
+    
+    deps = engine.inspect_dependencies(clean_code)
+    params = engine.inspect_parameters(clean_code)
+    
+    return {
+        "success": True, 
+        "dependencies": deps,
+        "parameters": params
+    }
 
 @app.get("/api/v1/laboratory/download/{file_format}")
 async def download_model(file_format: str):

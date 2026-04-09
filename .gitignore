@@ -15,3 +15,4 @@ secure_training_platform/dataset_vault/datasets/
 secure_training_platform/model_registry/models/
 secure_training_platform/database/*.db
 secure_training_platform/database/secure_platform.db*
+research_sandbox/

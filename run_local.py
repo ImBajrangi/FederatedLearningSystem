@@ -66,9 +66,15 @@ def main():
         print(f"  [WARN] Could not write .env.local: {e}")
 
     # Find Python interpreter
-    python_path = os.path.join(cwd, "Cybronites/venv_mac/bin/python3")
-    if not os.path.exists(python_path):
-        python_path = sys.executable
+    paths_to_check = [
+        os.path.join(cwd, "Cybronites/venv_mac/bin/python3"),
+        os.path.join(cwd, ".venv/bin/python3"),
+    ]
+    python_path = sys.executable
+    for p in paths_to_check:
+        if os.path.exists(p):
+            python_path = p
+            break
     print(f"  [PYTHON] {python_path}")
     
     print(f"\n  [1/3] Starting Bridge (:{BRIDGE_PORT}) + Flower Server (:{FLOWER_PORT})...")

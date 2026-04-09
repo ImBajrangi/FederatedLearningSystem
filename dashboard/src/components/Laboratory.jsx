@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Code, Play, ShieldCheck, Terminal, Zap, 
-  AlertCircle, RefreshCw, Download, BarChart2, 
-  Activity, Settings, CheckCircle2, StopCircle, Cpu
+import {
+  Code, Play, ShieldCheck, Terminal, Zap,
+  AlertCircle, RefreshCw, Download, BarChart2,
+  Activity, Settings, CheckCircle2, StopCircle, Cpu, Box
 } from 'lucide-react';
 import { API_BASE_URL } from '../hooks/useSecureFederated';
 
@@ -32,7 +32,7 @@ class MNISTNet(nn.Module):
         return F.log_softmax(x, dim=1)
 `;
 
-export const Laboratory = ({ onAction, labState }) => {
+export const Laboratory = ({ onAction, labState, onExecuteCommand }) => {
   const [code, setCode] = useState(DEFAULT_MODEL_CODE);
   const [status, setStatus] = useState('IDLE');
   const [logs, setLogs] = useState([]);
@@ -43,6 +43,10 @@ export const Laboratory = ({ onAction, labState }) => {
   const [epochs, setEpochs] = useState(5);
   const [lr, setLr] = useState(0.001);
   const [batchSize, setBatchSize] = useState(32);
+  const [envData, setEnvData] = useState(null);
+  const [isEnvLoading, setIsEnvLoading] = useState(false);
+  const [detectedDeps, setDetectedDeps] = useState([]);
+  const [isInspecting, setIsInspecting] = useState(false);
 
   const addLog = (msg, type = 'info') => {
     setLogs(prev => [{ msg, type, time: new Date().toLocaleTimeString() }, ...prev].slice(0, 50));
@@ -57,19 +61,67 @@ export const Laboratory = ({ onAction, labState }) => {
     textarea.addEventListener('scroll', handleScroll);
     return () => textarea.removeEventListener('scroll', handleScroll);
   }, []);
-
   useEffect(() => {
     if (!labState) return;
     if (labState.status === 'TRAINING') {
       setStatus('TRAINING');
+      setProgress(labState.progress);
     } else if (labState.status === 'COMPLETE') {
       setStatus('COMPLETE');
-      addLog('Training session finalized. Model prepared for download.', 'success');
+      setProgress(100);
     } else if (labState.status === 'ERROR') {
       setStatus('ERROR');
-      addLog(`Training Error: ${labState.error}`, 'error');
+      addLog(`Backend Error: ${labState.error}`, 'error');
     }
   }, [labState]);
+
+  const fetchEnvironment = async () => {
+    setIsEnvLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/environment`);
+      const data = await response.json();
+      setEnvData(data);
+    } catch (err) {
+      console.error("Failed to fetch environment:", err);
+    } finally {
+      setIsEnvLoading(false);
+    }
+  };
+
+  const inspectDependencies = async () => {
+    if (!code.trim()) {
+      setDetectedDeps([]);
+      return;
+    }
+    setIsInspecting(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/inspect`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setDetectedDeps(data.dependencies);
+      }
+    } catch (err) {
+      console.error("Dependency inspection failed:", err);
+    } finally {
+      setIsInspecting(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEnvironment();
+    const interval = setInterval(fetchEnvironment, 10000); // Poll every 10s
+    return () => clearInterval(interval);
+  }, []);
+
+  // Debounced inspection
+  useEffect(() => {
+    const timer = setTimeout(inspectDependencies, 800);
+    return () => clearTimeout(timer);
+  }, [code]);
 
   const handleCompile = async () => {
     setStatus('COMPILING');
@@ -139,17 +191,17 @@ export const Laboratory = ({ onAction, labState }) => {
   const lineNumbers = Array.from({ length: Math.max(lineCount, 30) }, (_, i) => i + 1);
   const progress = labState?.progress || 0;
 
-  const statusColor = status === 'READY' || status === 'COMPLETE' ? 'var(--success)' 
-    : status === 'ERROR' ? 'var(--error)' 
-    : status === 'TRAINING' ? 'var(--accent)' 
-    : 'var(--text-muted)';
+  const statusColor = status === 'READY' || status === 'COMPLETE' ? 'var(--success)'
+    : status === 'ERROR' ? 'var(--error)'
+      : status === 'TRAINING' ? 'var(--accent)'
+        : 'var(--text-muted)';
 
   const statusLabel = {
     IDLE: 'Awaiting Input',
     COMPILING: 'Validating...',
     READY: 'Architecture Verified',
-    TRAINING: `Training — Epoch ${labState?.epoch || 0}/${epochs}`,
-    COMPLETE: 'Training Complete',
+    TRAINING: labState?.mode === 'SCRIPT' ? 'Executing standalone script...' : `Training — Epoch ${labState?.epoch || 0}/${epochs}`,
+    COMPLETE: labState?.mode === 'SCRIPT' ? 'Execution Complete' : 'Federated Training Complete',
     ERROR: 'Exception Raised'
   }[status] || status;
 
@@ -203,7 +255,7 @@ export const Laboratory = ({ onAction, labState }) => {
       {/* ─── Progress Strip (only during training/complete) ─── */}
       <AnimatePresence>
         {(status === 'TRAINING' || status === 'COMPLETE') && (
-          <motion.div 
+          <motion.div
             className="lab-progress-strip"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -211,7 +263,7 @@ export const Laboratory = ({ onAction, labState }) => {
             transition={{ duration: 0.3 }}
           >
             <div className="lab-progress-bar-track">
-              <motion.div 
+              <motion.div
                 className="lab-progress-bar-fill"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
@@ -219,18 +271,22 @@ export const Laboratory = ({ onAction, labState }) => {
               />
             </div>
             <div className="lab-progress-stats">
-              <div className="lab-stat">
-                <span className="lab-stat-label">Epoch</span>
-                <span className="lab-stat-value">{labState?.epoch || 0}/{epochs}</span>
-              </div>
-              <div className="lab-stat">
-                <span className="lab-stat-label">Loss</span>
-                <span className="lab-stat-value lab-stat-loss">{(labState?.loss || 0).toFixed(4)}</span>
-              </div>
-              <div className="lab-stat">
-                <span className="lab-stat-label">Accuracy</span>
-                <span className="lab-stat-value lab-stat-acc">{((labState?.accuracy || 0) * 100).toFixed(2)}%</span>
-              </div>
+              {labState?.mode !== 'SCRIPT' && (
+                <>
+                  <div className="lab-stat">
+                    <span className="lab-stat-label">Epoch</span>
+                    <span className="lab-stat-value">{labState?.epoch || 0}/{epochs}</span>
+                  </div>
+                  <div className="lab-stat">
+                    <span className="lab-stat-label">Loss</span>
+                    <span className="lab-stat-value lab-stat-loss">{(labState?.loss || 0).toFixed(4)}</span>
+                  </div>
+                  <div className="lab-stat">
+                    <span className="lab-stat-label">Accuracy</span>
+                    <span className="lab-stat-value lab-stat-acc">{((labState?.accuracy || 0) * 100).toFixed(2)}%</span>
+                  </div>
+                </>
+              )}
               <div className="lab-stat">
                 <span className="lab-stat-label">Progress</span>
                 <span className="lab-stat-value">{progress.toFixed(0)}%</span>
@@ -284,8 +340,8 @@ export const Laboratory = ({ onAction, labState }) => {
                   <label className="lab-param-label">Target Epochs</label>
                   <span className="lab-param-badge">{epochs}</span>
                 </div>
-                <input 
-                  type="range" min="1" max="20" step="1" 
+                <input
+                  type="range" min="1" max="20" step="1"
                   value={epochs} onChange={(e) => setEpochs(parseInt(e.target.value))}
                   className="lab-slider"
                 />
@@ -293,7 +349,7 @@ export const Laboratory = ({ onAction, labState }) => {
               <div className="lab-param-grid">
                 <div className="lab-param-group">
                   <label className="lab-param-label">Learning Rate</label>
-                  <select 
+                  <select
                     value={lr} onChange={(e) => setLr(parseFloat(e.target.value))}
                     className="lab-select"
                   >
@@ -305,7 +361,7 @@ export const Laboratory = ({ onAction, labState }) => {
                 </div>
                 <div className="lab-param-group">
                   <label className="lab-param-label">Batch Size</label>
-                  <select 
+                  <select
                     value={batchSize} onChange={(e) => setBatchSize(parseInt(e.target.value))}
                     className="lab-select"
                   >
@@ -316,15 +372,104 @@ export const Laboratory = ({ onAction, labState }) => {
                   </select>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="lab-env-row">
-                <div>
-                  <span className="lab-env-label">Runtime</span>
-                  <span className="lab-env-value">PyTorch 2.1</span>
+          {/* 🧪 Environment Monitor (Stitch System) */}
+          <div className="lab-panel lab-env-panel">
+            <div className="lab-panel-header flex justify-between items-center group">
+              <div className="flex items-center gap-2">
+                <Box size={14} className="text-primary" />
+                <span>Sandbox Environment</span>
+              </div>
+              <button 
+                onClick={fetchEnvironment} 
+                title="Refresh Environment"
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <RefreshCw size={10} className={isEnvLoading ? 'lab-spin' : ''} />
+              </button>
+            </div>
+            <div className="lab-panel-body">
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between items-center pb-3 border-b border-[#222]">
+                  <div className="flex flex-col">
+                    <span className="text-[8px] text-primary font-bold tracking-widest uppercase">STATUS</span>
+                    <span className="text-[11px] font-mono text-white">{envData?.status || 'AWAITING_INIT...'}</span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-[8px] text-[#444] font-bold tracking-widest uppercase">PYTHON</span>
+                    <span className="text-[11px] font-mono text-white">{envData?.python || '...'}</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="lab-env-label">Device</span>
-                  <span className="lab-env-value lab-env-device">CPU / CUDA</span>
+
+                <div className="flex flex-col gap-2">
+                  <span className="text-[8px] text-[#444] font-bold tracking-widest mb-1">INSTALLED_PACKAGES</span>
+                  <div className="max-h-[140px] overflow-y-auto pr-2 space-y-1">
+                    {envData?.packages?.slice(0, 10).map((pkg, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-2 bg-[#050505] border border-[#111]">
+                        <span className="text-[10px] text-primary font-mono">{pkg.name}</span>
+                        <span className="text-[10px] text-[#444] font-mono">{pkg.version}</span>
+                      </div>
+                    ))}
+                    {(envData?.packages?.length > 10) && (
+                      <div className="text-[8px] text-[#333] text-center italic py-1">
+                        + {envData.packages.length - 10} MORE NODES
+                      </div>
+                    )}
+                    {(!envData?.packages || envData.packages.length === 0) && (
+                       <div className="text-[9px] text-[#333] italic py-4 text-center">INITIALIZING_VENV...</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <span className="text-[8px] text-[#444] font-bold tracking-widest mb-1">DETECTED_DEPENDENCIES</span>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {detectedDeps.length > 0 ? (
+                      detectedDeps.map((dep, idx) => {
+                        const isInstalled = envData?.packages?.some(p => p.name.toLowerCase() === dep.toLowerCase());
+                        return (
+                          <div 
+                            key={idx} 
+                            onClick={!isInstalled ? () => onExecuteCommand(`!pip install ${dep}`) : undefined}
+                            className={`flex items-center gap-1.5 px-2 py-1 border text-[9px] font-mono cursor-pointer transition-all ${
+                              isInstalled 
+                                ? 'bg-primary/10 border-primary/20 text-primary' 
+                                : 'bg-red-500/10 border-red-500/30 text-red-500 hover:bg-red-500/20'
+                            }`}
+                            title={isInstalled ? 'Library Available' : 'Click to Auto-Install'}
+                          >
+                            <div className={`w-1 h-1 rounded-full ${isInstalled ? 'bg-primary' : 'bg-red-500 animate-pulse'}`} />
+                            {dep}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <span className="text-[9px] text-[#333] italic">NO_IMPORTS_DETECTED</span>
+                    )}
+                  </div>
+                  {detectedDeps.some(dep => !envData?.packages?.some(p => p.name.toLowerCase() === dep.toLowerCase())) && (
+                    <button 
+                      onClick={() => {
+                        const missing = detectedDeps.filter(dep => !envData?.packages?.some(p => p.name.toLowerCase() === dep.toLowerCase()));
+                        onExecuteCommand(`!pip install ${missing.join(' ')}`);
+                      }}
+                      className="text-[8px] text-red-500 font-bold hover:underline text-left"
+                    >
+                      [→] INSTALL_ALL_MISSING_MODULES
+                    </button>
+                  )}
+                </div>
+
+                <div className="p-3 bg-primary/5 border border-primary/20">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap size={10} className="text-primary" />
+                    <span className="text-[9px] font-bold text-primary italic tracking-tight">VENV_IS_ACTIVE</span>
+                  </div>
+                  <p className="text-[9px] leading-relaxed text-[#666]">
+                    Use <span className="text-primary font-bold">!pip install [package]</span> to install libraries directly into the sandbox.
+                  </p>
                 </div>
               </div>
             </div>
@@ -333,7 +478,7 @@ export const Laboratory = ({ onAction, labState }) => {
           {/* ─── Model Download Panel ─── */}
           <AnimatePresence>
             {status === 'COMPLETE' && (
-              <motion.div 
+              <motion.div
                 className="lab-panel lab-download-panel"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
