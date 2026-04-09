@@ -2,7 +2,7 @@ __pycache__/
 *.pyc
 .DS_Store
 .localStorage
-venv/
+.venv/
 venv_mac/
 node_modules/
 *.zip
