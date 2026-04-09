@@ -607,31 +607,50 @@ async def download_model(file_format: str):
         
     return FileResponse(path, filename=filename)
 
-# ── Static Dashboard Serving (for Deployment) ──
-# Look for 'static' (Hugging Face) or 'dist' (Local build)
-paths_to_check = [
-    os.path.join(os.getcwd(), "static"),
-    os.path.join(os.getcwd(), "dist"),
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static"),
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dist")
-]
+# ── Static Dashboard Supporting Logic ──
+def find_static_directory():
+    """Identifies the best local or cloud path for the built UI assets."""
+    search_paths = [
+        os.path.join(os.getcwd(), "dist"),
+        os.path.join(os.getcwd(), "static"),
+        "/home/user/app/dist",
+        "/app/dist",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dist")
+    ]
+    for p in search_paths:
+        if os.path.exists(p) and os.path.isdir(p):
+            # Verify it contains an index.html and assets/
+            if os.path.exists(os.path.join(p, "index.html")):
+                return p
+    return None
 
-for s_dir in paths_to_check:
-    if os.path.exists(s_dir) and os.path.isdir(s_dir):
-        assets_dir = os.path.join(s_dir, "assets")
-        if os.path.exists(assets_dir):
-            app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+static_dir = find_static_directory()
+
+if static_dir:
+    logger.info(f"UI Serving enabled from: {static_dir}")
+    # 1. Mount assets folder explicitly (ensures correct MIME types)
+    assets_path = os.path.join(static_dir, "assets")
+    if os.path.exists(assets_path):
+        app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
+
+    # 2. Main SPA Catch-all
+    @app.get("/{full_path:path}")
+    async def serve_dashboard(full_path: str):
+        # Allow internal system paths to bypass static serving
+        if full_path.startswith(("api", "ws", "auth", "docs")):
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404)
         
-        @app.get("/{full_path:path}")
-        async def serve_dashboard(full_path: str):
-            # Block internal API/WS from being caught by static server
-            if full_path.startswith("api") or full_path.startswith("ws"):
-                from fastapi import HTTPException
-                raise HTTPException(status_code=404)
-            # Try to serve index.html from whichever static dir we found
-            return FileResponse(os.path.join(s_dir, "index.html"))
-        logger.info(f"Serving dashboard from {s_dir}")
-        break
+        # Check if requested file exists locally (e.g. favicon.svg, vite.svg)
+        # Note: /assets/ is already handled by the mount above
+        local_file = os.path.join(static_dir, full_path)
+        if full_path and os.path.isfile(local_file):
+            return FileResponse(local_file)
+            
+        # Fallback to index.html for all other routes (SPA Pattern)
+        return FileResponse(os.path.join(static_dir, "index.html"))
+else:
+    logger.warning("No static assets folder found. UI will not be served.")
 
 def start_bridge(port: int = 7860):
     import uvicorn

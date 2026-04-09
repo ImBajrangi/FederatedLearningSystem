@@ -92,10 +92,19 @@ def main():
             break
     print(f"  [PYTHON] {python_path}")
     
+    # ─── Cloud-Safe Logging Setup ───
+    # Hugging Face Spaces run as a non-root user (UID 1000) with limited write access.
+    # We use /tmp for logs to ensure 100% permission stability.
+    is_cloud = os.environ.get("SPACE_ID") is not None or os.environ.get("HF_SPACE") == "true"
+    log_path = "/tmp/backend.log" if is_cloud else "backend.log"
+    json_path = "/tmp/backend.json" if is_cloud else "backend.json"
+    
     print(f"\n  [1/3] Starting Bridge (:{BRIDGE_PORT}) + Flower Server (:{FLOWER_PORT})...")
-    log_file = open("backend.log", "w")
+    print(f"  [LOG] Redirecting logs to {log_path}")
+    
+    log_file = open(log_path, "w")
     # Initialize/Clear JSON log
-    with open("backend.json", "w") as f:
+    with open(json_path, "w") as f:
         f.write("") 
     
     server_proc = subprocess.Popen(

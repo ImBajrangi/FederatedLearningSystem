@@ -2,7 +2,7 @@
 title: Secure Federated Learning System
 emoji: 🛡️
 colorFrom: indigo
-colorTo: slate
+colorTo: blue
 sdk: docker
 pinned: false
 app_port: 7860

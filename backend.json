@@ -130,3 +130,15 @@
 {"timestamp":"2026-04-09 21:06:58","level":"INFO","component":"GuardianBridge","message":"Loaded 3 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775749018.6629188}
 {"timestamp":"2026-04-09 21:06:58","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1775749018.663848}
 {"timestamp":"2026-04-09 21:16:42","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 1","epoch":1775749602.4013078}
+{"timestamp":"2026-04-09 21:31:44","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775750504.956005}
+{"timestamp":"2026-04-09 21:31:44","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 0","epoch":1775750504.957389}
+{"timestamp":"2026-04-09 22:03:09","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775752389.9376519}
+{"timestamp":"2026-04-09 22:03:09","level":"INFO","component":"GuardianBridge","message":"Loaded 3 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775752389.9426482}
+{"timestamp":"2026-04-09 22:03:09","level":"ERROR","component":"GuardianBridge","message":"WS Serialization/Send Error: ","epoch":1775752389.944994}
+{"timestamp":"2026-04-09 22:03:09","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 0","epoch":1775752389.9452338}
+{"timestamp":"2026-04-09 22:03:09","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 0","epoch":1775752389.945319}
+{"timestamp":"2026-04-09 22:03:09","level":"ERROR","component":"GuardianBridge","message":"WS Runtime Error: WebSocket is not connected. Need to call \"accept\" first.","epoch":1775752389.9453828}
+{"timestamp":"2026-04-09 22:03:09","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775752389.9460852}
+{"timestamp":"2026-04-09 22:03:09","level":"INFO","component":"GuardianBridge","message":"Loaded 3 shards from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775752389.946677}
+{"timestamp":"2026-04-09 22:03:09","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 1","epoch":1775752389.953341}
+{"timestamp":"2026-04-09 22:03:59","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 0","epoch":1775752439.208422}
