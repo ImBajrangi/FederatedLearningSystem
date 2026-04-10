@@ -9,8 +9,8 @@ export const AuthProvider = ({ children }) => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeSessionId, setActiveSessionId] = useState(null);
+    const [authError, setAuthError] = useState(null);
 
-    // Fetch profile whenever user changes
     const fetchProfile = useCallback(async (userId) => {
         if (!userId || !supabase) return;
         try {
@@ -27,60 +27,40 @@ export const AuthProvider = ({ children }) => {
             return;
         }
 
-        // Handle OAuth callback — check for auth tokens in URL hash or query params
-        const handleOAuthCallback = async () => {
-            const hash = window.location.hash;
-            const params = new URLSearchParams(window.location.search);
+        // Check for OAuth error in URL (e.g., from failed Google login)
+        const params = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+        const errorDesc = params.get('error_description') || hashParams.get('error_description');
+        if (errorDesc) {
+            setAuthError(decodeURIComponent(errorDesc));
+            // Clean the URL
+            window.history.replaceState(null, '', window.location.pathname);
+        }
 
-            // Supabase OAuth returns tokens in hash (#access_token=...) or query (?code=...)
-            if (hash?.includes('access_token') || params.get('code')) {
-                try {
-                    const { data: { session }, error } = await supabase.auth.getSession();
-                    if (session) {
-                        setUser(session.user);
-                        await fetchProfile(session.user.id);
-                        logActivity(session.user.id, 'LOGIN', { method: 'google_oauth' });
-                        // Clean URL after successful auth
-                        window.history.replaceState(null, '', window.location.pathname);
-                        setLoading(false);
-                        return true;
-                    }
-                } catch (err) {
-                    console.warn('OAuth callback processing error:', err);
-                }
-            }
-            return false;
-        };
-
-        // Initial session check
+        // Check existing session
         const checkUser = async () => {
-            // First try to handle OAuth callback
-            const handled = await handleOAuthCallback();
-            if (handled) return;
-
             try {
                 const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
+                if (session?.user) {
                     setUser(session.user);
                     await fetchProfile(session.user.id);
-                    logActivity(session.user.id, 'SESSION_RESTORED', { method: 'auto' });
                 }
             } catch (err) {
-                console.warn("Auth session check failed:", err);
+                console.warn("Session check failed:", err);
             }
             setLoading(false);
         };
 
         checkUser();
 
-        // Listen for auth changes (handles redirect-based OAuth)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        // Listen for auth state changes (handles OAuth redirect automatically)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             const u = session?.user ?? null;
             setUser(u);
             if (u) {
                 await fetchProfile(u.id);
-                if (_event === 'SIGNED_IN') {
-                    logActivity(u.id, 'LOGIN', { method: 'session', provider: u.app_metadata?.provider });
+                if (event === 'SIGNED_IN') {
+                    logActivity(u.id, 'LOGIN', { provider: u.app_metadata?.provider || 'email' });
                 }
             } else {
                 setProfile(null);
@@ -93,13 +73,13 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         if (!supabase) {
-            console.log("Guardian Guest Mode: Logging in as", email);
             setUser({ email, guest: true });
             return { user: { email } };
         }
+        setAuthError(null);
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        logActivity(data.user.id, 'LOGIN', { method: 'password', email });
+        logActivity(data.user.id, 'LOGIN', { method: 'password' });
         return data;
     };
 
@@ -108,11 +88,11 @@ export const AuthProvider = ({ children }) => {
             setUser({ email: "guest@institution.edu", guest: true });
             return;
         }
+        setAuthError(null);
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin,
-                skipBrowserRedirect: false
+                redirectTo: window.location.origin
             }
         });
         if (error) throw error;
@@ -121,56 +101,44 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (email, password, metadata = {}) => {
         if (!supabase) throw new Error("Authentication service is not configured.");
+        setAuthError(null);
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            options: {
-                data: metadata,
-                emailRedirectTo: window.location.origin
-            }
+            options: { data: metadata }
         });
         if (error) throw error;
         if (data.user) {
-            logActivity(data.user.id, 'REGISTER', { email, username: metadata.username });
+            logActivity(data.user.id, 'REGISTER', { email });
         }
         return data;
     };
 
     const logout = async () => {
-        if (user && !user.guest) {
-            logActivity(user.id, 'LOGOUT');
-        }
+        if (user && !user.guest) logActivity(user.id, 'LOGOUT');
         if (!supabase) {
             setUser(null);
             setProfile(null);
             return;
         }
-        const { error } = await supabase.auth.signOut();
-        if (error) console.error('Sign out error:', error.message);
+        await supabase.auth.signOut();
         setUser(null);
         setProfile(null);
         setActiveSessionId(null);
     };
 
-    // Helper: get display name
     const displayName = profile?.username
         || profile?.full_name
+        || user?.user_metadata?.full_name
         || user?.user_metadata?.username
         || user?.email?.split('@')[0]
         || 'Researcher';
 
     return (
         <AuthContext.Provider value={{
-            user,
-            profile,
-            loading,
-            login,
-            loginWithGoogle,
-            register,
-            logout,
-            displayName,
-            activeSessionId,
-            setActiveSessionId,
+            user, profile, loading, authError,
+            login, loginWithGoogle, register, logout,
+            displayName, activeSessionId, setActiveSessionId,
             refreshProfile: () => user && fetchProfile(user.id)
         }}>
             {children}

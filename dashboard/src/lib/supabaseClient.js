@@ -6,17 +6,16 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const isConfigured = supabaseUrl && supabaseAnonKey && supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY_HERE';
 
 if (!isConfigured) {
-  console.warn('Supabase credentials missing or using placeholders. Auth logic will be disabled.');
+  console.warn('Supabase credentials missing. Running in Guest Mode.');
 }
 
-// Create client with auth options optimized for cloud proxy environments (HF Spaces, etc.)
+// Create Supabase client — use implicit flow (works on all platforms including HF Spaces)
 export const supabase = isConfigured 
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,  // Crucial: detects OAuth tokens in URL hash/query
-        flowType: 'pkce'           // PKCE flow works better behind reverse proxies
+        detectSessionInUrl: true
       }
     })
   : null;

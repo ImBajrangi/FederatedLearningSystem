@@ -4,7 +4,7 @@ import { Lock, ShieldCheck, Cpu, Key, ChevronRight, Activity, Terminal, Mail, Us
 import { useAuth } from '../context/AuthContext';
 
 export const Login = ({ onLogin }) => {
-  const { login, register, loginWithGoogle } = useAuth();
+  const { login, register, loginWithGoogle, authError } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -96,15 +96,15 @@ export const Login = ({ onLogin }) => {
                 className="login-form-container"
               >
                 <form onSubmit={handleSubmit} className="login-form">
-                  {error ? (
+                  {(error || authError) ? (
                     <div className="login-error-banner bg-red-50 border-red-100 text-red-600">
                       <Activity size={12} />
-                      <span>{error}</span>
+                      <span>{error || authError}</span>
                     </div>
                   ) : (
-                    <div className="login-error-banner bg-accent/5 border-accent/20 text-accent font-bold">
+                    <div className="login-error-banner bg-emerald-50/50 border-emerald-200/30 text-emerald-700 font-bold">
                        <ShieldCheck size={12} />
-                       <span>GUARDIAN GUEST MODE ACTIVE</span>
+                       <span>SECURE ACCESS READY</span>
                     </div>
                   )}
 
