@@ -27,24 +27,53 @@ export const AuthProvider = ({ children }) => {
             return;
         }
 
+        // Handle OAuth callback — check for auth tokens in URL hash or query params
+        const handleOAuthCallback = async () => {
+            const hash = window.location.hash;
+            const params = new URLSearchParams(window.location.search);
+
+            // Supabase OAuth returns tokens in hash (#access_token=...) or query (?code=...)
+            if (hash?.includes('access_token') || params.get('code')) {
+                try {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+                    if (session) {
+                        setUser(session.user);
+                        await fetchProfile(session.user.id);
+                        logActivity(session.user.id, 'LOGIN', { method: 'google_oauth' });
+                        // Clean URL after successful auth
+                        window.history.replaceState(null, '', window.location.pathname);
+                        setLoading(false);
+                        return true;
+                    }
+                } catch (err) {
+                    console.warn('OAuth callback processing error:', err);
+                }
+            }
+            return false;
+        };
+
         // Initial session check
         const checkUser = async () => {
+            // First try to handle OAuth callback
+            const handled = await handleOAuthCallback();
+            if (handled) return;
+
             try {
-                const { data: { session }, error } = await supabase.auth.getSession();
+                const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
                     setUser(session.user);
                     await fetchProfile(session.user.id);
                     logActivity(session.user.id, 'SESSION_RESTORED', { method: 'auto' });
                 }
             } catch (err) {
-                console.warn("Auth session check skipped (Guest Mode active or service unavailable):", err);
+                console.warn("Auth session check failed:", err);
             }
             setLoading(false);
         };
 
         checkUser();
 
-        // Listen for auth changes
+        // Listen for auth changes (handles redirect-based OAuth)
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             const u = session?.user ?? null;
             setUser(u);
@@ -82,7 +111,8 @@ export const AuthProvider = ({ children }) => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin
+                redirectTo: window.location.origin,
+                skipBrowserRedirect: false
             }
         });
         if (error) throw error;
@@ -95,7 +125,8 @@ export const AuthProvider = ({ children }) => {
             email,
             password,
             options: {
-                data: metadata
+                data: metadata,
+                emailRedirectTo: window.location.origin
             }
         });
         if (error) throw error;

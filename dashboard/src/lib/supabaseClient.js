@@ -9,7 +9,14 @@ if (!isConfigured) {
   console.warn('Supabase credentials missing or using placeholders. Auth logic will be disabled.');
 }
 
-// Only create the client if we have a valid URL to prevent the "supabaseUrl is required" crash
+// Create client with auth options optimized for cloud proxy environments (HF Spaces, etc.)
 export const supabase = isConfigured 
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,  // Crucial: detects OAuth tokens in URL hash/query
+        flowType: 'pkce'           // PKCE flow works better behind reverse proxies
+      }
+    })
   : null;
