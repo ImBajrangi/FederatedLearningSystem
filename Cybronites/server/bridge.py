@@ -11,6 +11,7 @@ import time
 import sqlite3
 import urllib.request
 import ast
+import torch
 from Cybronites.server.auth import router as auth_router
 from Cybronites.utils.structured_logging import setup_structured_logging
 import Cybronites.server.training_engine as engine
@@ -505,9 +506,137 @@ async def federated_reset():
     bridge._fl_session_active = False
     bridge.state["status"] = "IDLE"
     bridge.state["round"] = 0
+    bridge._distributed_clients = {}
+    bridge._distributed_updates = {}
     await bridge.broadcast("STAT_UPDATE", {"status": "IDLE", "round": 0})
     await bridge.broadcast("LOG", "SYSTEM: Session reset. Ready for new training.")
     return {"success": True}
+
+# ═══════════════════════════════════════════════════════════
+# DISTRIBUTED CLIENT API — External devices join FL via HTTP
+# ═══════════════════════════════════════════════════════════
+
+# In-memory storage for distributed clients
+if not hasattr(bridge, '_distributed_clients'):
+    bridge._distributed_clients = {}
+if not hasattr(bridge, '_distributed_updates'):
+    bridge._distributed_updates = {}
+if not hasattr(bridge, '_distributed_round'):
+    bridge._distributed_round = 0
+
+@app.post("/api/v1/distributed/register")
+async def distributed_register(data: Dict[str, Any]):
+    """Register an external device as a federated learning client."""
+    import uuid
+    client_id = str(uuid.uuid4())[:8]
+    client_info = {
+        "id": client_id,
+        "name": data.get("name", "Unknown"),
+        "ip": data.get("ip", "unknown"),
+        "registered_at": time.time(),
+        "last_seen": time.time(),
+        "rounds_completed": 0
+    }
+    bridge._distributed_clients[client_id] = client_info
+    logger.info(f"[DISTRIBUTED] Client registered: {client_info['name']} ({client_id}) from {client_info['ip']}")
+    await bridge.broadcast("LOG", f"DISTRIBUTED: New node '{client_info['name']}' joined from {client_info['ip']}")
+    await bridge.broadcast("STAT_UPDATE", {"clients_active": len(bridge._distributed_clients)})
+    
+    return {
+        "success": True,
+        "client_id": client_id,
+        "session_status": bridge.state.get("status", "IDLE"),
+        "message": f"Welcome {client_info['name']}! You are node #{len(bridge._distributed_clients)}"
+    }
+
+@app.get("/api/v1/distributed/status")
+async def distributed_status():
+    """Returns current training session state for distributed clients to poll."""
+    return {
+        "status": bridge.state.get("status", "IDLE"),
+        "round": bridge.state.get("round", 0),
+        "total_rounds": bridge.state.get("total_rounds", 5),
+        "clients_registered": len(bridge._distributed_clients),
+        "updates_received": len(bridge._distributed_updates.get(bridge.state.get("round", 0), {})),
+        "accuracy_history": bridge.state.get("accuracy_history", []),
+        "loss_history": bridge.state.get("loss_history", []),
+    }
+
+@app.get("/api/v1/distributed/get-model")
+async def distributed_get_model():
+    """Serve current global model weights to distributed clients."""
+    import io, base64
+    try:
+        # Try to load the latest global model
+        model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'tmp', 'global_model.pt')
+        if not os.path.exists(model_path):
+            # Return initial random weights
+            from Cybronites.client.client import MNISTNet
+            model = MNISTNet()
+            params = []
+            for val in model.state_dict().values():
+                arr = val.cpu().detach().numpy()
+                buf = io.BytesIO()
+                import numpy as np
+                np.save(buf, arr)
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+                params.append({"data": b64})
+            return {"params": params, "round": bridge.state.get("round", 0)}
+        
+        checkpoint = torch.load(model_path, map_location='cpu', weights_only=True)
+        params = []
+        state = checkpoint if isinstance(checkpoint, dict) and 'state_dict' not in checkpoint else checkpoint.get('state_dict', checkpoint)
+        for val in state.values():
+            arr = val.cpu().detach().numpy()
+            buf = io.BytesIO()
+            import numpy as np
+            np.save(buf, arr)
+            b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+            params.append({"data": b64})
+        return {"params": params, "round": bridge.state.get("round", 0)}
+    except Exception as e:
+        logger.error(f"[DISTRIBUTED] get-model error: {e}")
+        return {"error": str(e)}
+
+@app.post("/api/v1/distributed/submit-update")
+async def distributed_submit_update(data: Dict[str, Any]):
+    """Receive trained weights from a distributed client."""
+    client_id = data.get("client_id")
+    if client_id not in bridge._distributed_clients:
+        return {"success": False, "message": "Unknown client. Please re-register."}
+    
+    current_round = bridge.state.get("round", 0)
+    metrics = data.get("metrics", {})
+    
+    # Store the update
+    if current_round not in bridge._distributed_updates:
+        bridge._distributed_updates[current_round] = {}
+    
+    bridge._distributed_updates[current_round][client_id] = {
+        "params": data.get("params"),
+        "num_examples": data.get("num_examples", 0),
+        "metrics": metrics,
+        "received_at": time.time()
+    }
+    
+    # Update client info
+    bridge._distributed_clients[client_id]["last_seen"] = time.time()
+    bridge._distributed_clients[client_id]["rounds_completed"] += 1
+    
+    client_name = bridge._distributed_clients[client_id]["name"]
+    acc = metrics.get("accuracy", 0)
+    
+    logger.info(f"[DISTRIBUTED] Update from {client_name}: acc={acc:.2%}, loss={metrics.get('loss', 0):.4f}")
+    await bridge.broadcast("LOG", f"DISTRIBUTED: Received update from '{client_name}' (acc: {acc:.2%})")
+    await bridge.broadcast("STAT_UPDATE", {
+        "clients_active": len(bridge._distributed_clients),
+        "distributed_updates": len(bridge._distributed_updates.get(current_round, {}))
+    })
+    
+    return {
+        "success": True,
+        "message": f"Update accepted for round {current_round}. Thank you, {client_name}!"
+    }
 
 @app.post("/api/v1/laboratory/validate")
 async def validate_code(data: Dict[str, str]):
