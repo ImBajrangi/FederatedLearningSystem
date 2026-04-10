@@ -1,66 +1,92 @@
-# 🛡️ AI Guardian | Secure Federated Learning Laboratory
-## Professional Technical Documentation v1.5
+# AI Guardian: Technical Documentation & User Manual
 
-Welcome to the **AI Guardian Professional Dashboard**, a state-of-the-art Federated Learning environment designed for quantitative researchers and institutional data scientists.
-
----
-
-## 1. System Architecture
-The platform is built on a **Decentralized Hub-and-Spoke** architecture, leveraging the [Flower (flwr)](https://flower.ai) framework for secure model aggregation.
-
-### 🧩 Core Components
-1. **The Orchestrator (`orchestrator.py`)**: The central engine that manages both the Flower Server and the lifecycle of local `GuardianClient` processes.
-2. **The Guardian Bridge (`bridge.py`)**: A FastAPI-powered middleware that bridges the gap between binary training processes and the React-based Dashboard via WebSockets.
-3. **The Research Engine (`training_engine.py`)**: A stateful sandbox environment that handles model compilation, dependency scanning, and REPL evaluation.
-4. **The Client Node (`client.py`)**: The decentralized training actor that performs isolated learning with built-in **Differential Privacy (DP)**.
+## 🛡️ Introduction
+**AI Guardian** (Cybronites) is a production-grade Federated Learning (FL) Laboratory and Institutional IDE. It enables decentralized machine learning where data never leaves its source, protected by a multilayered security stack including **Blockchain auditing**, **Differential Privacy**, and **Reputation Management**.
 
 ---
 
-## 2. The Research Laboratory (IDE)
-The Laboratory is a high-fidelity research environment that supports two primary execution modalities:
+## 🏗️ System Architecture
 
-### 🤖 Model Mode (Main Editor)
-- Used for defining complex neural architectures using `torch.nn.Module`.
-- **Auto-Detection**: The engine identifies your model class, instantiates it on the backend, and automatically prepares the Federated Learning protocol.
-- **Weights Export**: Automatically generates `.pt` and `.onnx` files upon successful convergence.
+### 1. The Institutional Dashboard (Frontend)
+Built with **React 18**, **Vite**, and **Tailwind CSS**, the dashboard provides a premium academic interface.
+*   **Workflow:** Researchers design models in the **Architecture Builder**, test logic in the **Code Laboratory**, and orchestrate training via the **Cluster Manager**.
+*   **Real-time sync:** Uses WebSockets for zero-latency telemetry streaming (Loss/Accuracy/Blockchain blocks).
 
-### 🧪 Script Mode & Research Shell (REPL)
-- **Interactive Terminal**: Located at the bottom of the console. Supports multi-line code cells and Jupyter-style expression evaluation.
-- **Persistence**: Unlike standard scripts, variables and libraries imported in the shell persist across your entire research session.
-- **Magic Commands**: Supports Google Colab-style `!pip` and `!ls` commands for direct environment manipulation.
+### 2. The Guardian Bridge (Backend)
+A **FastAPI** central hub that coordinates all operations.
+*   **State Management:** Tracks global training status and distributes configurations to nodes.
+*   **Static Serving:** Built to handle SPA routing, serving the React frontend directly in production.
+*   **Cloud Orchestration:** Detects environments like HuggingFace or Railway to adapt filesystem operations.
 
----
+### 3. Federated Learning Layer
+Powered by **Flower (flwr)** with a custom **SecureFedAvg** strategy.
+*   **Decentralized Nodes:** Clients perform local training on private datasets (MNIST/Institutional shards).
+*   **Robust Aggregation:** Supports Median and Trimmed Mean aggregation to resist poisoning attacks.
+*   **Validation Contract:** Every update is checked against statistical thresholds before being accepted.
 
-## 3. "Nuclear Safety" & System Resilience
-The platform is hardened with **Institutional Safety Protocols** to ensure zero-downtime during research sessions.
-
-- **Pipe Hardening**: The system is resilient to `BrokenPipeError` and `ConnectionResetError`. If an investigator closes their dashboard mid-session, the backend training continues uninterrupted.
-- **Malformation Shield**: The Bridge parses all code in a "Dry Run" sandbox before submission to catch syntax errors without crashing the server.
-- **Cache Persistence**: Uses a 15-second TTL cache for environment scans to prevent UI lag during massive dependency lookups.
-
----
-
-## 4. Privacy & Compliance
-- **Differential Privacy (DP)**: All client updates are obscured using ε-privacy noise before aggregation, ensuring that individual data points cannot be reconstructed from global model updates.
-- **VENV Isolation**: Every research session runs in a distinct `research_sandbox` virtual environment, isolating user experiments from the system-level Python distribution.
+### 4. Security & Audit Stack
+*   **Blockchain Ledger:** Every round and specific client update is hashed and stored in an immutable chain.
+*   **Differential Privacy (DP):** Local updates are clipped and "noised" (ε-privacy) to prevent data reconstruction attacks.
+*   **Supabase (DB/Auth):** Handles institutional identity and persistent research logging with Row Level Security (RLS).
 
 ---
 
-## 5. Quickstart Reference
+## 🚀 Deployment Guide
 
-### Starting the Stack
+### Cloud Deployment (HuggingFace / Railway / Render)
+The system is optimized for free-tier cloud environments.
+1.  **Repository:** Push the code to your chosen provider.
+2.  **Environment Variables:**
+    *   `SUPABASE_URL`: Your project URL.
+    *   `SUPABASE_ANON_KEY`: Your project public key.
+    *   `PORT`: (Auto-assigned by most platforms, default 7860).
+3.  **Database Migration:** Copy the contents of `dashboard/supabase_setup.sql` into your Supabase SQL Editor and run it.
+
+### Local Development
 ```bash
-# Start the unified backend
+# Clone the repository
+git clone <repo-url>
+cd secure_federated_learning
+
+# Run the unified orchestrator
 python3 run_local.py
-
-# Launch the Dashboard
-cd dashboard
-npm run dev
 ```
-
-### Administrative Controls
-- **Purge Sandbox**: Use the `Refresh_Health` button to scan for outdated libraries or manually liquidate the sandbox to reclaim disk space.
-- **Abort Training**: Sends a secure interrupt signal to all federated nodes to halt execution and retain current state.
+*   **Local Mode:** Launches the Bridge + 2 Simulated Clients.
+*   **Access:** Dashboard will be available at `http://localhost:7880`.
 
 ---
-*© 2026 Cybronites Institutional Research. Optimized for High-Security Research Environments.*
+
+## 📊 Database Schema
+The system uses **Supabase** for persistence.
+| Table | Description |
+|---|---|
+| `profiles` | Stores usernames, roles, and institutional affiliations. |
+| `training_sessions` | High-level record of every FL session initiated. |
+| `experiment_logs` | Deep metrics for every round (Accuracy, Loss, Blockchain Hash). |
+| `architecture_configs`| Saved neural network designs from the builder. |
+| `activity_log` | Audit trail of user logins, view changes, and training triggers. |
+
+---
+
+## 🛠️ API Reference
+
+### Federated Training
+*   `POST /api/v1/federated/start`: Initiates a new training session.
+*   `GET /api/v1/federated/status`: Returns the current round and metrics.
+*   `POST /api/v1/federated/reset`: Clears the session for a new run.
+
+### Code Laboratory
+*   `POST /api/v1/laboratory/validate`: Checks code for syntax/security errors.
+*   `POST /api/v1/laboratory/train`: Executes the current script in the research sandbox.
+*   `GET /api/v1/laboratory/download/pt`: Downloads the global model weights.
+
+---
+
+## 🛡️ Security Best Practices
+1.  **RLS Policies:** Ensure "Row Level Security" is enabled on all Supabase tables so researchers cannot view each other's private experiments.
+2.  **Secret Management:** Never commit `.env` files. Use HuggingFace Secrets or Railway Variables.
+3.  **Node Reputation:** Regularly monitor the **Node Registry** in the Privacy Vault to identify nodes with dropping trust scores.
+
+---
+*Document Version: 2.1.0*
+*Last Updated: April 10, 2026*
