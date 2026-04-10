@@ -5,6 +5,9 @@ COPY dashboard/package*.json ./
 # Use --legacy-peer-deps for complex institutional dependency trees
 RUN npm install
 COPY dashboard/ ./
+# Supabase credentials must be available at build time for Vite to inline them
+ENV VITE_SUPABASE_URL=https://tilimltxgeucefxzerqi.supabase.co
+ENV VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpbGltbHR4Z2V1Y2VmeHplcnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MjQyNTQsImV4cCI6MjA4MzIwMDI1NH0.lwaCJyTRW6jNsfQJ32R_wAwp11yj6bvsJ4fzC0EX_00
 RUN npm run build
 
 # Stage 2: Final Production Image
@@ -45,7 +48,9 @@ EXPOSE 7860 8095
 RUN useradd -m -u 1000 user
 USER user
 ENV HOME=/home/user \
-	PATH=/home/user/.local/bin:$PATH
+	PATH=/home/user/.local/bin:$PATH \
+	SUPABASE_URL=https://tilimltxgeucefxzerqi.supabase.co \
+	SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpbGltbHR4Z2V1Y2VmeHplcnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MjQyNTQsImV4cCI6MjA4MzIwMDI1NH0.lwaCJyTRW6jNsfQJ32R_wAwp11yj6bvsJ4fzC0EX_00
 
 WORKDIR $HOME/app
 
