@@ -1,5 +1,4 @@
 # === Build Context Exclusions ===
-# Keep Docker context small for fast builds on free-tier CI
 .git
 .github
 .venv
@@ -21,11 +20,10 @@ research_sandbox/
 secure_training_platform/
 tmp/
 scratch/
-docs/
 exports/
 deployment_hf/
 .env
 .env.local
 .env*.local
-*.md
-!README.md
+CODING_STANDARDS.md
+documentation.md

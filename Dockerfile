@@ -2,7 +2,7 @@
 FROM node:20-slim AS frontend-builder
 WORKDIR /app/dashboard
 COPY dashboard/package*.json ./
-RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev
+RUN npm ci 2>/dev/null || npm install
 COPY dashboard/ ./
 # Supabase credentials must be available at build time for Vite to inline them
 ENV VITE_SUPABASE_URL=https://tilimltxgeucefxzerqi.supabase.co
@@ -27,9 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Optimize layer caching: Install core requirements first
 COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    find /usr/local -name '*.pyc' -delete && \
-    find /usr/local -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy backend architecture (selective — no tests, no docs, no data)
 COPY Cybronites/ ./Cybronites/
