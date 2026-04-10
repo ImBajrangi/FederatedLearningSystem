@@ -13,11 +13,12 @@ import { Dashboard } from './components/Dashboard';
 import { Login } from './components/Login';
 import { useSecureFederated } from './hooks/useSecureFederated';
 import { useAuth } from './context/AuthContext';
+import { logActivity, createTrainingSession, updateTrainingSession, logExperimentRound } from './lib/supabaseDB';
 import { Play, RotateCcw, ShieldCheck, Info, X, Zap, Activity, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
-  const { user, logout, loading } = useAuth();
+  const { user, logout, loading, activeSessionId, setActiveSessionId } = useAuth();
   const {
     round,
     isActive,
@@ -53,6 +54,14 @@ function App() {
       return 'dashboard';
     }
   });
+
+  // Log view changes to Supabase
+  const handleViewChange = useCallback((view) => {
+    setCurrentView(view);
+    if (user && !user.guest) {
+      logActivity(user.id, 'VIEW_CHANGE', { view });
+    }
+  }, [user]);
 
   const [toasts, setToasts] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(280);
@@ -119,13 +128,56 @@ function App() {
     }
 
     addToast(status === 'IDLE' ? 'Initiating Federated Session...' : 'Session already in progress.', 'info');
+    
+    // Create a training session in Supabase
+    if (user && !user.guest) {
+      try {
+        const session = await createTrainingSession(user.id, hyperparams);
+        if (session) setActiveSessionId(session.id);
+        logActivity(user.id, 'START_TRAINING', { sessionId: session?.id });
+      } catch (err) {
+        console.warn('DB session creation failed (non-critical):', err.message);
+      }
+    }
+    
     await runRound();
   };
 
   const handleLogout = async () => {
+    if (user && !user.guest) {
+      logActivity(user.id, 'LOGOUT');
+    }
     await logout();
     addToast('Session Terminated.', 'info');
   };
+
+  // Track training completion — log experiment round data to Supabase
+  useEffect(() => {
+    if (!user || user.guest || !activeSessionId) return;
+    if (status === 'FINISHED' && accuracyHistory.length > 0) {
+      const latestAcc = accuracyHistory[accuracyHistory.length - 1];
+      const latestLoss = lossHistory.length > 0 ? lossHistory[lossHistory.length - 1] : null;
+      
+      // Log the round result
+      logExperimentRound(user.id, activeSessionId, {
+        round,
+        accuracy: latestAcc,
+        loss: latestLoss,
+        clientsActive: clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length,
+        rejectedCount,
+        blockchainHash: blockchain.length > 1 ? blockchain[blockchain.length - 1]?.hash : null
+      }).catch(err => console.warn('Round log failed:', err.message));
+
+      // Update session with final results
+      updateTrainingSession(activeSessionId, {
+        status: 'COMPLETE',
+        ended_at: new Date().toISOString(),
+        rounds_completed: round,
+        final_accuracy: latestAcc,
+        final_loss: latestLoss
+      }).catch(err => console.warn('Session update failed:', err.message));
+    }
+  }, [status, user, activeSessionId]);
 
   if (loading) {
     return (
@@ -202,7 +254,7 @@ function App() {
       <div className="flex flex-1" style={{ overflow: 'hidden' }}>
         <Sidebar
           currentView={currentView}
-          setView={setCurrentView}
+          setView={handleViewChange}
           clients={clients}
           nodeRegistry={nodeRegistry}
           rejectedCount={rejectedCount}

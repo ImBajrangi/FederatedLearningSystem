@@ -232,11 +232,11 @@ export const Login = ({ onLogin }) => {
         <footer className="login-footer">
           <div className="login-footer-item">
             <Activity size={10} />
-            <span>SESSION: DB_CONNECTED</span>
+            <span>SESSION: SUPABASE_CONNECTED</span>
           </div>
           <div className="login-footer-item">
             <Lock size={10} />
-            <span>SQLITE_V3_SECURE</span>
+            <span>AUTH_RLS_SECURE</span>
           </div>
         </footer>
       </motion.div>
