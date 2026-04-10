@@ -10,24 +10,54 @@ app_port: 7860
 
 # Secure Federated Learning System
 
-This is a production-ready Federated Learning (FL) Laboratory and Institutional IDE.
+Production-grade Federated Learning Laboratory and Institutional IDE with Supabase-powered authentication and real-time database tracking.
 
-## 🚀 Deployment Instructions
+## 🚀 Deploy (Free Hosting)
 
-1.  **Create a New Space**: Choose **Docker** as the SDK.
-2.  **Upload the Code**: Push this repository to the HF Space.
-3.  **Configure Secrets**:
-    - Go to **Settings > Variables and Secrets**.
-    - Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-4.  **Update Supabase Redirects**:
-    - Copy the Space URL (e.g., `https://user-space.hf.space`).
-    - Add it to your Supabase Project **Authentication > URL Configuration > Redirect URIs**.
+### Hugging Face Spaces (Recommended)
+1. Create a Space with **Docker** SDK
+2. Push this repo — it auto-builds and deploys
+3. Set secrets in **Settings → Repository Secrets**:
+   - `SUPABASE_SECRET_KEY` (your Supabase secret key)
+
+### Railway
+```bash
+railway login && railway up
+```
+Railway auto-detects the Dockerfile and `PORT` env var.
+
+### Render
+1. Connect repo → Select **Docker** runtime
+2. Set env var `PORT` (Render assigns dynamically)
+
+### Fly.io
+```bash
+fly launch --dockerfile Dockerfile
+```
+
+## 🔐 Supabase Setup
+1. Go to your [Supabase SQL Editor](https://supabase.com/dashboard)
+2. Run `dashboard/supabase_setup.sql` to create tables
+3. Enable **Email Auth** in Authentication → Providers
+4. Add your deploy URL to **Authentication → URL Configuration → Redirect URIs**
 
 ## 🏗️ Architecture
+- **Backend**: FastAPI + Flower (Federated Learning Orchestrator)
+- **Frontend**: React + Vite (Institutional Dashboard)
+- **Database**: Supabase (PostgreSQL + Auth + RLS)
+- **Security**: Diffie-Hellman Key Exchange, Differential Privacy, Blockchain Ledger
 
-- **Backend**: FastAPI + Flower (Federated Learning Orchestrator).
-- **Frontend**: React + Tailwind (Institutional Dashboard).
-- **Security**: Diffie-Hellman Key Exchange, Differential Privacy, and Blockchain Ledger.
+## 📊 Database Tables
+| Table | Purpose |
+|-------|---------|
+| `profiles` | Auto-created user profiles on signup |
+| `training_sessions` | FL training session history per user |
+| `experiment_logs` | Per-round metrics (accuracy, loss, etc.) |
+| `architecture_configs` | Saved model architectures |
+| `lab_experiments` | Code Laboratory history |
+| `activity_log` | User activity tracking |
+
+All tables enforce **Row Level Security (RLS)** — users can only access their own data.
 
 ---
 *Maintained by the AI Guardian Team.*

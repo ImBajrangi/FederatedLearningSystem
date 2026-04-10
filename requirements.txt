@@ -1,3 +1,6 @@
+# AI Guardian — Production Dependencies (Free-Tier Optimized)
+# Using CPU-only torch for smaller Docker images (~800MB savings)
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch>=2.0.0
 torchvision>=0.15.0
 numpy>=1.24.0
@@ -16,5 +19,4 @@ python-multipart
 python-dotenv
 pydantic-settings
 requests
-# scikit-learn
 onnx

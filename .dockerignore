@@ -1,1 +1,31 @@
-.git\n.venv\nnode_modules\nstitch_hackathon\nresearch_sandbox\ndist
+# === Build Context Exclusions ===
+# Keep Docker context small for fast builds on free-tier CI
+.git
+.github
+.venv
+__pycache__
+*.pyc
+node_modules
+dashboard/node_modules
+dashboard/dist
+data/
+*.db
+*.db-*
+*.sqlite3
+*.log
+*.zip
+.DS_Store
+.localStorage
+stitch_hackathon/
+research_sandbox/
+secure_training_platform/
+tmp/
+scratch/
+docs/
+exports/
+deployment_hf/
+.env
+.env.local
+.env*.local
+*.md
+!README.md
