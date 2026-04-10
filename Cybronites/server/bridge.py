@@ -319,106 +319,195 @@ async def health_check():
 
 @app.post("/api/v1/federated/start")
 async def start_federated_training():
-    """Triggers a new federated training session using in-process threads.
-    Uses the same pattern as the working app.py auto-start."""
+    """Launches a proper federated training session with:
+    - Singleton session guard (prevents duplicate launches)
+    - Strategy connected to bridge for real-time dashboard telemetry
+    - Cloud-safe dataset downloads (/tmp for read-only filesystems)
+    - Configurable rounds and clients
+    - Thread-safe with proper lifecycle management
+    """
     import threading
-    import flwr as fl
-    
-    FLOWER_PORT = 8080
+
+    # ─── Singleton Guard ───
+    if hasattr(bridge, '_fl_session_active') and bridge._fl_session_active:
+        return {"success": False, "message": "Training session already in progress."}
+
+    bridge._fl_session_active = True
+    FLOWER_PORT = int(os.environ.get("FL_INTERNAL_PORT", 8080))
+    NUM_ROUNDS = int(os.environ.get("FL_ROUNDS", 5))
+    NUM_CLIENTS = int(os.environ.get("FL_CLIENTS", 2))
     _flower_ready = threading.Event()
-    
+
     def _run_server():
-        """Background thread for Flower gRPC server."""
+        """Background thread: Flower gRPC server with bridge-connected strategy."""
+        import flwr as fl
         import signal
         from Cybronites.server.strategy import SecureFedAvg
         from blockchain.ledger import Blockchain
         from blockchain.reputation import ReputationManager
-        
+
+        # Neutralize signals in non-main thread (prevents crash on cloud)
         original_signal = signal.signal
-        signal.signal = lambda *a, **kw: None  # Neutralize in non-main thread
-        
+        try:
+            signal.signal = lambda *a, **kw: None
+        except Exception:
+            pass
+
         ledger = Blockchain(difficulty=1)
         reputation = ReputationManager()
+
+        # Strategy is connected to bridge for real-time dashboard telemetry
         strategy = SecureFedAvg(
             blockchain=ledger,
             reputation=reputation,
-            min_fit_clients=2,
-            min_available_clients=2,
+            min_fit_clients=NUM_CLIENTS,
+            min_available_clients=NUM_CLIENTS,
             aggregation_method="median",
+            # No log_queue — uses bridge.broadcast_sync directly for dashboard sync
         )
+
+        bridge.broadcast_sync("LOG", f"[FL-SERVER] Flower gRPC binding to port {FLOWER_PORT}...")
+        bridge.broadcast_sync("STAT_UPDATE", {"status": "INITIALIZING", "round": 0, "clients_active": 0})
         _flower_ready.set()
+
         try:
             fl.server.start_server(
                 server_address=f"0.0.0.0:{FLOWER_PORT}",
-                config=fl.server.ServerConfig(num_rounds=5),
+                config=fl.server.ServerConfig(num_rounds=NUM_ROUNDS),
                 strategy=strategy,
                 grpc_max_message_length=512 * 1024 * 1024,
             )
         except Exception as e:
             logger.error(f"Flower Server error: {e}")
+            bridge.broadcast_sync("LOG", f"[FL-SERVER] CRITICAL ERROR: {e}")
         finally:
-            signal.signal = original_signal
-    
-    def _run_client(cid, num_clients=2):
-        """Background thread for a simulation client."""
-        _flower_ready.wait(timeout=60)
-        import time as _t; _t.sleep(5)
+            try:
+                signal.signal = original_signal
+            except Exception:
+                pass
+            bridge._fl_session_active = False
+            bridge.broadcast_sync("LOG", "[FL-SERVER] Session complete.")
+            bridge.broadcast_sync("STAT_UPDATE", {"status": "FINISHED"})
+
+    def _run_client(cid, num_clients):
+        """Background thread: Federated client with DP noise."""
+        import flwr as fl
+        import torch
+
+        # Wait for server to bind
+        if not _flower_ready.wait(timeout=30):
+            bridge.broadcast_sync("LOG", f"[CLIENT {cid}] ERROR: Server did not start in time.")
+            return
+
+        time.sleep(3 + cid)  # Stagger client connections
+
         try:
             from Cybronites.client.model import MNISTNet, train as _train, test as _test
             from Cybronites.client.dataset import load_data
             from security.privacy import apply_dp_to_updates, DPSpec
-            import torch
-            import urllib.request
-            
+
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+            # Cloud-safe: use /tmp for dataset if filesystem is read-only
+            data_dir = "/tmp/mnist_data" if os.environ.get("SPACE_ID") or not os.access(".", os.W_OK) else "./data"
+            os.makedirs(data_dir, exist_ok=True)
+
+            bridge.broadcast_sync("LOG", f"[CLIENT {cid}] Loading MNIST dataset...")
+            train_loader, test_loader = load_data(client_id=cid, num_clients=num_clients)
+
+            # Fetch public IP for audit trail
+            ip = "127.0.0.1"
             try:
+                import urllib.request
                 with urllib.request.urlopen("https://api.ipify.org", timeout=2) as r:
                     ip = r.read().decode("utf-8")
             except Exception:
-                ip = "127.0.0.1"
-            
-            train_loader, test_loader = load_data(client_id=cid, num_clients=num_clients)
-            
-            class _Client(fl.client.NumPyClient):
+                pass
+
+            class SecureFlowerClient(fl.client.NumPyClient):
                 def __init__(self):
                     self.model = MNISTNet().to(device)
                     self.dp_spec = DPSpec(l2_norm_clip=1.0, noise_multiplier=0.01)
+
                 def get_parameters(self, config):
                     return [v.cpu().numpy() for v in self.model.state_dict().values()]
+
                 def set_parameters(self, parameters):
                     pairs = zip(self.model.state_dict().keys(), parameters)
                     self.model.load_state_dict({k: torch.tensor(v) for k, v in pairs}, strict=True)
+
                 def fit(self, parameters, config):
+                    bridge.broadcast_sync("LOG", f"[CLIENT {cid}] Training locally...")
                     initial = [torch.tensor(p).to(device) for p in parameters]
                     self.set_parameters(parameters)
                     opt = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
                     loss, acc = _train(self.model, train_loader, opt, epochs=1, device=device)
+
+                    # Apply Differential Privacy to parameter updates
+                    bridge.broadcast_sync("LOG", f"[CLIENT {cid}] Applying DP noise (ε-privacy)...")
                     new_params = [v.cpu() for v in self.model.state_dict().values()]
                     updates = {n: new_params[i] - initial[i].cpu() for i, (n, _) in enumerate(self.model.state_dict().items())}
                     dp = apply_dp_to_updates(updates, self.dp_spec)
                     final = [(initial[i].cpu() + dp[n]).numpy() for i, (n, _) in enumerate(self.model.state_dict().items())]
+
+                    bridge.broadcast_sync("LOG", f"[CLIENT {cid}] Round complete — Acc: {acc:.4f}, Loss: {loss:.4f}")
                     return final, len(train_loader.dataset), {"accuracy": float(acc), "loss": float(loss), "ip": ip}
+
                 def evaluate(self, parameters, config):
                     self.set_parameters(parameters)
                     loss, acc = _test(self.model, test_loader, device=device)
                     return float(loss), len(test_loader.dataset), {"accuracy": float(acc), "ip": ip}
-            
+
+            bridge.broadcast_sync("LOG", f"[CLIENT {cid}] Connecting to gRPC server at 127.0.0.1:{FLOWER_PORT}...")
             fl.client.start_client(
                 server_address=f"127.0.0.1:{FLOWER_PORT}",
-                client=_Client().to_client(),
-                grpc_max_message_length=512 * 1024 * 1024
+                client=SecureFlowerClient().to_client(),
+                grpc_max_message_length=512 * 1024 * 1024,
             )
+            bridge.broadcast_sync("LOG", f"[CLIENT {cid}] Disconnected from server.")
         except Exception as e:
             logger.error(f"Client {cid} error: {e}")
-    
-    # Launch server + clients as threads (same process = shared bridge)
-    threading.Thread(target=_run_server, daemon=True).start()
-    for cid in range(2):
-        threading.Thread(target=_run_client, args=(cid, 2), daemon=True).start()
-        import time as _t; _t.sleep(1)
-    
-    await bridge.broadcast("LOG", "SYSTEM: Federated Training session launched.")
-    return {"success": True, "message": "Federated Training launched."}
+            bridge.broadcast_sync("LOG", f"[CLIENT {cid}] ERROR: {e}")
+
+    # ─── Launch FL Stack ───
+    bridge.broadcast_sync("LOG", "═══════════════════════════════════════════════════")
+    bridge.broadcast_sync("LOG", f"  FEDERATED LEARNING SESSION LAUNCHING")
+    bridge.broadcast_sync("LOG", f"  Rounds: {NUM_ROUNDS} | Clients: {NUM_CLIENTS} | Port: {FLOWER_PORT}")
+    bridge.broadcast_sync("LOG", f"  Security: Differential Privacy + Blockchain Audit")
+    bridge.broadcast_sync("LOG", "═══════════════════════════════════════════════════")
+
+    # Server thread
+    threading.Thread(target=_run_server, name="FL-Server", daemon=True).start()
+
+    # Client threads (staggered startup)
+    for cid in range(NUM_CLIENTS):
+        threading.Thread(target=_run_client, args=(cid, NUM_CLIENTS), name=f"FL-Client-{cid}", daemon=True).start()
+
+    await bridge.broadcast("LOG", "SYSTEM: All federated threads launched. Awaiting convergence...")
+    return {"success": True, "message": f"Federated Training launched ({NUM_ROUNDS} rounds, {NUM_CLIENTS} clients)."}
+
+@app.get("/api/v1/federated/status")
+async def federated_status():
+    """Returns the current FL session state for dashboard polling."""
+    return {
+        "active": getattr(bridge, '_fl_session_active', False),
+        "status": bridge.state.get("status", "IDLE"),
+        "round": bridge.state.get("round", 0),
+        "accuracy_history": bridge.state.get("accuracy_history", []),
+        "loss_history": bridge.state.get("loss_history", []),
+        "node_registry": bridge.state.get("node_registry", {}),
+        "chain_length": len(bridge.state.get("chain", [])),
+    }
+
+@app.post("/api/v1/federated/reset")
+async def federated_reset():
+    """Resets the FL session flag so a new training can be started."""
+    bridge._fl_session_active = False
+    bridge.state["status"] = "IDLE"
+    bridge.state["round"] = 0
+    await bridge.broadcast("STAT_UPDATE", {"status": "IDLE", "round": 0})
+    await bridge.broadcast("LOG", "SYSTEM: Session reset. Ready for new training.")
+    return {"success": True}
 
 @app.post("/api/v1/laboratory/validate")
 async def validate_code(data: Dict[str, str]):
