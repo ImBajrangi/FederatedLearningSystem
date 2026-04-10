@@ -79,10 +79,18 @@ export const AuthProvider = ({ children }) => {
             setUser({ email: "guest@institution.edu", guest: true });
             return;
         }
+        const redirectUrl = window.location.origin.includes('localhost') 
+            ? window.location.origin 
+            : window.location.origin.replace(/\/$/, "");
+
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin
+                redirectTo: redirectUrl,
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                }
             }
         });
         if (error) throw error;
