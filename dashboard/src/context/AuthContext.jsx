@@ -79,18 +79,10 @@ export const AuthProvider = ({ children }) => {
             setUser({ email: "guest@institution.edu", guest: true });
             return;
         }
-        const redirectUrl = window.location.origin.includes('localhost') 
-            ? window.location.origin 
-            : window.location.origin.replace(/\/$/, "");
-
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: redirectUrl,
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent',
-                }
+                redirectTo: window.location.origin
             }
         });
         if (error) throw error;
@@ -130,20 +122,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     // Helper: get display name
-    const displayName = profile?.username 
-        || profile?.full_name 
-        || user?.user_metadata?.username 
-        || user?.email?.split('@')[0] 
+    const displayName = profile?.username
+        || profile?.full_name
+        || user?.user_metadata?.username
+        || user?.email?.split('@')[0]
         || 'Researcher';
 
     return (
-        <AuthContext.Provider value={{ 
-            user, 
-            profile, 
-            loading, 
-            login, 
-            loginWithGoogle, 
-            register, 
+        <AuthContext.Provider value={{
+            user,
+            profile,
+            loading,
+            login,
+            loginWithGoogle,
+            register,
             logout,
             displayName,
             activeSessionId,

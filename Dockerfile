@@ -3,10 +3,12 @@ FROM node:20-slim AS frontend-builder
 WORKDIR /app/dashboard
 COPY dashboard/package*.json ./
 RUN npm ci 2>/dev/null || npm install
-COPY dashboard/ ./
 # Supabase credentials must be available at build time for Vite to inline them
-ENV VITE_SUPABASE_URL=https://tilimltxgeucefxzerqi.supabase.co
-ENV VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpbGltbHR4Z2V1Y2VmeHplcnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MjQyNTQsImV4cCI6MjA4MzIwMDI1NH0.lwaCJyTRW6jNsfQJ32R_wAwp11yj6bvsJ4fzC0EX_00
+ARG VITE_SUPABASE_URL=https://tilimltxgeucefxzerqi.supabase.co
+ARG VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpbGltbHR4Z2V1Y2VmeHplcnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MjQyNTQsImV4cCI6MjA4MzIwMDI1NH0.lwaCJyTRW6jNsfQJ32R_wAwp11yj6bvsJ4fzC0EX_00
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+COPY dashboard/ ./
 RUN npm run build
 
 # Stage 2: Final Production Image (optimized for free-tier servers)
