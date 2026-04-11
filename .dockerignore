@@ -17,11 +17,9 @@ data/
 .localStorage
 stitch_hackathon/
 research_sandbox/
-secure_training_platform/
 tmp/
 scratch/
 exports/
-deployment_hf/
 .env
 .env.local
 .env*.local
