@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-./venv/bin/python run_client.py --server https://rishuuuuuu-cybronites-secure-fl.hf.space --name "Dost-Ka-Laptop"
+./venv/bin/python run_client.py --server https://mdark4025-cybronites.hf.space --name "Remote-Device"
 Cybronites — Distributed Learning Client
 
 Run this on ANY device to participate in federated training.
 No special setup needed — just Python + PyTorch.
 
 Usage:
-    python run_client.py --server https://rishuuuuuu-cybronites-secure-fl.hf.space --name "My-Laptop"
+    python run_client.py --server https://mdark4025-cybronites.hf.space --name "My-Laptop"
 """
 
 import argparse
@@ -209,7 +209,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python run_client.py --server https://rishuuuuuu-cybronites-secure-fl.hf.space --name "Lab-PC"
+  python run_client.py --server https://mdark4025-cybronites.hf.space --name "Lab-PC"
   python run_client.py --server http://192.168.1.100:7860 --name "Rishu-Laptop" --epochs 2
         """
     )

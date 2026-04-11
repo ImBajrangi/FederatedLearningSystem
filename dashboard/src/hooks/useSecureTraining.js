@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 
 const isProd = import.meta.env.PROD;
-const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://rishuuuuuu-cybronites-secure-fl.hf.space';
+const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://mdark4025-cybronites.hf.space';
 const SECURE_BASE_URL = isProd 
     ? `${HF_BACKEND}/api/secure`
     : `http://localhost:${import.meta.env.VITE_SECURE_PORT || '8100'}`;

@@ -719,10 +719,7 @@ async def get_distributed_connection_info():
     
     return {
         "server_url": server_url,
-        "api_base": f"https://{server_url}" if server_url != "127.0.0.1" else "http://127.0.0.1:7860",
-        "status": coord.status,
-        "registered_clients": len(coord.registered_clients),
-        "command": f'python run_client.py --server https://rishuuuuuu-cybronites-secure-fl.hf.space --name "My-Device"',
+        "command": f'python run_client.py --server https://mdark4025-cybronites.hf.space --name "My-Device"',
     }
 
 # ── Secure Training Platform Proxy (for production single-port) ──

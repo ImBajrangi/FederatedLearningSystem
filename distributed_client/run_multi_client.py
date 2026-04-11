@@ -5,7 +5,7 @@ Runs 2-5 clients SIMULTANEOUSLY from one machine to simulate
 multi-device distributed federated learning.
 
 Usage:
-    python run_multi_client.py --server https://rishuuuuuu-cybronites-secure-fl.hf.space --clients 3
+    python run_multi_client.py --server https://mdark4025-cybronites.hf.space --clients 3
     python run_multi_client.py --server http://localhost:7860 --clients 5 --epochs 2
 """
 

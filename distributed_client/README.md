@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ### 3. Join a Training Session
 ```bash
 python run_client.py \
-  --server https://rishuuuuuu-cybronites-secure-fl.hf.space \
+  --server https://mdark4025-cybronites.hf.space \
   --name "My-Device-Name"
 ```
 
@@ -39,10 +39,8 @@ That's it! The client will:
 
 ```bash
 # Basic usage
-python run_client.py --server https://rishuuuuuu-cybronites-secure-fl.hf.space --name "Rishu-Laptop"
-
-# More training per round
-python run_client.py --server https://rishuuuuuu-cybronites-secure-fl.hf.space --name "Lab-PC" --epochs 3
+python run_client.py --server https://mdark4025-cybronites.hf.space --name "My-Device"
+python run_client.py --server https://mdark4025-cybronites.hf.space --name "Office-PC" --epochs 3
 
 # Local server (testing)
 python run_client.py --server http://localhost:7860 --name "Test-Node"
