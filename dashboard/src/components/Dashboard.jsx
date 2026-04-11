@@ -126,132 +126,139 @@ export const Dashboard = ({
         </div>
       </div>
 
-      {/* ─── Distributed Neural Exchange Section ─── */}
+      {/* ─── Distributed Neural Exchange (Reorganized) ─── */}
       <div className="dash-distributed-section">
-        <div className="dist-card-premium">
-          <div className="dist-bg-globe">
-             <Globe size={240} />
-          </div>
-
-          <div className="dist-layout">
-            {/* Control Sidebar */}
-            <div className="dist-sidebar">
+        <div className="dist-organizer-grid">
+          
+          {/* Panel 1: Orchestration & Session */}
+          <div className="dist-panel">
+            <div className="dist-panel-header">
+              <Zap size={14} className="text-accent" />
+              <span className="type-label-bold !text-main">Session Controller</span>
+            </div>
+            
+            <div className="flex flex-col gap-6">
               <div>
-                <div className="dist-header-group">
-                  <div className="dist-icon-box">
-                    <Globe size={20} />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="type-label-bold !text-main">Synchronization</span>
-                    <span className="mono text-[8px] opacity-40 uppercase">v2.4 Distributed</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-6">
-                  <div>
-                    <span className="type-label block mb-2">Network Status</span>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-border rounded-sm">
-                      <span className={`w-2 h-2 rounded-full ${distributedStatus.status !== 'IDLE' ? 'bg-success animate-pulse' : 'bg-slate-300'}`} 
-                            style={{ backgroundColor: distributedStatus.status !== 'IDLE' ? 'var(--success)' : '#cbd5e1' }} />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">
-                        {distributedStatus.status || 'Offline'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="type-label block mb-2">Protocol Config</span>
-                    <div className="text-[10px] space-y-1 opacity-60 mono">
-                      <div className="flex justify-between"><span>ROUNDS:</span> <span>05</span></div>
-                      <div className="flex justify-between"><span>MIN_NODES:</span> <span>02</span></div>
-                    </div>
-                  </div>
+                <span className="dist-metric-label-mini">Network State</span>
+                <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-slate-50 border border-border rounded-sm">
+                  <span className={`w-2 h-2 rounded-full ${distributedStatus.status !== 'IDLE' ? 'bg-success animate-pulse' : 'bg-slate-300'}`} 
+                        style={{ backgroundColor: distributedStatus.status !== 'IDLE' ? 'var(--success)' : '#cbd5e1' }} />
+                  <span className="mono text-[10px] font-bold uppercase tracking-widest text-main">
+                    {distributedStatus.status || 'Offline'}
+                  </span>
                 </div>
               </div>
 
-              <button 
-                onClick={() => distributedStatus.status === 'IDLE' ? startDistributedSession(5, 2) : stopDistributedSession()}
-                className={`dist-btn-action ${distributedStatus.status === 'IDLE' ? 'dist-btn-start' : 'dist-btn-stop'}`}
-              >
-                {distributedStatus.status === 'IDLE' ? <Zap size={12} fill="currentColor" /> : <TrendingUp size={12} />}
-                <span>{distributedStatus.status === 'IDLE' ? 'Initiate Exchange' : 'Terminate'}</span>
-              </button>
+              <div className="space-y-3">
+                <span className="dist-metric-label-mini text-accent">Protocol Constraints</span>
+                <div className="mono text-[10px] space-y-2 opacity-70">
+                  <div className="flex justify-between border-b border-border/40 pb-1">
+                    <span>ROUNDS_LIMIT</span> 
+                    <span className="text-main font-bold">05</span>
+                  </div>
+                  <div className="flex justify-between border-b border-border/40 pb-1">
+                    <span>MIN_CONSENSUS</span> 
+                    <span className="text-main font-bold">02</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Main Content Area */}
-            <div className="dist-main">
-              <div className="dist-metrics-grid">
-                
-                {/* Metrics */}
-                <div className="dist-metric-item">
-                  <div>
-                    <span className="type-label block mb-2">Registered Nodes</span>
-                    <div className="flex items-baseline gap-3">
-                      <span className="serif text-4xl text-main">{distributedStatus.registeredClients || 0}</span>
-                      <span className="type-label opacity-30">/ 02 Min</span>
-                    </div>
-                    <div className="mt-4 h-1 bg-border relative overflow-hidden">
-                       <motion.div 
-                          className="absolute h-full left-0"
-                          style={{ backgroundColor: 'var(--accent)' }}
-                          initial={{ width: 0 }}
-                          animate={{ width: `${Math.min(100, ((distributedStatus.registeredClients || 0) / 2) * 100)}%` }}
-                       />
-                    </div>
-                  </div>
+            <button 
+              onClick={() => distributedStatus.status === 'IDLE' ? startDistributedSession(5, 2) : stopDistributedSession()}
+              className={`dist-btn-action-large ${distributedStatus.status === 'IDLE' ? '' : 'dist-btn-stop-large'}`}
+            >
+              {distributedStatus.status === 'IDLE' ? <Zap size={12} fill="currentColor" /> : <TrendingUp size={12} />}
+              <span>{distributedStatus.status === 'IDLE' ? 'Initiate Session' : 'Terminate'}</span>
+            </button>
+          </div>
 
-                  <div className="mt-8">
-                    <span className="type-label block mb-2">Round Progress</span>
-                    <div className="flex items-baseline gap-3">
-                      <span className="serif text-4xl text-main">{distributedStatus.round || 0}</span>
-                      <span className="type-label opacity-30">/ 05 Rounds</span>
-                    </div>
-                  </div>
+          {/* Panel 2: Live Metrics & Convergence */}
+          <div className="dist-panel">
+            <div className="dist-panel-header">
+              <Activity size={14} className="text-accent" />
+              <span className="type-label-bold !text-main">Aggregation Progress</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 mb-8">
+              <div className="dist-metric-box">
+                <span className="dist-metric-label-mini">Registered Nodes</span>
+                <div className="dist-metric-value-row">
+                  <span className="dist-metric-val">{distributedStatus.registeredClients || 0}</span>
+                  <span className="type-label opacity-30">/ 02</span>
                 </div>
-
-                {/* Progress Ring */}
-                <div className="flex flex-col items-center justify-center">
-                  <div className="dist-progress-ring-container">
-                    <div className="dist-ring-text">
-                      <span className="serif text-3xl leading-none">{distributedStatus.updatesReceived || 0}</span>
-                      <span className="type-label !text-[8px] opacity-40">Uplinks</span>
-                    </div>
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                      <circle className="text-border" strokeWidth="4" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" 
-                              style={{ color: 'var(--border)' }} />
-                      <motion.circle 
-                        strokeWidth="4" 
-                        strokeDasharray="283" 
-                        initial={{ strokeDashoffset: 283 }}
-                        animate={{ strokeDashoffset: 283 - (283 * ((distributedStatus.updatesReceived || 0) / (distributedStatus.updatesNeeded || 1))) }}
-                        strokeLinecap="round" 
-                        stroke="currentColor" 
-                        fill="transparent" 
-                        r="45" cx="50" cy="50" 
-                        style={{ color: 'var(--accent)' }}
-                      />
-                    </svg>
-                  </div>
-                  <span className="mt-4 text-center type-label opacity-40 uppercase">Awaiting Node Gradients</span>
+              </div>
+              <div className="dist-metric-box">
+                <span className="dist-metric-label-mini">Current Round</span>
+                <div className="dist-metric-value-row">
+                  <span className="dist-metric-val">{distributedStatus.round || 0}</span>
+                  <span className="type-label opacity-30">/ 05</span>
                 </div>
+              </div>
+            </div>
 
-                {/* CLI Guide */}
-                <div className="dist-cli-box">
-                  <div className="flex items-center gap-2">
-                    <Terminal size={12} style={{ color: 'var(--accent)' }} />
-                    <span className="type-label-bold !text-main">Connection Directive</span>
-                  </div>
-                  <div className="dist-code-area">
-                    python run_client.py <br/> --server https://mdark4025-cybronites.hf.space
-                  </div>
-                  <p className="type-label !text-[8px] leading-relaxed opacity-50 italic">
-                    Geographically distributed nodes must use this endpoint for secure weight synchronization.
-                  </p>
-                </div>
+            <div className="dist-ring-center">
+              <div className="absolute flex flex-col items-center">
+                <span className="serif text-3xl text-main leading-none">{distributedStatus.updatesReceived || 0}</span>
+                <span className="dist-metric-label-mini !text-[7px] opacity-40">Updates</span>
+              </div>
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle stroke="var(--border)" strokeOpacity="0.3" strokeWidth="3" fill="transparent" r="45" cx="50" cy="50" />
+                <motion.circle 
+                  stroke="var(--accent)"
+                  strokeWidth="3" 
+                  strokeDasharray="283" 
+                  initial={{ strokeDashoffset: 283 }}
+                  animate={{ strokeDashoffset: 283 - (283 * ((distributedStatus.updatesReceived || 0) / (distributedStatus.updatesNeeded || 1))) }}
+                  strokeLinecap="round" 
+                  fill="transparent" 
+                  r="45" cx="50" cy="50" 
+                />
+              </svg>
+            </div>
+            
+            <p className="mt-6 text-center mono text-[8px] uppercase tracking-tighter opacity-40">
+              Awaiting Gradient Distribution
+            </p>
 
+            <div className="dist-bg-globe-watermark">
+              <Globe size={180} />
+            </div>
+          </div>
+
+          {/* Panel 3: CLI Edge Directive */}
+          <div className="dist-panel">
+            <div className="dist-panel-header">
+              <Terminal size={14} className="text-accent" />
+              <span className="type-label-bold !text-main">Edge Connectivity</span>
+            </div>
+
+            <p className="text-[10px] leading-relaxed text-muted mb-6">
+              Geographically distributed entities must execute the following directive to join the synchronization pool.
+            </p>
+
+            <div className="dist-terminal">
+              <code className="text-main/80 block break-all leading-relaxed mb-4">
+                python run_client.py <br/> 
+                --server https://mdark4025-cybronites.hf.space <br/>
+                --name "NODE_{Math.floor(Math.random()*1000)}"
+              </code>
+              <div className="flex items-center gap-2 opacity-40 selection:bg-transparent">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                  <span className="mono text-[8px]">READY_FOR_HANDSHAKE</span>
+              </div>
+            </div>
+
+            <div className="mt-auto pt-6 border-t border-border/40">
+              <div className="flex items-start gap-3">
+                <AlertCircle size={14} className="text-accent mt-1 flex-shrink-0" />
+                <p className="text-[9px] leading-relaxed opacity-60 italic">
+                  Nodes automatically encrypt gradients using AES-256-GCM before transport. Ensure stable internet uplink during aggregation.
+                </p>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -382,6 +389,122 @@ export const Dashboard = ({
           animation: dash-pulse 2s infinite;
         }
         @keyframes dash-pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .dash-distributed-section { 
+          margin-top: 40px; 
+          margin-bottom: 60px; 
+          position: relative;
+        }
+        .dist-organizer-grid {
+          display: grid;
+          grid-template-columns: 280px 1fr 320px;
+          gap: 24px;
+          position: relative;
+          z-index: 10;
+        }
+        @media (max-width: 1200px) { .dist-organizer-grid { grid-template-columns: 300px 1fr; } }
+        @media (max-width: 850px) { .dist-organizer-grid { grid-template-columns: 1fr; } }
+
+        .dist-panel {
+          background: var(--bg-surface);
+          border: 1px solid var(--border);
+          padding: 32px;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          transition: border-color 0.3s, transform 0.3s;
+        }
+        .dist-panel:hover { border-color: var(--accent); }
+        
+        .dist-panel-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .dist-bg-globe-watermark {
+          position: absolute;
+          bottom: -30px;
+          right: -30px;
+          color: var(--accent);
+          opacity: 0.03;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .dist-metric-box {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          margin-bottom: 24px;
+        }
+        .dist-metric-value-row {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+        }
+        .dist-metric-val { 
+          font-family: var(--font-serif); 
+          font-size: 32px; 
+          color: var(--text-main);
+          line-height: 1;
+        }
+        .dist-metric-label-mini {
+          font-size: 9px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--text-muted);
+          font-weight: 600;
+        }
+
+        .dist-btn-action-large {
+          margin-top: auto;
+          padding: 18px;
+          background: var(--accent);
+          color: white;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          font-size: 10px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        .dist-btn-action-large:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); }
+        .dist-btn-stop-large { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: none; }
+        .dist-btn-stop-large:hover { background: var(--error); color: white; }
+
+        .dist-ring-center {
+          width: 110px; height: 110px;
+          position: relative;
+          display: flex;
+          align-items: center; justify-content: center;
+          margin: 0 auto;
+        }
+        
+        .dist-terminal {
+          background: var(--bg-main);
+          padding: 24px;
+          border: 1px solid var(--border);
+          font-family: var(--font-mono);
+          font-size: 10px;
+          position: relative;
+          overflow: hidden;
+        }
+        .dist-terminal::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; width: 3px; height: 100%;
+          background: var(--accent);
+          opacity: 0.5;
+        }
 
         .dash-actions {
           display: flex;
