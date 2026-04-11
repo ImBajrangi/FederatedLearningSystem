@@ -3,9 +3,15 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const isProd = import.meta.env.PROD;
 export const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7880';
 export const BACKEND_IP = import.meta.env.VITE_BACKEND_IP || '127.0.0.1';
-export const API_BASE_URL = isProd ? window.location.origin : `http://${BACKEND_IP}:${BACKEND_PORT}`;
+
+// Production: connect to HuggingFace Space backend
+const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://rishuuuuuu-cybronites-secure-fl.hf.space';
+export const API_BASE_URL = isProd ? HF_BACKEND : `http://${BACKEND_IP}:${BACKEND_PORT}`;
+
+// WebSocket: derive from HF backend URL in production
+const hfWsUrl = HF_BACKEND.replace('https://', 'wss://').replace('http://', 'ws://');
 export const WS_URL = isProd
-  ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`
+  ? `${hfWsUrl}/ws`
   : `ws://${BACKEND_IP}:${BACKEND_PORT}/ws`;
 
 export function useSecureFederated() {
@@ -30,9 +36,19 @@ export function useSecureFederated() {
     epochs: 1
   });
   const [roundHistory, setRoundHistory] = useState([]);
-  const [shards, setShards] = useState([]); // NEW STATE
+  const [shards, setShards] = useState([]); 
   const [modelArchitecture, setModelArchitecture] = useState('# Loading Model source...');
   const [labState, setLabState] = useState({ status: 'IDLE', progress: 0, epoch: 0, loss: 0, accuracy: 0, ptPath: null, onnxPath: null });
+  
+  // State for distributed status sync (from simulation/HF updates)
+  const [distributedStatus, setDistributedStatus] = useState({
+    status: 'IDLE',
+    round: 0,
+    totalRounds: 5,
+    registeredClients: 0,
+    updatesReceived: 0,
+    updatesNeeded: 2,
+  });
 
   const ws = useRef(null);
 
@@ -64,12 +80,32 @@ export function useSecureFederated() {
           if (state.chain) setBlockchain(state.chain);
           if (state.node_registry) setNodeRegistry(state.node_registry);
           if (state.hyperparams) setHyperparams(state.hyperparams);
-          if (state.round_history) setRoundHistory(state.round_history);
+          if (state.round_history) {
+             setRoundHistory(state.round_history.map(r => ({
+                ...r,
+                lr: r.lr ?? 0.01,
+                batch: r.batch ?? 32,
+              })));
+          }
           if (state.shards) setShards(state.shards);
           if (state.model_architecture) setModelArchitecture(state.model_architecture);
           if (state.lab_state) {
             setLabState(prev => ({ ...prev, ...state.lab_state }));
           }
+          
+          // Initial distributed status sync
+          if (state.status) {
+            setDistributedStatus(prev => ({
+              ...prev,
+              status: state.status,
+              round: state.round ?? prev.round,
+              totalRounds: state.total_rounds ?? prev.totalRounds,
+              registeredClients: state.clients_active ?? prev.registeredClients,
+              updatesReceived: state.updates_received ?? prev.updatesReceived,
+              updatesNeeded: state.updates_needed ?? prev.updatesNeeded,
+            }));
+          }
+
           updateClientStatus(state.status, state.clients_active);
           break;
         }
@@ -87,11 +123,32 @@ export function useSecureFederated() {
           if (payload.chain !== undefined) setBlockchain(payload.chain);
           if (payload.node_registry !== undefined) setNodeRegistry(payload.node_registry);
           if (payload.hyperparams) setHyperparams(payload.hyperparams);
-          if (payload.round_history) setRoundHistory(payload.round_history);
+          if (payload.round_history) {
+            setRoundHistory(
+              payload.round_history.map(r => ({
+                ...r,
+                lr: r.lr ?? 0.01,
+                batch: r.batch ?? 32,
+              }))
+            );
+          }
           if (payload.shards) setShards(payload.shards);
           if (payload.model_architecture) setModelArchitecture(payload.model_architecture);
           if (payload.lab_state) {
             setLabState(prev => ({ ...prev, ...payload.lab_state }));
+          }
+
+          // Sync distributed training status from WebSocket broadcasts
+          if (payload.status && ['IDLE','WAITING','AGGREGATING','COMPLETE'].includes(payload.status)) {
+            setDistributedStatus(prev => ({
+              ...prev,
+              status: payload.status,
+              round: payload.round ?? prev.round,
+              totalRounds: payload.total_rounds ?? prev.totalRounds,
+              registeredClients: payload.clients_active ?? prev.registeredClients,
+              updatesReceived: payload.updates_received ?? prev.updatesReceived,
+              updatesNeeded: payload.updates_needed ?? prev.updatesNeeded,
+            }));
           }
           break;
         }
@@ -105,11 +162,12 @@ export function useSecureFederated() {
         case 'LAB_PROGRESS': {
           setLabState(prev => ({
             ...prev,
-            status: 'TRAINING',
+            status: payload.status || 'TRAINING',
             progress: payload.progress,
             epoch: payload.epoch,
             loss: payload.loss,
-            accuracy: payload.accuracy
+            accuracy: payload.accuracy,
+            mode: payload.mode || 'FEDERATED'
           }));
           break;
         }
@@ -127,7 +185,7 @@ export function useSecureFederated() {
         }
 
         case 'LAB_ERROR': {
-          setLabState(prev => ({ ...prev, status: 'ERROR', error: payload.error }));
+          setLabState(prev => ({ ...prev, status: 'ERROR', error: payload.error, errorLine: payload.line }));
           break;
         }
 
@@ -246,6 +304,8 @@ export function useSecureFederated() {
     clientsActive,
     executeDashboardCommand,
     evalLaboratoryCode,
-    labState
+    labState,
+    distributedStatus,
+    setDistributedStatus
   };
 }

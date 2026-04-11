@@ -4,24 +4,17 @@ import os
 import signal
 import sys
 import urllib.request
-import threading
 
-# AI GUARDIAN | UNIFIED ORCHESTRATION COORDINATOR
-# Modes:
-#   LOCAL:   Starts Bridge + Flower Server + 2 Clients (subprocesses)
-#   CLOUD:   Starts Bridge only (FL training triggered from dashboard)
+# AI GUARDIAN | LOCAL ORCHESTRATION COORDINATOR
+# Run this ONE file to start everything:
+#   1. FastAPI Bridge (Dashboard WebSocket server)
+#   2. Flower FL Server (Orchestrator)
+#   3. Federated Clients (x2)
 
+# Dynamically detect port from environment (HF default is 7860, local default 7880)
 BRIDGE_PORT = int(os.environ.get("PORT", 7880))
 FLOWER_PORT = int(os.environ.get("FLOWER_PORT", 8095))
 ROUNDS = int(os.environ.get("ROUNDS", 5))
-
-# Cloud detection
-IS_CLOUD = (
-    os.environ.get("SPACE_ID") is not None or
-    os.environ.get("RAILWAY_ENVIRONMENT") is not None or
-    os.environ.get("RENDER") is not None or
-    os.environ.get("FLY_APP_NAME") is not None
-)
 
 processes = []
 
@@ -32,7 +25,22 @@ def signal_handler(sig, frame):
             p.terminate()
         except Exception:
             pass
-    sys.exit(0)
+    # Wait briefly for processes to terminate
+    for p in processes:
+        try:
+            p.wait(timeout=3)
+        except Exception:
+            try:
+                p.kill()
+            except Exception:
+                pass
+    # Flush and force-exit to avoid daemon thread stdout lock crash
+    try:
+        sys.stdout.flush()
+        sys.stderr.flush()
+    except Exception:
+        pass
+    os._exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -40,6 +48,7 @@ def wait_for_bridge(port, timeout=15):
     """Wait until the bridge HTTP endpoint is reachable."""
     for i in range(timeout):
         try:
+            # Use /api/health as defined in bridge.py
             r = urllib.request.urlopen(f"http://localhost:{port}/api/health", timeout=1)
             if r.status == 200:
                 return True
@@ -51,149 +60,138 @@ def wait_for_bridge(port, timeout=15):
 def main():
     print("=" * 60)
     print("  AI GUARDIAN | SECURE FEDERATED LEARNING ORCHESTRATOR")
-    print(f"  MODE: {'CLOUD' if IS_CLOUD else 'LOCAL'}")
     print("=" * 60)
     
     cwd = os.getcwd()
     
     # Environment setup
     env = os.environ.copy()
+    # PYTHONPATH should be project root to find Cybronites package
     env["PYTHONPATH"] = f"{cwd}:{env.get('PYTHONPATH', '')}"
     env["PORT"] = str(BRIDGE_PORT)
     env["FLOWER_PORT"] = str(FLOWER_PORT)
-    env["FL_INTERNAL_PORT"] = str(FLOWER_PORT)
-    env["FL_ROUNDS"] = str(ROUNDS)
-    env["PYTHONUNBUFFERED"] = "1"
 
-    if IS_CLOUD:
-        # ─── CLOUD MODE ───
-        # Start only the bridge server (FastAPI). FL training is triggered
-        # from the dashboard via /api/v1/federated/start endpoint.
-        # This is the proper cloud pattern — single process, no subprocesses.
-        print(f"\n  [CLOUD] Starting Bridge Server on port {BRIDGE_PORT}...")
-        print(f"  [CLOUD] FL training will be triggered from the dashboard.")
-        
-        # Import and run directly (no subprocess) for cloud stability
-        sys.path.insert(0, cwd)
-        os.environ["PORT"] = str(BRIDGE_PORT)
-        
-        from Cybronites.server.bridge import start_bridge
-        start_bridge(port=BRIDGE_PORT)
-    else:
-        # ─── LOCAL MODE ───
-        # Start Bridge + standalone Flower Server + Clients as subprocesses
-        
-        # Update .env.local for dashboard auto-discovery
-        try:
-            env_path = os.path.join(cwd, "dashboard", ".env.local")
-            content = ""
-            if os.path.exists(env_path):
-                with open(env_path, "r") as f:
-                    content = f.read()
-            
-            import re
-            port_pattern = r"VITE_BACKEND_PORT=\d+"
-            new_line = f"VITE_BACKEND_PORT={BRIDGE_PORT}"
-            
-            if re.search(port_pattern, content):
-                new_content = re.sub(port_pattern, new_line, content)
-            else:
-                new_content = content.strip() + f"\n{new_line}\n"
-                
-            with open(env_path, "w") as f:
-                f.write(new_content)
-            print(f"  [SYNC] Dashboard .env.local -> Port {BRIDGE_PORT}")
-        except Exception as e:
-            print(f"  [WARN] Could not update .env.local: {e}")
+    # Write .env.local for dashboard auto-discovery
+    try:
+        env_path = os.path.join(cwd, "dashboard", ".env.local")
+        with open(env_path, "w") as f:
+            f.write(f"VITE_BACKEND_PORT={BRIDGE_PORT}\n")
+        print(f"  [SYNC] Dashboard .env.local -> Port {BRIDGE_PORT}")
+    except Exception as e:
+        print(f"  [WARN] Could not write .env.local: {e}")
 
-        # Find Python interpreter
-        paths_to_check = [
-            os.path.join(cwd, "Cybronites/venv_mac/bin/python3"),
-            os.path.join(cwd, ".venv/bin/python3"),
-        ]
+    # Find Python interpreter
+    python_path = os.path.join(cwd, "Cybronites/venv_mac/bin/python3")
+    if not os.path.exists(python_path):
+        python_path = os.path.join(cwd, "venv_root/bin/python3")
+    if not os.path.exists(python_path):
         python_path = sys.executable
-        for p in paths_to_check:
-            if os.path.exists(p):
-                python_path = p
-                break
-        print(f"  [PYTHON] {python_path}")
-        
-        # Cloud-Safe Logging
-        log_path = "/tmp/backend.log" if IS_CLOUD else "backend.log"
-        json_path = "/tmp/backend.json" if IS_CLOUD else "backend.json"
-        
-        print(f"\n  [1/3] Starting Bridge (:{BRIDGE_PORT}) + Flower Server (:{FLOWER_PORT})...")
-        print(f"  [LOG] Redirecting logs to {log_path}")
-        
-        log_file = open(log_path, "w")
-        with open(json_path, "w") as f:
-            f.write("") 
-        
-        server_proc = subprocess.Popen(
-            [python_path, "-m", "Cybronites.server.server", "--flower_port", str(FLOWER_PORT), "--rounds", str(ROUNDS)],
+    print(f"  [PYTHON] {python_path}")
+    
+    print(f"\n  [1/3] Starting Bridge (:{BRIDGE_PORT}) + Flower Server (:{FLOWER_PORT})...")
+    log_file = open("backend.log", "w")
+    # Initialize/Clear JSON log
+    with open("backend.json", "w") as f:
+        f.write("") 
+    
+    server_proc = subprocess.Popen(
+        [python_path, "-m", "Cybronites.server.server", "--flower_port", str(FLOWER_PORT), "--rounds", str(ROUNDS)],
+        env=env,
+        cwd=cwd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1
+    )
+    processes.append(server_proc)
+
+    def stream_logs(proc, file):
+        for line in iter(proc.stdout.readline, ""):
+            print(f"  [SERVER] {line.strip()}")
+            file.write(line)
+            file.flush()
+
+    import threading
+    log_thread = threading.Thread(target=stream_logs, args=(server_proc, log_file), daemon=True)
+    log_thread.start()
+
+    # 2. Wait for bridge to be ready (not just a sleep)
+    print("  [WAIT] Waiting for bridge to come online...", end="", flush=True)
+    if wait_for_bridge(BRIDGE_PORT):
+        print(" READY ✓")
+    else:
+        print(" TIMEOUT (continuing anyway)")
+
+    # 3. Launch Clients
+    num_clients = 2
+    for i in range(num_clients):
+        print(f"  [2/3] Starting Client {i}...")
+        client_proc = subprocess.Popen(
+            [python_path, "-m", "Cybronites.client.client", str(i), str(num_clients)],
             env=env,
+            cwd=cwd,
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
+        )
+        processes.append(client_proc)
+        
+        def stream_client_logs(proc, index, file):
+            for line in iter(proc.stdout.readline, ""):
+                print(f"  [CLIENT {index}] {line.strip()}")
+                file.write(f"  [CLIENT {index}] {line.strip()}\n")
+                file.flush()
+        
+        threading.Thread(target=stream_client_logs, args=(client_proc, i, log_file), daemon=True).start()
+        time.sleep(2) # Increased delay to avoid race on server binding
+
+    # 4. Launch Secure Training Platform (Privacy Vault backend)
+    STP_PORT = int(os.environ.get("STP_API_PORT", 8100))
+    stp_main = os.path.join(cwd, "secure_training_platform", "main.py")
+    if os.path.exists(stp_main):
+        print(f"  [3/4] Starting Secure Training Platform (:{STP_PORT})...")
+        stp_proc = subprocess.Popen(
+            [python_path, stp_main],
+            env={**env, "STP_API_PORT": str(STP_PORT)},
             cwd=cwd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1
         )
-        processes.append(server_proc)
+        processes.append(stp_proc)
 
-        def stream_logs(proc, file):
+        def stream_stp_logs(proc, file):
             for line in iter(proc.stdout.readline, ""):
-                print(f"  [SERVER] {line.strip()}")
-                file.write(line)
+                print(f"  [STP] {line.strip()}")
+                file.write(f"  [STP] {line.strip()}\n")
                 file.flush()
 
-        threading.Thread(target=stream_logs, args=(server_proc, log_file), daemon=True).start()
+        threading.Thread(target=stream_stp_logs, args=(stp_proc, log_file), daemon=True).start()
+        time.sleep(2)
+    else:
+        STP_PORT = None
+        print("  [SKIP] Secure Training Platform not found. Privacy Vault will run in limited mode.")
 
-        # Wait for bridge to be ready
-        print("  [WAIT] Waiting for bridge to come online...", end="", flush=True)
-        if wait_for_bridge(BRIDGE_PORT):
-            print(" READY ✓")
-        else:
-            print(" TIMEOUT (continuing anyway)")
+    print(f"\n{'=' * 60}")
+    print(f"  ALL SYSTEMS ONLINE")
+    print(f"  Bridge:    http://localhost:{BRIDGE_PORT}")
+    print(f"  WebSocket: ws://localhost:{BRIDGE_PORT}/ws")
+    if STP_PORT:
+        print(f"  STP Vault: http://localhost:{STP_PORT}/docs")
+    print(f"  Dashboard: Open http://localhost:5173 (or 5174)")
+    print(f"  Logs:      tail -f backend.log")
+    print(f"{'=' * 60}")
+    print("  Press Ctrl+C to shut down.\n")
 
-        # Launch Clients
-        num_clients = 2
-        for i in range(num_clients):
-            print(f"  [2/3] Starting Client {i}...")
-            client_proc = subprocess.Popen(
-                [python_path, "-m", "Cybronites.client.client", str(i), str(num_clients)],
-                env=env,
-                cwd=cwd,
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1
-            )
-            processes.append(client_proc)
-            
-            def stream_client_logs(proc, index, file):
-                for line in iter(proc.stdout.readline, ""):
-                    print(f"  [CLIENT {index}] {line.strip()}")
-                    file.write(f"  [CLIENT {index}] {line.strip()}\n")
-                    file.flush()
-            
-            threading.Thread(target=stream_client_logs, args=(client_proc, i, log_file), daemon=True).start()
-            time.sleep(2)
-
-        print(f"\n{'=' * 60}")
-        print(f"  ALL SYSTEMS ONLINE")
-        print(f"  Bridge:    http://localhost:{BRIDGE_PORT}")
-        print(f"  WebSocket: ws://localhost:{BRIDGE_PORT}/ws")
-        print(f"  Dashboard: Open http://localhost:5173 (or 5174)")
-        print(f"  Logs:      tail -f {log_path}")
-        print(f"{'=' * 60}")
-        print("  Press Ctrl+C to shut down.\n")
-
-        # Keep alive & monitor
-        while True:
-            if server_proc.poll() is not None:
-                print("  [ERROR] Server process exited. Check backend.log")
-                break
-            time.sleep(2)
+    # Keep alive & monitor
+    while True:
+        # Check if server process died
+        if server_proc.poll() is not None:
+            print("  [ERROR] Server process exited. Check backend.log")
+            break
+        time.sleep(2)
 
 if __name__ == "__main__":
     main()

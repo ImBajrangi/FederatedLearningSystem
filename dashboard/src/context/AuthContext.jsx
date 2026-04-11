@@ -5,9 +5,17 @@ import { getProfile, logActivity } from '../lib/supabaseDB';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [profile, setProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState({ 
+        id: 'dev-user-id', 
+        email: 'dev@cybronites.local', 
+        guest: true,
+        user_metadata: { full_name: 'Lead Developer' }
+    });
+    const [profile, setProfile] = useState({
+        username: 'DevAdmin',
+        full_name: 'Lead Developer'
+    });
+    const [loading, setLoading] = useState(false);
     const [activeSessionId, setActiveSessionId] = useState(null);
     const [authError, setAuthError] = useState(null);
 

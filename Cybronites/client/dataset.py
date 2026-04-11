@@ -1,36 +1,11 @@
 import torch
-import os
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Subset
 
-def get_data_path():
-    """Returns a writable path for dataset storage.
-    Cloud platforms often have read-only filesystems except /tmp.
-    """
-    # Check for cloud environment indicators
-    is_cloud = (
-        os.environ.get("SPACE_ID") is not None or      # HuggingFace
-        os.environ.get("RAILWAY_ENVIRONMENT") is not None or  # Railway
-        os.environ.get("RENDER") is not None or         # Render
-        os.environ.get("FLY_APP_NAME") is not None      # Fly.io
-    )
-    
-    if is_cloud or not os.access(".", os.W_OK):
-        path = "/tmp/mnist_data"
-    else:
-        path = os.path.join(os.getcwd(), "data")
-    
-    os.makedirs(path, exist_ok=True)
-    return path
-
-def get_mnist(data_path=None):
+def get_mnist(data_path="./data"):
     """
     Downloads and prepares the MNIST dataset.
-    Uses cloud-safe path detection if no path is specified.
     """
-    if data_path is None:
-        data_path = get_data_path()
-    
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))

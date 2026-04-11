@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import sys
 import os
+import time
 import logging
 import urllib.request
 from Cybronites.utils.structured_logging import setup_structured_logging
@@ -132,9 +133,9 @@ def main():
     for attempt in range(max_retries):
         try:
             logger.info(f"Connecting to Secure Server at {server_address} (Attempt {attempt+1})...")
-            fl.client.start_client(
+            fl.client.start_numpy_client(
                 server_address=server_address,
-                client=FlowerClient(client_id, train_loader, test_loader).to_client(),
+                client=FlowerClient(client_id, train_loader, test_loader),
                 grpc_max_message_length=512 * 1024 * 1024 # 512 MB
             )
             break
@@ -147,5 +148,4 @@ def main():
                 sys.exit(1)
 
 if __name__ == "__main__":
-    import time
     main()

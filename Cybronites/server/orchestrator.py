@@ -102,9 +102,9 @@ def run_simulation_client_proc(client_id, num_clients, port, log_queue):
                 log_queue.put(("LOG", f"[CLIENT {self.cid}] INFO: Local Accuracy: {acc:.4f}"))
                 return float(loss), len(test_loader.dataset), {"accuracy": float(acc)}
 
-        fl.client.start_client(
+        fl.client.start_numpy_client(
             server_address=f"127.0.0.1:{port}",
-            client=InlineFlowerClient(client_id).to_client(),
+            client=InlineFlowerClient(client_id),
             grpc_max_message_length=512 * 1024 * 1024
         )
     except Exception as e:

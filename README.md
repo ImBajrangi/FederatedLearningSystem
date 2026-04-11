@@ -1,63 +1,82 @@
 ---
-title: Secure Federated Learning System
+title: Cybronites Secure FL
 emoji: 🛡️
-colorFrom: indigo
-colorTo: blue
+colorFrom: blue
+colorTo: purple
 sdk: docker
 pinned: false
-app_port: 7860
 ---
 
-# Secure Federated Learning System
+# 🛡️ Secure Federated Learning — Blockchain & SMPC
 
-Production-grade Federated Learning Laboratory and Institutional IDE with Supabase-powered authentication and real-time database tracking.
+A premium, research-grade platform for **Blockchain-Based Secure Federated Learning (BCFL)**. This project implements a comprehensive decentralized ML framework that prioritizes **Privacy**, **Security**, and **Accountability**.
 
-## 🚀 Deploy (Free Hosting)
+---
 
-### Hugging Face Spaces (Recommended)
-1. Create a Space with **Docker** SDK
-2. Push this repo — it auto-builds and deploys
-3. Set secrets in **Settings → Repository Secrets**:
-   - `SUPABASE_SECRET_KEY` (your Supabase secret key)
+## 🚀 Key Features
 
-### Railway
+*   **🔒 Privacy-Preserving Training**: Integrated **Local Differential Privacy (DP)** with L2-norm clipping and Gaussian noise injection.
+*   **⛓️ Blockchain Distributed Ledger**: In-memory PoW blockchain providing an immutable audit trail for every model update and transaction.
+*   **🧩 Secure Multi-Party Computation**: SMPC-based **Secure Aggregation** using Additive Secret Sharing to protect client updates from the central server.
+*   **⚖️ Reputation & Governance**: Advanced scoring system that rewards honest participants and blacklists malicious actors based on smart contract validation.
+*   **🛡️ Poisoning Defense**: Multi-stage verification (L2-norm metrics + Cosine Similarity) against model poisoning and Sybil attacks.
+*   **📊 Interactive Dashboard**: A [standalone research visualizer](dashboard/index.html) built for high-level simulation and architectural demonstrations.
+
+---
+
+## 🛠️ Quick Start
+
+### 1. Prerequisites
+Ensure you have Python 3.9+ installed. This project uses `torch` for machine learning.
+
+### 2. Installation
+Clone the repository and install dependencies:
 ```bash
-railway login && railway up
+git clone https://github.com/ImBajrangi/FederatedLearningSystem.git
+cd secure_federated_learning
+pip install -r requirements.txt
 ```
-Railway auto-detects the Dockerfile and `PORT` env var.
 
-### Render
-1. Connect repo → Select **Docker** runtime
-2. Set env var `PORT` (Render assigns dynamically)
-
-### Fly.io
+### 3. Run the Simulation
+Launch the full simulation demo to witness the decentralized training process:
 ```bash
-fly launch --dockerfile Dockerfile
+python demo.py
 ```
 
-## 🔐 Supabase Setup
-1. Go to your [Supabase SQL Editor](https://supabase.com/dashboard)
-2. Run `dashboard/supabase_setup.sql` to create tables
-3. Enable **Email Auth** in Authentication → Providers
-4. Add your deploy URL to **Authentication → URL Configuration → Redirect URIs**
+---
 
 ## 🏗️ Architecture
-- **Backend**: FastAPI + Flower (Federated Learning Orchestrator)
-- **Frontend**: React + Vite (Institutional Dashboard)
-- **Database**: Supabase (PostgreSQL + Auth + RLS)
-- **Security**: Diffie-Hellman Key Exchange, Differential Privacy, Blockchain Ledger
 
-## 📊 Database Tables
-| Table | Purpose |
-|-------|---------|
-| `profiles` | Auto-created user profiles on signup |
-| `training_sessions` | FL training session history per user |
-| `experiment_logs` | Per-round metrics (accuracy, loss, etc.) |
-| `architecture_configs` | Saved model architectures |
-| `lab_experiments` | Code Laboratory history |
-| `activity_log` | User activity tracking |
+```mermaid
+graph LR
+    A[Clients] -- "DP-Noise Weights" --> B[Secure Aggregator]
+    B -- "Aggregated Gradient" --> C[Global Server]
+    C -- "Validation" --> D[Smart Contract]
+    D -- "Commit" --> E[Blockchain Ledger]
+    E -- "Reputation State" --> A
+```
 
-All tables enforce **Row Level Security (RLS)** — users can only access their own data.
+For a deeper dive into the system design, please refer to the detailed documentation:
+
+*   📘 **[Architecture Overview](docs/ARCHITECTURE.md)** — Lifecycle and component interactions.
+*   🔐 **[Security Framework](docs/SECURITY.md)** — Deep dive into DP, SMPC, and defense mechanisms.
+*   📖 **[API Reference](docs/API_REFERENCE.md)** — Documentation for core classes and methods.
 
 ---
-*Maintained by the AI Guardian Team.*
+
+## 🎨 Visualization Dashboard
+
+The dashboard provides a visual layer to the complex underlying simulation. Open `dashboard/index.html` in any modern browser to see:
+- Real-time convergence of global model accuracy.
+- Live blockchain mining events and transaction logs.
+- Client reputation leaderboard and status tracking.
+
+---
+
+## 📝 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+> [!TIP]
+> This system is designed for **Research and Prototyping**. For production deployments, we recommend integrating with a production-grade blockchain like Hyperledger Fabric or Ethereum for persistence.

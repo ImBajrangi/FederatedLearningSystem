@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Shield, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { API_BASE_URL } from '../../hooks/useSecureFederated';
 
 const Verify = () => {
     const [searchParams] = useSearchParams();
@@ -19,7 +20,7 @@ const Verify = () => {
             }
 
             try {
-                const response = await axios.get(`http://localhost:7861/api/auth/verify?token=${token}`);
+                const response = await axios.get(`${API_BASE_URL}/api/auth/verify?token=${token}`);
                 setStatus('success');
                 setMessage(response.data.message);
             } catch (err) {

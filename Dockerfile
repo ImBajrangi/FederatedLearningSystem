@@ -1,72 +1,56 @@
-# Stage 1: Build Frontend (Institutional Dashboard)
+# Stage 1: Build Frontend
 FROM node:20-slim AS frontend-builder
 WORKDIR /app/dashboard
 COPY dashboard/package*.json ./
-RUN npm ci 2>/dev/null || npm install
-# Supabase credentials must be available at build time for Vite to inline them
-ARG VITE_SUPABASE_URL=https://tilimltxgeucefxzerqi.supabase.co
-ARG VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpbGltbHR4Z2V1Y2VmeHplcnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MjQyNTQsImV4cCI6MjA4MzIwMDI1NH0.lwaCJyTRW6jNsfQJ32R_wAwp11yj6bvsJ4fzC0EX_00
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+RUN npm install
 COPY dashboard/ ./
 RUN npm run build
 
-# Stage 2: Final Production Image (optimized for free-tier servers)
+# Stage 2: Build Backend & Final Image
 FROM python:3.10-slim
-LABEL maintainer="AI Guardian Team"
-LABEL version="2.1.0"
-LABEL description="Secure Federated Learning Infrastructure"
-
 WORKDIR /app
 
-# Install only critical system deps, clean aggressively for smaller image
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     sqlite3 \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Optimize layer caching: Install core requirements first
+# Copy backend requirements first for caching
 COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+COPY secure_training_platform/requirements.txt ./stp_requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt -r stp_requirements.txt
 
-# Copy backend architecture (selective — no tests, no docs, no data)
+# Copy backend code structures
 COPY Cybronites/ ./Cybronites/
 COPY blockchain/ ./blockchain/
 COPY security/ ./security/
 COPY utils/ ./utils/
 COPY core/ ./core/
-COPY run_local.py ./
+COPY secure_training_platform/ ./secure_training_platform/
+COPY auth_server/ ./auth_server/
 
-# Import built dashboard from Stage 1
+# Copy built frontend from Stage 1
+# bridge.py checks both /app/static and /app/dist
 COPY --from=frontend-builder /app/dashboard/dist ./dist
 
-# Exposed Ports: Dashboard (7860) & FL Orchestrator (8095)
-EXPOSE 7860 8095
-
-# Set up user for Hugging Face (UID 1000) — also works on Railway, Render, Fly
-RUN useradd -m -u 1000 user
-USER user
-ENV HOME=/home/user \
-	PATH=/home/user/.local/bin:$PATH \
-	SUPABASE_URL=https://tilimltxgeucefxzerqi.supabase.co \
-	SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpbGltbHR4Z2V1Y2VmeHplcnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MjQyNTQsImV4cCI6MjA4MzIwMDI1NH0.lwaCJyTRW6jNsfQJ32R_wAwp11yj6bvsJ4fzC0EX_00 \
-	PYTHONUNBUFFERED=1 \
-	PYTHONDONTWRITEBYTECODE=1 \
-	OMP_NUM_THREADS=2 \
-	MKL_NUM_THREADS=2
-
-WORKDIR $HOME/app
-
-COPY --chown=user . $HOME/app
-COPY --chown=user --from=frontend-builder /app/dashboard/dist $HOME/app/dist
-
+# Copy the Cloud Deployment Startup script
+COPY deployment_hf/start_cloud.sh ./start.sh
 RUN chmod +x start.sh
 
-# Health check for platforms that support it (Railway, Render, Fly)
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:${PORT:-7860}/api/health || exit 1
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PORT=7860
+ENV PYTHONPATH=/app
+ENV GUARDIAN_DB_PATH="/app/Cybronites/guardian.db"
 
-# Entrypoint via the unified Guardian Startup Hub
-ENTRYPOINT ["./start.sh"]
+# Grant permission to Hugging Face user (1000) to write SQLite DB
+RUN chown -R 1000:1000 /app
+
+# Hugging Face Spaces use port 7860 by default
+EXPOSE 7860
+
+# Use a startup script to run multi-process orchestrator
+CMD ["./start.sh"]

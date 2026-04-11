@@ -1,8 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 
 const isProd = import.meta.env.PROD;
+const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://rishuuuuuu-cybronites-secure-fl.hf.space';
 const SECURE_BASE_URL = isProd 
-    ? `${window.location.origin}/api/secure`
+    ? `${HF_BACKEND}/api/secure`
     : `http://localhost:${import.meta.env.VITE_SECURE_PORT || '8100'}`;
 
 export const useSecureTraining = () => {
@@ -36,7 +37,7 @@ export const useSecureTraining = () => {
              // Backend returns { count: X, jobs: [...] }
             setJobs(Array.isArray(data.jobs) ? data.jobs : []);
         } catch (err) {
-            console.error(err);
+            setError(prev => prev || err.message);
         }
     }, []);
 
@@ -48,7 +49,7 @@ export const useSecureTraining = () => {
             // Backend returns list directly for models
             setModels(Array.isArray(data) ? data : (data.models || []));
         } catch (err) {
-            console.error(err);
+            setError(prev => prev || err.message);
         }
     }, []);
 

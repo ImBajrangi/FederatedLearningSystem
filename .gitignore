@@ -6,7 +6,11 @@ __pycache__/
 .DS_Store
 .localStorage
 .venv/
+venv_root/
+distributed_client/venv/
 node_modules/
+
+.npm_cache/
 *.zip
 *.db
 *.db-*
