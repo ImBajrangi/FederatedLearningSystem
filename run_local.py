@@ -73,10 +73,12 @@ def main():
 
     # Write .env.local for dashboard auto-discovery
     try:
+        stp_port_def = int(os.environ.get("STP_API_PORT", 8100))
         env_path = os.path.join(cwd, "dashboard", ".env.local")
         with open(env_path, "w") as f:
             f.write(f"VITE_BACKEND_PORT={BRIDGE_PORT}\n")
-        print(f"  [SYNC] Dashboard .env.local -> Port {BRIDGE_PORT}")
+            f.write(f"VITE_SECURE_PORT={stp_port_def}\n")
+        print(f"  [SYNC] Dashboard .env.local -> Ports {BRIDGE_PORT}, {stp_port_def}")
     except Exception as e:
         print(f"  [WARN] Could not write .env.local: {e}")
 
