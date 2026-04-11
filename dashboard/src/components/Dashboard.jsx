@@ -126,106 +126,137 @@ export const Dashboard = ({
         </div>
       </div>
 
-      {/* ─── Distributed Training Section ─── */}
-      <div className="dash-distributed-section">
-        <div className="dash-card dash-card-distributed border-accent/20 bg-accent/5 overflow-hidden group">
-          <div className="dash-distributed-bg-icon">
-             <Globe size={180} />
+      {/* ─── Distributed Neural Exchange Section ─── */}
+      <div className="dash-distributed-section mb-12">
+        <div className="academic-card !p-0 overflow-hidden relative group border-accent/20">
+          {/* Subtle Cyber Background */}
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/5 to-transparent pointer-events-none" />
+          <div className="absolute -top-24 -right-24 opacity-[0.03] text-accent pointer-events-none group-hover:opacity-[0.06] transition-opacity duration-1000">
+             <Globe size={400} />
           </div>
 
-          <div className="dash-card-header !bg-transparent !border-b-0 pt-8 px-10">
-            <div className="dash-card-title-wrap">
-              <div className="p-2 bg-accent/10 rounded-lg text-accent">
-                <Globe size={16} />
-              </div>
-              <div className="flex flex-col">
-                <span className="dash-card-title !text-accent opacity-100">Distributed Neural Exchange</span>
-                <span className="text-[9px] font-mono opacity-50 uppercase tracking-tighter">Multi-Network Node Synchronization Active</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-               {distributedStatus.status !== 'IDLE' && (
-                  <div className="flex items-center gap-2 px-3 py-1 bg-accent/20 border border-accent/40 rounded-full">
-                     <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-                     </span>
-                     <span className="text-[10px] font-bold text-accent uppercase tracking-widest">{distributedStatus.status}</span>
+          <div className="flex flex-col md:flex-row">
+            {/* Control Sidebar (Left) */}
+            <div className="w-full md:w-72 border-r border-border bg-bg-sidebar p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
+                    <Globe size={18} />
                   </div>
-               )}
-               <button 
-                  onClick={() => distributedStatus.status === 'IDLE' ? startDistributedSession(5, 2) : stopDistributedSession()}
-                  className={`dist-btn ${distributedStatus.status === 'IDLE' ? 'dist-btn-start' : 'dist-btn-stop'}`}
-               >
-                  {distributedStatus.status === 'IDLE' ? <Zap size={12} fill="currentColor" /> : <TrendingUp size={12} />}
-                  <span>{distributedStatus.status === 'IDLE' ? 'Initiate Distributed Session' : 'Terminate Exchange'}</span>
-               </button>
-            </div>
-          </div>
+                  <div className="flex flex-col">
+                    <span className="type-label-bold !text-main !tracking-[0.2em]">Synchronization</span>
+                    <span className="text-[8px] font-mono opacity-40 uppercase">v2.4 Distributed</span>
+                  </div>
+                </div>
 
-          <div className="dash-card-body px-10 pb-10 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-              {/* Telemetry */}
-              <div className="dist-telemetry-col">
-                 <div className="dist-metric-box">
-                    <span className="dist-metric-label">Registered Nodes</span>
-                    <div className="flex items-baseline gap-2">
-                       <span className="dist-metric-value">{distributedStatus.registeredClients || 0}</span>
-                       <span className="text-[10px] opacity-40 font-mono">/ 2 Min</span>
+                <div className="space-y-6 mb-8">
+                  <div className="dist-status-indicator">
+                    <span className="type-label block mb-2">Network Status</span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-bg-main border border-border rounded-sm">
+                      <span className={`w-1.5 h-1.5 rounded-full ${distributedStatus.status !== 'IDLE' ? 'bg-success animate-pulse' : 'bg-text-muted opacity-30'}`} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">
+                        {distributedStatus.status || 'Offline'}
+                      </span>
                     </div>
-                 </div>
-                 <div className="dist-metric-box">
-                    <span className="dist-metric-label">Sync Progress</span>
-                    <div className="flex items-baseline gap-2">
-                       <span className="dist-metric-value">{distributedStatus.round || 0}</span>
-                       <span className="text-[10px] opacity-40 font-mono">/ 5 Rounds</span>
+                  </div>
+
+                  <div className="dist-config-preview">
+                    <span className="type-label block mb-2">Protocol Config</span>
+                    <div className="text-[10px] space-y-1 opacity-60 font-mono">
+                      <div className="flex justify-between"><span>ROUNDS:</span> <span>05</span></div>
+                      <div className="flex justify-between"><span>MIN_NODES:</span> <span>02</span></div>
                     </div>
-                 </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Client Updates */}
-              <div className="dist-updates-col flex flex-col justify-center">
-                 <div className="dist-progress-ring-wrap">
-                    <div className="dist-progress-label">
-                       <span className="text-[24px] font-serif leading-none">{distributedStatus.updatesReceived || 0}</span>
-                       <span className="text-[10px] opacity-40 uppercase font-bold tracking-tighter">Updates</span>
+              <button 
+                onClick={() => distributedStatus.status === 'IDLE' ? startDistributedSession(5, 2) : stopDistributedSession()}
+                className={`w-full py-3 px-4 flex items-center justify-center gap-3 transition-all duration-300 font-bold uppercase tracking-[0.2em] text-[10px] ${
+                  distributedStatus.status === 'IDLE' 
+                  ? 'bg-accent text-white hover:bg-accent/90 shadow-lg shadow-accent/20' 
+                  : 'bg-error/10 text-error border border-error/20 hover:bg-error hover:text-white'
+                }`}
+              >
+                {distributedStatus.status === 'IDLE' ? <Zap size={12} fill="currentColor" /> : <TrendingUp size={12} />}
+                <span>{distributedStatus.status === 'IDLE' ? 'Initiate Exchange' : 'Terminate'}</span>
+              </button>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-1 p-8 md:p-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                
+                {/* Metrics 1 */}
+                <div className="flex flex-col gap-8">
+                  <div>
+                    <span className="type-label block mb-1">Registered Nodes</span>
+                    <div className="flex items-baseline gap-3">
+                      <span className="serif text-4xl text-main">{distributedStatus.registeredClients || 0}</span>
+                      <span className="type-label opacity-30">/ 02 Required</span>
                     </div>
-                    <svg className="dist-progress-svg" viewBox="0 0 100 100">
-                       <circle className="dist-ring-bg" cx="50" cy="50" r="45" />
-                       <motion.circle 
-                          className="dist-ring-fill" 
-                          cx="50" cy="50" r="45"
-                          initial={{ strokeDashoffset: 283 }}
-                          animate={{ strokeDashoffset: 283 - (283 * ((distributedStatus.updatesReceived || 0) / (distributedStatus.updatesNeeded || 1))) }}
-                          transition={{ duration: 1, ease: "easeOut" }}
+                    <div className="mt-4 h-1 bg-border relative overflow-hidden">
+                       <motion.div 
+                          className="absolute inset-y-0 left-0 bg-accent"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min(100, ((distributedStatus.registeredClients || 0) / 2) * 100)}%` }}
                        />
-                    </svg>
-                 </div>
-                 <span className="text-center text-[9px] font-bold opacity-40 uppercase tracking-widest mt-4">
-                    Receiving parameter gradients ({distributedStatus.updatesNeeded || 0} needed)
-                 </span>
-              </div>
-
-              {/* Connection Guide */}
-              <div className="dist-guide-col">
-                  <div className="dist-guide-card bg-black/40 backdrop-blur-md border border-white/5 p-4 rounded-xl">
-                     <div className="flex items-center gap-2 mb-3">
-                        <Terminal size={12} className="text-accent" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Remote Node CLI</span>
-                     </div>
-                     <div className="bg-black/60 rounded-lg p-3 font-mono text-[9px] relative group/code mb-3">
-                        <code className="text-accent-glow break-all">
-                           python run_client.py --server https://mdark4025-cybronites.hf.space
-                        </code>
-                        <div className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity">
-                           <Lock size={10} className="text-accent" />
-                        </div>
-                     </div>
-                     <p className="text-[9px] opacity-50 leading-relaxed uppercase tracking-tighter">
-                        Deploy this command on geographically distributed edge devices to securely synchronize weights with this orchestrator.
-                     </p>
+                    </div>
                   </div>
+
+                  <div>
+                    <span className="type-label block mb-1">Round Progress</span>
+                    <div className="flex items-baseline gap-3">
+                      <span className="serif text-4xl text-main">{distributedStatus.round || 0}</span>
+                      <span className="type-label opacity-30">/ 05 Rounds</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress Ring */}
+                <div className="flex flex-col items-center justify-center">
+                  <div className="relative w-32 h-32">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                      <span className="serif text-3xl leading-none">{distributedStatus.updatesReceived || 0}</span>
+                      <span className="type-label !text-[8px] opacity-40">Uplinks</span>
+                    </div>
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                      <circle className="text-border" strokeWidth="4" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
+                      <motion.circle 
+                        className="text-accent" 
+                        strokeWidth="4" 
+                        strokeDasharray="283" 
+                        initial={{ strokeDashoffset: 283 }}
+                        animate={{ strokeDashoffset: 283 - (283 * ((distributedStatus.updatesReceived || 0) / (distributedStatus.updatesNeeded || 1))) }}
+                        strokeLinecap="round" 
+                        stroke="currentColor" 
+                        fill="transparent" 
+                        r="45" cx="50" cy="50" 
+                      />
+                    </svg>
+                  </div>
+                  <span className="mt-4 text-center type-label opacity-40">Awaiting {distributedStatus.updatesNeeded || 0} Node Gradients</span>
+                </div>
+
+                {/* CLI Guide */}
+                <div className="bg-bg-main border border-border p-6 flex flex-col">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Terminal size={12} className="text-accent" />
+                    <span className="type-label-bold !text-main">Connection Directive</span>
+                  </div>
+                  <div className="flex-1 bg-white border border-border p-4 rounded-sm font-mono text-[9px] mb-4 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-accent/20" />
+                    <code className="text-main/80 block break-all leading-relaxed">
+                      python run_client.py <br/> --server https://mdark4025-cybronites.hf.space
+                    </code>
+                  </div>
+                  <p className="text-[9px] text-text-muted leading-relaxed uppercase tracking-tighter italic">
+                    Geographically distributed nodes must use this endpoint for secure weight synchronization.
+                  </p>
+                </div>
+
               </div>
+            </div>
           </div>
         </div>
       </div>
