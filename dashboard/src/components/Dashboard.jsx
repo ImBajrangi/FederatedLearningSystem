@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Activity, ShieldCheck, Zap, Globe, Lock, Cpu, Server, TrendingUp, AlertCircle } from 'lucide-react';
+import { Activity, ShieldCheck, Zap, Globe, Lock, Cpu, Server, TrendingUp, AlertCircle, Terminal } from 'lucide-react';
 import { MetricsChart } from './MetricsChart';
 import { BlockchainRibbon } from './BlockchainExplorer';
 
