@@ -7,14 +7,15 @@ COPY dashboard/ ./
 RUN npm run build
 
 # Stage 2: Build Backend & Final Image
-FROM python:3.10-slim
+FROM python:3.12-slim
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including redis for the training worker
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     sqlite3 \
+    redis-server \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy backend requirements first for caching
@@ -32,8 +33,11 @@ COPY secure_training_platform/ ./secure_training_platform/
 COPY auth_server/ ./auth_server/
 
 # Copy built frontend from Stage 1
-# bridge.py checks both /app/static and /app/dist
 COPY --from=frontend-builder /app/dashboard/dist ./dist
+COPY --from=frontend-builder /app/dashboard/dist ./static
+
+# Ensure the app can write its database and logs
+RUN mkdir -p /app/Cybronites /app/logs && chmod -R 777 /app/Cybronites /app/logs
 
 # Copy the Cloud Deployment Startup script
 COPY deployment_hf/start_cloud.sh ./start.sh

@@ -13,20 +13,24 @@ export ROUNDS=${ROUNDS:-5}
 export PYTHONPATH=/app
 export STP_API_PORT=${STP_API_PORT:-8100}
 
+# Start Redis for Training Worker (if available)
+if command -v redis-server >/dev/null; then
+    echo "  [INFO] Starting Redis Server..."
+    redis-server --daemonize yes
+fi
+
 # Verify static assets exist
 if [ -d "/app/dist" ]; then
     echo "  [INFO] Static dashboard assets (dist): $(ls /app/dist | wc -l) files"
 elif [ -d "/app/static" ]; then
     echo "  [INFO] Static dashboard assets (static): $(ls /app/static | wc -l) files"
-else
-    echo "  [WARN] No static dashboard assets found!"
 fi
 
 # Verify DB can initialize
 echo "  [INFO] Verifying database initialization..."
 python -c "from Cybronites.server.db import init_db; init_db(); print('  [DB] guardian.db ready.')"
 
-# Start Secure Training Platform in background (if available)
+# Start Secure Training Platform in background
 if [ -f "/app/secure_training_platform/main.py" ]; then
     echo "  [INFO] Starting Secure Training Platform on port $STP_API_PORT..."
     python -m secure_training_platform.main &

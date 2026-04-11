@@ -5,7 +5,7 @@ export const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7880';
 export const BACKEND_IP = import.meta.env.VITE_BACKEND_IP || '127.0.0.1';
 
 // Production: connect to HuggingFace Space backend
-const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://rishuuuuuu-cybronites-secure-fl.hf.space';
+const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://mdark4025-cybronites.hf.space';
 export const API_BASE_URL = isProd ? HF_BACKEND : `http://${BACKEND_IP}:${BACKEND_PORT}`;
 
 // WebSocket: derive from HF backend URL in production
