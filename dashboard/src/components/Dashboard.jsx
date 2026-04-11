@@ -14,7 +14,10 @@ export const Dashboard = ({
   blockchain = [],
   clients = [],
   rejectedCount = 0,
-  round = 0
+  round = 0,
+  distributedStatus = {},
+  startDistributedSession = () => {},
+  stopDistributedSession = () => {}
 }) => {
   const currentAccuracy = accuracyHistory.length > 0
     ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
@@ -119,6 +122,110 @@ export const Dashboard = ({
                 <span className={`dash-metric-value ${rejectedCount > 0 ? 'dash-value-error' : 'dash-value-success'}`}>{rejectedCount}</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Distributed Training Section ─── */}
+      <div className="dash-distributed-section">
+        <div className="dash-card dash-card-distributed border-accent/20 bg-accent/5 overflow-hidden group">
+          <div className="dash-distributed-bg-icon">
+             <Globe size={180} />
+          </div>
+
+          <div className="dash-card-header !bg-transparent !border-b-0 pt-8 px-10">
+            <div className="dash-card-title-wrap">
+              <div className="p-2 bg-accent/10 rounded-lg text-accent">
+                <Globe size={16} />
+              </div>
+              <div className="flex flex-col">
+                <span className="dash-card-title !text-accent opacity-100">Distributed Neural Exchange</span>
+                <span className="text-[9px] font-mono opacity-50 uppercase tracking-tighter">Multi-Network Node Synchronization Active</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+               {distributedStatus.status !== 'IDLE' && (
+                  <div className="flex items-center gap-2 px-3 py-1 bg-accent/20 border border-accent/40 rounded-full">
+                     <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                     </span>
+                     <span className="text-[10px] font-bold text-accent uppercase tracking-widest">{distributedStatus.status}</span>
+                  </div>
+               )}
+               <button 
+                  onClick={() => distributedStatus.status === 'IDLE' ? startDistributedSession(5, 2) : stopDistributedSession()}
+                  className={`dist-btn ${distributedStatus.status === 'IDLE' ? 'dist-btn-start' : 'dist-btn-stop'}`}
+               >
+                  {distributedStatus.status === 'IDLE' ? <Zap size={12} fill="currentColor" /> : <TrendingUp size={12} />}
+                  <span>{distributedStatus.status === 'IDLE' ? 'Initiate Distributed Session' : 'Terminate Exchange'}</span>
+               </button>
+            </div>
+          </div>
+
+          <div className="dash-card-body px-10 pb-10 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+              {/* Telemetry */}
+              <div className="dist-telemetry-col">
+                 <div className="dist-metric-box">
+                    <span className="dist-metric-label">Registered Nodes</span>
+                    <div className="flex items-baseline gap-2">
+                       <span className="dist-metric-value">{distributedStatus.registeredClients || 0}</span>
+                       <span className="text-[10px] opacity-40 font-mono">/ 2 Min</span>
+                    </div>
+                 </div>
+                 <div className="dist-metric-box">
+                    <span className="dist-metric-label">Sync Progress</span>
+                    <div className="flex items-baseline gap-2">
+                       <span className="dist-metric-value">{distributedStatus.round || 0}</span>
+                       <span className="text-[10px] opacity-40 font-mono">/ 5 Rounds</span>
+                    </div>
+                 </div>
+              </div>
+
+              {/* Client Updates */}
+              <div className="dist-updates-col flex flex-col justify-center">
+                 <div className="dist-progress-ring-wrap">
+                    <div className="dist-progress-label">
+                       <span className="text-[24px] font-serif leading-none">{distributedStatus.updatesReceived || 0}</span>
+                       <span className="text-[10px] opacity-40 uppercase font-bold tracking-tighter">Updates</span>
+                    </div>
+                    <svg className="dist-progress-svg" viewBox="0 0 100 100">
+                       <circle className="dist-ring-bg" cx="50" cy="50" r="45" />
+                       <motion.circle 
+                          className="dist-ring-fill" 
+                          cx="50" cy="50" r="45"
+                          initial={{ strokeDashoffset: 283 }}
+                          animate={{ strokeDashoffset: 283 - (283 * ((distributedStatus.updatesReceived || 0) / (distributedStatus.updatesNeeded || 1))) }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                       />
+                    </svg>
+                 </div>
+                 <span className="text-center text-[9px] font-bold opacity-40 uppercase tracking-widest mt-4">
+                    Receiving parameter gradients ({distributedStatus.updatesNeeded || 0} needed)
+                 </span>
+              </div>
+
+              {/* Connection Guide */}
+              <div className="dist-guide-col">
+                  <div className="dist-guide-card bg-black/40 backdrop-blur-md border border-white/5 p-4 rounded-xl">
+                     <div className="flex items-center gap-2 mb-3">
+                        <Terminal size={12} className="text-accent" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Remote Node CLI</span>
+                     </div>
+                     <div className="bg-black/60 rounded-lg p-3 font-mono text-[9px] relative group/code mb-3">
+                        <code className="text-accent-glow break-all">
+                           python run_client.py --server https://mdark4025-cybronites.hf.space
+                        </code>
+                        <div className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity">
+                           <Lock size={10} className="text-accent" />
+                        </div>
+                     </div>
+                     <p className="text-[9px] opacity-50 leading-relaxed uppercase tracking-tighter">
+                        Deploy this command on geographically distributed edge devices to securely synchronize weights with this orchestrator.
+                     </p>
+                  </div>
+              </div>
           </div>
         </div>
       </div>
@@ -424,6 +531,117 @@ export const Dashboard = ({
           background: var(--border);
           opacity: 0.6;
         }
+        .dash-distributed-section {
+          margin-top: 40px;
+        }
+        .dash-card-distributed {
+          position: relative;
+          border-radius: 20px;
+          border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
+          background: linear-gradient(135deg, rgba(var(--bg-surface-rgb), 0.95), rgba(var(--bg-surface-rgb), 0.8));
+          backdrop-filter: blur(20px);
+        }
+        .dash-distributed-bg-icon {
+          position: absolute;
+          top: -20px;
+          right: -40px;
+          color: var(--primary);
+          opacity: 0.03;
+          pointer-events: none;
+          transform: rotate(15deg);
+        }
+        .dist-btn {
+          height: 40px;
+          padding: 0 24px;
+          border-radius: 10px;
+          font-size: 10px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          font-family: var(--font-sans);
+        }
+        .dist-btn-start {
+          background: var(--primary);
+          color: #fff;
+          border: none;
+          box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3);
+        }
+        .dist-btn-start:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(var(--primary-rgb), 0.4);
+        }
+        .dist-btn-stop {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .dist-btn-stop:hover {
+          background: #ef4444;
+          color: #fff;
+        }
+
+        .dist-metric-box {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--border);
+          padding: 16px;
+          border-radius: 12px;
+          margin-bottom: 12px;
+        }
+        .dist-metric-label {
+          font-size: 9px;
+          font-weight: 700;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          margin-bottom: 8px;
+          display: block;
+        }
+        .dist-metric-value {
+          font-family: var(--font-serif);
+          font-size: 24px;
+          color: var(--text-main);
+          font-weight: 500;
+        }
+
+        .dist-progress-ring-wrap {
+          position: relative;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto;
+        }
+        .dist-progress-label {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+        }
+        .dist-progress-svg {
+          width: 120px;
+          height: 120px;
+          transform: rotate(-90deg);
+        }
+        .dist-ring-bg {
+          fill: none;
+          stroke: var(--border);
+          stroke-width: 6;
+          opacity: 0.3;
+        }
+        .dist-ring-fill {
+          fill: none;
+          stroke: var(--primary);
+          stroke-width: 6;
+          stroke-linecap: round;
+          stroke-dasharray: 283;
+        }
+
         .dash-journal-container {
           height: 320px;
           border: 1px solid var(--border);

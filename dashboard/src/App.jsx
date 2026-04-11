@@ -44,6 +44,9 @@ function App() {
     labState,
     executeDashboardCommand,
     evalLaboratoryCode,
+    distributedStatus,
+    startDistributedSession,
+    stopDistributedSession,
   } = useSecureFederated();
 
   const [currentView, setCurrentView] = useState(() => {
@@ -209,6 +212,9 @@ function App() {
             clients={clients}
             rejectedCount={rejectedCount}
             round={round}
+            distributedStatus={distributedStatus}
+            startDistributedSession={startDistributedSession}
+            stopDistributedSession={stopDistributedSession}
           />
         );
       case 'architecture':

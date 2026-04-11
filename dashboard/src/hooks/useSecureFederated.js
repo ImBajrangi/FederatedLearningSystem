@@ -281,6 +281,38 @@ export function useSecureFederated() {
     }
   };
 
+  const startDistributedSession = async (rounds = 5, minClients = 2) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/distributed/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ num_rounds: rounds, min_clients: minClients })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setDistributedStatus(prev => ({ ...prev, status: 'WAITING', totalRounds: rounds }));
+      }
+      return data;
+    } catch (err) {
+      console.error("Dist Session Start Error:", err);
+      return { success: false, error: "Connection Failed" };
+    }
+  };
+
+  const stopDistributedSession = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/distributed/stop`, { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        setDistributedStatus(prev => ({ ...prev, status: 'IDLE' }));
+      }
+      return data;
+    } catch (err) {
+      console.error("Dist Session Stop Error:", err);
+      return { success: false, error: "Connection Failed" };
+    }
+  };
+
   return {
     round,
     isActive,
@@ -306,6 +338,8 @@ export function useSecureFederated() {
     evalLaboratoryCode,
     labState,
     distributedStatus,
-    setDistributedStatus
+    setDistributedStatus,
+    startDistributedSession,
+    stopDistributedSession
   };
 }
