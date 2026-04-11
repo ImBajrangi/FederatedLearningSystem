@@ -130,7 +130,7 @@ export const Dashboard = ({
       <div className="dash-distributed-section">
         <div className="dist-card-premium">
           <div className="dist-bg-globe">
-             <Globe size={400} />
+             <Globe size={240} />
           </div>
 
           <div className="dist-layout">
@@ -566,15 +566,21 @@ export const Dashboard = ({
           background: linear-gradient(135deg, rgba(var(--bg-surface-rgb), 0.95), rgba(var(--bg-surface-rgb), 0.8));
           backdrop-filter: blur(20px);
         }
-        .dash-distributed-bg-icon {
+        .dist-bg-globe {
           position: absolute;
-          top: -20px;
-          right: -40px;
-          color: var(--primary);
-          opacity: 0.03;
+          top: -60px;
+          right: -60px;
+          color: var(--accent);
+          opacity: 0.04;
           pointer-events: none;
-          transform: rotate(15deg);
+          transition: opacity 1s;
+          display: block;
+          z-index: 0;
         }
+        .dist-card-premium:hover .dist-bg-globe { opacity: 0.1; }
+        
+        .dist-layout { display: flex; flex-direction: row; min-height: 380px; position: relative; z-index: 10; }
+        @media (max-width: 768px) { .dist-layout { flex-direction: column; } }
         .dist-btn {
           height: 40px;
           padding: 0 24px;
@@ -633,11 +639,18 @@ export const Dashboard = ({
           font-weight: 500;
         }
 
-        .dist-progress-ring-wrap {
+        .dist-metrics-grid { display: grid; grid-gap: 40px; grid-template-columns: 1fr 140px 1fr; }
+        @media (max-width: 1024px) { .dist-metrics-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 640px) { .dist-metrics-grid { grid-template-columns: 1fr; } }
+        
+        .dist-metric-item { display: flex; flex-direction: column; gap: 8px; }
+        .dist-progress-ring-container {
           position: relative;
-          width: 120px;
-          height: 120px;
-          margin: 0 auto;
+          width: 100px;
+          height: 100px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .dist-progress-label {
           position: absolute;
