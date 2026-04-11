@@ -94,9 +94,6 @@ export const Dashboard = ({
         <div className="dash-sidebar-stats">
           {/* Security Policy */}
           <div className="dash-card dash-card-accent bg-primary shadow-xl overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                <ShieldCheck size={80} />
-            </div>
             <ShieldCheck size={20} className="text-accent mb-6" />
             <h3 className="dash-accent-title serif">Security Policy Active</h3>
             <p className="dash-accent-text opacity-70">Differential Privacy calibration active. Coordination via Secure gRPC Tunnel.</p>
