@@ -127,42 +127,41 @@ export const Dashboard = ({
       </div>
 
       {/* ─── Distributed Neural Exchange Section ─── */}
-      <div className="dash-distributed-section mb-12">
-        <div className="academic-card !p-0 overflow-hidden relative group border-accent/20">
-          {/* Subtle Cyber Background */}
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/5 to-transparent pointer-events-none" />
-          <div className="absolute -top-24 -right-24 opacity-[0.03] text-accent pointer-events-none group-hover:opacity-[0.06] transition-opacity duration-1000">
+      <div className="dash-distributed-section">
+        <div className="dist-card-premium">
+          <div className="dist-bg-globe">
              <Globe size={400} />
           </div>
 
-          <div className="flex flex-col md:flex-row">
-            {/* Control Sidebar (Left) */}
-            <div className="w-full md:w-72 border-r border-border bg-bg-sidebar p-8 flex flex-col justify-between">
+          <div className="dist-layout">
+            {/* Control Sidebar */}
+            <div className="dist-sidebar">
               <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
-                    <Globe size={18} />
+                <div className="dist-header-group">
+                  <div className="dist-icon-box">
+                    <Globe size={20} />
                   </div>
                   <div className="flex flex-col">
-                    <span className="type-label-bold !text-main !tracking-[0.2em]">Synchronization</span>
-                    <span className="text-[8px] font-mono opacity-40 uppercase">v2.4 Distributed</span>
+                    <span className="type-label-bold !text-main">Synchronization</span>
+                    <span className="mono text-[8px] opacity-40 uppercase">v2.4 Distributed</span>
                   </div>
                 </div>
 
-                <div className="space-y-6 mb-8">
-                  <div className="dist-status-indicator">
+                <div className="flex flex-col gap-6">
+                  <div>
                     <span className="type-label block mb-2">Network Status</span>
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-bg-main border border-border rounded-sm">
-                      <span className={`w-1.5 h-1.5 rounded-full ${distributedStatus.status !== 'IDLE' ? 'bg-success animate-pulse' : 'bg-text-muted opacity-30'}`} />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-white border border-border rounded-sm">
+                      <span className={`w-2 h-2 rounded-full ${distributedStatus.status !== 'IDLE' ? 'bg-success animate-pulse' : 'bg-slate-300'}`} 
+                            style={{ backgroundColor: distributedStatus.status !== 'IDLE' ? 'var(--success)' : '#cbd5e1' }} />
                       <span className="text-[10px] font-bold uppercase tracking-widest">
                         {distributedStatus.status || 'Offline'}
                       </span>
                     </div>
                   </div>
 
-                  <div className="dist-config-preview">
+                  <div>
                     <span className="type-label block mb-2">Protocol Config</span>
-                    <div className="text-[10px] space-y-1 opacity-60 font-mono">
+                    <div className="text-[10px] space-y-1 opacity-60 mono">
                       <div className="flex justify-between"><span>ROUNDS:</span> <span>05</span></div>
                       <div className="flex justify-between"><span>MIN_NODES:</span> <span>02</span></div>
                     </div>
@@ -172,11 +171,7 @@ export const Dashboard = ({
 
               <button 
                 onClick={() => distributedStatus.status === 'IDLE' ? startDistributedSession(5, 2) : stopDistributedSession()}
-                className={`w-full py-3 px-4 flex items-center justify-center gap-3 transition-all duration-300 font-bold uppercase tracking-[0.2em] text-[10px] ${
-                  distributedStatus.status === 'IDLE' 
-                  ? 'bg-accent text-white hover:bg-accent/90 shadow-lg shadow-accent/20' 
-                  : 'bg-error/10 text-error border border-error/20 hover:bg-error hover:text-white'
-                }`}
+                className={`dist-btn-action ${distributedStatus.status === 'IDLE' ? 'dist-btn-start' : 'dist-btn-stop'}`}
               >
                 {distributedStatus.status === 'IDLE' ? <Zap size={12} fill="currentColor" /> : <TrendingUp size={12} />}
                 <span>{distributedStatus.status === 'IDLE' ? 'Initiate Exchange' : 'Terminate'}</span>
@@ -184,28 +179,29 @@ export const Dashboard = ({
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 p-8 md:p-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="dist-main">
+              <div className="dist-metrics-grid">
                 
-                {/* Metrics 1 */}
-                <div className="flex flex-col gap-8">
+                {/* Metrics */}
+                <div className="dist-metric-item">
                   <div>
-                    <span className="type-label block mb-1">Registered Nodes</span>
+                    <span className="type-label block mb-2">Registered Nodes</span>
                     <div className="flex items-baseline gap-3">
                       <span className="serif text-4xl text-main">{distributedStatus.registeredClients || 0}</span>
-                      <span className="type-label opacity-30">/ 02 Required</span>
+                      <span className="type-label opacity-30">/ 02 Min</span>
                     </div>
                     <div className="mt-4 h-1 bg-border relative overflow-hidden">
                        <motion.div 
-                          className="absolute inset-y-0 left-0 bg-accent"
+                          className="absolute h-full left-0"
+                          style={{ backgroundColor: 'var(--accent)' }}
                           initial={{ width: 0 }}
                           animate={{ width: `${Math.min(100, ((distributedStatus.registeredClients || 0) / 2) * 100)}%` }}
                        />
                     </div>
                   </div>
 
-                  <div>
-                    <span className="type-label block mb-1">Round Progress</span>
+                  <div className="mt-8">
+                    <span className="type-label block mb-2">Round Progress</span>
                     <div className="flex items-baseline gap-3">
                       <span className="serif text-4xl text-main">{distributedStatus.round || 0}</span>
                       <span className="type-label opacity-30">/ 05 Rounds</span>
@@ -215,15 +211,15 @@ export const Dashboard = ({
 
                 {/* Progress Ring */}
                 <div className="flex flex-col items-center justify-center">
-                  <div className="relative w-32 h-32">
-                    <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                  <div className="dist-progress-ring-container">
+                    <div className="dist-ring-text">
                       <span className="serif text-3xl leading-none">{distributedStatus.updatesReceived || 0}</span>
                       <span className="type-label !text-[8px] opacity-40">Uplinks</span>
                     </div>
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                      <circle className="text-border" strokeWidth="4" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
+                      <circle className="text-border" strokeWidth="4" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" 
+                              style={{ color: 'var(--border)' }} />
                       <motion.circle 
-                        className="text-accent" 
                         strokeWidth="4" 
                         strokeDasharray="283" 
                         initial={{ strokeDashoffset: 283 }}
@@ -232,25 +228,23 @@ export const Dashboard = ({
                         stroke="currentColor" 
                         fill="transparent" 
                         r="45" cx="50" cy="50" 
+                        style={{ color: 'var(--accent)' }}
                       />
                     </svg>
                   </div>
-                  <span className="mt-4 text-center type-label opacity-40">Awaiting {distributedStatus.updatesNeeded || 0} Node Gradients</span>
+                  <span className="mt-4 text-center type-label opacity-40 uppercase">Awaiting Node Gradients</span>
                 </div>
 
                 {/* CLI Guide */}
-                <div className="bg-bg-main border border-border p-6 flex flex-col">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Terminal size={12} className="text-accent" />
+                <div className="dist-cli-box">
+                  <div className="flex items-center gap-2">
+                    <Terminal size={12} style={{ color: 'var(--accent)' }} />
                     <span className="type-label-bold !text-main">Connection Directive</span>
                   </div>
-                  <div className="flex-1 bg-white border border-border p-4 rounded-sm font-mono text-[9px] mb-4 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-accent/20" />
-                    <code className="text-main/80 block break-all leading-relaxed">
-                      python run_client.py <br/> --server https://mdark4025-cybronites.hf.space
-                    </code>
+                  <div className="dist-code-area">
+                    python run_client.py <br/> --server https://mdark4025-cybronites.hf.space
                   </div>
-                  <p className="text-[9px] text-text-muted leading-relaxed uppercase tracking-tighter italic">
+                  <p className="type-label !text-[8px] leading-relaxed opacity-50 italic">
                     Geographically distributed nodes must use this endpoint for secure weight synchronization.
                   </p>
                 </div>
