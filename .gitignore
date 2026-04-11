@@ -9,7 +9,6 @@ __pycache__/
 venv_root/
 distributed_client/venv/
 node_modules/
-
 .npm_cache/
 *.zip
 *.db
