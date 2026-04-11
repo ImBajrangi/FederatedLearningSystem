@@ -8,7 +8,7 @@ export const Header = ({ status }) => {
         <div className="w-10 h-10 bg-primary flex items-center justify-center text-white font-serif text-xl shadow-lg">FL</div>
         <div className="flex flex-col">
           <h1 className="type-l2 serif text-text-main leading-tight tracking-tight font-medium">
-            AI Guardian <span className="text-accent underline decoration-accent/30 decoration-2 underline-offset-4 font-serif italic italic">Professional</span>
+            AI Guardian <span className="text-accent underline decoration-accent/30 decoration-2 underline-offset-4 font-serif italic italic">Platform</span>
           </h1>
           <span className="type-label-bold opacity-30">INSTITUTIONAL FEDERATED LAB</span>
         </div>
