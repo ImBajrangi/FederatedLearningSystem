@@ -71,6 +71,14 @@ class MNISTNet(nn.Module):
 # ── Data: partition MNIST among N clients ──
 def load_partition(client_idx, num_clients, batch_size=32):
     """Each client gets a non-overlapping slice of MNIST training data."""
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    urllib.request.install_opener(opener)
+    datasets.MNIST.mirrors = [
+        'https://storage.googleapis.com/cvdf-datasets/mnist/',
+        'https://ossci-datasets.s3.amazonaws.com/mnist/'
+    ]
+
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))

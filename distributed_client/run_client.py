@@ -65,6 +65,14 @@ class MNISTNet(nn.Module):
 
 def load_mnist(batch_size=32):
     """Download and prepare MNIST dataset."""
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    urllib.request.install_opener(opener)
+    datasets.MNIST.mirrors = [
+        'https://storage.googleapis.com/cvdf-datasets/mnist/',
+        'https://ossci-datasets.s3.amazonaws.com/mnist/'
+    ]
+
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
@@ -214,7 +222,7 @@ Examples:
         """
     )
     parser.add_argument("--server", required=True, 
-                        help="Server URL (e.g., https://your-space.hf.space)")
+                        help="Server URL (e.g., https://mdark4025-cybronites.hf.space)")
     parser.add_argument("--name", default="Client-Node", 
                         help="Display name for this device")
     parser.add_argument("--epochs", type=int, default=1, 
