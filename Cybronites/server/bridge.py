@@ -1192,7 +1192,7 @@ async def serve_join_script(request: Request):
 
 # ── Distributed Model Export & Download Endpoints ──
 
-@app.api_route("/api/v1/distributed/download/pt", methods=["GET", "HEAD"])
+@app.get("/api/v1/distributed/download/pt")
 async def download_distributed_model_pt():
     """Download trained PyTorch checkpoint (.pt) containing aggregated global weights."""
     import torch
@@ -1210,7 +1210,7 @@ async def download_distributed_model_pt():
         logger.error(f"Failed to export PyTorch model: {e}")
         return {"success": False, "error": str(e)}
 
-@app.api_route("/api/v1/distributed/download/onnx", methods=["GET", "HEAD"])
+@app.get("/api/v1/distributed/download/onnx")
 async def download_distributed_model_onnx():
     """Download trained model in ONNX format for deployment."""
     import torch
@@ -1240,7 +1240,7 @@ async def download_distributed_model_onnx():
         torch.save(coord.global_model.state_dict(), pt_path)
         return FileResponse(pt_path, media_type="application/octet-stream", filename="federated_model_final.pt")
 
-@app.api_route("/api/v1/distributed/download/report", methods=["GET", "HEAD"])
+@app.get("/api/v1/distributed/download/report")
 async def download_distributed_performance_report():
     """Download comprehensive Institutional Convergence & Audit Performance Report."""
     from starlette.responses import JSONResponse
@@ -1437,8 +1437,30 @@ paths_to_check = [
 for s_dir in paths_to_check:
     if os.path.exists(s_dir) and os.path.isdir(s_dir):
         assets_dir = os.path.join(s_dir, "assets")
-        if os.path.exists(assets_dir):
-            app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+        @app.get("/assets/{asset_name:path}")
+        async def serve_asset(asset_name: str):
+            """Serve dashboard assets with smart fallback for stale cached hash requests."""
+            if os.path.exists(assets_dir):
+                asset_file = os.path.join(assets_dir, asset_name)
+                if os.path.exists(asset_file) and os.path.isfile(asset_file):
+                    return FileResponse(asset_file, headers={"Cache-Control": "public, max-age=31536000, immutable"})
+                
+                # Stale asset fallback: If an old hash was requested (e.g. index-B97yVXZ7.js), serve current matching file
+                ext = os.path.splitext(asset_name)[1].lower()
+                if ext in [".js", ".css"]:
+                    candidates = [f for f in os.listdir(assets_dir) if f.endswith(ext) and not f.endswith(".map")]
+                    if candidates:
+                        candidates.sort(key=lambda f: os.path.getmtime(os.path.join(assets_dir, f)), reverse=True)
+                        best_match = os.path.join(assets_dir, candidates[0])
+                        media_type = "application/javascript" if ext == ".js" else "text/css"
+                        return FileResponse(
+                            best_match,
+                            media_type=media_type,
+                            headers={"Cache-Control": "no-cache, must-revalidate"}
+                        )
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail=f"Asset {asset_name} not found")
         
         @app.get("/{full_path:path}")
         async def serve_dashboard(full_path: str):
@@ -1456,7 +1478,7 @@ for s_dir in paths_to_check:
                 return FileResponse(
                     index_path,
                     headers={
-                        "Cache-Control": "no-cache, no-store, must-revalidate",
+                        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, proxy-revalidate",
                         "Pragma": "no-cache",
                         "Expires": "0"
                     }
