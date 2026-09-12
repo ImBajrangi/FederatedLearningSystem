@@ -36,7 +36,9 @@ function Dashboard() {
     roundHistory,
     modelArchitecture,
     shards,
-    clientsActive
+    clientsActive,
+    activeTrainingCode,
+    updateActiveTrainingCode
   } = useSecureFederated();
 
   const { logout, user } = useAuth();
@@ -222,7 +224,23 @@ function Dashboard() {
           </div>
         );
       case 'architecture': return <ArchitectureBuilder onAction={addToast} />;
-      case 'training': return <TrainingWorkspace clients={clients} nodeRegistry={nodeRegistry} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} hyperparams={hyperparams} roundHistory={roundHistory} modelArchitecture={modelArchitecture} activeTrainingCode={activeTrainingCode} isActive={isActive} />;
+      case 'training': return (
+        <TrainingWorkspace 
+          clients={clients} 
+          nodeRegistry={nodeRegistry} 
+          logs={logs} 
+          accuracyHistory={accuracyHistory} 
+          lossHistory={lossHistory} 
+          hyperparams={hyperparams} 
+          roundHistory={roundHistory} 
+          modelArchitecture={modelArchitecture} 
+          activeTrainingCode={activeTrainingCode} 
+          onUpdateActiveCode={updateActiveTrainingCode}
+          onInitiate={startSimulation}
+          onClear={clearLogs}
+          isActive={isActive} 
+        />
+      );
       case 'datasets': return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
       case 'laboratory': return <Laboratory onAction={addToast} />;
       default: return <div>View not found</div>;
