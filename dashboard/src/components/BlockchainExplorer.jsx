@@ -256,15 +256,7 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           position: relative;
           border: 1px solid #e2e8f0;
           box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-        .bl-root::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #10b981, transparent);
-          opacity: 0.6;
-          z-index: 5;
+          box-sizing: border-box;
         }
 
         /* ── Header ── */

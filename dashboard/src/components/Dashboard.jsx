@@ -1070,9 +1070,10 @@ export const Dashboard = ({
         }
 
         .dash-journal-container {
-          height: 320px;
-          border: 1px solid var(--border);
-          background: #000;
+          min-height: 180px;
+          border-radius: 8px;
+          overflow: hidden;
+          background: #ffffff;
           display: flex;
           flex-direction: column;
         }

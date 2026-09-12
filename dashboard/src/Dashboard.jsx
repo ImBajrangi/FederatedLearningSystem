@@ -182,7 +182,7 @@ function Dashboard() {
                       <div className="w-full border-t border-border/60"></div>
                     </div>
                   </div>
-                  <div className="h-[240px] border border-border/60 rounded-sm overflow-hidden">
+                  <div className="min-h-[180px] rounded-lg overflow-hidden bg-white">
                     <BlockchainRibbon blockchain={blockchain} />
                   </div>
                 </div>
