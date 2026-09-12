@@ -538,11 +538,31 @@ export function Laboratory({
     return () => window.removeEventListener('beforeunload', cleanup);
   }, []);
 
+  // Instant bidirectional sync from code editor -> sidebar state
+  useEffect(() => {
+    if (!code) return;
+    const mEpochs = code.match(/(?:^|\n)\s*epochs\s*=\s*(\d+)/i);
+    if (mEpochs) {
+      const val = parseInt(mEpochs[1], 10);
+      if (val !== epochs) setEpochs(val);
+    }
+    const mLr = code.match(/(?:^|\n)\s*lr\s*=\s*([0-9\.e\-]+)/i);
+    if (mLr) {
+      const val = parseFloat(mLr[1]);
+      if (val !== lr) setLr(val);
+    }
+    const mBatch = code.match(/(?:^|\n)\s*batch_size\s*=\s*(\d+)/i);
+    if (mBatch) {
+      const val = parseInt(mBatch[1], 10);
+      if (val !== batchSize) setBatchSize(val);
+    }
+  }, [code]);
+
   // Debounced inspection
   useEffect(() => {
     const timer = setTimeout(() => {
       inspectDependencies();
-    }, 600); // 🧪 Accelerated from 2000ms for High-Frequency Sync
+    }, 600);
     return () => clearTimeout(timer);
   }, [code]);
 
@@ -558,50 +578,40 @@ export function Laboratory({
   };
 
   const syncParamToSource = (paramName, newValue) => {
-    if (!isLiveSyncEnabled) return;
+    setCode(prevCode => {
+      const lines = prevCode.split('\n');
+      let updated = false;
+      let matchedLine = null;
+      const regex = new RegExp(`^(\\s*${paramName}\\s*[:=]\\s*)([0-9\\.e\\-]+)(.*)$`, 'i');
 
-    let lineNum = neededParams.find(p => p.name === paramName)?.lineno || getParamLine(paramName, code);
-    if (!lineNum) return;
+      const newLines = lines.map((line, idx) => {
+        if (!updated && regex.test(line)) {
+          updated = true;
+          matchedLine = idx + 1;
+          return line.replace(regex, `$1${newValue}$3`);
+        }
+        return line;
+      });
 
-    const lines = code.split('\n');
-    const lineIndex = lineNum - 1;
-    const line = lines[lineIndex];
+      if (!updated) {
+        newLines.push(`${paramName} = ${newValue}`);
+        matchedLine = newLines.length;
+      }
 
-    if (line) {
-      const regex = new RegExp(`(${paramName}\\s*[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
-      if (regex.test(line)) {
-        lines[lineIndex] = line.replace(regex, `$1${newValue}`);
-        setCode(lines.join('\n'));
-
-        setSyncingLines(prev => [...new Set([...prev, lineNum])]);
+      if (matchedLine) {
+        setSyncingLines(prev => [...new Set([...prev, matchedLine])]);
         setTimeout(() => {
-          setSyncingLines(prev => prev.filter(l => l !== lineNum));
+          setSyncingLines(prev => prev.filter(l => l !== matchedLine));
         }, 1200);
       }
-    }
+
+      return newLines.join('\n');
+    });
   };
 
   const pushParamToSource = (paramName, newValue) => {
-    let lineNum = neededParams.find(p => p.name === paramName)?.lineno || getParamLine(paramName, code);
-    if (!lineNum) return;
-
-    const lines = code.split('\n');
-    const lineIndex = lineNum - 1;
-    const line = lines[lineIndex];
-
-    if (line) {
-      const regex = new RegExp(`(${paramName}\\s*[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
-      if (regex.test(line)) {
-        lines[lineIndex] = line.replace(regex, `$1${newValue}`);
-        setCode(lines.join('\n'));
-        addLog(`Pushed ${paramName}=${newValue} to line ${lineNum}`, 'success');
-
-        setSyncingLines(prev => [...new Set([...prev, lineNum])]);
-        setTimeout(() => {
-          setSyncingLines(prev => prev.filter(l => l !== lineNum));
-        }, 1200);
-      }
-    }
+    syncParamToSource(paramName, newValue);
+    addLog(`Pushed ${paramName}=${newValue} to code.`, 'success');
   };
 
   const handleParamChange = (name, value, setter) => {

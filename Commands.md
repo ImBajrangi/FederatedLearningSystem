@@ -38,3 +38,10 @@ python join.py --server https://mdark4025-cybronites.hf.space --name "Hospital-A
 ```bash
 python3 -c "$(curl -sSL https://mdark4025-cybronites.hf.space/join.py)" -- --server https://mdark4025-cybronites.hf.space --name "Hospital-Alpha"
 ```
+
+curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3
+
+
+python3 join.py --server http://127.0.0.1:7880
+# OR
+curl -sSL http://127.0.0.1:7880/join.py | python3
