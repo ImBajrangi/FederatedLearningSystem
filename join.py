@@ -594,11 +594,15 @@ class MNISTNet(nn.Module):
                 print(f"  {Style.SLATE}⏳ Awaiting Next Global Aggregation Cycle...{Style.RESET}\n")
 
             elif session_status == "COMPLETE":
-                print(f"\n{Style.GREEN}{Style.BOLD}╔════════════════════════════════════════════════════════════════════════╗{Style.RESET}")
-                print(f"{Style.GREEN}{Style.BOLD}║  🏁 FEDERATED LEARNING SESSION COMPLETE!                              ║{Style.RESET}")
-                print(f"{Style.GREEN}{Style.BOLD}║  🏆 All Model Updates Aggregated & Verified on Distributed Ledger.     ║{Style.RESET}")
-                print(f"{Style.GREEN}{Style.BOLD}╚════════════════════════════════════════════════════════════════════════╝{Style.RESET}\n")
-                break
+                if last_participated_round > 0:
+                    print(f"\n{Style.GREEN}{Style.BOLD}╔════════════════════════════════════════════════════════════════════════╗{Style.RESET}")
+                    print(f"{Style.GREEN}{Style.BOLD}║  🏁 FEDERATED LEARNING SESSION COMPLETE!                              ║{Style.RESET}")
+                    print(f"{Style.GREEN}{Style.BOLD}║  🏆 All Model Updates Aggregated & Verified on Distributed Ledger.     ║{Style.RESET}")
+                    print(f"{Style.GREEN}{Style.BOLD}╚════════════════════════════════════════════════════════════════════════╝{Style.RESET}\n")
+                    break
+                else:
+                    # Previous session is complete, stay connected in standby for new session
+                    time.sleep(1.5)
 
             time.sleep(1.2)
 
