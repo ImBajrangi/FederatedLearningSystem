@@ -1012,7 +1012,7 @@ export const TrainingWorkspace = ({
                       const isWarning = msgUpper.includes('WARN') || logObj.type === 'warn';
                       const isInput = logObj.type === 'input';
                       
-                      const msgColor = isInput ? '#38bdf8' : isSuccess ? '#34d399' : isError ? '#f87171' : isWarning ? '#fbbf24' : '#f8fafc';
+                      const msgColor = isInput ? '#0284c7' : isSuccess ? '#059669' : isError ? '#dc2626' : isWarning ? '#d97706' : '#0f172a';
                       const prefix = logObj.prefix || (i % 2 === 0 ? 'NODE_01' : 'NODE_02');
                       const ts = logObj.ts || new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
 

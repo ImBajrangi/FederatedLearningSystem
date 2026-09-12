@@ -6,7 +6,7 @@ import { Activity, TrendingDown, TrendingUp, Sparkles } from 'lucide-react';
 
 export const MetricsChart = ({ data = [], lossData = [] }) => {
   const containerRef = useRef(null);
-  const [isReady, setIsReady] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -32,7 +32,7 @@ export const MetricsChart = ({ data = [], lossData = [] }) => {
     return Number(val);
   };
 
-  const hasData = data && data.length > 0;
+  const hasData = data && data.length > 0 && data.some(v => v > 0);
 
   // Chart data mapping
   const chartData = hasData
@@ -56,76 +56,70 @@ export const MetricsChart = ({ data = [], lossData = [] }) => {
   const lossReduced = lossData.length > 1 ? normalizeLoss(lossData[lossData.length - 1]) <= normalizeLoss(lossData[lossData.length - 2]) : true;
 
   return (
-    <div className="w-full flex flex-col justify-between h-full">
-      {/* Chart Header Bar */}
-      <div className="flex items-center justify-between pb-3 border-b border-border/60 shrink-0">
-        <div className="flex items-center gap-2">
-          <Activity size={13} className="text-primary" />
-          <span className="text-[11px] font-bold text-text-main uppercase tracking-wider">
-            Institutional Convergence Metrics
-          </span>
+    <div className="mc-root">
+      {/* Chart Top Sub-Bar */}
+      <div className="mc-top-bar">
+        <div className="mc-title-group">
+          <Activity size={13} className="mc-icon" />
+          <span className="mc-title-text">Convergence Metrics</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-              {currentAcc}% Global
-            </span>
-          </div>
+        <div className="mc-badge-live">
+          <span className="mc-badge-dot" />
+          <span className="mc-badge-text">{currentAcc}% Global</span>
         </div>
       </div>
 
-      {/* Responsive Chart Container */}
-      <div ref={containerRef} className="w-full h-[180px] min-h-[160px] relative mt-3 mb-2" style={{ minWidth: 0 }}>
+      {/* Chart Canvas Wrap */}
+      <div ref={containerRef} className="mc-canvas-area">
         {!hasData && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 dark:bg-slate-900/60 backdrop-blur-[1px] pointer-events-none">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-100 dark:bg-slate-800 border border-border/80 shadow-xs">
-              <Sparkles size={13} className="text-accent" />
-              <span className="text-[10px] font-semibold text-text-muted">
-                Awaiting active federated training round to plot real-time convergence
+          <div className="mc-empty-overlay">
+            <div className="mc-empty-chip">
+              <Sparkles size={12} className="mc-empty-icon" />
+              <span className="mc-empty-text">
+                Awaiting active federated training round to plot convergence
               </span>
             </div>
           </div>
         )}
 
         {isReady && (
-          <ResponsiveContainer width="100%" height="100%" debounce={30}>
+          <ResponsiveContainer width="100%" height={170} debounce={40}>
             <AreaChart
               data={chartData}
-              margin={{ top: 8, right: 12, left: -20, bottom: 0 }}
+              margin={{ top: 8, right: 10, left: -24, bottom: 0 }}
             >
               <defs>
                 <linearGradient id="colorAcc" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
+                  <stop offset="5%" stopColor="#0284c7" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0} />
                 </linearGradient>
                 <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#ef4444" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.6} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.8} />
               <XAxis
                 dataKey="round"
-                fontSize={10}
+                fontSize={9}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'var(--text-muted)', fontWeight: 600, fontFamily: 'monospace' }}
-                dy={6}
+                tick={{ fill: '#64748b', fontWeight: 600, fontFamily: 'monospace' }}
+                dy={4}
               />
               <YAxis
                 yAxisId="left"
-                fontSize={10}
+                fontSize={9}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'var(--text-muted)', fontWeight: 600, fontFamily: 'monospace' }}
+                tick={{ fill: '#64748b', fontWeight: 600, fontFamily: 'monospace' }}
                 domain={[0, 100]}
                 tickFormatter={(val) => `${val}%`}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                fontSize={10}
+                fontSize={9}
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#ef4444', fontWeight: 600, fontFamily: 'monospace' }}
@@ -134,24 +128,24 @@ export const MetricsChart = ({ data = [], lossData = [] }) => {
               <Tooltip
                 contentStyle={{
                   backgroundColor: '#ffffff',
-                  border: '1px solid var(--border)',
+                  border: '1px solid #cbd5e1',
                   borderRadius: '6px',
                   fontSize: '11px',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                   fontFamily: 'monospace'
                 }}
-                labelStyle={{ color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}
+                labelStyle={{ color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}
                 itemStyle={{ fontWeight: 700 }}
               />
               <Area
                 yAxisId="left"
                 type="monotone"
                 dataKey="accuracy"
-                stroke="var(--primary)"
-                strokeWidth={2.5}
+                stroke="#0284c7"
+                strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#colorAcc)"
-                animationDuration={1000}
+                animationDuration={800}
                 name="Accuracy (%)"
               />
               <Area
@@ -159,10 +153,10 @@ export const MetricsChart = ({ data = [], lossData = [] }) => {
                 type="monotone"
                 dataKey="loss"
                 stroke="#ef4444"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 fillOpacity={1}
                 fill="url(#colorLoss)"
-                animationDuration={1000}
+                animationDuration={800}
                 name="Loss"
                 strokeDasharray="4 4"
               />
@@ -172,37 +166,182 @@ export const MetricsChart = ({ data = [], lossData = [] }) => {
       </div>
 
       {/* Dual Summary Metrics Cards */}
-      <div className="grid grid-cols-2 gap-4 mt-2">
-        <div className="p-3.5 bg-slate-50/70 dark:bg-slate-800/40 border border-border/80 rounded-md transition-all hover:border-primary/40">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Global Accuracy</span>
+      <div className="mc-cards-grid">
+        <div className="mc-card">
+          <div className="mc-card-header">
+            <span className="mc-card-label">Global Accuracy</span>
             {hasData && data.length > 1 && (
-              <TrendingUp size={13} className={accImproved ? 'text-emerald-500' : 'text-error rotate-180'} />
+              <TrendingUp size={13} className={accImproved ? 'mc-trend-up' : 'mc-trend-down'} />
             )}
           </div>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-xl font-bold font-mono text-text-main tabular-nums">{currentAcc}%</span>
+          <div className="mc-card-val-row">
+            <span className="mc-card-val">{currentAcc}%</span>
           </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-text-muted/80 mt-1">
+          <div className="mc-card-subtext">
             Institutional Convergence
           </div>
         </div>
         
-        <div className="p-3.5 bg-slate-50/70 dark:bg-slate-800/40 border border-border/80 rounded-md transition-all hover:border-error/40">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Training Loss</span>
+        <div className="mc-card">
+          <div className="mc-card-header">
+            <span className="mc-card-label">Training Loss</span>
             {lossData.length > 1 && (
-              <TrendingDown size={13} className={lossReduced ? 'text-emerald-500' : 'text-error rotate-180'} />
+              <TrendingDown size={13} className={lossReduced ? 'mc-trend-up' : 'mc-trend-down'} />
             )}
           </div>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-xl font-bold font-mono text-error tabular-nums">{currentLoss}</span>
+          <div className="mc-card-val-row">
+            <span className="mc-card-val mc-val-loss">{currentLoss}</span>
           </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-text-muted/80 mt-1">
+          <div className="mc-card-subtext">
             Error Minimization
           </div>
         </div>
       </div>
+
+      <style>{`
+        .mc-root {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          gap: 12px;
+        }
+        .mc-top-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 8px;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        .mc-title-group {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .mc-icon {
+          color: #0284c7;
+        }
+        .mc-title-text {
+          font-size: 10px;
+          font-weight: 700;
+          color: #475569;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .mc-badge-live {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 2px 8px;
+          border-radius: 999px;
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
+        }
+        .mc-badge-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 6px rgba(16,185,129,0.5);
+        }
+        .mc-badge-text {
+          font-size: 9px;
+          font-weight: 700;
+          color: #047857;
+          font-family: var(--font-mono, monospace);
+        }
+        .mc-canvas-area {
+          width: 100%;
+          height: 170px;
+          min-height: 170px;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .mc-empty-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(1px);
+          pointer-events: none;
+        }
+        .mc-empty-chip {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border-radius: 6px;
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+        .mc-empty-icon {
+          color: #0284c7;
+        }
+        .mc-empty-text {
+          font-size: 9.5px;
+          font-weight: 600;
+          color: #64748b;
+        }
+        .mc-cards-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .mc-card {
+          padding: 10px 14px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .mc-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .mc-card-label {
+          font-size: 9px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+        .mc-trend-up {
+          color: #10b981;
+        }
+        .mc-trend-down {
+          color: #ef4444;
+          transform: rotate(180deg);
+        }
+        .mc-card-val-row {
+          display: flex;
+          align-items: baseline;
+          gap: 4px;
+        }
+        .mc-card-val {
+          font-size: 16px;
+          font-weight: 800;
+          font-family: var(--font-mono, monospace);
+          color: #0f172a;
+        }
+        .mc-val-loss {
+          color: #ef4444;
+        }
+        .mc-card-subtext {
+          font-size: 8px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: #94a3b8;
+        }
+      `}</style>
     </div>
   );
 };
