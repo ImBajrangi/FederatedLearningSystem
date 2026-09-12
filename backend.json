@@ -70,3 +70,14 @@
 {"timestamp":"2026-04-11 14:37:59","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/secure_federated_learning/Cybronites/client/model.py","epoch":1775898479.451883}
 {"timestamp":"2026-04-11 14:37:59","level":"INFO","component":"GuardianBridge","message":"Loaded 74 FL nodes from /Users/sakhi/Code/secure_federated_learning/Cybronites/guardian.db","epoch":1775898479.4556181}
 {"timestamp":"2026-04-11 14:37:59","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 1","epoch":1775898479.4584231}
+{"timestamp":"2026-09-12 15:08:18","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/client/model.py","epoch":1789205898.886733,"taskName":"Task-2"}
+{"timestamp":"2026-09-12 15:08:19","level":"INFO","component":"GuardianBridge","message":"Public IP fetched: 103.93.179.42","epoch":1789205899.1878452,"taskName":"Task-2"}
+{"timestamp":"2026-09-12 15:08:19","level":"INFO","component":"GuardianBridge","message":"Distributed Coordinator & Realtime Blockchain initialized and linked to bridge.","epoch":1789205899.188483,"taskName":"Task-2"}
+{"timestamp":"2026-09-12 15:08:20","level":"INFO","component":"GuardianBridge","message":"IPC Log Listener thread started.","epoch":1789205900.159673,"taskName":null}
+{"timestamp":"2026-09-12 15:08:20","level":"INFO","component":"GuardianBridge","message":"Guardian Bridge Event Loop context captured.","epoch":1789205900.159905,"taskName":"Task-2"}
+{"timestamp":"2026-09-12 15:10:05","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/client/model.py","epoch":1789206005.586904,"taskName":"Task-17"}
+{"timestamp":"2026-09-12 15:10:05","level":"INFO","component":"GuardianBridge","message":"Loaded 0 FL nodes from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/guardian.db","epoch":1789206005.603128,"taskName":"Task-17"}
+{"timestamp":"2026-09-12 15:10:05","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 1","epoch":1789206005.606111,"taskName":"Task-17"}
+{"timestamp":"2026-09-12 15:10:05","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/client/model.py","epoch":1789206005.613151,"taskName":"Task-18"}
+{"timestamp":"2026-09-12 15:10:05","level":"INFO","component":"GuardianBridge","message":"Loaded 0 FL nodes from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/guardian.db","epoch":1789206005.614604,"taskName":"Task-18"}
+{"timestamp":"2026-09-12 15:10:05","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1789206005.616298,"taskName":"Task-18"}

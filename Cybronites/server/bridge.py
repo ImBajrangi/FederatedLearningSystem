@@ -1,3 +1,11 @@
+import sys
+import os
+
+# Ensure repository root is on sys.path for direct script execution
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,7 +14,6 @@ from typing import List, Dict, Any, Optional
 import json
 import logging
 import asyncio
-import os
 import time
 import sqlite3
 import hashlib
