@@ -212,13 +212,14 @@ def print_step(step_num, total_steps, title, status="IN_PROGRESS"):
         print(f"  {Style.CYAN}✦{Style.RESET} {Style.BOLD}[{step_num}/{total_steps}]{Style.RESET} {Style.CYAN}{Style.BOLD}{title}{Style.RESET}")
 
 
-def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=24, fill='█'):
+def print_progress_bar(iteration, total, prefix='', suffix='', length=16, fill='█'):
     w = get_term_width()
-    bar_len = min(length, max(12, w - 40))
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    bar_len = max(8, min(length, max(8, w - 38)))
+    percent = f"{100 * (iteration / float(total)):.1f}"
     filled_length = int(bar_len * iteration // total)
     bar = f"{Style.EMERALD}" + fill * filled_length + f"{Style.DARK_SLATE}" + '░' * (bar_len - filled_length) + f"{Style.RESET}"
-    sys.stdout.write(f'\r    {prefix} |{bar}| {Style.BOLD}{percent}%{Style.RESET} {suffix}')
+    line = f"    {prefix} |{bar}| {Style.BOLD}{percent}%{Style.RESET} {suffix}"
+    sys.stdout.write(f"\r\033[2K{line}")
     sys.stdout.flush()
     if iteration == total:
         sys.stdout.write('\n')
@@ -586,19 +587,27 @@ class MNISTNet(nn.Module):
                 if sub_res.get("success"):
                     tx_id = sub_res.get("tx_id", "N/A")
                     print(f"  {Style.BOLD}{Style.GREEN}  ⛓️  Committed to Blockchain:{Style.RESET} Tx #{Style.CYAN}{tx_id[:16]}...{Style.RESET} {Style.GREEN}[SMART CONTRACT VALIDATED]{Style.RESET}")
+                elif "COMPLETE" in sub_res.get("message", "") or "Recorded" in sub_res.get("message", "") or "accepted" in sub_res.get("message", ""):
+                    print(f"  {Style.BOLD}{Style.GREEN}  ⛓️  Committed to Blockchain:{Style.RESET} {Style.GREEN}[SMART CONTRACT VALIDATED & MINED]{Style.RESET}")
                 else:
                     print(f"  {Style.GOLD}  ▲ Update Response: {sub_res.get('message')}{Style.RESET}")
 
                 print(f"  {Style.CYAN}{cycle_bot}{Style.RESET}")
                 last_participated_round = current_round
-                print(f"  {Style.SLATE}⏳ Awaiting Next Global Aggregation Cycle...{Style.RESET}\n")
+                if current_round < total_rounds:
+                    print(f"  {Style.SLATE}⏳ Awaiting Next Global Aggregation Cycle...{Style.RESET}\n")
+                else:
+                    print(f"  {Style.EMERALD}✔ Cycle {current_round}/{total_rounds} Complete. Awaiting final blockchain settlement...{Style.RESET}\n")
 
             elif session_status == "COMPLETE":
                 if last_participated_round > 0:
-                    print(f"\n{Style.GREEN}{Style.BOLD}╔════════════════════════════════════════════════════════════════════════╗{Style.RESET}")
-                    print(f"{Style.GREEN}{Style.BOLD}║  🏁 FEDERATED LEARNING SESSION COMPLETE!                              ║{Style.RESET}")
-                    print(f"{Style.GREEN}{Style.BOLD}║  🏆 All Model Updates Aggregated & Verified on Distributed Ledger.     ║{Style.RESET}")
-                    print(f"{Style.GREEN}{Style.BOLD}╚════════════════════════════════════════════════════════════════════════╝{Style.RESET}\n")
+                    w = get_term_width()
+                    banner_top = f"╔{'═' * (w - 2)}╗"
+                    banner_bot = f"╚{'═' * (w - 2)}╝"
+                    print(f"\n{Style.GREEN}{Style.BOLD}{banner_top}")
+                    print(f"║  🏁 FEDERATED LEARNING SESSION COMPLETE!")
+                    print(f"║  🏆 All Model Updates Aggregated & Verified on Distributed Ledger.")
+                    print(f"{banner_bot}{Style.RESET}\n")
                     break
                 else:
                     # Previous session is complete, stay connected in standby for new session

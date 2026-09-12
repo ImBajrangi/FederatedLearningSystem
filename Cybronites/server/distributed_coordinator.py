@@ -312,14 +312,14 @@ class DistributedCoordinator:
         and triggers PoW/PoA Block Mining when min_clients threshold is met.
         """
         with self._aggregation_lock:
-            if self.status not in ("WAITING",):
+            if self.status not in ("WAITING", "AGGREGATING", "IN_PROGRESS", "COMPLETE"):
                 return {"success": False, "message": f"Server not accepting updates (status={self.status})"}
 
             if client_id not in self.registered_clients:
                 return {"success": False, "message": "Client not registered. Call /register first."}
 
             if client_id in self.round_updates:
-                return {"success": False, "message": "Already submitted for this round. Wait for next round."}
+                return {"success": True, "message": "Already recorded for this round. Synced on ledger.", "tx_id": self.round_updates[client_id].get("tx_id", "0xRecorded")}
 
             # Decode parameters
             try:
