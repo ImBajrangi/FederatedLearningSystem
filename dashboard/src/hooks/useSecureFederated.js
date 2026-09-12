@@ -52,6 +52,7 @@ export function useSecureFederated() {
   });
 
   const ws = useRef(null);
+  const activeEndpointIndex = useRef(0);
 
   const updateClientStatus = useCallback((currentStatus, numActive = 0, registry = {}) => {
     const regEntries = Object.entries(registry || {});
@@ -86,6 +87,7 @@ export function useSecureFederated() {
           const { state, logs: initialLogs } = payload;
           setRound(state.round || 0);
           setStatus(state.status || 'IDLE');
+          setIsActive(['TRAINING', 'AGGREGATING', 'MINING', 'IN_PROGRESS'].includes(state.status));
           setAccuracyHistory(state.accuracy_history || []);
           setLossHistory(state.loss_history || []);
           setLogs(initialLogs.map(l => ({ msg: `${l}`, color: '#64748b' })));
@@ -252,8 +254,26 @@ export function useSecureFederated() {
     setLogs([]);
   }, []);
 
+  const updateActiveTrainingCode = useCallback(async (code, filename = 'model.py', source = 'custom', name = 'Custom Injected Script', dataset = 'Dynamic Dataset Binding') => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/training/active-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, filename, source, name, dataset })
+      });
+      const data = await response.json();
+      if (data.success && data.active_code) {
+        setActiveTrainingCode(data.active_code);
+        setModelArchitecture(code);
+      }
+      return data;
+    } catch (err) {
+      console.error("Failed to update active training code:", err);
+      return { success: false, error: err.message };
+    }
+  }, []);
+
   const targetEndpoints = isProd ? [hfWsUrl] : [localWsUrl, hfWsUrl];
-  const activeEndpointIndex = useRef(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -320,6 +340,39 @@ export function useSecureFederated() {
     };
   }, [onMessage]);
 
+  // Periodic Telemetry Polling fallback to ensure 100% synchronized state across all tabs
+  useEffect(() => {
+    const syncStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/distributed/status`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.status) {
+            setDistributedStatus(prev => ({
+              ...prev,
+              status: data.status,
+              round: data.round ?? prev.round,
+              totalRounds: data.total_rounds ?? prev.totalRounds,
+              registeredClients: data.registered_clients ?? prev.registeredClients,
+              updatesReceived: data.updates_received ?? prev.updatesReceived,
+              updatesNeeded: data.updates_needed ?? prev.updatesNeeded,
+            }));
+            setStatus(data.status);
+            setIsActive(['TRAINING', 'AGGREGATING', 'MINING', 'IN_PROGRESS'].includes(data.status));
+            if (data.round !== undefined && data.round > 0) setRound(data.round);
+            if (data.accuracy_history && data.accuracy_history.length > 0) setAccuracyHistory(data.accuracy_history);
+            if (data.loss_history && data.loss_history.length > 0) setLossHistory(data.loss_history);
+          }
+        }
+      } catch (e) {
+        // Quiet fallback
+      }
+    };
+
+    const timer = setInterval(syncStatus, 2500);
+    return () => clearInterval(timer);
+  }, []);
+
   const runRound = async () => {
     try {
       try {
@@ -369,16 +422,20 @@ export function useSecureFederated() {
     }
   };
 
-  const startDistributedSession = async (rounds = 5, minClients = 2) => {
+  const startDistributedSession = async (rounds = 5, minClients = null) => {
     try {
+      const regCount = Object.keys(nodeRegistry).length;
+      const actualMin = minClients !== null ? minClients : Math.max(1, regCount);
       const response = await fetch(`${API_BASE_URL}/api/v1/distributed/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ num_rounds: rounds, min_clients: minClients })
+        body: JSON.stringify({ num_rounds: rounds, min_clients: actualMin })
       });
       const data = await response.json();
       if (data.success) {
-        setDistributedStatus(prev => ({ ...prev, status: 'WAITING', totalRounds: rounds }));
+        setStatus('WAITING');
+        setIsActive(true);
+        setDistributedStatus(prev => ({ ...prev, status: 'WAITING', totalRounds: rounds, round: 1, updatesNeeded: actualMin }));
       }
       return data;
     } catch (err) {
@@ -400,25 +457,6 @@ export function useSecureFederated() {
       return { success: false, error: "Connection Failed" };
     }
   };
-
-  const updateActiveTrainingCode = useCallback(async (code, filename = 'model.py', source = 'custom', name = 'Custom Injected Script', dataset = 'Dynamic Dataset Binding') => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/training/active-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, filename, source, name, dataset })
-      });
-      const data = await response.json();
-      if (data.success && data.active_code) {
-        setActiveTrainingCode(data.active_code);
-        setModelArchitecture(code);
-      }
-      return data;
-    } catch (err) {
-      console.error("Failed to update active training code:", err);
-      return { success: false, error: err.message };
-    }
-  }, []);
 
   return {
     round,

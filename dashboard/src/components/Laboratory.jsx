@@ -655,6 +655,23 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
                 setCode(e.target.value);
                 if (status === 'READY' || status === 'COMPLETE') setStatus('IDLE');
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Tab') {
+                  e.preventDefault();
+                  const start = e.target.selectionStart;
+                  const end = e.target.selectionEnd;
+                  const val = e.target.value;
+                  setCode(val.substring(0, start) + '    ' + val.substring(end));
+                  setTimeout(() => {
+                    if (textAreaRef.current) {
+                      textAreaRef.current.selectionStart = textAreaRef.current.selectionEnd = start + 4;
+                    }
+                  }, 0);
+                } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                  e.preventDefault();
+                  handleRunLocal();
+                }
+              }}
               spellCheck={false}
               className="lab-textarea"
             />

@@ -481,9 +481,9 @@ class MNISTNet(nn.Module):
     print(f"  {Style.CYAN}⏳ Node Active & Ready — Listening for Federated Orchestration Rounds...{Style.RESET}\n")
 
     # ── ORCHESTRATION LOOP ──
+    last_session_id = None
     last_participated_round = -1
-    spinner_frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-    spin_idx = 0
+    has_printed_complete = False
 
     try:
         while True:
@@ -497,6 +497,13 @@ class MNISTNet(nn.Module):
             session_status = status_res.get("status")
             current_round = status_res.get("round", 0)
             total_rounds = status_res.get("total_rounds", 5)
+            current_session_id = status_res.get("session_id")
+
+            # Detect new session started from coordinator/dashboard
+            if current_session_id and current_session_id != last_session_id:
+                last_session_id = current_session_id
+                last_participated_round = -1
+                has_printed_complete = False
 
             if session_status in ("WAITING", "IN_PROGRESS", "TRAINING") and current_round != last_participated_round and current_round > 0:
                 w = get_term_width()
@@ -582,12 +589,37 @@ class MNISTNet(nn.Module):
                     "client_id": client_id,
                     "params": params_payload,
                     "num_examples": len(X_train),
-                    "metrics": {"accuracy": acc_val, "loss": loss_val},
+                    "metrics": {"accuracy": acc_val, "loss": loss_val, "node_name": node_name},
                 }, timeout=15)
 
                 if sub_res.get("success"):
                     tx_id = sub_res.get("tx_id", "N/A")
                     print(f"  {Style.BOLD}{Style.GREEN}  ⛓️  Committed to Blockchain:{Style.RESET} Tx #{Style.CYAN}{tx_id[:16]}...{Style.RESET} {Style.GREEN}[SMART CONTRACT VALIDATED]{Style.RESET}")
+                elif "not registered" in sub_res.get("message", "").lower():
+                    # Auto re-register and re-submit
+                    reg_res = http_post(f"{server_url}/api/v1/distributed/register", {
+                        "name": node_name,
+                        "ip": "127.0.0.1",
+                        "device": device_label,
+                        "os": f"{platform.system()} {platform.release()}",
+                        "arch": platform.machine(),
+                        "python": f"v{platform.python_version()}",
+                        "shard_size": f"{len(X_train)} samples",
+                        "privacy": "L2-Clip (1.5) + Gaussian (σ=0.005)",
+                        "code": training_code,
+                        "filename": training_filename
+                    })
+                    if reg_res.get("client_id"):
+                        client_id = reg_res.get("client_id")
+                    sub_res2 = http_post(f"{server_url}/api/v1/distributed/submit-update", {
+                        "client_id": client_id,
+                        "params": params_payload,
+                        "num_examples": len(X_train),
+                        "metrics": {"accuracy": acc_val, "loss": loss_val, "node_name": node_name},
+                    }, timeout=15)
+                    if sub_res2.get("success"):
+                        tx_id = sub_res2.get("tx_id", "N/A")
+                        print(f"  {Style.BOLD}{Style.GREEN}  ⛓️  Committed to Blockchain:{Style.RESET} Tx #{Style.CYAN}{tx_id[:16]}...{Style.RESET} {Style.GREEN}[SMART CONTRACT VALIDATED]{Style.RESET}")
                 elif "COMPLETE" in sub_res.get("message", "") or "Recorded" in sub_res.get("message", "") or "accepted" in sub_res.get("message", ""):
                     print(f"  {Style.BOLD}{Style.GREEN}  ⛓️  Committed to Blockchain:{Style.RESET} {Style.GREEN}[SMART CONTRACT VALIDATED & MINED]{Style.RESET}")
                 else:
@@ -601,7 +633,7 @@ class MNISTNet(nn.Module):
                     print(f"  {Style.EMERALD}✔ Cycle {current_round}/{total_rounds} Complete. Awaiting final blockchain settlement...{Style.RESET}\n")
 
             elif session_status == "COMPLETE":
-                if last_participated_round > 0:
+                if not has_printed_complete and last_participated_round > 0:
                     w = get_term_width()
                     banner_top = f"╔{'═' * (w - 2)}╗"
                     banner_bot = f"╚{'═' * (w - 2)}╝"
@@ -609,10 +641,11 @@ class MNISTNet(nn.Module):
                     print(f"║  🏁 FEDERATED LEARNING SESSION COMPLETE!")
                     print(f"║  🏆 All Model Updates Aggregated & Verified on Distributed Ledger.")
                     print(f"{banner_bot}{Style.RESET}\n")
-                    break
-                else:
-                    # Previous session is complete, stay connected in standby for new session
-                    time.sleep(1.5)
+                    print(f"  {Style.SLATE}⏳ Node Active & In Standby — Listening for Next Federated Orchestration Session...{Style.RESET}\n")
+                    has_printed_complete = True
+                time.sleep(1.5)
+
+            time.sleep(1.2)
 
             time.sleep(1.2)
 

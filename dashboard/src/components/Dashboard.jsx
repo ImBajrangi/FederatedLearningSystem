@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, ShieldCheck, Zap, Globe, Lock, Cpu, Server, TrendingUp, AlertCircle, Terminal } from 'lucide-react';
+import { Activity, ShieldCheck, Zap, Globe, Lock, Cpu, Server, TrendingUp, AlertCircle, Terminal, Download, Box, Award, FileText, Copy, Check } from 'lucide-react';
 import { MetricsChart } from './MetricsChart';
 import { BlockchainRibbon } from './BlockchainExplorer';
+import { API_BASE_URL } from '../hooks/useSecureFederated';
 
 export const Dashboard = ({
   accuracyHistory = [],
@@ -19,6 +20,9 @@ export const Dashboard = ({
   startDistributedSession = () => {},
   stopDistributedSession = () => {}
 }) => {
+  const [copyCloudSuccess, setCopyCloudSuccess] = useState(false);
+  const [copyLocalSuccess, setCopyLocalSuccess] = useState(false);
+
   const currentAccuracy = accuracyHistory.length > 0
     ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
     : "0.00";
@@ -155,19 +159,24 @@ export const Dashboard = ({
                   </div>
                   <div className="flex justify-between border-b border-border/40 pb-1">
                     <span>MIN_CONSENSUS</span> 
-                    <span className="text-main font-bold">02</span>
+                    <span className="text-main font-bold">{Math.max(1, distributedStatus.updatesNeeded || distributedStatus.registeredClients || 1).toString().padStart(2, '0')}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <button 
-              onClick={() => distributedStatus.status === 'IDLE' ? startDistributedSession(5, 2) : stopDistributedSession()}
-              className={`dist-btn-action-large ${distributedStatus.status === 'IDLE' ? '' : 'dist-btn-stop-large'}`}
-            >
-              {distributedStatus.status === 'IDLE' ? <Zap size={12} fill="currentColor" /> : <TrendingUp size={12} />}
-              <span>{distributedStatus.status === 'IDLE' ? 'Initiate Session' : 'Terminate'}</span>
-            </button>
+            {(() => {
+              const isSessionActive = ['WAITING', 'TRAINING', 'AGGREGATING', 'IN_PROGRESS'].includes(distributedStatus.status);
+              return (
+                <button 
+                  onClick={() => isSessionActive ? stopDistributedSession() : startDistributedSession(5, Math.max(1, distributedStatus.registeredClients || 1))}
+                  className={`dist-btn-action-large ${isSessionActive ? 'dist-btn-stop-large' : ''}`}
+                >
+                  {isSessionActive ? <TrendingUp size={12} /> : <Zap size={12} fill="currentColor" />}
+                  <span>{isSessionActive ? 'Terminate' : (distributedStatus.status === 'COMPLETE' ? 'Start Training' : 'Initiate Session')}</span>
+                </button>
+              );
+            })()}
           </div>
 
           {/* Panel 2: Live Metrics & Convergence */}
@@ -182,7 +191,7 @@ export const Dashboard = ({
                 <span className="dist-metric-label-mini">Registered Nodes</span>
                 <div className="dist-metric-value-row">
                   <span className="dist-metric-val">{distributedStatus.registeredClients || 0}</span>
-                  <span className="type-label opacity-30">/ 02</span>
+                  <span className="type-label opacity-30">/ {Math.max(1, distributedStatus.updatesNeeded || distributedStatus.registeredClients || 1).toString().padStart(2, '0')}</span>
                 </div>
               </div>
               <div className="dist-metric-box">
@@ -215,7 +224,7 @@ export const Dashboard = ({
             </div>
             
             <p className="mt-6 text-center mono text-[8px] uppercase tracking-tighter opacity-40">
-              Awaiting Gradient Distribution
+              {distributedStatus.status === 'COMPLETE' ? 'Consensus Convergence Reached ✓' : 'Awaiting Gradient Distribution'}
             </p>
 
             <div className="dist-bg-globe-watermark">
@@ -230,33 +239,145 @@ export const Dashboard = ({
               <span className="type-label-bold !text-main">Edge Connectivity</span>
             </div>
 
-            <p className="text-[10px] leading-relaxed text-muted mb-6">
-              Geographically distributed entities must execute the following directive to join the synchronization pool.
+            <p className="text-[10px] leading-relaxed text-muted mb-3">
+              Run either directive on any Mac, Linux, or Cloud GPU to participate in consensus training:
             </p>
 
-            <div className="dist-terminal">
-              <code className="text-main/80 block break-all leading-relaxed mb-4">
-                python run_client.py <br/> 
-                --server https://mdark4025-cybronites.hf.space <br/>
-                --name "NODE_{Math.floor(Math.random()*1000)}"
-              </code>
-              <div className="flex items-center gap-2 opacity-40 selection:bg-transparent">
-                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
-                  <span className="mono text-[8px]">READY_FOR_HANDSHAKE</span>
+            {/* Option 1: Cloud 1-Command */}
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 1: 1-Command Cloud</span>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3');
+                    setCopyCloudSuccess(true);
+                    setTimeout(() => setCopyCloudSuccess(false), 2000);
+                  }}
+                  className="dist-mini-copy-btn"
+                  title="Copy cloud join command"
+                >
+                  {copyCloudSuccess ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                  <span>{copyCloudSuccess ? 'COPIED' : 'COPY'}</span>
+                </button>
+              </div>
+              <div className="dist-code-box">
+                <code>curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3</code>
               </div>
             </div>
 
-            <div className="mt-auto pt-6 border-t border-border/40">
-              <div className="flex items-start gap-3">
-                <AlertCircle size={14} className="text-accent mt-1 flex-shrink-0" />
-                <p className="text-[9px] leading-relaxed opacity-60 italic">
-                  Nodes automatically encrypt gradients using AES-256-GCM before transport. Ensure stable internet uplink during aggregation.
-                </p>
+            {/* Option 2: Local Workspace Command */}
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 2: Local Workspace</span>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText('python join.py --server http://localhost:7880 --name "Hospital-Alpha"');
+                    setCopyLocalSuccess(true);
+                    setTimeout(() => setCopyLocalSuccess(false), 2000);
+                  }}
+                  className="dist-mini-copy-btn"
+                  title="Copy local workspace join command"
+                >
+                  {copyLocalSuccess ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                  <span>{copyLocalSuccess ? 'COPIED' : 'COPY'}</span>
+                </button>
+              </div>
+              <div className="dist-code-box">
+                <code>python join.py --server http://localhost:7880 --name "Hospital-Alpha"</code>
+              </div>
+            </div>
+
+            <div className="mt-auto pt-3 border-t border-border/40">
+              <div className="flex items-center gap-2 opacity-60">
+                <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                <span className="mono text-[8px]">{distributedStatus.status === 'COMPLETE' ? 'SESSION_SETTLED_READY' : 'LISTENING_FOR_HANDSHAKE'}</span>
               </div>
             </div>
           </div>
 
         </div>
+
+        {/* ─── Trained Model Artifact & Deployment Card (Visible when Training Completes or on request) ─── */}
+        {(distributedStatus.status === 'COMPLETE' || status === 'COMPLETE' || status === 'FINISHED' || round >= 5 || (accuracyHistory && accuracyHistory.length > 0)) && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="dash-trained-model-card"
+          >
+            <div className="dash-tm-header">
+              <div className="dash-tm-title-wrap">
+                <div className="dash-tm-badge">
+                  <Award size={14} className="text-emerald-500" />
+                  <span>TRAINING CYCLE COMPLETED</span>
+                </div>
+                <h4 className="dash-tm-title">Trained Federated Model Checkpoint</h4>
+                <p className="dash-tm-desc">
+                  All 5 consensus rounds aggregated via decentralized coordinate-wise median & verified on blockchain ledger.
+                </p>
+              </div>
+              <div className="dash-tm-meta-tags">
+                <div className="dash-tm-tag">
+                  <ShieldCheck size={12} className="text-emerald-500" />
+                  <span>100% SMART CONTRACT VERIFIED</span>
+                </div>
+                <div className="dash-tm-tag">
+                  <Cpu size={12} className="text-cyan-500" />
+                  <span>PYTORCH & ONNX EXPORTS READY</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="dash-tm-body">
+              <div className="dash-tm-stats-grid">
+                <div className="dash-tm-stat-box">
+                  <span className="dash-tm-stat-label">Convergence Accuracy</span>
+                  <span className="dash-tm-stat-value text-emerald-600 font-serif">{currentAccuracy}%</span>
+                </div>
+                <div className="dash-tm-stat-box">
+                  <span className="dash-tm-stat-label">Model Architecture</span>
+                  <span className="dash-tm-stat-value font-mono text-slate-800">MNISTNet (PyTorch)</span>
+                </div>
+                <div className="dash-tm-stat-box">
+                  <span className="dash-tm-stat-label">Consensus Height</span>
+                  <span className="dash-tm-stat-value font-mono text-slate-800">{blockchain.length} Blocks</span>
+                </div>
+                <div className="dash-tm-stat-box">
+                  <span className="dash-tm-stat-label">Differential Privacy</span>
+                  <span className="dash-tm-stat-value text-slate-700">Gaussian (σ=0.005)</span>
+                </div>
+              </div>
+
+              <div className="dash-tm-actions">
+                <a
+                  href={`${API_BASE_URL}/api/v1/distributed/download/pt`}
+                  download="federated_model_final.pt"
+                  className="dash-tm-btn dash-tm-btn-primary"
+                >
+                  <Download size={14} />
+                  <span>Download PyTorch Model (.pt)</span>
+                </a>
+
+                <a
+                  href={`${API_BASE_URL}/api/v1/distributed/download/onnx`}
+                  download="federated_model_final.onnx"
+                  className="dash-tm-btn dash-tm-btn-secondary"
+                >
+                  <Box size={14} />
+                  <span>Download ONNX Model (.onnx)</span>
+                </a>
+
+                <a
+                  href={`${API_BASE_URL}/api/v1/distributed/download/report`}
+                  download="federated_audit_performance_report.json"
+                  className="dash-tm-btn dash-tm-btn-report"
+                >
+                  <FileText size={14} />
+                  <span>Performance & Audit Report (.json)</span>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* ─── Blockchain Journal ─── */}
@@ -474,7 +595,7 @@ export const Dashboard = ({
           gap: 12px;
           box-shadow: 0 4px 15px var(--accent-glow);
         }
-        .dist-btn-action-large:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); }
+        .dist-btn-action-large:hover { box-shadow: 0 6px 20px var(--accent-glow); filter: brightness(1.05); }
         .dist-btn-stop-large { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: none; }
         .dist-btn-stop-large:hover { background: var(--error); color: white; }
 
@@ -488,29 +609,22 @@ export const Dashboard = ({
         
         .dist-terminal {
           background: var(--bg-main);
-          padding: 24px;
           border: 1px solid var(--border);
+          border-radius: var(--radius-sm);
+          padding: 16px;
           font-family: var(--font-mono);
-          font-size: 10px;
-          position: relative;
-          overflow: hidden;
-        }
-        .dist-terminal::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; width: 3px; height: 100%;
-          background: var(--accent);
-          opacity: 0.5;
+          font-size: 11px;
+          line-height: 1.6;
+          box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .dash-actions {
           display: flex;
           align-items: center;
           gap: 12px;
-          height: 44px;
         }
         .dash-btn-primary {
-          height: 100%;
+          height: 44px;
           background: var(--primary);
           color: #fff;
           border: none;
@@ -526,8 +640,8 @@ export const Dashboard = ({
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .dash-btn-primary:hover:not(.dash-btn-disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-        .dash-btn-primary:active:not(.dash-btn-disabled) { transform: scale(0.98); }
+        .dash-btn-primary:hover:not(.dash-btn-disabled) { box-shadow: 0 6px 20px rgba(0,0,0,0.15); filter: brightness(1.08); }
+        .dash-btn-primary:active:not(.dash-btn-disabled) { transform: scale(0.99); }
         .dash-btn-disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); box-shadow: none; }
         
         .dash-btn-icon {
@@ -800,12 +914,194 @@ export const Dashboard = ({
           stroke-dasharray: 283;
         }
 
+        .dist-code-box {
+          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          border-radius: 4px;
+          padding: 6px 10px;
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          color: #0f172a;
+          word-break: break-all;
+          line-height: 1.4;
+        }
+        .dist-code-box code {
+          font-weight: 600;
+          color: #0f172a;
+        }
+        .dist-mini-copy-btn {
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          color: #0f172a;
+          padding: 2px 8px;
+          border-radius: 3px;
+          font-size: 8px;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+          transition: all 0.15s ease-in-out;
+        }
+        .dist-mini-copy-btn:hover {
+          background: #f1f5f9;
+          border-color: #94a3b8;
+        }
+
         .dash-journal-container {
           height: 320px;
           border: 1px solid var(--border);
           background: #000;
           display: flex;
           flex-direction: column;
+        }
+
+        /* ─── Trained Model Artifact & Deployment Card ─── */
+        .dash-trained-model-card {
+          margin-top: 24px;
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          padding: 24px;
+          box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.06);
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .dash-tm-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          border-bottom: 1px solid #f1f5f9;
+          padding-bottom: 16px;
+          gap: 16px;
+        }
+        @media (max-width: 768px) {
+          .dash-tm-header { flex-direction: column; }
+        }
+        .dash-tm-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 10px;
+          font-weight: 800;
+          color: #059669;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          margin-bottom: 6px;
+        }
+        .dash-tm-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #0f172a;
+          margin: 0 0 4px 0;
+          letter-spacing: -0.01em;
+        }
+        .dash-tm-desc {
+          font-size: 12px;
+          color: #64748b;
+          margin: 0;
+          line-height: 1.5;
+        }
+        .dash-tm-meta-tags {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          flex-shrink: 0;
+        }
+        .dash-tm-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          padding: 4px 10px;
+          border-radius: 4px;
+          font-size: 9px;
+          font-weight: 700;
+          color: #334155;
+          letter-spacing: 0.05em;
+        }
+        .dash-tm-body {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .dash-tm-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+        @media (max-width: 900px) {
+          .dash-tm-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .dash-tm-stat-box {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          padding: 12px 16px;
+          border-radius: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .dash-tm-stat-label {
+          font-size: 9px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+        }
+        .dash-tm-stat-value {
+          font-size: 15px;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+        }
+        .dash-tm-actions {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 12px;
+        }
+        .dash-tm-btn {
+          height: 38px;
+          padding: 0 16px;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 11px;
+          font-weight: 700;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.15s ease-in-out;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .dash-tm-btn-primary {
+          background: #0f172a;
+          color: #ffffff !important;
+          border: 1px solid #0f172a;
+        }
+        .dash-tm-btn-primary:hover {
+          background: #1e293b;
+          border-color: #1e293b;
+        }
+        .dash-tm-btn-secondary {
+          background: #ffffff;
+          color: #0f172a !important;
+          border: 1px solid #cbd5e1;
+        }
+        .dash-tm-btn-secondary:hover {
+          background: #f8fafc;
+          border-color: #94a3b8;
+        }
+        .dash-tm-btn-report {
+          background: #f0fdf4;
+          color: #15803d !important;
+          border: 1px solid #bbf7d0;
+        }
+        .dash-tm-btn-report:hover {
+          background: #dcfce7;
+          border-color: #86efac;
         }
 
         /* ─── Responsive ─── */

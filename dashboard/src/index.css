@@ -219,12 +219,11 @@ h4 {
 
 .card-shadow-premium {
   box-shadow: 0 10px 40px -10px rgba(54, 78, 104, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .card-shadow-premium:hover {
-  box-shadow: 0 20px 60px -15px rgba(54, 78, 104, 0.12);
-  transform: translateY(-2px);
+  box-shadow: 0 14px 45px -10px rgba(54, 78, 104, 0.12);
 }
 
 /* ─── Luminous Text ─── */
@@ -255,16 +254,6 @@ h4 {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(226, 230, 236, 0.3);
-}
-
-.card-shadow-premium {
-  box-shadow: 0 10px 40px -10px rgba(54, 78, 104, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-shadow-premium:hover {
-  box-shadow: 0 20px 60px -15px rgba(54, 78, 104, 0.12);
-  transform: translateY(-2px);
 }
 
 /* ─── Luminous Text ─── */

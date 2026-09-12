@@ -45,9 +45,20 @@ export const Header = ({ status }) => {
             <span>Connect Node</span>
           </button>
 
-          <div className="hd-status-pill">
-            <div className="hd-status-dot" />
-            <span className="hd-status-text">{status}</span>
+          <div className={`hd-status-pill ${
+            status === 'TRAINING' ? 'hd-status-training' :
+            status === 'OFFLINE' ? 'hd-status-offline' :
+            status === 'COMPLETE' || status === 'FINISHED' ? 'hd-status-complete' :
+            status === 'READY' || status === 'WAITING' ? 'hd-status-ready' : 'hd-status-idle'
+          }`}>
+            <div className={`hd-status-dot ${status === 'TRAINING' ? 'animate-pulse' : ''}`} />
+            <span className="hd-status-text">
+              {status === 'TRAINING' ? 'LIVE TRAINING' :
+               status === 'OFFLINE' ? 'OFFLINE' :
+               status === 'COMPLETE' || status === 'FINISHED' ? 'COMPLETED' :
+               status === 'READY' || status === 'WAITING' ? 'READY (CONNECTED)' :
+               status || 'ONLINE'}
+            </span>
           </div>
 
           <div className="hd-secure-pill">
@@ -263,6 +274,7 @@ export const Header = ({ status }) => {
           background: rgba(16, 185, 129, 0.08);
           border: 1px solid rgba(16, 185, 129, 0.25);
           border-radius: 4px;
+          transition: all 0.2s ease;
         }
         .hd-status-dot {
           width: 7px;
@@ -278,6 +290,54 @@ export const Header = ({ status }) => {
           color: #047857;
           letter-spacing: 0.08em;
           text-transform: uppercase;
+        }
+        .hd-status-offline {
+          background: rgba(239, 68, 68, 0.08);
+          border-color: rgba(239, 68, 68, 0.25);
+        }
+        .hd-status-offline .hd-status-dot {
+          background: #ef4444;
+          box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+          animation: none;
+        }
+        .hd-status-offline .hd-status-text {
+          color: #b91c1c;
+        }
+        .hd-status-ready {
+          background: rgba(14, 165, 233, 0.08);
+          border-color: rgba(14, 165, 233, 0.25);
+        }
+        .hd-status-ready .hd-status-dot {
+          background: #0ea5e9;
+          box-shadow: 0 0 8px rgba(14, 165, 233, 0.6);
+          animation: none;
+        }
+        .hd-status-ready .hd-status-text {
+          color: #0369a1;
+        }
+        .hd-status-complete {
+          background: rgba(139, 92, 246, 0.08);
+          border-color: rgba(139, 92, 246, 0.25);
+        }
+        .hd-status-complete .hd-status-dot {
+          background: #8b5cf6;
+          box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+          animation: none;
+        }
+        .hd-status-complete .hd-status-text {
+          color: #6d28d9;
+        }
+        .hd-status-idle {
+          background: rgba(100, 116, 139, 0.08);
+          border-color: rgba(100, 116, 139, 0.25);
+        }
+        .hd-status-idle .hd-status-dot {
+          background: #64748b;
+          box-shadow: none;
+          animation: none;
+        }
+        .hd-status-idle .hd-status-text {
+          color: #475569;
         }
         .hd-secure-pill {
           display: inline-flex;
@@ -398,19 +458,21 @@ export const Header = ({ status }) => {
           letter-spacing: 0.02em;
         }
         .hd-code-box {
-          background: #090E1A;
-          border: 1px solid #1E293B;
+          background: #F8FAFC;
+          border: 1px solid #CBD5E1;
           border-radius: 6px;
           padding: 10px 14px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 12px;
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
         }
         .hd-code-text {
           font-family: var(--font-mono, monospace);
           font-size: 11px;
-          color: #34D399;
+          font-weight: 600;
+          color: #0F172A;
           white-space: nowrap;
           overflow-x: auto;
           user-select: all;
@@ -419,9 +481,9 @@ export const Header = ({ status }) => {
           flex-shrink: 0;
           height: 28px;
           padding: 0 12px;
-          background: #1E293B;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          color: #ffffff !important;
+          background: #FFFFFF;
+          border: 1px solid #CBD5E1;
+          color: #0F172A !important;
           border-radius: 4px;
           font-size: 10px;
           font-weight: 700;
@@ -429,13 +491,15 @@ export const Header = ({ status }) => {
           align-items: center;
           gap: 6px;
           cursor: pointer;
-          transition: all 0.15s;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+          transition: all 0.15s ease-in-out;
         }
         .hd-copy-btn:hover {
-          background: #334155;
+          background: #F1F5F9;
+          border-color: #94A3B8;
         }
         .hd-check-icon {
-          color: #34D399;
+          color: #059669;
         }
         .hd-steps-list {
           padding-top: 6px;

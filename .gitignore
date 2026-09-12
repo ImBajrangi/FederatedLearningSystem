@@ -20,3 +20,7 @@ dist/
 stitch_hackathon/
 research_sandbox/
 secure_training_platform/
+exports/
+*.pt
+*.onnx
+*.onnx.data

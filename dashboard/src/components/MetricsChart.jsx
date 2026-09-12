@@ -21,20 +21,31 @@ export const MetricsChart = ({ data = [], lossData = [] }) => {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  const normalizeAcc = (val) => {
+    if (val === null || val === undefined || isNaN(val)) return 0;
+    const num = Number(val);
+    return num <= 1 && num > 0 ? num * 100 : num;
+  };
+
+  const normalizeLoss = (val) => {
+    if (val === null || val === undefined || isNaN(val)) return 0;
+    return Number(val);
+  };
+
   // Map raw floats to charted objects.
   const chartData = data.length > 0 
     ? data.map((val, index) => ({
         round: index + 1,
-        accuracy: (val * 100).toFixed(1),
-        loss: (lossData[index] || 0).toFixed(3),
+        accuracy: normalizeAcc(val).toFixed(1),
+        loss: normalizeLoss(lossData[index] || 0).toFixed(3),
       }))
     : [{ round: 0, accuracy: 0, loss: 0 }];
 
-  const currentAcc = data.length > 0 ? (data[data.length - 1] * 100).toFixed(1) : "0.0";
-  const currentLoss = lossData.length > 0 ? lossData[lossData.length - 1].toFixed(3) : "0.000";
+  const currentAcc = data.length > 0 ? normalizeAcc(data[data.length - 1]).toFixed(1) : "0.0";
+  const currentLoss = lossData.length > 0 ? normalizeLoss(lossData[lossData.length - 1]).toFixed(3) : "0.000";
   
-  const accImproved = data.length > 1 ? data[data.length-1] >= data[data.length-2] : true;
-  const lossReduced = lossData.length > 1 ? lossData[lossData.length-1] <= lossData[lossData.length-2] : true;
+  const accImproved = data.length > 1 ? normalizeAcc(data[data.length-1]) >= normalizeAcc(data[data.length-2]) : true;
+  const lossReduced = lossData.length > 1 ? normalizeLoss(lossData[lossData.length-1]) <= normalizeLoss(lossData[lossData.length-2]) : true;
 
   return (
     <div className="w-full h-full flex flex-col">

@@ -249,7 +249,7 @@ function Dashboard() {
 
   return (
     <div className={`shell-container selection:bg-primary/10 bg-white`}>
-      <Header status={isConnected ? (isActive ? 'TRAINING' : status || 'CONNECTED') : 'OFFLINE'} />
+      <Header status={!isConnected ? 'OFFLINE' : isActive ? 'TRAINING' : status === 'WAITING' ? 'READY' : status === 'COMPLETE' || status === 'FINISHED' ? 'COMPLETE' : (status || 'IDLE')} />
 
       <div className="flex flex-1" style={{ overflow: 'hidden' }}>
         <Sidebar

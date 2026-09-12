@@ -209,38 +209,44 @@ export const PrivacyVault = () => {
                                 </div>
                             ) : (
                                 <div className="pv-jobs-list">
-                                    {jobs.map(job => (
-                                        <div key={job.id} className="pv-job-row">
-                                            <div className="pv-job-left">
-                                                <div className={`pv-job-indicator ${job.status === 'COMPLETED' ? 'pv-job-done' : 'pv-job-running'}`}>
-                                                    {job.status === 'COMPLETED' 
-                                                        ? <CheckCircle2 size={12} /> 
-                                                        : <RefreshCcw size={12} className="pv-spin" />}
+                                    {jobs.map(job => {
+                                        const rawProgress = Number(job.progress) || 0;
+                                        const progressPct = rawProgress > 1 ? Math.min(100, rawProgress) : Math.min(100, rawProgress * 100);
+                                        const accDisplay = job.accuracy ? (Number(job.accuracy) <= 1 ? (Number(job.accuracy) * 100).toFixed(1) : Number(job.accuracy).toFixed(1)) : '0.0';
+                                        const lossDisplay = job.loss ? Number(job.loss).toFixed(4) : '—';
+
+                                        return (
+                                            <div key={job.id} className="pv-job-row">
+                                                <div className="pv-job-left">
+                                                    <div className={`pv-job-indicator ${job.status === 'COMPLETED' ? 'pv-job-done' : 'pv-job-running'}`}>
+                                                        {job.status === 'COMPLETED' 
+                                                            ? <CheckCircle2 size={12} /> 
+                                                            : <RefreshCcw size={12} className="pv-spin" />}
+                                                    </div>
+                                                    <div className="pv-job-info">
+                                                        <span className="pv-job-name">{job.id.startsWith('job-') ? job.id.substring(0, 12) : `Job_${job.id.slice(0, 6)}`}</span>
+                                                        <span className="pv-job-model">{job.model_type || 'SimpleCNN'} • {job.dataset_name || 'Encrypted Partition'}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="pv-job-info">
-                                                    <span className="pv-job-name">Job_{job.id.slice(0, 6)}</span>
-                                                    <span className="pv-job-model">{job.model_type}</span>
+                                                <div className="pv-job-right">
+                                                    <span className="pv-job-progress">{progressPct.toFixed(1)}%</span>
+                                                    <span className={`pv-job-status ${job.status === 'COMPLETED' ? 'text-emerald-500' : 'text-cyan-400'}`}>{job.status}</span>
                                                 </div>
-                                            </div>
-                                            <div className="pv-job-right">
-                                                <span className="pv-job-progress">{(job.progress * 100).toFixed(1)}%</span>
-                                                <span className="pv-job-status">{job.status}</span>
-                                            </div>
-                                            <div className="pv-job-bar">
-                                                <motion.div 
-                                                    className="pv-job-bar-fill"
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${job.progress * 100}%` }}
-                                                />
-                                            </div>
-                                            {job.status === 'COMPLETED' && (
+                                                <div className="pv-job-bar">
+                                                    <motion.div 
+                                                        className="pv-job-bar-fill"
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${progressPct}%` }}
+                                                    />
+                                                </div>
                                                 <div className="pv-job-metrics">
-                                                    <span>Acc: {job.accuracy}%</span>
-                                                    <span>Loss: {job.loss}</span>
+                                                    <span>Acc: {accDisplay}%</span>
+                                                    <span>Loss: {lossDisplay}</span>
+                                                    {job.current_epoch !== undefined && <span>Epoch: {job.current_epoch}/{job.total_epochs || 5}</span>}
                                                 </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

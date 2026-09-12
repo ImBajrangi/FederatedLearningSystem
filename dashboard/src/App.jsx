@@ -59,6 +59,29 @@ function App() {
       return 'dashboard';
     }
   });
+  const [toasts, setToasts] = useState([]);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('federated_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [footerHeight, setFooterHeight] = useState(280);
+  const [isTerminalMinimized, setIsTerminalMinimized] = useState(false);
+
+  const resizingRef = useRef(null); // 'terminal' | 'sidebar' | null
+
+  const handleToggleSidebar = useCallback(() => {
+    setIsSidebarCollapsed(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('federated_sidebar_collapsed', String(next));
+      } catch (e) {}
+      return next;
+    });
+  }, []);
 
   // Log view changes to Supabase
   const handleViewChange = useCallback((view) => {
@@ -68,11 +91,23 @@ function App() {
     }
   }, [user]);
 
-  const [toasts, setToasts] = useState([]);
-  const [sidebarWidth, setSidebarWidth] = useState(280);
-  const [footerHeight, setFooterHeight] = useState(280);
-  const [isTerminalMinimized, setIsTerminalMinimized] = useState(false);
-  const resizingRef = useRef(null); // 'terminal' | 'sidebar' | null
+  const startTerminalResize = useCallback((e) => {
+    e.preventDefault();
+    resizingRef.current = 'terminal';
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
+
+  const startSidebarResize = useCallback((e) => {
+    e.preventDefault();
+    if (isSidebarCollapsed) {
+      setIsSidebarCollapsed(false);
+      try { localStorage.setItem('federated_sidebar_collapsed', 'false'); } catch (e) {}
+    }
+    resizingRef.current = 'sidebar';
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, [isSidebarCollapsed]);
 
   // Universal resize handler using refs (no stale closures)
   useEffect(() => {
@@ -102,21 +137,6 @@ function App() {
       window.removeEventListener('mouseup', onMouseUp);
     };
   }, []);
-
-  const startTerminalResize = useCallback((e) => {
-    e.preventDefault();
-    resizingRef.current = 'terminal';
-    document.body.style.cursor = 'ns-resize';
-    document.body.style.userSelect = 'none';
-  }, []);
-
-  const startSidebarResize = useCallback((e) => {
-    e.preventDefault();
-    resizingRef.current = 'sidebar';
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  }, []);
-
 
   const addToast = (msg, type = 'success') => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -260,7 +280,7 @@ function App() {
 
   return (
     <div className={`shell-container selection:bg-primary/10 bg-white`}>
-      <Header status={isConnected ? (isActive ? 'TRAINING' : status || 'CONNECTED') : 'OFFLINE'} />
+      <Header status={!isConnected ? 'OFFLINE' : isActive ? 'TRAINING' : status === 'WAITING' ? 'READY' : status === 'COMPLETE' || status === 'FINISHED' ? 'COMPLETE' : (status || 'IDLE')} />
 
       <div className="flex flex-1" style={{ overflow: 'hidden' }}>
         <Sidebar
@@ -270,7 +290,9 @@ function App() {
           nodeRegistry={nodeRegistry}
           rejectedCount={rejectedCount}
           blockchain={blockchain}
-          width={sidebarWidth}
+          width={isSidebarCollapsed ? 68 : sidebarWidth}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={handleToggleSidebar}
           onResize={startSidebarResize}
           onLogout={handleLogout}
         />

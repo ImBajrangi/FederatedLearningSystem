@@ -97,6 +97,9 @@ class DistributedCoordinator:
                 cosine_threshold = -0.3
             self.validation_contract = _FallbackValidator()
 
+        # Initialize global model
+        self._init_model()
+
     @classmethod
     def get_instance(cls) -> 'DistributedCoordinator':
         with cls._lock:
@@ -316,7 +319,13 @@ class DistributedCoordinator:
                 return {"success": False, "message": f"Server not accepting updates (status={self.status})"}
 
             if client_id not in self.registered_clients:
-                return {"success": False, "message": "Client not registered. Call /register first."}
+                # Auto-enroll / self-heal on active update so edge clients are never dropped across coordinator restarts
+                node_name = metrics.get("node_name", f"Node-{client_id[:6]}")
+                self.register_client(
+                    name=node_name,
+                    ip="127.0.0.1",
+                    device="Apple MPS / Edge Compute",
+                )
 
             if client_id in self.round_updates:
                 return {"success": True, "message": "Already recorded for this round. Synced on ledger.", "tx_id": self.round_updates[client_id].get("tx_id", "0xRecorded")}
@@ -423,6 +432,8 @@ class DistributedCoordinator:
                 "clients_active": len(self.registered_clients),
                 "node_registry": self.node_registry,
                 "round_history": self.round_history,
+                "accuracy_history": list(self.accuracy_history),
+                "loss_history": list(self.loss_history),
                 "mempool_count": len(self.blockchain.pending_transactions),
             })
 
