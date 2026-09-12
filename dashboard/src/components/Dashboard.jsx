@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, ShieldCheck, Zap, Globe, Lock, Cpu, Server, TrendingUp, AlertCircle, Terminal, Download, Box, Award, FileText, Copy, Check } from 'lucide-react';
+import { Activity, ShieldCheck, Zap, Globe, Lock, Cpu, Server, TrendingUp, AlertCircle, Terminal, Download, Box, Award, FileText, Copy, Check, CheckCircle2 } from 'lucide-react';
 import { MetricsChart } from './MetricsChart';
 import { BlockchainRibbon } from './BlockchainExplorer';
 import { API_BASE_URL } from '../hooks/useSecureFederated';
@@ -24,6 +24,7 @@ export const Dashboard = ({
   const [copyCloudSuccess, setCopyCloudSuccess] = useState(false);
   const [copyLocalSuccess, setCopyLocalSuccess] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [cliTab, setCliTab] = useState('universal');
 
   const handleDownloadJoinScript = async () => {
     try {
@@ -170,200 +171,388 @@ export const Dashboard = ({
         </div>
       </div>
 
-      {/* ─── Distributed Neural Exchange (Reorganized) ─── */}
+      {/* ─── Distributed Neural Exchange (Institutional Redesign) ─── */}
       <div className="dash-distributed-section">
         <div className="dist-organizer-grid">
           
-          {/* Panel 1: Orchestration & Session */}
+          {/* Panel 1: Orchestration & Session Controller */}
           <div className="dist-panel">
             <div className="dist-panel-header">
-              <Zap size={14} className="text-accent" />
-              <span className="type-label-bold !text-main">Session Controller</span>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600">
+                  <Zap size={13} />
+                </div>
+                <div>
+                  <h3 className="dist-panel-title">Session Controller</h3>
+                  <span className="dist-panel-subtitle">Orchestration & Quorum</span>
+                </div>
+              </div>
+              <div className={`dist-status-badge ${['WAITING', 'TRAINING', 'AGGREGATING', 'IN_PROGRESS'].includes(distributedStatus.status) ? 'dist-status-badge-active' : ''}`}>
+                <span className="dist-status-pulse" />
+                <span>{distributedStatus.status || 'IDLE'}</span>
+              </div>
             </div>
-            
-            <div className="flex flex-col gap-6">
-              <div>
-                <span className="dist-metric-label-mini">Network State</span>
-                <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-slate-50 border border-border rounded-sm">
-                  <span className={`w-2 h-2 rounded-full ${distributedStatus.status !== 'IDLE' ? 'bg-success animate-pulse' : 'bg-slate-300'}`} 
-                        style={{ backgroundColor: distributedStatus.status !== 'IDLE' ? 'var(--success)' : '#cbd5e1' }} />
-                  <span className="mono text-[10px] font-bold uppercase tracking-widest text-main">
-                    {distributedStatus.status || 'Offline'}
+
+            <div className="dist-panel-body">
+              {/* Quorum Fulfillment Telemetry */}
+              <div className="dist-telemetry-card">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="dist-field-label">Consensus Quorum</span>
+                  <span className="dist-field-val-mono font-bold text-sky-600">
+                    {(distributedStatus.registeredClients || Object.keys(nodeRegistry || {}).length || 0)} / {Math.max(1, distributedStatus.updatesNeeded || distributedStatus.registeredClients || 1)} Nodes
                   </span>
                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <span className="dist-metric-label-mini text-accent">Protocol Constraints</span>
-                <div className="mono text-[10px] space-y-2 opacity-70">
-                  <div className="flex justify-between border-b border-border/40 pb-1">
-                    <span>ROUNDS_LIMIT</span> 
-                    <span className="text-main font-bold">05</span>
-                  </div>
-                  <div className="flex justify-between border-b border-border/40 pb-1">
-                    <span>MIN_CONSENSUS</span> 
-                    <span className="text-main font-bold">{Math.max(1, distributedStatus.updatesNeeded || distributedStatus.registeredClients || 1).toString().padStart(2, '0')}</span>
-                  </div>
+                <div className="dist-progress-bar-bg">
+                  <motion.div 
+                    className="dist-progress-bar-fill"
+                    initial={{ width: 0 }}
+                    animate={{ 
+                      width: `${Math.min(100, Math.round(((distributedStatus.registeredClients || Object.keys(nodeRegistry || {}).length || 0) / Math.max(1, distributedStatus.updatesNeeded || distributedStatus.registeredClients || 1)) * 100))}%` 
+                    }}
+                  />
                 </div>
               </div>
+
+              {/* Protocol Hyperparameters Matrix */}
+              <div className="dist-params-grid">
+                <div className="dist-param-cell">
+                  <span className="dist-param-key">Rounds Cap</span>
+                  <span className="dist-param-val">05 Max</span>
+                </div>
+                <div className="dist-param-cell">
+                  <span className="dist-param-key">Aggregation</span>
+                  <span className="dist-param-val">FedAvg Median</span>
+                </div>
+                <div className="dist-param-cell">
+                  <span className="dist-param-key">DP Privacy</span>
+                  <span className="dist-param-val">σ = 0.005</span>
+                </div>
+                <div className="dist-param-cell">
+                  <span className="dist-param-key">Transport</span>
+                  <span className="dist-param-val">gRPC / WSS</span>
+                </div>
+              </div>
+
+              {/* Readiness Notice */}
+              {(() => {
+                const regCount = (distributedStatus.registeredClients || Object.keys(nodeRegistry || {}).length || 0);
+                const isSessionActive = ['WAITING', 'TRAINING', 'AGGREGATING', 'IN_PROGRESS'].includes(distributedStatus.status);
+
+                if (isSessionActive) {
+                  return (
+                    <div className="dist-notice dist-notice-active">
+                      <Activity size={13} className="text-sky-600 animate-spin" />
+                      <span>Federated round {distributedStatus.round || 1} in progress across {regCount} nodes...</span>
+                    </div>
+                  );
+                }
+
+                if (regCount === 0) {
+                  return (
+                    <div className="dist-notice dist-notice-warning">
+                      <AlertCircle size={13} className="text-amber-500" />
+                      <span>Awaiting edge worker. Run command in Panel 3 to connect a node.</span>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="dist-notice dist-notice-ready">
+                    <CheckCircle2 size={13} className="text-emerald-600 font-bold" />
+                    <span>{regCount} node{regCount > 1 ? 's' : ''} enrolled & verified. Ready to initiate session.</span>
+                  </div>
+                );
+              })()}
             </div>
 
-            {(() => {
-              const regCount = (distributedStatus.registeredClients || Object.keys(nodeRegistry || {}).length || 0);
-              const isSessionActive = ['WAITING', 'TRAINING', 'AGGREGATING', 'IN_PROGRESS'].includes(distributedStatus.status);
-              
-              if (!isSessionActive && regCount === 0) {
+            {/* Action Button */}
+            <div className="dist-panel-footer">
+              {(() => {
+                const regCount = (distributedStatus.registeredClients || Object.keys(nodeRegistry || {}).length || 0);
+                const isSessionActive = ['WAITING', 'TRAINING', 'AGGREGATING', 'IN_PROGRESS'].includes(distributedStatus.status);
+                
+                if (!isSessionActive && regCount === 0) {
+                  return (
+                    <button 
+                      onClick={() => {
+                        setCliTab('universal');
+                        navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3');
+                        setCopyCloudSuccess(true);
+                        setTimeout(() => setCopyCloudSuccess(false), 2000);
+                      }}
+                      className="dist-btn-action dist-btn-guide"
+                      data-tooltip="Copy 1-line connection script to your clipboard"
+                      data-tooltip-pos="bottom"
+                    >
+                      <Terminal size={13} />
+                      <span>Copy Client Run Command</span>
+                    </button>
+                  );
+                }
+
                 return (
                   <button 
-                    onClick={() => {
-                      alert("No edge nodes are currently connected.\n\nPlease connect at least one device by running:\n\npython join.py\n\nor\n\ncurl -sSL https://mdark4025-cybronites.hf.space/join.py | python3");
-                    }}
-                    className="dist-btn-action-large bg-slate-100 !text-slate-600 border border-slate-300 cursor-pointer hover:bg-slate-200"
-                    data-tooltip="Connect a client node first using 'python join.py' to start training"
+                    onClick={() => isSessionActive ? stopDistributedSession() : startDistributedSession(5, Math.max(1, regCount))}
+                    className={`dist-btn-action ${isSessionActive ? 'dist-btn-terminate' : 'dist-btn-execute'}`}
+                    data-tooltip={isSessionActive ? "Halt active distributed training cycle" : "Begin federated training cycle across connected nodes"}
                     data-tooltip-pos="bottom"
                   >
-                    <Terminal size={12} className="text-slate-500" />
-                    <span>Connect Node to Train</span>
+                    {isSessionActive ? <TrendingUp size={13} /> : <Zap size={13} fill="currentColor" />}
+                    <span>{isSessionActive ? 'Halt Active Session' : (distributedStatus.status === 'COMPLETE' ? 'Restart Training Cycle' : 'Initiate Federated Session')}</span>
                   </button>
                 );
-              }
-
-              return (
-                <button 
-                  onClick={() => isSessionActive ? stopDistributedSession() : startDistributedSession(5, Math.max(1, regCount))}
-                  className={`dist-btn-action-large ${isSessionActive ? 'dist-btn-stop-large' : ''}`}
-                  data-tooltip={isSessionActive ? "Halt active distributed training cycle" : "Begin federated training cycle across connected nodes"}
-                  data-tooltip-pos="bottom"
-                >
-                  {isSessionActive ? <TrendingUp size={12} /> : <Zap size={12} fill="currentColor" />}
-                  <span>{isSessionActive ? 'Terminate' : (distributedStatus.status === 'COMPLETE' ? 'Start Training' : 'Initiate Session')}</span>
-                </button>
-              );
-            })()}
+              })()}
+            </div>
           </div>
 
-          {/* Panel 2: Live Metrics & Convergence */}
+          {/* Panel 2: Aggregation Progress & Consensus Matrix */}
           <div className="dist-panel">
             <div className="dist-panel-header">
-              <Activity size={14} className="text-accent" />
-              <span className="type-label-bold !text-main">Aggregation Progress</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-8 mb-8">
-              <div className="dist-metric-box">
-                <span className="dist-metric-label-mini">Registered Nodes</span>
-                <div className="dist-metric-value-row">
-                  <span className="dist-metric-val">{distributedStatus.registeredClients || 0}</span>
-                  <span className="type-label opacity-30">/ {Math.max(1, distributedStatus.updatesNeeded || distributedStatus.registeredClients || 1).toString().padStart(2, '0')}</span>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                  <Activity size={13} />
+                </div>
+                <div>
+                  <h3 className="dist-panel-title">Aggregation Progress</h3>
+                  <span className="dist-panel-subtitle">Gradient Ingestion Matrix</span>
                 </div>
               </div>
-              <div className="dist-metric-box">
-                <span className="dist-metric-label-mini">Current Round</span>
-                <div className="dist-metric-value-row">
-                  <span className="dist-metric-val">{distributedStatus.round || 0}</span>
-                  <span className="type-label opacity-30">/ 05</span>
-                </div>
+              <div className="dist-meta-pill">
+                <span>Round {distributedStatus.round || 0} / 05</span>
               </div>
             </div>
 
-            <div className="dist-ring-center">
-              <div className="absolute flex flex-col items-center">
-                <span className="serif text-3xl text-main leading-none">{distributedStatus.updatesReceived || 0}</span>
-                <span className="dist-metric-label-mini !text-[7px] opacity-40">Updates</span>
+            <div className="dist-panel-body">
+              {/* Dual Stat Cards */}
+              <div className="grid grid-cols-2 gap-3 mb-1">
+                <div className="dist-stat-tile">
+                  <span className="dist-stat-tile-label">Registered Nodes</span>
+                  <div className="dist-stat-tile-val-row">
+                    <span className="dist-stat-tile-val text-slate-800">
+                      {distributedStatus.registeredClients || Object.keys(nodeRegistry || {}).length || 0}
+                    </span>
+                    <span className="dist-stat-tile-denom">
+                      / {Math.max(1, distributedStatus.updatesNeeded || distributedStatus.registeredClients || 1).toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                </div>
+                <div className="dist-stat-tile">
+                  <span className="dist-stat-tile-label">Current Round</span>
+                  <div className="dist-stat-tile-val-row">
+                    <span className="dist-stat-tile-val text-slate-800">
+                      {distributedStatus.round || 0}
+                    </span>
+                    <span className="dist-stat-tile-denom">/ 05</span>
+                  </div>
+                </div>
               </div>
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle stroke="var(--border)" strokeOpacity="0.3" strokeWidth="3" fill="transparent" r="45" cx="50" cy="50" />
-                <motion.circle 
-                  stroke="var(--accent)"
-                  strokeWidth="3" 
-                  strokeDasharray="283" 
-                  initial={{ strokeDashoffset: 283 }}
-                  animate={{ strokeDashoffset: 283 - (283 * ((distributedStatus.updatesReceived || 0) / (distributedStatus.updatesNeeded || 1))) }}
-                  strokeLinecap="round" 
-                  fill="transparent" 
-                  r="45" cx="50" cy="50" 
-                />
-              </svg>
+
+              {/* Gauge & Progress Center */}
+              <div className="dist-gauge-section">
+                <div className="dist-gauge-wrap">
+                  <svg className="dist-gauge-svg" viewBox="0 0 100 100">
+                    <circle className="dist-gauge-track" r="42" cx="50" cy="50" />
+                    <motion.circle 
+                      className="dist-gauge-indicator"
+                      stroke="#0284c7"
+                      strokeDasharray="264"
+                      initial={{ strokeDashoffset: 264 }}
+                      animate={{ 
+                        strokeDashoffset: 264 - (264 * Math.min(1, ((distributedStatus.updatesReceived || 0) / Math.max(1, distributedStatus.updatesNeeded || 1)))) 
+                      }}
+                      r="42" cx="50" cy="50" 
+                    />
+                  </svg>
+                  <div className="dist-gauge-center-text">
+                    <span className="dist-gauge-num">{distributedStatus.updatesReceived || 0}</span>
+                    <span className="dist-gauge-unit">Updates</span>
+                  </div>
+                </div>
+
+                {/* Pipeline Phase Indicator */}
+                <div className="dist-phases-strip">
+                  <div className={`dist-phase-dot ${distributedStatus.status === 'WAITING' ? 'active' : (distributedStatus.status ? 'done' : '')}`}>
+                    <span className="phase-num">1</span>
+                    <span className="phase-name">Dispatch</span>
+                  </div>
+                  <div className="dist-phase-line" />
+                  <div className={`dist-phase-dot ${distributedStatus.status === 'TRAINING' ? 'active' : (['AGGREGATING', 'COMPLETE'].includes(distributedStatus.status) ? 'done' : '')}`}>
+                    <span className="phase-num">2</span>
+                    <span className="phase-name">Train</span>
+                  </div>
+                  <div className="dist-phase-line" />
+                  <div className={`dist-phase-dot ${distributedStatus.status === 'AGGREGATING' ? 'active' : (distributedStatus.status === 'COMPLETE' ? 'done' : '')}`}>
+                    <span className="phase-num">3</span>
+                    <span className="phase-name">Ingest</span>
+                  </div>
+                  <div className="dist-phase-line" />
+                  <div className={`dist-phase-dot ${distributedStatus.status === 'COMPLETE' ? 'done' : ''}`}>
+                    <span className="phase-num">4</span>
+                    <span className="phase-name">FedAvg</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <p className="mt-6 text-center mono text-[8px] uppercase tracking-tighter opacity-40">
-              {distributedStatus.status === 'COMPLETE' ? 'Consensus Convergence Reached ✓' : 'Awaiting Gradient Distribution'}
-            </p>
+
+            <div className="dist-panel-footer">
+              <div className="dist-status-strip">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="mono text-[9px] uppercase tracking-wide text-slate-600">
+                  {distributedStatus.status === 'COMPLETE' 
+                    ? 'Consensus Convergence Reached ✓' 
+                    : distributedStatus.status === 'AGGREGATING'
+                    ? 'Computing Byzantine FedAvg Median...'
+                    : distributedStatus.status === 'TRAINING'
+                    ? 'Edge Shards Computing Local Gradients...'
+                    : 'Awaiting Gradient Distribution'}
+                </span>
+              </div>
+            </div>
 
             <div className="dist-bg-globe-watermark">
-              <Globe size={180} />
+              <Globe size={160} />
             </div>
           </div>
 
-          {/* Panel 3: CLI Edge Directive */}
+          {/* Panel 3: Edge Connectivity & Worker Dispatch */}
           <div className="dist-panel">
             <div className="dist-panel-header flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Terminal size={14} className="text-accent" />
-                <span className="type-label-bold !text-main">Edge Connectivity</span>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+                  <Terminal size={13} />
+                </div>
+                <div>
+                  <h3 className="dist-panel-title">Edge Connectivity</h3>
+                  <span className="dist-panel-subtitle">Zero-Clone Node Launcher</span>
+                </div>
               </div>
               <button
                 onClick={handleDownloadJoinScript}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 transition-colors"
+                className="dist-header-action-btn"
                 title="Download standalone join.py script"
               >
-                <Download size={10} className="text-slate-600" />
-                <span>{downloadSuccess ? 'SAVED' : 'DOWNLOAD SCRIPT'}</span>
+                <Download size={11} />
+                <span>{downloadSuccess ? 'SAVED ✓' : 'join.py'}</span>
               </button>
             </div>
 
-            <p className="text-[10px] leading-relaxed text-muted mb-3">
-              Run on any Mac, Linux, Windows, or Cloud GPU (Zero repository cloning required):
-            </p>
-
-            {/* Option 1: Cloud 1-Command Universal Stream */}
-            <div className="mb-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 1: 1-Command Universal (No files needed)</span>
+            <div className="dist-panel-body">
+              {/* Tab Selector */}
+              <div className="dist-tab-switcher">
                 <button 
-                  onClick={() => {
-                    navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3');
-                    setCopyCloudSuccess(true);
-                    setTimeout(() => setCopyCloudSuccess(false), 2000);
-                  }}
-                  className="dist-mini-copy-btn"
-                  title="Copy cloud join command"
+                  onClick={() => setCliTab('universal')}
+                  className={`dist-tab-btn ${cliTab === 'universal' ? 'active' : ''}`}
                 >
-                  {copyCloudSuccess ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
-                  <span>{copyCloudSuccess ? 'COPIED' : 'COPY'}</span>
+                  Universal 1-Liner
+                </button>
+                <button 
+                  onClick={() => setCliTab('standalone')}
+                  className={`dist-tab-btn ${cliTab === 'standalone' ? 'active' : ''}`}
+                >
+                  Local join.py
+                </button>
+                <button 
+                  onClick={() => setCliTab('flags')}
+                  className={`dist-tab-btn ${cliTab === 'flags' ? 'active' : ''}`}
+                >
+                  CLI Flags
                 </button>
               </div>
-              <div className="dist-code-box">
-                <code>curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3</code>
-              </div>
+
+              {/* Tab 1: Universal 1-Liner */}
+              {cliTab === 'universal' && (
+                <div className="dist-cli-content">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-wider">
+                      Cloud Stream (No repo clone)
+                    </span>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3');
+                        setCopyCloudSuccess(true);
+                        setTimeout(() => setCopyCloudSuccess(false), 2000);
+                      }}
+                      className="dist-mini-copy-btn"
+                      title="Copy universal cloud command"
+                    >
+                      {copyCloudSuccess ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                      <span>{copyCloudSuccess ? 'COPIED' : 'COPY'}</span>
+                    </button>
+                  </div>
+                  <div className="dist-terminal-box">
+                    <div className="dist-terminal-prompt">$</div>
+                    <code className="dist-terminal-code">
+                      <span className="token-cmd">curl</span> <span className="token-flag">-sSL</span> <span className="token-url">https://mdark4025-cybronites.hf.space/join.py</span> <span className="token-pipe">|</span> <span className="token-exec">python3</span>
+                    </code>
+                  </div>
+                  <p className="dist-cli-desc">
+                    Connects any Mac, Linux, Windows, or Cloud GPU directly without downloading files.
+                  </p>
+                </div>
+              )}
+
+              {/* Tab 2: Standalone Script */}
+              {cliTab === 'standalone' && (
+                <div className="dist-cli-content">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-wider">
+                      Download & Execute
+                    </span>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py -o join.py && python3 join.py');
+                        setCopyLocalSuccess(true);
+                        setTimeout(() => setCopyLocalSuccess(false), 2000);
+                      }}
+                      className="dist-mini-copy-btn"
+                      title="Copy download and execute command"
+                    >
+                      {copyLocalSuccess ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                      <span>{copyLocalSuccess ? 'COPIED' : 'COPY'}</span>
+                    </button>
+                  </div>
+                  <div className="dist-terminal-box">
+                    <div className="dist-terminal-prompt">$</div>
+                    <code className="dist-terminal-code">
+                      <span className="token-cmd">curl</span> <span className="token-flag">-sSL</span> <span className="token-url">https://mdark4025-cybronites.hf.space/join.py</span> <span className="token-flag">-o</span> join.py <span className="token-pipe">&amp;&amp;</span> <span className="token-exec">python3 join.py</span>
+                    </code>
+                  </div>
+                  <p className="dist-cli-desc">
+                    Saves <code>join.py</code> locally to configure custom datasets, epochs, and parameters.
+                  </p>
+                </div>
+              )}
+
+              {/* Tab 3: CLI Flags */}
+              {cliTab === 'flags' && (
+                <div className="dist-cli-content">
+                  <div className="dist-flags-grid">
+                    <div className="dist-flag-row" onClick={() => navigator.clipboard.writeText('python3 join.py --name "Hospital-Alpha"')}>
+                      <code className="dist-flag-name">--name &lt;str&gt;</code>
+                      <span className="dist-flag-desc">Custom node identity</span>
+                    </div>
+                    <div className="dist-flag-row" onClick={() => navigator.clipboard.writeText('python3 join.py --server http://localhost:7880')}>
+                      <code className="dist-flag-name">--server &lt;url&gt;</code>
+                      <span className="dist-flag-desc">Bridge server URL</span>
+                    </div>
+                    <div className="dist-flag-row" onClick={() => navigator.clipboard.writeText('python3 join.py --epochs 5 --lr 0.001')}>
+                      <code className="dist-flag-name">--epochs &lt;N&gt;</code>
+                      <span className="dist-flag-desc">Local training epochs</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Option 2: Download & Execute Script */}
-            <div className="mb-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 2: Auto-Download & Execute</span>
-                <button 
-                  onClick={() => {
-                    navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py -o join.py && python3 join.py');
-                    setCopyLocalSuccess(true);
-                    setTimeout(() => setCopyLocalSuccess(false), 2000);
-                  }}
-                  className="dist-mini-copy-btn"
-                  title="Copy download and execute command"
-                >
-                  {copyLocalSuccess ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
-                  <span>{copyLocalSuccess ? 'COPIED' : 'COPY'}</span>
-                </button>
-              </div>
-              <div className="dist-code-box">
-                <code>curl -sSL https://mdark4025-cybronites.hf.space/join.py -o join.py && python3 join.py</code>
-              </div>
-            </div>
-
-            <div className="mt-auto pt-3 border-t border-border/40">
-              <div className="flex items-center gap-2 opacity-60">
-                <div className="w-1.5 h-1.5 rounded-full bg-success" />
-                <span className="mono text-[8px]">{distributedStatus.status === 'COMPLETE' ? 'SESSION_SETTLED_READY' : 'LISTENING_FOR_HANDSHAKE'}</span>
+            <div className="dist-panel-footer">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="mono text-[8px] font-bold text-slate-600">
+                    {distributedStatus.status === 'COMPLETE' ? 'SESSION_SETTLED_READY' : 'LISTENING_FOR_HANDSHAKE'}
+                  </span>
+                </div>
+                <span className="mono text-[8px] text-slate-400">PORT 7880 WSS</span>
               </div>
             </div>
           </div>
@@ -589,6 +778,7 @@ export const Dashboard = ({
           animation: dash-pulse 2s infinite;
         }
         @keyframes dash-pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        /* ─── Distributed Neural Exchange (Institutional Studio Theme) ─── */
         .dash-distributed-section { 
           margin-top: 24px; 
           margin-bottom: 32px; 
@@ -596,118 +786,560 @@ export const Dashboard = ({
         }
         .dist-organizer-grid {
           display: grid;
-          grid-template-columns: minmax(260px, 280px) minmax(0, 1fr) minmax(280px, 340px);
+          grid-template-columns: minmax(280px, 320px) minmax(0, 1fr) minmax(300px, 340px);
           gap: 16px;
           position: relative;
           z-index: 10;
           align-items: stretch;
         }
-        @media (max-width: 1280px) { .dist-organizer-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 1200px) { .dist-organizer-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 860px) { .dist-organizer-grid { grid-template-columns: 1fr; } }
 
         .dist-panel {
-          background: var(--bg-surface);
-          border: 1px solid var(--border);
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           border-radius: 8px;
-          padding: 20px;
+          padding: 18px 20px;
           display: flex;
           flex-direction: column;
           position: relative;
           min-width: 0;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
           transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .dist-panel:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        
+        .dist-panel:hover {
+          border-color: #cbd5e1;
+          box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.06);
+        }
+
         .dist-panel-header {
           display: flex;
           align-items: center;
-          gap: 10px;
-          margin-bottom: 16px;
+          justify-content: space-between;
+          margin-bottom: 14px;
           padding-bottom: 12px;
-          border-bottom: 1px solid var(--border);
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .dist-panel-title {
+          font-family: var(--font-sans);
+          font-size: 13px;
+          font-weight: 700;
+          color: #0f172a;
+          margin: 0;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+        }
+        .dist-panel-subtitle {
+          font-size: 9px;
+          font-weight: 600;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .dist-panel-body {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          flex: 1;
+        }
+
+        .dist-panel-footer {
+          margin-top: auto;
+          padding-top: 14px;
+          border-top: 1px solid #f1f5f9;
+        }
+
+        /* Status Badges */
+        .dist-status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 3px 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 4px;
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .dist-status-badge-active {
+          background: #f0fdf4;
+          border-color: #bbf7d0;
+          color: #16a34a;
+        }
+        .dist-status-pulse {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #94a3b8;
+        }
+        .dist-status-badge-active .dist-status-pulse {
+          background: #22c55e;
+          box-shadow: 0 0 6px #22c55e;
+          animation: pulse 1.5s infinite;
+        }
+
+        .dist-meta-pill {
+          padding: 3px 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 4px;
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          font-weight: 700;
+          color: #0284c7;
+        }
+
+        /* Telemetry & Param Matrix */
+        .dist-telemetry-card {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 10px 12px;
+        }
+        .dist-field-label {
+          font-size: 9px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: #64748b;
+        }
+        .dist-field-val-mono {
+          font-family: var(--font-mono, monospace);
+          font-size: 10px;
+        }
+        .dist-progress-bar-bg {
+          width: 100%;
+          height: 5px;
+          background: #e2e8f0;
+          border-radius: 3px;
+          overflow: hidden;
+          margin-top: 4px;
+        }
+        .dist-progress-bar-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #0284c7, #10b981);
+          border-radius: 3px;
+        }
+
+        .dist-params-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+        }
+        .dist-param-cell {
+          background: #ffffff;
+          border: 1px solid #f1f5f9;
+          border-radius: 4px;
+          padding: 6px 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .dist-param-key {
+          font-size: 8px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #94a3b8;
+        }
+        .dist-param-val {
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          font-weight: 600;
+          color: #1e293b;
+        }
+
+        /* Notices */
+        .dist-notice {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 10px;
+          border-radius: 6px;
+          font-size: 10px;
+          line-height: 1.4;
+          font-weight: 500;
+        }
+        .dist-notice-warning {
+          background: #fffbeb;
+          border: 1px solid #fef3c7;
+          color: #b45309;
+        }
+        .dist-notice-ready {
+          background: #f0fdf4;
+          border: 1px solid #dcfce7;
+          color: #15803d;
+        }
+        .dist-notice-active {
+          background: #f0f9ff;
+          border: 1px solid #e0f2fe;
+          color: #0369a1;
+        }
+
+        /* Action Buttons */
+        .dist-btn-action {
+          width: 100%;
+          padding: 10px 14px;
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          font-family: var(--font-sans);
+        }
+        .dist-btn-guide {
+          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          color: #334155;
+        }
+        .dist-btn-guide:hover {
+          background: #f1f5f9;
+          border-color: #94a3b8;
+          color: #0f172a;
+        }
+        .dist-btn-execute {
+          background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+          color: #ffffff;
+          border: none;
+          box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+        }
+        .dist-btn-execute:hover {
+          filter: brightness(1.08);
+          box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+          transform: translateY(-1px);
+        }
+        .dist-btn-terminate {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          color: #ffffff;
+          border: none;
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+        .dist-btn-terminate:hover {
+          filter: brightness(1.08);
+          box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+        }
+
+        /* Center Panel Stat Tiles */
+        .dist-stat-tile {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 10px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .dist-stat-tile-label {
+          font-size: 8px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #64748b;
+        }
+        .dist-stat-tile-val-row {
+          display: flex;
+          align-items: baseline;
+          gap: 4px;
+        }
+        .dist-stat-tile-val {
+          font-family: var(--font-mono, monospace);
+          font-size: 20px;
+          font-weight: 700;
+          line-height: 1;
+        }
+        .dist-stat-tile-denom {
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+          color: #94a3b8;
+          font-weight: 500;
+        }
+
+        /* Circular Gauge */
+        .dist-gauge-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          position: relative;
+          padding: 4px 0;
+        }
+        .dist-gauge-wrap {
+          position: relative;
+          width: 96px;
+          height: 96px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .dist-gauge-svg {
+          width: 100%;
+          height: 100%;
+          transform: rotate(-90deg);
+        }
+        .dist-gauge-track {
+          fill: none;
+          stroke: #e2e8f0;
+          stroke-width: 5;
+        }
+        .dist-gauge-indicator {
+          fill: none;
+          stroke-width: 5;
+          stroke-linecap: round;
+          transition: stroke-dashoffset 0.5s ease;
+        }
+        .dist-gauge-center-text {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .dist-gauge-num {
+          font-size: 22px;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1;
+          font-family: var(--font-mono, monospace);
+        }
+        .dist-gauge-unit {
+          font-size: 8px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #94a3b8;
+          margin-top: 2px;
+        }
+
+        /* Pipeline Phases Strip */
+        .dist-phases-strip {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          width: 100%;
+          padding: 6px 10px;
+          background: #f8fafc;
+          border: 1px solid #f1f5f9;
+          border-radius: 6px;
+        }
+        .dist-phase-dot {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 8px;
+          font-weight: 700;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+        .dist-phase-dot .phase-num {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #e2e8f0;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 8px;
+          font-weight: 800;
+        }
+        .dist-phase-dot.active {
+          color: #0284c7;
+        }
+        .dist-phase-dot.active .phase-num {
+          background: #0284c7;
+          color: #ffffff;
+          box-shadow: 0 0 6px rgba(2, 132, 199, 0.4);
+        }
+        .dist-phase-dot.done {
+          color: #10b981;
+        }
+        .dist-phase-dot.done .phase-num {
+          background: #10b981;
+          color: #ffffff;
+        }
+        .dist-phase-line {
+          flex: 1;
+          height: 1px;
+          background: #e2e8f0;
+          max-width: 16px;
+        }
+
+        .dist-status-strip {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
         }
 
         .dist-bg-globe-watermark {
           position: absolute;
-          bottom: -30px;
-          right: -30px;
-          color: var(--accent);
+          bottom: -20px;
+          right: -20px;
+          color: #0284c7;
           opacity: 0.03;
           pointer-events: none;
           z-index: 0;
         }
 
-        .dist-metric-box {
+        /* Right Panel: Tabs & Code Box */
+        .dist-header-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 3px 8px;
+          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          border-radius: 4px;
+          font-size: 9px;
+          font-weight: 700;
+          color: #475569;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .dist-header-action-btn:hover {
+          background: #f1f5f9;
+          border-color: #94a3b8;
+          color: #0f172a;
+        }
+
+        .dist-tab-switcher {
+          display: flex;
+          gap: 4px;
+          background: #f1f5f9;
+          padding: 2px;
+          border-radius: 5px;
+          border: 1px solid #e2e8f0;
+        }
+        .dist-tab-btn {
+          flex: 1;
+          padding: 4px 6px;
+          font-size: 8px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          border: none;
+          background: transparent;
+          color: #64748b;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .dist-tab-btn.active {
+          background: #ffffff;
+          color: #0f172a;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .dist-cli-content {
           display: flex;
           flex-direction: column;
-          gap: 2px;
-          margin-bottom: 12px;
-          background: rgba(0,0,0,0.02);
-          padding: 12px 14px;
-          border: 1px solid var(--border);
-          border-radius: 6px;
-        }
-        .dist-metric-value-row {
-          display: flex;
-          align-items: baseline;
           gap: 6px;
         }
-        .dist-metric-val { 
-          font-family: var(--font-mono, monospace); 
-          font-size: 26px; 
-          font-weight: 700;
-          color: var(--text-main);
-          line-height: 1;
-        }
-        .dist-metric-label-mini {
-          font-size: 9px;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: var(--text-muted);
-          font-weight: 700;
-        }
-
-        .dist-btn-action-large {
-          margin-top: auto;
-          padding: 14px 20px;
-          background: #0284c7;
-          color: white;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          font-size: 10px;
-          border: none;
+        .dist-terminal-box {
+          background: #090e17;
+          border: 1px solid #1e293b;
           border-radius: 6px;
-          cursor: pointer;
-          transition: all 0.2s;
+          padding: 8px 10px;
           display: flex;
           align-items: center;
-          justify-content: center;
-          gap: 10px;
-          box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+          gap: 8px;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
         }
-        .dist-btn-action-large:hover { filter: brightness(1.08); box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35); }
-        .dist-btn-stop-large { background: #ef4444 !important; color: white !important; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important; }
-        .dist-btn-stop-large:hover { background: #dc2626 !important; }
+        .dist-terminal-prompt {
+          font-family: var(--font-mono, monospace);
+          font-size: 10px;
+          font-weight: 700;
+          color: #10b981;
+          user-select: none;
+        }
+        .dist-terminal-code {
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          line-height: 1.4;
+          color: #e2e8f0;
+          word-break: break-all;
+        }
+        .dist-terminal-code .token-cmd { color: #38bdf8; font-weight: 700; }
+        .dist-terminal-code .token-flag { color: #fbbf24; }
+        .dist-terminal-code .token-url { color: #a5f3fc; }
+        .dist-terminal-code .token-pipe { color: #f472b6; font-weight: 700; }
+        .dist-terminal-code .token-exec { color: #4ade80; font-weight: 700; }
 
-        .dist-ring-center {
-          width: 90px; height: 90px;
-          position: relative;
-          display: flex;
-          align-items: center; justify-content: center;
-          margin: 8px auto;
+        .dist-cli-desc {
+          font-size: 9px;
+          line-height: 1.4;
+          color: #64748b;
+          margin: 0;
         }
-        
-        .dist-terminal {
-          background: var(--bg-main);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-sm);
-          padding: 16px;
-          font-family: var(--font-mono);
-          font-size: 11px;
-          line-height: 1.6;
-          box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        .dist-cli-desc code {
+          font-family: var(--font-mono, monospace);
+          font-size: 8px;
+          background: #f1f5f9;
+          padding: 1px 3px;
+          border-radius: 2px;
+          color: #0f172a;
+        }
+
+        .dist-flags-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .dist-flag-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 5px 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background 0.15s ease;
+        }
+        .dist-flag-row:hover {
+          background: #f1f5f9;
+        }
+        .dist-flag-name {
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          font-weight: 700;
+          color: #0284c7;
+        }
+        .dist-flag-desc {
+          font-size: 8px;
+          color: #64748b;
+        }
+
+        .dist-mini-copy-btn {
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          color: #0f172a;
+          padding: 2px 8px;
+          border-radius: 3px;
+          font-size: 8px;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+          transition: all 0.15s ease-in-out;
+        }
+        .dist-mini-copy-btn:hover {
+          background: #f1f5f9;
+          border-color: #94a3b8;
         }
 
         .dash-actions {
@@ -911,163 +1543,7 @@ export const Dashboard = ({
           background: var(--border);
           opacity: 0.6;
         }
-        .dash-distributed-section {
-          margin-top: 40px;
-        }
-        .dash-card-distributed {
-          position: relative;
-          border-radius: 20px;
-          border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
-          background: linear-gradient(135deg, rgba(var(--bg-surface-rgb), 0.95), rgba(var(--bg-surface-rgb), 0.8));
-          backdrop-filter: blur(20px);
-        }
-        .dist-bg-globe {
-          position: absolute;
-          top: -60px;
-          right: -60px;
-          color: var(--accent);
-          opacity: 0.04;
-          pointer-events: none;
-          transition: opacity 1s;
-          display: block;
-          z-index: 0;
-        }
-        .dist-card-premium:hover .dist-bg-globe { opacity: 0.1; }
-        
-        .dist-layout { display: flex; flex-direction: row; min-height: 380px; position: relative; z-index: 10; }
-        @media (max-width: 768px) { .dist-layout { flex-direction: column; } }
-        .dist-btn {
-          height: 40px;
-          padding: 0 24px;
-          border-radius: 10px;
-          font-size: 10px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          font-family: var(--font-sans);
-        }
-        .dist-btn-start {
-          background: var(--primary);
-          color: #fff;
-          border: none;
-          box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3);
-        }
-        .dist-btn-start:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(var(--primary-rgb), 0.4);
-        }
-        .dist-btn-stop {
-          background: rgba(239, 68, 68, 0.1);
-          color: #ef4444;
-          border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-        .dist-btn-stop:hover {
-          background: #ef4444;
-          color: #fff;
-        }
 
-        .dist-metric-box {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid var(--border);
-          padding: 16px;
-          border-radius: 12px;
-          margin-bottom: 12px;
-        }
-        .dist-metric-label {
-          font-size: 9px;
-          font-weight: 700;
-          color: var(--text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.2em;
-          margin-bottom: 8px;
-          display: block;
-        }
-        .dist-metric-value {
-          font-family: var(--font-serif);
-          font-size: 24px;
-          color: var(--text-main);
-          font-weight: 500;
-        }
-
-        .dist-metrics-grid { display: grid; grid-gap: 40px; grid-template-columns: 1fr 140px 1fr; }
-        @media (max-width: 1024px) { .dist-metrics-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 640px) { .dist-metrics-grid { grid-template-columns: 1fr; } }
-        
-        .dist-metric-item { display: flex; flex-direction: column; gap: 8px; }
-        .dist-progress-ring-container {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .dist-progress-label {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          z-index: 2;
-        }
-        .dist-progress-svg {
-          width: 120px;
-          height: 120px;
-          transform: rotate(-90deg);
-        }
-        .dist-ring-bg {
-          fill: none;
-          stroke: var(--border);
-          stroke-width: 6;
-          opacity: 0.3;
-        }
-        .dist-ring-fill {
-          fill: none;
-          stroke: var(--primary);
-          stroke-width: 6;
-          stroke-linecap: round;
-          stroke-dasharray: 283;
-        }
-
-        .dist-code-box {
-          background: #f8fafc;
-          border: 1px solid #cbd5e1;
-          border-radius: 4px;
-          padding: 6px 10px;
-          font-family: var(--font-mono, monospace);
-          font-size: 9px;
-          color: #0f172a;
-          word-break: break-all;
-          line-height: 1.4;
-        }
-        .dist-code-box code {
-          font-weight: 600;
-          color: #0f172a;
-        }
-        .dist-mini-copy-btn {
-          background: #ffffff;
-          border: 1px solid #cbd5e1;
-          color: #0f172a;
-          padding: 2px 8px;
-          border-radius: 3px;
-          font-size: 8px;
-          font-weight: 700;
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          cursor: pointer;
-          transition: all 0.15s ease-in-out;
-        }
-        .dist-mini-copy-btn:hover {
-          background: #f1f5f9;
-          border-color: #94a3b8;
-        }
 
         .dash-journal-container {
           min-height: 180px;
