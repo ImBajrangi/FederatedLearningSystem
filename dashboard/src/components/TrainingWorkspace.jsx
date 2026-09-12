@@ -1342,18 +1342,20 @@ export const TrainingWorkspace = ({
                       <tbody>
                         {filteredRoundHistory.length === 0 ? (
                           <tr>
-                            <td colSpan="7" className="tr-fs-empty">
-                              <div className="tr-fs-empty-icon">
-                                <Database size={32} className="text-slate-400" />
+                            <td colSpan="7" className="tr-fs-empty-td">
+                              <div className="tr-fs-empty-wrap">
+                                <div className="tr-fs-empty-icon">
+                                  <Database size={26} className="text-slate-400" />
+                                </div>
+                                <h4 className="tr-fs-empty-title">
+                                  {roundHistory.length === 0 ? "Awaiting Initial Orchestration Cycle" : "No records match search filter"}
+                                </h4>
+                                <p className="tr-fs-empty-desc">
+                                  {roundHistory.length === 0 
+                                    ? "When you trigger a federated session, local edge node updates, L2-norm clipped gradients, and smart contract blockchain transactions stream directly into this full-screen audit journal."
+                                    : "Try clearing your search query to view all recorded federated learning rounds."}
+                                </p>
                               </div>
-                              <span className="text-[12px] font-bold uppercase tracking-wider text-slate-700">
-                                {roundHistory.length === 0 ? "Awaiting Initial Orchestration Cycle" : "No records match search filter"}
-                              </span>
-                              <span className="text-[10.5px] text-slate-400 max-w-md text-center">
-                                {roundHistory.length === 0 
-                                  ? "When you trigger a federated session, local edge node updates, L2-norm clipped gradients, and smart contract blockchain transactions stream directly into this full-screen audit journal."
-                                  : "Try clearing your search query to view all recorded federated learning rounds."}
-                              </span>
                             </td>
                           </tr>
                         ) : (
@@ -1460,9 +1462,12 @@ export const TrainingWorkspace = ({
 
                   {/* Footer */}
                   <div className="tr-fs-footer">
-                    <span className="text-[10px] text-slate-500 font-mono tracking-wider">
-                      BLOCKCHAIN HEIGHT: {roundHistory.length + 1} BLOCKS • DIFFICULTY: 1 (INSTITUTIONAL FEDERATED CONSENSUS)
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="tr-fs-footer-text">
+                        BLOCKCHAIN HEIGHT: {roundHistory.length + 1} BLOCKS • DIFFICULTY: 1 (INSTITUTIONAL FEDERATED CONSENSUS)
+                      </span>
+                    </div>
                     <button 
                       onClick={() => setIsLedgerExpanded(false)}
                       className="tr-fs-footer-close-btn"
@@ -3202,39 +3207,72 @@ export const TrainingWorkspace = ({
           border-bottom: 1px solid var(--border);
           border-left: 3px solid var(--primary);
         }
-        .tr-fs-empty {
-          padding: 80px 24px;
+        .tr-fs-empty-td {
+          padding: 0 !important;
+          border: none !important;
           text-align: center;
+          width: 100%;
+        }
+        .tr-fs-empty-wrap {
+          padding: 90px 24px;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           gap: 12px;
+          width: 100%;
+          max-width: 520px;
+          margin: 0 auto;
+          text-align: center;
         }
         .tr-fs-empty-icon {
-          width: 52px;
-          height: 52px;
+          width: 54px;
+          height: 54px;
           border-radius: 50%;
-          background: #f1f5f9;
-          border: 1px solid var(--border);
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
           justify-content: center;
+          margin-bottom: 2px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+        .tr-fs-empty-title {
+          font-family: var(--font-sans);
+          font-size: 13px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #1e293b;
+          margin: 0;
+        }
+        .tr-fs-empty-desc {
+          font-size: 12px;
+          line-height: 1.6;
+          color: #64748b;
+          margin: 0;
         }
         .tr-fs-footer {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 10px 20px;
+          padding: 12px 20px;
           background: #f8fafc;
           border-top: 1px solid var(--border);
         }
+        .tr-fs-footer-text {
+          font-family: var(--font-mono, monospace);
+          font-size: 10px;
+          font-weight: 700;
+          color: #475569;
+          letter-spacing: 0.04em;
+        }
         .tr-fs-footer-close-btn {
-          padding: 5px 12px;
+          padding: 6px 14px;
           border-radius: 4px;
           background: #ffffff;
           border: 1px solid #cbd5e1;
-          font-size: 9.5px;
+          font-size: 10px;
           font-weight: 700;
           color: #334155;
           font-family: var(--font-sans);
