@@ -254,15 +254,20 @@ export const PrivacyVault = () => {
                         <div className="pv-launch-glow" />
                         <div className="pv-launch-content">
                             <div className="pv-launch-header">
-                                <Zap size={16} />
-                                <h3>Secure Orchestrator</h3>
+                                <div className="pv-launch-icon-wrapper">
+                                    <Zap size={16} />
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <h3>Secure Orchestrator</h3>
+                                    <span style={{ fontSize: '9px', color: '#38bdf8', fontWeight: 700, letterSpacing: '0.05em' }}>RAM-ONLY CONVERGENCE</span>
+                                </div>
                             </div>
                             <p className="pv-launch-desc">
                                 Execute in-memory training on encrypted assets. Data decrypted ONLY in RAM via AES-256-GCM.
                             </p>
                             <div className="pv-launch-target">
                                 <span className="pv-launch-target-label">Target Dataset</span>
-                                <span className="pv-launch-target-value">
+                                <span className={`pv-launch-target-value ${selectedDataset ? 'pv-target-active' : 'pv-target-none'}`}>
                                     {selectedDataset ? selectedDataset.name : 'NONE_SELECTED'}
                                 </span>
                             </div>
@@ -271,8 +276,8 @@ export const PrivacyVault = () => {
                                 disabled={!selectedDataset || isLaunching}
                                 className="pv-launch-btn"
                             >
-                                {isLaunching ? <RefreshCcw size={12} className="pv-spin" /> : <Zap size={12} />}
-                                Launch Secure Job
+                                {isLaunching ? <RefreshCcw size={13} className="pv-spin" /> : <Zap size={13} />}
+                                <span>{isLaunching ? 'INITIALIZING ENGINE...' : (selectedDataset ? 'LAUNCH SECURE JOB' : 'SELECT A DATASET TO LAUNCH')}</span>
                             </button>
                         </div>
                     </div>
@@ -773,84 +778,129 @@ export const PrivacyVault = () => {
 
                 /* ─── Launch Card ─── */
                 .pv-launch-card {
-                    background: var(--primary);
+                    background: #0b1329;
+                    border: 1px solid rgba(56, 189, 248, 0.25);
                     border-radius: 10px;
-                    overflow: hidden;
                     position: relative;
-                    box-shadow: 0 8px 24px rgba(54,78,104,0.15);
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.08);
                 }
                 .pv-launch-glow {
                     position: absolute;
-                    right: -30px;
-                    top: -30px;
-                    width: 120px;
-                    height: 120px;
-                    background: rgba(255,255,255,0.04);
+                    right: -20px;
+                    top: -20px;
+                    width: 140px;
+                    height: 140px;
+                    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
                     border-radius: 50%;
-                    filter: blur(30px);
+                    pointer-events: none;
                 }
                 .pv-launch-content {
                     position: relative;
-                    padding: 24px;
+                    padding: 22px 20px;
                     display: flex;
                     flex-direction: column;
                     gap: 14px;
-                    color: white;
+                    color: #ffffff;
                 }
                 .pv-launch-header {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
+                    gap: 12px;
                 }
-                .pv-launch-header svg { opacity: 0.5; }
+                .pv-launch-icon-wrapper {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 8px;
+                    background: rgba(56, 189, 248, 0.15);
+                    border: 1px solid rgba(56, 189, 248, 0.35);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #38bdf8;
+                    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+                    flex-shrink: 0;
+                }
                 .pv-launch-header h3 {
-                    font-size: 14px;
-                    font-weight: 700;
-                    margin: 0;
+                    font-size: 15px !important;
+                    font-weight: 800 !important;
+                    color: #ffffff !important;
+                    margin: 0 !important;
+                    letter-spacing: -0.01em;
                 }
                 .pv-launch-desc {
-                    font-size: 10px;
-                    opacity: 0.6;
-                    line-height: 1.6;
+                    font-size: 11px !important;
+                    color: #94a3b8 !important;
+                    line-height: 1.55;
                     margin: 0;
-                    font-style: italic;
+                    font-style: normal;
                 }
                 .pv-launch-target {
                     display: flex;
+                    align-items: center;
                     justify-content: space-between;
+                    gap: 10px;
+                    background: #060a14;
+                    border: 1px solid #1e293b;
+                    border-radius: 6px;
+                    padding: 10px 14px;
+                }
+                .pv-launch-target-label {
                     font-size: 9px;
-                    font-weight: 700;
+                    font-weight: 800;
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
+                    color: #64748b !important;
                 }
-                .pv-launch-target-label { opacity: 0.4; }
-                .pv-launch-target-value { opacity: 0.9; font-family: var(--font-mono); }
+                .pv-launch-target-value {
+                    font-size: 10px;
+                    font-weight: 700;
+                    font-family: var(--font-mono);
+                    padding: 3px 8px;
+                    border-radius: 4px;
+                    letter-spacing: 0.05em;
+                }
+                .pv-target-active {
+                    color: #10b981 !important;
+                    background: rgba(16, 185, 129, 0.12);
+                    border: 1px solid rgba(16, 185, 129, 0.3);
+                }
+                .pv-target-none {
+                    color: #fbbf24 !important;
+                    background: rgba(251, 191, 36, 0.1);
+                    border: 1px solid rgba(251, 191, 36, 0.25);
+                }
                 .pv-launch-btn {
                     width: 100%;
-                    padding: 12px;
-                    background: white;
-                    color: var(--primary);
-                    border: none;
+                    padding: 12px 16px;
+                    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+                    color: #ffffff !important;
+                    border: 1px solid #38bdf8;
                     border-radius: 6px;
                     font-size: 10px;
                     font-weight: 800;
                     text-transform: uppercase;
-                    letter-spacing: 0.2em;
+                    letter-spacing: 0.15em;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 8px;
                     transition: all 0.2s;
+                    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
                 }
                 .pv-launch-btn:hover:not(:disabled) {
                     transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+                    background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
                 }
                 .pv-launch-btn:disabled {
-                    opacity: 0.4;
+                    background: #131d31 !important;
+                    color: #64748b !important;
+                    border: 1px solid #1e293b !important;
                     cursor: not-allowed;
-                    filter: grayscale(0.5);
+                    opacity: 1;
+                    filter: none;
+                    box-shadow: none;
                 }
 
                 /* ─── Audit Card ─── */
