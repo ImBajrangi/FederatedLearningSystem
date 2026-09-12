@@ -1677,107 +1677,113 @@ export const TrainingWorkspace = ({
         /* ─── Pop-up Inspector Modal ─── */
         .tr-modal-backdrop {
           position: fixed; inset: 0; z-index: 10000;
-          background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px);
+          background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
           display: flex; align-items: center; justify-content: center;
           padding: 20px;
         }
         .tr-modal-card {
           width: 100%; max-width: 680px;
-          background: #0b1220; border: 1px solid #1e293b;
-          border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9);
+          background: #0b1220 !important; border: 1px solid #334155 !important;
+          border-radius: 12px; box-shadow: 0 25px 60px -10px rgba(0,0,0,0.95), 0 0 25px rgba(56, 189, 248, 0.15) !important;
           display: flex; flex-direction: column; overflow: hidden;
+          color: #f8fafc !important;
         }
         .tr-modal-header {
-          padding: 16px 20px; background: #0f172a;
-          border-bottom: 1px solid #1e293b;
+          padding: 16px 20px; background: #0f172a !important;
+          border-bottom: 1px solid #1e293b !important;
           display: flex; justify-content: space-between; align-items: center;
         }
         .tr-modal-tool-btn {
           display: flex; align-items: center; gap: 5px;
-          background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);
-          color: #38bdf8; font-size: 9px; font-weight: 800;
-          padding: 5px 9px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+          background: rgba(56, 189, 248, 0.15) !important; border: 1px solid rgba(56, 189, 248, 0.35) !important;
+          color: #38bdf8 !important; font-size: 9px; font-weight: 800;
+          padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
         }
-        .tr-modal-tool-btn:hover { background: rgba(56, 189, 248, 0.25); color: #ffffff; }
+        .tr-modal-tool-btn:hover { background: rgba(56, 189, 248, 0.3) !important; color: #ffffff !important; }
         .tr-modal-close-btn {
-          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-          color: #94a3b8; border-radius: 6px; padding: 6px;
+          background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.15) !important;
+          color: #cbd5e1 !important; border-radius: 6px; padding: 6px;
           display: flex; align-items: center; justify-content: center;
           cursor: pointer; transition: all 0.2s;
         }
-        .tr-modal-close-btn:hover { background: rgba(239,68,68,0.2); color: #f87171; border-color: rgba(239,68,68,0.4); }
+        .tr-modal-close-btn:hover { background: rgba(239,68,68,0.25) !important; color: #f87171 !important; border-color: rgba(239,68,68,0.5) !important; }
         
         .tr-modal-meta-grid {
           display: grid; grid-template-columns: repeat(2, 1fr);
-          gap: 10px; padding: 16px 20px; background: rgba(15, 23, 42, 0.5);
-          border-bottom: 1px solid #1e293b;
+          gap: 10px; padding: 16px 20px; background: #080d18 !important;
+          border-bottom: 1px solid #1e293b !important;
         }
         .tr-meta-item {
-          display: flex; flex-direction: column; gap: 3px;
-          background: rgba(2, 6, 23, 0.6); padding: 8px 12px;
-          border-radius: 6px; border: 1px solid #1e293b;
+          display: flex; flex-direction: column; gap: 4px;
+          background: #0f172a !important; padding: 10px 14px;
+          border-radius: 6px; border: 1px solid #1e293b !important;
         }
-        .tr-meta-k { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-        .tr-meta-v { font-size: 11px; }
+        .tr-meta-k { font-size: 9px; font-weight: 800; color: #94a3b8 !important; text-transform: uppercase; letter-spacing: 0.08em; }
+        .tr-meta-v { font-size: 12px; font-weight: 700; color: #f8fafc !important; }
 
         .tr-modal-payload-box {
           padding: 16px 20px; display: flex; flex-direction: column; gap: 8px;
+          background: #0b1220 !important;
         }
         .tr-payload-header {
           display: flex; justify-content: space-between; align-items: center;
         }
         .tr-payload-copy-btn {
           display: flex; align-items: center; gap: 5px;
-          background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);
-          color: #38bdf8; font-size: 9px; font-weight: 800;
-          padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+          background: rgba(56, 189, 248, 0.15) !important; border: 1px solid rgba(56, 189, 248, 0.35) !important;
+          color: #38bdf8 !important; font-size: 9px; font-weight: 800;
+          padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
         }
-        .tr-payload-copy-btn:hover { background: rgba(56, 189, 248, 0.25); color: #ffffff; }
+        .tr-payload-copy-btn:hover { background: rgba(56, 189, 248, 0.3) !important; color: #ffffff !important; }
         .tr-payload-content {
-          background: #030712; border: 1px solid #1e293b;
+          background: #030712 !important; border: 1px solid #1e293b !important;
           border-radius: 6px; padding: 14px 16px;
-          font-family: var(--font-mono, monospace); font-size: 11px;
+          font-family: var(--font-mono, monospace); font-size: 11.5px;
           line-height: 1.6; max-height: 220px; overflow-y: auto;
           white-space: pre-wrap; word-break: break-all;
+          color: #38bdf8 !important;
         }
 
         .tr-modal-footer {
-          padding: 12px 20px; background: #0f172a;
-          border-top: 1px solid #1e293b;
+          padding: 12px 20px; background: #0f172a !important;
+          border-top: 1px solid #1e293b !important;
           display: flex; justify-content: space-between; align-items: center;
         }
         .tr-footer-btn-secondary {
           display: flex; align-items: center; gap: 6px;
-          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-          color: #e2e8f0; font-size: 10px; font-weight: 700;
-          padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+          background: #1e293b !important; border: 1px solid #334155 !important;
+          color: #f1f5f9 !important; font-size: 10px; font-weight: 700;
+          padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
         }
-        .tr-footer-btn-secondary:hover { background: rgba(255,255,255,0.12); color: #ffffff; }
+        .tr-footer-btn-secondary:hover { background: #334155 !important; color: #ffffff !important; border-color: #475569 !important; }
         .tr-footer-btn-primary {
-          background: #0284c7; border: none; color: #ffffff;
+          background: #0284c7 !important; border: none; color: #ffffff !important;
           font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
-          padding: 6px 16px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+          padding: 7px 18px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
         }
-        .tr-footer-btn-primary:hover { background: #0369a1; }
+        .tr-footer-btn-primary:hover { background: #0369a1 !important; }
 
         .tr-cli-welcome {
           padding: 16px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 6px;
+          background: #0c1424 !important;
+          border: 1px solid #1e293b !important;
+          border-radius: 8px;
           margin-bottom: 16px;
           display: flex;
           flex-direction: column;
           gap: 12px;
+          color: #f8fafc !important;
         }
         .tr-cli-banner {
           display: flex;
           align-items: center;
           justify-content: space-between;
           padding-bottom: 8px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          border-bottom: 1px solid #1e293b !important;
           font-size: 11px;
           letter-spacing: 0.05em;
+          color: #f8fafc !important;
         }
         .tr-cli-info-grid {
           display: grid;
@@ -1787,20 +1793,20 @@ export const TrainingWorkspace = ({
         .tr-cli-info-item {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 3px;
           font-size: 10px;
         }
         .tr-cli-k {
-          color: #64748b;
-          font-weight: 700;
+          color: #94a3b8 !important;
+          font-weight: 800;
           text-transform: uppercase;
-          font-size: 8px;
+          font-size: 8.5px;
           letter-spacing: 0.08em;
         }
         .tr-cli-v {
           font-family: var(--font-mono, monospace);
           font-weight: 700;
-          font-size: 10px;
+          font-size: 10.5px;
         }
         .tr-cli-commands-hint {
           display: flex;
@@ -1808,21 +1814,22 @@ export const TrainingWorkspace = ({
           gap: 8px;
           font-size: 10px;
           padding-top: 4px;
+          color: #cbd5e1 !important;
         }
         .tr-cmd-tag {
           font-family: var(--font-mono, monospace);
-          font-size: 9px;
-          font-weight: 700;
-          color: #38bdf8;
-          background: rgba(56, 189, 248, 0.12);
-          border: 1px solid rgba(56, 189, 248, 0.3);
-          padding: 2px 6px;
+          font-size: 9.5px;
+          font-weight: 800;
+          color: #38bdf8 !important;
+          background: rgba(56, 189, 248, 0.18) !important;
+          border: 1px solid rgba(56, 189, 248, 0.4) !important;
+          padding: 2px 7px;
           border-radius: 4px;
           cursor: pointer;
           transition: all 0.15s;
         }
         .tr-cmd-tag:hover {
-          background: rgba(56, 189, 248, 0.25);
+          background: rgba(56, 189, 248, 0.35) !important;
           transform: translateY(-1px);
         }
 
