@@ -958,34 +958,34 @@ export const TrainingWorkspace = ({
                 {allLogs.length === 0 ? (
                   <div className="tr-cli-welcome">
                     <div className="tr-cli-banner">
-                      <span className="text-emerald-400 font-bold flex items-center gap-1.5 text-[11px] tracking-wide">
-                        <Sparkles size={12} /> AI GUARDIAN ORCHESTRATION TERMINAL
+                      <span className="text-slate-800 font-bold flex items-center gap-1.5 text-[11px] tracking-wide">
+                        <Sparkles size={12} className="text-sky-600" /> AI GUARDIAN ORCHESTRATION TERMINAL
                       </span>
                       <div className="tr-cli-version-badge">
                         <span className="tr-cli-badge-dot" />
-                        <span className="text-slate-300 font-mono text-[9px] font-medium">v2.4.0-PROD</span>
-                        <span className="text-slate-600 text-[8px]">•</span>
-                        <span className="text-cyan-400 font-mono text-[8.5px] font-semibold tracking-wider uppercase">TELEMETRY ACTIVE</span>
+                        <span className="text-slate-700 font-mono text-[9px] font-semibold">v2.4.0-PROD</span>
+                        <span className="text-slate-300 text-[8px]">•</span>
+                        <span className="text-sky-600 font-mono text-[8.5px] font-bold tracking-wider uppercase">TELEMETRY ACTIVE</span>
                       </div>
                     </div>
                     <div className="tr-cli-info-grid">
                       <div className="tr-cli-info-item">
                         <span className="tr-cli-k">Cluster Status</span>
-                        <span className="tr-cli-v text-emerald-400 font-bold">{isActive ? '⚡ CONVERGENCE ACTIVE' : '● LISTENING IN STANDBY'}</span>
+                        <span className="tr-cli-v text-emerald-600 font-bold">{isActive ? '⚡ CONVERGENCE ACTIVE' : '● LISTENING IN STANDBY'}</span>
                       </div>
                       <div className="tr-cli-info-item">
                         <span className="tr-cli-k">Active Code Fingerprint</span>
-                        <span className="tr-cli-v text-cyan-300 font-mono" title={`${displayedFilename} (${displayedHash || '0x0000'})`}>
+                        <span className="tr-cli-v text-slate-800 font-mono" title={`${displayedFilename} (${displayedHash || '0x0000'})`}>
                           {displayedFilename} <span className="text-slate-400 font-normal">({displayedHash ? displayedHash.substring(0, 8) + '...' : '0x0000'})</span>
                         </span>
                       </div>
                       <div className="tr-cli-info-item">
                         <span className="tr-cli-k">Enrolled Edge Participants</span>
-                        <span className="tr-cli-v text-amber-300 font-bold">{Object.keys(safeNodeRegistry).length} Nodes Connected</span>
+                        <span className="tr-cli-v text-sky-700 font-bold">{Object.keys(safeNodeRegistry).length} Nodes Connected</span>
                       </div>
                     </div>
                     <div className="tr-cli-commands-hint">
-                      <span className="text-slate-400 text-[9px] font-medium tracking-wide">Quick Commands:</span>
+                      <span className="text-slate-500 text-[9px] font-semibold tracking-wide">Quick Commands:</span>
                       <button type="button" className="tr-cmd-tag" onClick={() => setCliInput('/train')}>/train</button>
                       <button type="button" className="tr-cmd-tag" onClick={() => setCliInput('/nodes')}>/nodes</button>
                       <button type="button" className="tr-cmd-tag" onClick={() => setCliInput('/status')}>/status</button>
@@ -2448,15 +2448,16 @@ export const TrainingWorkspace = ({
         .tr-footer-btn-primary:hover { background: #0369a1 !important; }
 
         .tr-cli-welcome {
-          padding: 12px 14px;
-          background: #090d16 !important;
-          border: 1px solid rgba(56, 189, 248, 0.15) !important;
-          border-radius: 6px;
+          padding: 14px 16px;
+          background: #ffffff !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 8px;
           margin-bottom: 12px;
           display: flex;
           flex-direction: column;
-          gap: 10px;
-          color: #f8fafc !important;
+          gap: 12px;
+          color: #0f172a !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
         }
         .tr-cli-banner {
           display: flex;
@@ -2464,18 +2465,18 @@ export const TrainingWorkspace = ({
           justify-content: space-between;
           flex-wrap: wrap;
           gap: 8px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #f1f5f9 !important;
           font-size: 11px;
-          letter-spacing: 0.03em;
+          letter-spacing: 0.02em;
         }
         .tr-cli-version-badge {
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          padding: 2.5px 7px;
-          background: rgba(15, 23, 42, 0.85);
-          border: 1px solid rgba(56, 189, 248, 0.25);
+          padding: 2.5px 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           border-radius: 4px;
           white-space: nowrap;
           line-height: 1;
@@ -2484,14 +2485,14 @@ export const TrainingWorkspace = ({
           width: 5px;
           height: 5px;
           border-radius: 50%;
-          background: #34d399;
-          box-shadow: 0 0 5px rgba(52, 211, 153, 0.6);
+          background: #10b981;
+          box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
           flex-shrink: 0;
         }
         .tr-cli-info-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-          gap: 8px 14px;
+          gap: 8px 16px;
         }
         .tr-cli-info-item {
           display: flex;
@@ -2499,7 +2500,7 @@ export const TrainingWorkspace = ({
           gap: 2px;
         }
         .tr-cli-k {
-          color: #94a3b8 !important;
+          color: #64748b !important;
           font-weight: 700;
           text-transform: uppercase;
           font-size: 8px;
@@ -2510,6 +2511,7 @@ export const TrainingWorkspace = ({
           font-family: var(--font-mono, monospace);
           font-weight: 600;
           font-size: 10px;
+          color: #0f172a;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -2519,24 +2521,24 @@ export const TrainingWorkspace = ({
           align-items: center;
           flex-wrap: wrap;
           gap: 6px;
-          padding-top: 6px;
-          border-top: 1px dashed #cbd5e1;
+          padding-top: 8px;
+          border-top: 1px dashed #e2e8f0;
         }
         .tr-cmd-tag {
           font-family: var(--font-mono, monospace);
           font-size: 9px;
           font-weight: 700;
           color: #0284c7 !important;
-          background: #e0f2fe !important;
+          background: #f0f9ff !important;
           border: 1px solid #bae6fd !important;
-          padding: 2px 6px;
-          border-radius: 3px;
+          padding: 2px 7px;
+          border-radius: 4px;
           cursor: pointer;
           transition: all 0.15s ease;
           outline: none;
         }
         .tr-cmd-tag:hover {
-          background: #bae6fd !important;
+          background: #e0f2fe !important;
           border-color: #0284c7 !important;
           color: #0369a1 !important;
         }
