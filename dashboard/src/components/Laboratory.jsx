@@ -1149,10 +1149,12 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
           {/* ─── Compiler Console ─── */}
           <div className="lab-panel lab-console-panel" style={{ height: consoleHeight, minHeight: 120 }}>
             <div className="lab-console-resize-handle" onMouseDown={startConsoleResize} />
-            <div className="lab-panel-header">
-              <Terminal size={14} />
-              <span>Compiler Console</span>
-              <button onClick={() => setLogs([])} className="lab-clear-btn">Clear</button>
+            <div className="lab-console-header">
+              <div className="flex items-center gap-2">
+                <Terminal size={13} className="text-emerald-400" />
+                <span className="lab-console-title">COMPILER CONSOLE</span>
+              </div>
+              <button onClick={() => setLogs([])} className="lab-clear-btn" title="Clear console output">Clear</button>
             </div>
             <div className="lab-console-body" style={{ position: 'relative' }}>
               {/* ─── Package Installation Overlay ─── */}
@@ -1221,22 +1223,24 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
               <div ref={terminalRef} />
             </div>
 
-            {/* 🧪 Multi-line Interactive Terminal Input */}
+            {/* 🧪 Modern Interactive Terminal Command Bar */}
             <div className="lab-terminal-input-wrapper">
-              <div className="lab-terminal-prompt">
-                <ChevronRight size={14} className={isEvaluating ? 'animate-pulse text-primary' : 'text-primary'} />
-              </div>
-              <textarea
-                value={terminalInput}
-                onChange={(e) => setTerminalInput(e.target.value)}
-                onKeyDown={handleTerminalSubmit}
-                placeholder={isEvaluating ? 'Executing command...' : 'Type code or !shell command...'}
-                disabled={isEvaluating}
-                className="lab-terminal-textarea"
-                rows={terminalInput.split('\n').length || 1}
-              />
-              <div className="lab-terminal-hint">
-                {terminalInput.includes('\n') ? 'ENTER to Run | SHIFT+ENTER for New Line' : 'ENTER to Run'}
+              <div className="lab-terminal-input-inner">
+                <div className="lab-terminal-prompt">
+                  <ChevronRight size={14} className={isEvaluating ? 'animate-pulse text-emerald-400' : 'text-emerald-400'} />
+                </div>
+                <textarea
+                  value={terminalInput}
+                  onChange={(e) => setTerminalInput(e.target.value)}
+                  onKeyDown={handleTerminalSubmit}
+                  placeholder={isEvaluating ? 'Executing command...' : 'Type python code or !shell command (e.g. !pip install)...'}
+                  disabled={isEvaluating}
+                  className="lab-terminal-textarea"
+                  rows={Math.min(4, Math.max(1, terminalInput.split('\n').length))}
+                />
+                <div className="lab-terminal-hint-badge">
+                  {terminalInput.includes('\n') ? 'ENTER ↵ RUN | SHIFT+ENTER NEW LINE' : 'ENTER ↵ RUN'}
+                </div>
               </div>
             </div>
           </div>
@@ -2072,13 +2076,15 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
           transform: translateX(2px);
         }
 
-        /* ─── Console ─── */
+        /* ─── Modern Institutional Terminal Console ─── */
         .lab-console-panel {
           display: flex;
           flex-direction: column;
           min-height: 120px;
           flex-shrink: 0;
           position: relative;
+          background: #060913;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
         .lab-console-resize-handle {
           position: absolute;
@@ -2094,83 +2100,100 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
         .lab-console-resize-handle:hover,
         .lab-console-resize-handle:active {
           background: var(--primary);
-          opacity: 0.4;
+          opacity: 0.5;
+        }
+        .lab-console-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 16px;
+          background: #0a0f1d;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          user-select: none;
+        }
+        .lab-console-title {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          color: #94a3b8;
+          text-transform: uppercase;
         }
         .lab-clear-btn {
-          margin-left: auto;
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: var(--text-muted);
-          background: none;
-          border: none;
+          letter-spacing: 0.1em;
+          color: #64748b;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           cursor: pointer;
-          padding: 2px 6px;
-          transition: color 0.15s;
+          padding: 2px 7px;
+          border-radius: 4px;
+          transition: all 0.15s;
           font-family: var(--font-sans);
         }
         .lab-clear-btn:hover {
-          color: var(--text-main);
+          color: #f1f5f9;
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.16);
         }
         .lab-console-body {
           flex: 1;
           overflow-y: auto;
           overflow-x: hidden;
-          padding: 12px 20px;
+          padding: 12px 18px;
           font-family: var(--font-mono);
-          font-size: 10px;
-          line-height: 22px;
-          background: var(--bg-surface);
+          font-size: 11px;
+          line-height: 1.65;
+          background: #060913;
         }
-        .lab-console-body::-webkit-scrollbar { width: 3px; }
+        .lab-console-body::-webkit-scrollbar { width: 4px; }
         .lab-console-body::-webkit-scrollbar-track { background: transparent; }
-        .lab-console-body::-webkit-scrollbar-thumb { background: var(--border); }
+        .lab-console-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 2px; }
 
         .lab-log-line {
           display: flex;
           gap: 10px;
-          align-items: start;
+          align-items: baseline;
+          padding: 1px 0;
         }
         .lab-log-time {
-          color: #c4c8cc;
+          color: #475569;
           flex-shrink: 0;
-          font-size: 9px;
-          padding-top: 1px;
+          font-size: 9.5px;
+          font-weight: 600;
+          font-family: var(--font-mono);
           user-select: none;
         }
         .lab-log-msg {
-          color: var(--text-main);
-          opacity: 0.7;
+          color: #94a3b8;
           word-break: break-word;
+          white-space: pre-wrap;
         }
         .lab-log-error {
-          color: var(--error);
-          opacity: 1;
+          color: #f87171 !important;
           font-weight: 600;
         }
         .lab-log-success {
-          color: var(--success);
-          opacity: 1;
+          color: #34d399 !important;
           font-weight: 600;
         }
         .lab-log-warn {
-          color: var(--warning);
-          opacity: 1;
+          color: #fbbf24 !important;
+          font-weight: 600;
         }
         .lab-log-user {
-          color: var(--primary);
-          opacity: 1;
-          background: rgba(0, 255, 65, 0.05);
-          padding: 0 4px;
-          border-radius: 2px;
+          color: #38bdf8 !important;
+          background: rgba(56, 189, 248, 0.1);
+          padding: 1px 6px;
+          border-radius: 3px;
           font-weight: 700;
         }
-         .lab-console-empty {
-          color: #c4c8cc;
+        .lab-console-empty {
+          color: #475569;
           font-style: italic;
           text-align: center;
-          padding: 40px 0;
+          padding: 30px 0;
           font-size: 10px;
           text-transform: uppercase;
           letter-spacing: 0.12em;
@@ -2392,43 +2415,63 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
           cursor: wait;
         }
 
-        /* 🧪 Research Shell Terminal UI Styling */
+        /* 🧪 Research Shell Terminal Command Bar Styling */
         .lab-terminal-input-wrapper {
-          padding: 12px 20px;
-          background: rgba(0,0,0,0.4);
-          border-top: 1px solid rgba(255,255,255,0.03);
+          padding: 8px 14px;
+          background: #090e1c;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
           display: flex;
           flex-direction: column;
-          gap: 4px;
+        }
+        .lab-terminal-input-inner {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(0, 0, 0, 0.35);
+          border: 1px solid rgba(255, 255, 255, 0.09);
+          border-radius: 6px;
+          padding: 5px 10px;
+          transition: border-color 0.15s;
+        }
+        .lab-terminal-input-inner:focus-within {
+          border-color: rgba(56, 189, 248, 0.4);
+          box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15);
         }
         .lab-terminal-prompt {
           display: flex;
           align-items: center;
-          color: var(--primary);
+          justify-content: center;
+          flex-shrink: 0;
         }
         .lab-terminal-textarea {
-          width: 100%;
+          flex: 1;
           background: transparent;
           border: none;
           outline: none;
-          color: white;
+          color: #f8fafc;
           font-family: var(--font-mono);
           font-size: 11px;
-          line-height: 1.5;
+          line-height: 1.45;
           resize: none;
-          padding: 4px 0;
+          padding: 2px 0;
         }
         .lab-terminal-textarea::placeholder {
-          color: #444;
+          color: #475569;
           font-style: italic;
         }
-        .lab-terminal-hint {
+        .lab-terminal-hint-badge {
+          flex-shrink: 0;
           font-size: 8px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: #333;
-          text-align: right;
-          font-weight: 700;
+          color: #64748b;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 3px 6px;
+          border-radius: 4px;
+          user-select: none;
+          white-space: nowrap;
         }
 
         /* 🧺 Software Confirmation Pop-Up Modal */
