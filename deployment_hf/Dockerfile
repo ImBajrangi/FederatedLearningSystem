@@ -21,6 +21,7 @@ COPY blockchain/ /app/blockchain/
 COPY security/ /app/security/
 COPY dashboard/dist/ /app/static/
 COPY run_local.py .
+COPY join.py .
 
 # Ensure DB directory is writable (guardian.db is git-ignored, created at runtime by init_db())
 RUN mkdir -p /app/Cybronites

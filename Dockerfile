@@ -31,6 +31,7 @@ COPY utils/ ./utils/
 COPY core/ ./core/
 COPY secure_training_platform/ ./secure_training_platform/
 COPY auth_server/ ./auth_server/
+COPY join.py ./join.py
 
 # Copy built frontend from Stage 1
 COPY --from=frontend-builder /app/dashboard/dist ./dist
