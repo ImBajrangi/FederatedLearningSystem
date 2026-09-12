@@ -605,6 +605,16 @@ class MNISTNet(nn.Module):
         }
         reg_res = http_post(f"{server_url}/api/v1/distributed/register", reg_payload, timeout=10)
         client_id = reg_res.get("client_id")
+        
+        # Register graceful exit unregister
+        def cleanup_node():
+            try:
+                http_post(f"{server_url}/api/v1/distributed/unregister", {"client_id": client_id, "reason": "Node process exit"}, timeout=3)
+            except Exception:
+                pass
+        import atexit
+        atexit.register(cleanup_node)
+
         print(f"    {Style.SLATE}├─ Client ID Assigned:{Style.RESET} {Style.BOLD}{Style.GREEN}{client_id}{Style.RESET}")
         print(f"    {Style.SLATE}├─ Compute Engine:{Style.RESET}    {Style.PURPLE}{device_label}{Style.RESET}")
         print(f"    {Style.SLATE}├─ Private Edge Shard:{Style.RESET}{Style.EMERALD} {len(X_train)} samples into Secure Memory{Style.RESET}")
@@ -628,9 +638,9 @@ class MNISTNet(nn.Module):
 
     try:
         while True:
-            # Poll coordinator status
+            # Poll coordinator status with heartbeat client_id
             try:
-                status_res = http_get(f"{server_url}/api/v1/distributed/status", timeout=5)
+                status_res = http_get(f"{server_url}/api/v1/distributed/status?client_id={client_id}", timeout=5)
             except Exception:
                 time.sleep(1.5)
                 continue
@@ -792,6 +802,11 @@ class MNISTNet(nn.Module):
 
     except KeyboardInterrupt:
         print(f"\n  {Style.GOLD}👋 Disconnecting gracefully from Federated Coordinator...{Style.RESET}")
+        try:
+            if 'client_id' in locals() and client_id:
+                http_post(f"{server_url}/api/v1/distributed/unregister", {"client_id": client_id, "reason": "KeyboardInterrupt (Ctrl+C)"}, timeout=2)
+        except Exception:
+            pass
         sys.exit(0)
 
 

@@ -204,11 +204,64 @@ class DistributedCoordinator:
 
     # ─── Client Registration & Code Transparency ───
 
+    def prune_stale_clients(self, timeout: float = 12.0) -> bool:
+        """Prune clients that haven't sent a heartbeat/status check in `timeout` seconds."""
+        now = time.time()
+        to_remove = []
+        for cid, client in list(self.registered_clients.items()):
+            last_seen = client.get("last_seen", 0)
+            if now - last_seen > timeout:
+                to_remove.append((cid, client.get("name", cid)))
+
+        if to_remove:
+            for cid, name in to_remove:
+                self.registered_clients.pop(cid, None)
+                self.node_registry.pop(cid, None)
+                self._broadcast("LOG", f"⚠️ NODE TIMEOUT / DISCONNECTED: {name} ({cid})")
+            
+            self._broadcast("STAT_UPDATE", {
+                "clients_active": len(self.registered_clients),
+                "node_registry": self.node_registry,
+            })
+            return True
+        return False
+
+    def heartbeat(self, client_id: str):
+        """Update last seen timestamp for an active node."""
+        if client_id and client_id in self.registered_clients:
+            self.registered_clients[client_id]["last_seen"] = time.time()
+            if client_id in self.node_registry:
+                self.node_registry[client_id]["status"] = "CONNECTED"
+
+    def unregister_client(self, client_id: str, reason: str = "Graceful disconnect") -> bool:
+        """Unregister a client node immediately on disconnect."""
+        if client_id in self.registered_clients:
+            client = self.registered_clients.pop(client_id)
+            self.node_registry.pop(client_id, None)
+            name = client.get("name", client_id)
+            self._broadcast("LOG", f"👋 NODE DISCONNECTED: {name} ({client_id}) [{reason}]")
+            self._broadcast("STAT_UPDATE", {
+                "clients_active": len(self.registered_clients),
+                "node_registry": self.node_registry,
+            })
+            logger.info(f"Client unregistered: {name} ({client_id})")
+            return True
+        return False
+
     def register_client(self, name: str, ip: str, code: str = "", filename: str = "model.py",
                         device: str = "CPU Core", os_info: str = "Linux/Darwin", arch: str = "x86_64",
                         python_ver: str = "v3.12", shard_size: str = "250 samples",
                         privacy: str = "L2-Clip (1.5) + Gaussian (σ=0.005)") -> str:
         """Register a remote client with rich hardware telemetry and transparent training code."""
+        # Prune dead/stale clients first
+        self.prune_stale_clients(timeout=10.0)
+
+        # Remove duplicate/stale session from the same IP and name
+        stale_cids = [cid for cid, c in list(self.registered_clients.items()) if c.get("ip") == ip and c.get("name") == name]
+        for old_cid in stale_cids:
+            self.registered_clients.pop(old_cid, None)
+            self.node_registry.pop(old_cid, None)
+
         client_id = str(uuid.uuid4())[:12]
         code_hash = hashlib.sha256(code.encode("utf-8")).hexdigest() if code else "0x0000_DEFAULT"
 
@@ -548,8 +601,14 @@ class DistributedCoordinator:
 
     # ─── Status ───
 
-    def get_status(self) -> dict:
+    def get_status(self, client_id: Optional[str] = None) -> dict:
         """Return current session status for clients and dashboard."""
+        if client_id:
+            self.heartbeat(client_id)
+        
+        # Periodic stale check
+        self.prune_stale_clients(timeout=12.0)
+
         return {
             "status": self.status,
             "session_id": self._session_id,

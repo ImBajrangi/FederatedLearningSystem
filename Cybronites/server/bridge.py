@@ -1131,11 +1131,32 @@ async def submit_distributed_update(data: Dict[str, Any] = {}):
     
     return coord.submit_update(client_id, params_b64, num_examples, metrics)
 
+@app.post("/api/v1/distributed/unregister")
+@app.post("/api/v1/distributed/leave")
+async def unregister_distributed_client(data: Dict[str, Any] = {}):
+    """Gracefully unregister a client node on disconnect."""
+    coord = DistributedCoordinator.get_instance()
+    client_id = data.get("client_id")
+    reason = data.get("reason", "Graceful disconnect")
+    if not client_id:
+        return {"success": False, "error": "client_id is required"}
+    success = coord.unregister_client(client_id, reason=reason)
+    return {"success": success}
+
+@app.post("/api/v1/distributed/heartbeat")
+async def distributed_heartbeat(data: Dict[str, Any] = {}):
+    """Heartbeat endpoint for active client nodes."""
+    coord = DistributedCoordinator.get_instance()
+    client_id = data.get("client_id")
+    if client_id:
+        coord.heartbeat(client_id)
+    return {"success": True}
+
 @app.get("/api/v1/distributed/status")
-async def get_distributed_status():
+async def get_distributed_status(client_id: Optional[str] = None):
     """Get current distributed session status. Used by clients for polling."""
     coord = DistributedCoordinator.get_instance()
-    return coord.get_status()
+    return coord.get_status(client_id=client_id)
 
 @app.get("/api/v1/distributed/connection-info")
 async def get_distributed_connection_info():
