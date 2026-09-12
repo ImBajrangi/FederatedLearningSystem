@@ -170,12 +170,31 @@ class Style:
     WHITE = "\033[38;5;255m"
 
 
+def get_term_width():
+    try:
+        cols = shutil.get_terminal_size((72, 20)).columns
+        return max(44, min(cols - 2, 72))
+    except Exception:
+        return 68
+
+
+def hr(char="─", color=Style.DARK_SLATE):
+    w = get_term_width()
+    return f"{color}{char * w}{Style.RESET}"
+
+
 def print_header(node_name, compute_engine, coordinator_url):
+    w = get_term_width()
+    border_top = f"╭{'─' * (w - 2)}╮"
+    border_bot = f"╰{'─' * (w - 2)}╯"
+    title_line = f"  {Style.GREEN}◆{Style.CYAN} AI GUARDIAN {Style.SLATE}|{Style.WHITE} SECURE FEDERATED CLIENT NODE"
+    subtitle_line = f"  {Style.SLATE}Privacy-Preserving Training • Smart Contracts • Blockchain"
+    
     print(f"""
-{Style.CYAN}{Style.BOLD}╭────────────────────────────────────────────────────────────────────────╮
-│  {Style.GREEN}◆{Style.CYAN} AI GUARDIAN {Style.SLATE}|{Style.WHITE} SECURE FEDERATED CLIENT NODE                     {Style.CYAN}│
-│  {Style.SLATE}Privacy-Preserving Training  •  Smart Contracts  •  Blockchain Ledger{Style.CYAN}│
-╰────────────────────────────────────────────────────────────────────────╯{Style.RESET}
+{Style.CYAN}{Style.BOLD}{border_top}
+│{Style.RESET}{title_line}{Style.RESET}
+│{Style.RESET}{subtitle_line}{Style.RESET}
+{Style.CYAN}{Style.BOLD}{border_bot}{Style.RESET}
 
   {Style.GREEN}●{Style.RESET} {Style.BOLD}Node Identity:{Style.RESET}     {Style.WHITE}{node_name}{Style.RESET}
   {Style.CYAN}●{Style.RESET} {Style.BOLD}Compute Engine:{Style.RESET}    {Style.PURPLE}{compute_engine}{Style.RESET}
@@ -193,10 +212,12 @@ def print_step(step_num, total_steps, title, status="IN_PROGRESS"):
         print(f"  {Style.CYAN}✦{Style.RESET} {Style.BOLD}[{step_num}/{total_steps}]{Style.RESET} {Style.CYAN}{Style.BOLD}{title}{Style.RESET}")
 
 
-def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=28, fill='█'):
+def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=24, fill='█'):
+    w = get_term_width()
+    bar_len = min(length, max(12, w - 40))
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filled_length = int(length * iteration // total)
-    bar = f"{Style.EMERALD}" + fill * filled_length + f"{Style.DARK_SLATE}" + '░' * (length - filled_length) + f"{Style.RESET}"
+    filled_length = int(bar_len * iteration // total)
+    bar = f"{Style.EMERALD}" + fill * filled_length + f"{Style.DARK_SLATE}" + '░' * (bar_len - filled_length) + f"{Style.RESET}"
     sys.stdout.write(f'\r    {prefix} |{bar}| {Style.BOLD}{percent}%{Style.RESET} {suffix}')
     sys.stdout.flush()
     if iteration == total:
@@ -251,6 +272,7 @@ def main():
     parser.add_argument("--server", type=str, default=None, help="Coordinator Server URL (e.g., http://localhost:7880 or HF Space)")
     parser.add_argument("--name", type=str, default=None, help="Custom Node Name")
     parser.add_argument("--file", type=str, default=None, help="Path to local training Python script (.py)")
+    parser.add_argument("--auto", "-y", action="store_true", help="Auto-accept active network model without prompting")
     parser.add_argument("--dp", action="store_true", default=True, help="Enable Local Differential Privacy")
     parser.add_argument("--epochs", type=int, default=1, help="Local epochs per federated round")
     parser.add_argument("--batch-size", type=int, default=32, help="Local batch size")
@@ -300,7 +322,7 @@ def main():
 
     # ── STEP 1: Probe Environment & Hardware ──
     print_step(1, 3, "Hardware & Compute Environment Verification", "IN_PROGRESS")
-    time.sleep(0.3)
+    time.sleep(0.2)
     print(f"    {Style.SLATE}├─ Architecture:{Style.RESET} {platform.machine()} ({platform.system()} {platform.release()})")
     print(f"    {Style.SLATE}├─ Python Runtime:{Style.RESET} v{platform.python_version()} [{sys.executable}]")
     print(f"    {Style.SLATE}└─ Compute Backend:{Style.RESET} {Style.PURPLE}{device_label}{Style.RESET}")
@@ -324,16 +346,18 @@ def main():
     training_code = ""
     training_filename = "model.py"
 
-    if not chosen_file_path:
-        print(f"\n{Style.CYAN}╭── 📁 Select Model Architecture ──────────────────────────────────────╮{Style.RESET}")
-        print(f"{Style.CYAN}│{Style.RESET}                                                                      {Style.CYAN}│{Style.RESET}")
-        print(f"{Style.CYAN}│{Style.RESET}   {Style.BOLD}[1] 🌐 Network Active Model{Style.RESET} {Style.SLATE}(Synced from Platform - No file needed){Style.RESET}  {Style.CYAN}│{Style.RESET}")
-        print(f"{Style.CYAN}│{Style.RESET}       {Style.DIM}Architecture: Convolutional 2D -> MaxPool -> Linear (model.py){Style.RESET} {Style.CYAN}│{Style.RESET}")
-        print(f"{Style.CYAN}│{Style.RESET}                                                                      {Style.CYAN}│{Style.RESET}")
-        print(f"{Style.CYAN}│{Style.RESET}   {Style.BOLD}[2] 📂 Custom Local Script{Style.RESET} {Style.SLATE}(Specify custom .py file path){Style.RESET}             {Style.CYAN}│{Style.RESET}")
-        print(f"{Style.CYAN}│{Style.RESET}       {Style.DIM}Loads local PyTorch nn.Module and syncs code to platform      {Style.CYAN}│{Style.RESET}")
-        print(f"{Style.CYAN}│{Style.RESET}                                                                      {Style.CYAN}│{Style.RESET}")
-        print(f"{Style.CYAN}╰──────────────────────────────────────────────────────────────────────╯{Style.RESET}")
+    if not chosen_file_path and not args.auto:
+        w = get_term_width()
+        border_top = f"╭── 📁 Select Model Architecture {'─' * max(2, w - 34)}╮"
+        border_bot = f"╰{'─' * (w - 2)}╯"
+        
+        print(f"\n{Style.CYAN}{border_top}")
+        print(f"│  {Style.BOLD}[1] 🌐 Network Active Model{Style.RESET} {Style.SLATE}(Platform Synced){Style.RESET}")
+        print(f"│      {Style.DIM}Architecture: Conv2D -> MaxPool -> Linear ({active_platform_filename}){Style.RESET}")
+        print(f"│")
+        print(f"│  {Style.BOLD}[2] 📂 Custom Local Script{Style.RESET} {Style.SLATE}(Load custom .py){Style.RESET}")
+        print(f"│      {Style.DIM}Loads local nn.Module & syncs code to platform{Style.RESET}")
+        print(f"{Style.CYAN}{border_bot}{Style.RESET}")
         
         choice = prompt_tty(f"  {Style.GREEN}👉 Select option [1]:{Style.RESET} ", "1")
         if choice == "2":
@@ -347,6 +371,10 @@ def main():
         else:
             training_code = active_platform_code
             training_filename = active_platform_filename
+    elif args.auto and not chosen_file_path:
+        print(f"    {Style.SLATE}├─ Mode:{Style.RESET} {Style.EMERALD}Auto-Selected Network Active Model{Style.RESET}")
+        training_code = active_platform_code
+        training_filename = active_platform_filename
 
     # If chosen_file_path specified
     if chosen_file_path and os.path.exists(chosen_file_path):
@@ -469,7 +497,10 @@ class MNISTNet(nn.Module):
             total_rounds = status_res.get("total_rounds", 5)
 
             if session_status in ("WAITING", "IN_PROGRESS", "TRAINING") and current_round != last_participated_round and current_round > 0:
-                print(f"  {Style.BOLD}{Style.CYAN}╭── 🚀 ORCHESTRATION CYCLE [ROUND {current_round:02d}/{total_rounds:02d}] ──────────────────────────────╮{Style.RESET}")
+                w = get_term_width()
+                cycle_top = f"╭── 🚀 ORCHESTRATION CYCLE [ROUND {current_round:02d}/{total_rounds:02d}] {'─' * max(2, w - 42)}╮"
+                cycle_bot = f"╰{'─' * (w - 2)}╯"
+                print(f"\n  {Style.BOLD}{Style.CYAN}{cycle_top}{Style.RESET}")
                 
                 # 1. Fetch Global Weights
                 t0 = time.time()
@@ -558,7 +589,7 @@ class MNISTNet(nn.Module):
                 else:
                     print(f"  {Style.GOLD}  ▲ Update Response: {sub_res.get('message')}{Style.RESET}")
 
-                print(f"  {Style.CYAN}╰────────────────────────────────────────────────────────────────────────╯{Style.RESET}")
+                print(f"  {Style.CYAN}{cycle_bot}{Style.RESET}")
                 last_participated_round = current_round
                 print(f"  {Style.SLATE}⏳ Awaiting Next Global Aggregation Cycle...{Style.RESET}\n")
 

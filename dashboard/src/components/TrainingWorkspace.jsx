@@ -39,6 +39,7 @@ export const TrainingWorkspace = ({
   const [isEditing, setIsEditing] = useState(false);
   const [customCode, setCustomCode] = useState('');
   const [isInjecting, setIsInjecting] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   const [cliInput, setCliInput] = useState('');
   const [localCliLogs, setLocalCliLogs] = useState([]);
 
