@@ -270,10 +270,26 @@ async def startup():
     bridge.load_model_code()
     bridge.fetch_public_ip()
     
-    # Initialize Distributed Coordinator
+    # Initialize Distributed Coordinator with Realtime Blockchain
     dist_coord = DistributedCoordinator.get_instance()
     dist_coord.set_broadcast(bridge.broadcast_sync)
-    logger.info("Distributed Coordinator initialized and linked to bridge.")
+    
+    # Initialize initial blockchain state in bridge
+    bridge.state["chain"] = dist_coord.blockchain.to_serialized_chain()
+    bridge.state["total_blocks"] = len(dist_coord.blockchain.chain)
+    bridge.state["last_hash"] = dist_coord.blockchain.get_latest_block().hash[:16]
+    
+    # Event listeners on real-time blockchain
+    def on_block_mined(payload):
+        bridge.broadcast_sync("BLOCK_MINED", payload)
+        bridge.broadcast_sync("STAT_UPDATE", {
+            "chain": dist_coord.blockchain.to_serialized_chain(),
+            "total_blocks": len(dist_coord.blockchain.chain),
+            "last_hash": dist_coord.blockchain.get_latest_block().hash[:16]
+        })
+    dist_coord.blockchain.subscribe("block_mined", on_block_mined)
+    
+    logger.info("Distributed Coordinator & Realtime Blockchain initialized and linked to bridge.")
     
     # Initialize Orchestrator and start Log Listener thread
     from Cybronites.server.orchestrator import get_orchestrator
@@ -486,6 +502,66 @@ async def start_lab_training(data: Dict[str, Any]):
     success, msg = engine.start_training(code, hyperparams, bridge.broadcast_sync)
     return {"success": success, "message": msg}
 
+@app.post("/api/v1/laboratory/execute")
+async def execute_lab_code(data: Dict[str, Any]):
+    """Execute arbitrary Python script or terminal command on the local system with direct local data access."""
+    code = data.get("code", "")
+    if not code:
+        return {"success": False, "error": "No code provided."}
+    
+    import sys
+    import io
+    import traceback
+    
+    output_capture = io.StringIO()
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    
+    try:
+        from Cybronites.server.vault_loader import VaultLoader
+        vault_instance = VaultLoader()
+    except Exception:
+        vault_instance = None
+
+    namespace = {
+        '__builtins__': __builtins__,
+        'vault': vault_instance,
+    }
+    
+    sys.stdout = output_capture
+    sys.stderr = output_capture
+    start_time = time.time()
+    
+    try:
+        bridge.broadcast_sync("LOG", "SYSTEM: Executing script on local system with direct data access...")
+        exec(code, namespace)
+        exec_output = output_capture.getvalue()
+        elapsed = time.time() - start_time
+        
+        for line in exec_output.splitlines():
+            if line.strip():
+                bridge.broadcast_sync("LOG", f"[stdout] {line}")
+                
+        return {
+            "success": True,
+            "output": exec_output,
+            "elapsed_seconds": round(elapsed, 4)
+        }
+    except Exception as e:
+        tb = traceback.format_exc()
+        exec_output = output_capture.getvalue()
+        logger.error(f"Script Execution Error: {e}\n{tb}")
+        bridge.broadcast_sync("LOG", f"ERROR: {e}")
+        return {
+            "success": False,
+            "output": exec_output,
+            "error": str(e),
+            "traceback": tb
+        }
+    finally:
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+
 @app.post("/api/v1/laboratory/abort")
 async def abort_lab_training():
     success = engine.abort_training()
@@ -664,18 +740,52 @@ async def stop_distributed_session():
     return {"success": True, "message": "Session stopped."}
 
 @app.post("/api/v1/distributed/register")
-async def register_distributed_client(data: Dict[str, str] = {}):
-    """Register a remote client node. Returns a unique client ID."""
+async def register_distributed_client(data: Dict[str, Any] = {}):
+    """Register a remote client node with transparent training code. Returns a unique client ID."""
     coord = DistributedCoordinator.get_instance()
     name = data.get("name", "Unknown-Node")
     ip = data.get("ip", "0.0.0.0")
+    code = data.get("code", "")
+    filename = data.get("filename", "model.py")
     
-    client_id = coord.register_client(name, ip)
+    client_id = coord.register_client(name, ip, code=code, filename=filename)
     return {
         "success": True, 
         "client_id": client_id,
         "session_status": coord.status,
         "current_round": coord.round,
+        "filename": filename,
+    }
+
+@app.post("/api/v1/distributed/submit-code")
+async def submit_node_training_code(data: Dict[str, Any] = {}):
+    """Allows a connected node to upload/update its training source code for full transparency."""
+    coord = DistributedCoordinator.get_instance()
+    client_id = data.get("client_id")
+    code = data.get("code", "")
+    filename = data.get("filename", "model.py")
+    
+    if not client_id or not code:
+        return {"success": False, "error": "client_id and code are required"}
+    
+    updated = coord.update_client_code(client_id, code, filename)
+    return {"success": updated, "filename": filename}
+
+@app.get("/api/v1/distributed/node-code/{client_id}")
+async def get_node_training_code(client_id: str):
+    """Retrieve full source code and cryptographic SHA-256 fingerprint for a connected node."""
+    coord = DistributedCoordinator.get_instance()
+    client_info = coord.registered_clients.get(client_id)
+    if not client_info:
+        return {"success": False, "error": f"Node {client_id} not found"}
+    
+    return {
+        "success": True,
+        "client_id": client_id,
+        "name": client_info.get("name"),
+        "filename": client_info.get("filename", "model.py"),
+        "code": client_info.get("code", ""),
+        "code_hash": client_info.get("code_hash", ""),
     }
 
 @app.get("/api/v1/distributed/get-model")
@@ -713,13 +823,135 @@ async def get_distributed_status():
 
 @app.get("/api/v1/distributed/connection-info")
 async def get_distributed_connection_info():
-    """Get connection instructions for remote clients."""
+    """Get instant connection instructions for remote participants."""
+    server_ip = bridge.state.get("server_ip", "127.0.0.1")
+    return {
+        "server_url": server_ip,
+        "command_local": "python join.py",
+        "command_curl": f"curl -sSL http://{server_ip}:{BRIDGE_PORT}/join.py | python3",
+        "command_remote": f"python join.py --server http://{server_ip}:{BRIDGE_PORT} --name 'My-Device'",
+    }
+
+@app.get("/join.py")
+@app.get("/connect")
+async def serve_join_script():
+    """Serves the standalone 1-command client join script."""
+    candidates = [
+        os.path.join(os.getcwd(), "join.py"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "join.py"),
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            return FileResponse(path, media_type="text/x-python", filename="join.py")
+    return {"error": "join.py script not found on host."}
+
+# ── Real-Time Blockchain API Endpoints ──
+
+@app.get("/api/v1/blockchain/chain")
+async def get_blockchain_chain():
+    """Returns high-level blockchain overview, validity, and full block list."""
     coord = DistributedCoordinator.get_instance()
-    server_url = bridge.state.get("server_ip", "127.0.0.1")
+    bc = coord.blockchain
+    stats = bc.get_stats()
+    return {
+        "success": True,
+        "stats": stats,
+        "chain": bc.to_serialized_chain()
+    }
+
+@app.get("/api/v1/blockchain/blocks")
+async def get_blockchain_blocks(limit: int = 50, offset: int = 0):
+    """Returns paginated blocks from the distributed ledger."""
+    coord = DistributedCoordinator.get_instance()
+    bc = coord.blockchain
+    all_blocks = bc.to_serialized_chain()
+    paginated = all_blocks[offset : offset + limit]
+    return {
+        "success": True,
+        "total": len(all_blocks),
+        "limit": limit,
+        "offset": offset,
+        "blocks": paginated
+    }
+
+@app.get("/api/v1/blockchain/block/{index_or_hash}")
+async def get_blockchain_block(index_or_hash: str):
+    """Returns detailed block information with transaction data and Merkle verification."""
+    coord = DistributedCoordinator.get_instance()
+    bc = coord.blockchain
+    block = bc.get_block(index_or_hash)
+    if not block:
+        return {"success": False, "error": f"Block '{index_or_hash}' not found"}
+    return {"success": True, "block": block}
+
+@app.get("/api/v1/blockchain/mempool")
+async def get_blockchain_mempool():
+    """Returns active unmined pending transactions awaiting consensus."""
+    coord = DistributedCoordinator.get_instance()
+    bc = coord.blockchain
+    return {
+        "success": True,
+        "count": len(bc.pending_transactions),
+        "mempool": bc.get_mempool()
+    }
+
+@app.get("/api/v1/blockchain/validate")
+async def validate_blockchain():
+    """Executes live deep cryptographic verification of hash continuity and Merkle roots."""
+    coord = DistributedCoordinator.get_instance()
+    bc = coord.blockchain
+    is_valid, msg = bc.validate_chain_detailed()
+    return {
+        "success": True,
+        "is_valid": is_valid,
+        "message": msg,
+        "chain_length": len(bc.chain),
+        "latest_hash": bc.get_latest_block().hash
+    }
+
+@app.get("/api/v1/blockchain/client/{client_id}")
+async def get_client_blockchain_history(client_id: str):
+    """Returns complete on-chain audit trail and reputation history for a client."""
+    coord = DistributedCoordinator.get_instance()
+    bc = coord.blockchain
+    txs = bc.get_client_history(client_id)
+    rep_score = coord.reputation.get_score(client_id)
+    return {
+        "success": True,
+        "client_id": client_id,
+        "reputation_score": rep_score,
+        "transaction_count": len(txs),
+        "transactions": txs
+    }
+
+@app.post("/api/v1/blockchain/mine")
+async def force_mine_blockchain(data: Dict[str, Any] = {}):
+    """Manually or programmatically triggers block mining on pending mempool transactions."""
+    coord = DistributedCoordinator.get_instance()
+    bc = coord.blockchain
+    miner = data.get("miner", "API_ADMIN_TRIGGER")
+    if not bc.pending_transactions:
+        return {"success": False, "message": "Mempool is empty. No transactions to mine."}
+    
+    new_block = bc.mine_pending_transactions(miner=miner)
+    serialized_chain = bc.to_serialized_chain()
+    
+    # Broadcast to dashboard in real-time
+    await bridge.broadcast("BLOCK_MINED", {
+        "block": new_block.to_dict(),
+        "chain_length": len(bc.chain),
+        "is_valid": bc.validate_chain()
+    })
+    await bridge.broadcast("STAT_UPDATE", {
+        "chain": serialized_chain,
+        "total_blocks": len(bc.chain),
+        "last_hash": new_block.hash[:16]
+    })
     
     return {
-        "server_url": server_url,
-        "command": f'python run_client.py --server https://mdark4025-cybronites.hf.space --name "My-Device"',
+        "success": True,
+        "message": f"Block #{new_block.index} mined successfully",
+        "block": new_block.to_dict()
     }
 
 # ── Secure Training Platform Proxy (for production single-port) ──

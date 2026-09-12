@@ -200,7 +200,7 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
              return None, {}
 
         # 5. Mine the block
-        new_block = self.blockchain.mine_pending_transactions()
+        new_block = self.blockchain.mine_pending_transactions(miner="FEDAVG_COORDINATOR")
         
         # Calculate Average Metrics for the Round
         avg_acc = float(np.mean(acc_list)) if acc_list else (0.4 + (server_round * 0.1))
@@ -210,14 +210,16 @@ class SecureFedAvg(fl.server.strategy.FedAvg):
         self.accuracy_history.append(avg_acc)
         self.loss_history.append(avg_loss)
 
-        # PRE-SERIALIZATION with asdict
-        try:
-            serialized_chain = [asdict(b) for b in self.blockchain.chain]
-        except Exception as e:
-            logger.error(f"Chain serialization error: {e}")
-            serialized_chain = []
+        # PRE-SERIALIZATION with asdict or to_dict
+        serialized_chain = self.blockchain.to_serialized_chain()
 
-        # 6. Synchronous Broadcast
+        # 6. Real-time Event & Synchronous Broadcast
+        self._broadcast("BLOCK_MINED", {
+            "block": new_block.to_dict(),
+            "round": server_round,
+            "chain_length": len(self.blockchain.chain),
+            "is_valid": self.blockchain.validate_chain(),
+        })
         self._broadcast("STAT_UPDATE", {
             "status": "IDLE",
             "round": server_round,

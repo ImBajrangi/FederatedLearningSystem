@@ -153,9 +153,27 @@ export function useSecureFederated() {
           break;
         }
 
+        case 'BLOCK_MINED': {
+          console.log("BLOCK_MINED", payload);
+          if (payload.block) {
+            setBlockchain(prev => {
+              const exists = prev.some(b => b.index === payload.block.index || b.hash === payload.block.hash);
+              if (exists) {
+                return prev.map(b => (b.index === payload.block.index ? payload.block : b));
+              }
+              return [...prev, payload.block];
+            });
+          }
+          break;
+        }
+
         case 'LOG': {
           const isError = payload.includes('ERROR') || payload.includes('CRITICAL');
-          setLogs(prev => [...prev.slice(-199), { msg: `${payload}`, color: isError ? '#ef4444' : '#64748b' }]);
+          const isBlock = payload.includes('BLOCK MINED') || payload.includes('⛓️');
+          setLogs(prev => [...prev.slice(-199), { 
+            msg: `${payload}`, 
+            color: isError ? '#ef4444' : isBlock ? '#38bdf8' : '#64748b' 
+          }]);
           break;
         }
 

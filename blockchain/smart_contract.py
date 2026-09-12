@@ -20,22 +20,7 @@ from typing import Dict, List, Optional, Tuple
 import torch
 
 
-# Re-export a lightweight Transaction for the smart-contract layer
-@dataclass
-class Transaction:
-    """Immutable record of a model-update event."""
-    client_id: str
-    model_hash: str
-    timestamp: float
-    validation_status: str      # "VALID" | "REJECTED"
-    reputation_score: float
-    round_number: int = 0
-    rejection_reason: str = ""
-    l2_norm: float = 0.0
-    cosine_sim: float = 0.0
-
-    def to_dict(self):
-        return asdict(self)
+from blockchain.ledger import Transaction
 
 
 # ======================================================================

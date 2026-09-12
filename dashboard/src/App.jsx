@@ -223,6 +223,7 @@ function App() {
         return (
           <TrainingWorkspace
             clients={clients}
+            nodeRegistry={nodeRegistry}
             logs={logs}
             accuracyHistory={accuracyHistory}
             lossHistory={lossHistory}
