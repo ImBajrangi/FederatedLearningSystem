@@ -210,11 +210,11 @@ export const TrainingWorkspace = ({
               <table className="tr-table">
                 <thead>
                   <tr className="tr-table-header-row">
-                    <th className="tr-th-rnd" style={{ width: '60px' }}>RND</th>
-                    <th className="tr-th-node" style={{ width: '160px' }}>NODE_ID</th>
+                    <th className="tr-th-rnd" style={{ width: '70px' }}>RND</th>
+                    <th className="tr-th-node" style={{ width: '220px' }}>NODE_ID</th>
                     <th className="tr-th-params">PARAMETERS_GRID</th>
                     <th className="tr-th-acc" style={{ width: '100px', textAlign: 'right' }}>ACC_YIELD</th>
-                    <th className="tr-th-status" style={{ width: '100px', textAlign: 'right' }}>STATUS</th>
+                    <th className="tr-th-status" style={{ width: '160px', textAlign: 'right' }}>STATUS</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -255,12 +255,12 @@ export const TrainingWorkspace = ({
                             </div>
                           </div>
                         </td>
-                        <td className="tr-td-acc">
+                        <td className="tr-td-acc" style={{ textAlign: 'right' }}>
                           <span className="tr-acc-yield">
                             {row.accuracy ? `${(row.accuracy * 100).toFixed(1)}%` : '—'}
                           </span>
                         </td>
-                        <td className="tr-td-status">
+                        <td className="tr-td-status" style={{ textAlign: 'right' }}>
                           <span className="tr-status-pill tr-status-verified">
                             ON-CHAIN VERIFIED
                           </span>
@@ -719,35 +719,39 @@ export const TrainingWorkspace = ({
           text-transform: uppercase; letter-spacing: 0.15em;
           border-bottom: 2px solid var(--border);
         }
-        .tr-table td { padding: 18px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .tr-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         
-        .tr-td-rnd { width: 80px; }
-        .tr-rnd-num { font-family: var(--font-mono); font-size: 11px; font-weight: 800; color: var(--primary); }
+        .tr-td-rnd { width: 70px; }
+        .tr-rnd-num { font-family: var(--font-mono, monospace); font-size: 11px; font-weight: 800; color: var(--primary); }
         
-        .tr-node-info { display: flex; flex-direction: column; gap: 2px; }
-        .tr-node-id { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text-main); }
-        .tr-node-label { font-size: 8px; font-weight: 700; color: var(--text-muted); opacity: 0.6; }
+        .tr-node-info { display: flex; flex-direction: column; gap: 3px; }
+        .tr-node-id { font-family: var(--font-mono, monospace); font-size: 11px; font-weight: 700; color: #0f172a; word-break: break-all; }
+        .tr-node-label { font-size: 8px; font-weight: 700; color: #94a3b8; letter-spacing: 0.08em; text-transform: uppercase; }
 
-        .tr-params-grid { display: flex; gap: 16px; }
-        .tr-param-item { display: flex; gap: 6px; align-items: baseline; }
-        .tr-param-label { font-size: 8px; font-weight: 700; color: var(--text-muted); }
-        .tr-param-val { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text-main); }
+        .tr-params-grid { display: flex; gap: 16px; align-items: center; }
+        .tr-param-item { display: inline-flex; gap: 6px; align-items: baseline; }
+        .tr-param-k { font-size: 9px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; }
+        .tr-param-v { font-family: var(--font-mono, monospace); font-size: 11px; font-weight: 700; color: #0f172a; }
 
-        .tr-acc-badge { display: flex; align-items: baseline; gap: 1px; color: var(--success); }
-        .tr-acc-val { font-family: var(--font-mono); font-size: 14px; font-weight: 800; }
-        .tr-acc-unit { font-size: 9px; font-weight: 700; }
+        .tr-acc-yield { font-family: var(--font-mono, monospace); font-size: 12px; font-weight: 800; color: #059669; }
 
-        .tr-status-badge { 
-          display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
-          border-radius: 2px; font-size: 8px; font-weight: 800; letter-spacing: 0.1em;
+        .tr-status-pill { 
+          display: inline-flex; align-items: center; justify-content: center;
+          white-space: nowrap; height: 24px; padding: 0 10px;
+          border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+          text-transform: uppercase;
         }
-        .tr-status-verified { background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; }
+        .tr-status-verified { 
+          background: #ecfdf5; 
+          border: 1px solid #a7f3d0; 
+          color: #047857 !important; 
+        }
 
         .tr-ledger-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        .tr-footer-text { font-size: 9px; color: var(--text-muted); opacity: 0.6; letter-spacing: 0.05em; }
+        .tr-footer-text { font-size: 9px; color: var(--text-muted); opacity: 0.8; letter-spacing: 0.05em; }
         .tr-footer-stats { display: flex; align-items: center; gap: 10px; }
         .tr-stat-label { font-size: 8px; font-weight: 700; color: var(--text-muted); }
-        .tr-stat-val { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: var(--text-main); }
+        .tr-stat-val { font-family: var(--font-mono, monospace); font-size: 10px; font-weight: 800; color: var(--text-main); }
 
         /* ─── Console Overhaul ─── */
         .tr-console-container {
