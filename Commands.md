@@ -24,3 +24,17 @@ python join.py
 ```bash
 curl -X GET "https://mdark4025-cybronites.hf.space/api/v1/distributed/get-model" -o global_model.json
 ```
+
+---
+
+## 🌐 Connect Node to Hugging Face Cloud Space
+
+### Option A: Direct Python Script
+```bash
+python join.py --server https://mdark4025-cybronites.hf.space --name "Hospital-Alpha"
+```
+
+### Option B: Zero-Install 1-Command CLI (via curl)
+```bash
+python3 -c "$(curl -sSL https://mdark4025-cybronites.hf.space/join.py)" -- --server https://mdark4025-cybronites.hf.space --name "Hospital-Alpha"
+```

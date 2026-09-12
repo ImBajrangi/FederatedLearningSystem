@@ -24,6 +24,9 @@ import base64
 import io
 import shutil
 
+# Embedded origin when downloaded dynamically from server
+EMBEDDED_SERVER_ORIGIN = None
+
 # ── Auto-Install Essential ML Dependencies if missing ──
 REQUIRED_PKGS = ["numpy"]
 
@@ -284,6 +287,8 @@ def main():
     server_url = None
     if args.server:
         server_url = args.server.rstrip("/")
+    elif EMBEDDED_SERVER_ORIGIN:
+        server_url = EMBEDDED_SERVER_ORIGIN.rstrip("/")
     else:
         # Check local servers first, then cloud coordinator
         candidates = [

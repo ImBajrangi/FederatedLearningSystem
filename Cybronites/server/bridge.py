@@ -6,7 +6,7 @@ _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Body
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
@@ -1099,27 +1099,44 @@ async def get_distributed_connection_info():
 @app.get("/join.py")
 @app.get("/join")
 @app.get("/connect")
-async def serve_join_script():
-    """Serves the standalone 1-command client join script."""
+async def serve_join_script(request: Request):
+    """Serves the standalone 1-command client join script with origin auto-detection."""
     candidates = [
         "/app/join.py",
         os.path.join(os.getcwd(), "join.py"),
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "join.py"),
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "join.py"),
     ]
+    raw_content = ""
     for path in candidates:
         if os.path.exists(path):
-            return FileResponse(path, media_type="text/plain; charset=utf-8", filename="join.py")
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    raw_content = f.read()
+                break
+            except Exception:
+                pass
     
-    # Try reading from current workspace if available
-    try:
-        with open("join.py", "r", encoding="utf-8") as f:
-            from starlette.responses import PlainTextResponse
-            return PlainTextResponse(f.read(), media_type="text/plain; charset=utf-8")
-    except Exception:
-        pass
+    if not raw_content:
+        try:
+            with open("join.py", "r", encoding="utf-8") as f:
+                raw_content = f.read()
+        except Exception:
+            return JSONResponse({"error": "join.py script not found on host."}, status_code=404)
 
-    return {"error": "join.py script not found on host."}
+    # Compute origin from request headers
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or f"127.0.0.1:{BRIDGE_PORT}"
+    proto = request.headers.get("x-forwarded-proto", "https" if "hf.space" in host else "http")
+    origin = f"{proto}://{host}"
+    
+    # Inject into served join.py
+    modified = raw_content.replace(
+        "EMBEDDED_SERVER_ORIGIN = None",
+        f'EMBEDDED_SERVER_ORIGIN = "{origin}"'
+    )
+    
+    from starlette.responses import PlainTextResponse
+    return PlainTextResponse(modified, media_type="text/plain; charset=utf-8")
 
 # ── Distributed Model Export & Download Endpoints ──
 
