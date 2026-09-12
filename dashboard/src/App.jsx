@@ -258,6 +258,9 @@ function App() {
             onClear={clearLogs}
             onInitiate={startSimulation}
             isActive={isActive}
+            round={round}
+            status={status}
+            distributedStatus={distributedStatus}
           />
         );
       case 'datasets':

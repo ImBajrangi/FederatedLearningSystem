@@ -239,6 +239,8 @@ function Dashboard() {
           onInitiate={startSimulation}
           onClear={clearLogs}
           isActive={isActive} 
+          round={round}
+          status={status}
         />
       );
       case 'datasets': return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;

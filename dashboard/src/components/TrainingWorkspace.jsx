@@ -33,7 +33,10 @@ export const TrainingWorkspace = ({
   onUpdateActiveCode,
   onClear,
   onInitiate,
-  isActive 
+  isActive,
+  round = 0,
+  status = 'IDLE',
+  distributedStatus = {}
 }) => {
   const consoleRef = React.useRef(null);
   const ledgerRef = React.useRef(null);
