@@ -362,17 +362,19 @@ export const TrainingWorkspace = ({
           </section>
 
           {/* Connected Edge Nodes & Device Telemetry Audit */}
+          {/* Connected Edge Nodes & Device Telemetry Audit */}
           <section className="tr-card tr-nodes-section">
             <div className="tr-card-header">
               <div className="tr-card-title-wrap">
-                <Laptop size={13} className="tr-card-icon text-cyan-400" />
-                <span className="tr-card-title">Enrolled Edge Nodes & Device Telemetry</span>
+                <Laptop size={14} className="tr-card-icon text-cyan-600" />
+                <span className="tr-card-title">Enrolled Edge Participants</span>
                 <span className="tr-nodes-count-badge">
                   {Object.keys(safeNodeRegistry).length} ACTIVE
                 </span>
               </div>
-              <div className="tr-card-action text-[10px] text-slate-400">
-                <span>Auto-Discovered via Decentralized Bridge</span>
+              <div className="tr-nodes-header-right">
+                <span className="tr-sync-dot" />
+                <span className="text-[10px] font-semibold text-slate-500">Decentralized Bridge</span>
               </div>
             </div>
 
@@ -380,10 +382,10 @@ export const TrainingWorkspace = ({
               {Object.keys(safeNodeRegistry).length === 0 ? (
                 <div className="tr-no-nodes-card">
                   <div className="tr-no-nodes-left">
-                    <Radio size={16} className="text-amber-400 animate-pulse" />
+                    <Radio size={16} className="text-amber-500 animate-pulse" />
                     <div>
-                      <div className="text-xs font-semibold text-slate-200">Listening for Remote Edge Participants</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">Run join command on any Mac, Linux, or Cloud GPU instance to enroll:</div>
+                      <div className="text-xs font-semibold text-slate-800">Listening for Remote Edge Participants</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">Run join command on any Mac, Linux, or Cloud GPU instance to enroll:</div>
                     </div>
                   </div>
                   <div className="tr-quick-join-box">
@@ -418,13 +420,13 @@ export const TrainingWorkspace = ({
                         <div className="tr-node-header">
                           <div className="tr-node-id-group">
                             <div className="tr-node-status-dot-green" />
-                            <div>
-                              <div className="tr-node-name">{node.name || id}</div>
-                              <div className="tr-node-sub">{id.substring(0, 10)}... • {node.ip || '127.0.0.1'}</div>
+                            <div className="overflow-hidden">
+                              <div className="tr-node-name truncate" title={node.name || id}>{node.name || id}</div>
+                              <div className="tr-node-sub truncate">{id.substring(0, 10)}... • {node.ip || '127.0.0.1'}</div>
                             </div>
                           </div>
                           <div className="tr-node-rep-badge">
-                            <ShieldCheck size={11} className="text-emerald-400" />
+                            <ShieldCheck size={11} className="text-emerald-600" />
                             <span>{node.reputation ? node.reputation.toFixed(1) : '100.0'}% REP</span>
                           </div>
                         </div>
@@ -433,46 +435,46 @@ export const TrainingWorkspace = ({
                         <div className="tr-node-specs">
                           <div className="tr-node-spec-row">
                             <span className="tr-spec-k">
-                              <Cpu size={10} className="text-purple-400 inline mr-1" />
+                              <Cpu size={10} className="text-purple-600 inline mr-1" />
                               Compute:
                             </span>
-                            <span className="tr-spec-v text-purple-300 font-medium truncate" title={node.device || 'CPU Core'}>
+                            <span className="tr-spec-v text-slate-800 font-medium truncate" title={node.device || 'CPU Core'}>
                               {node.device || 'CPU Core'}
                             </span>
                           </div>
                           <div className="tr-node-spec-row">
                             <span className="tr-spec-k">
-                              <Layers size={10} className="text-cyan-400 inline mr-1" />
-                              Environment:
+                              <Layers size={10} className="text-cyan-600 inline mr-1" />
+                              Env:
                             </span>
-                            <span className="tr-spec-v text-cyan-200 truncate">
+                            <span className="tr-spec-v text-slate-700 truncate">
                               {node.os || 'Darwin/Linux'} ({node.arch || 'arm64'}) • {node.python || 'v3.12'}
                             </span>
                           </div>
                           <div className="tr-node-spec-row">
                             <span className="tr-spec-k">
-                              <HardDrive size={10} className="text-emerald-400 inline mr-1" />
-                              Local Shard:
+                              <HardDrive size={10} className="text-emerald-600 inline mr-1" />
+                              Shard:
                             </span>
-                            <span className="tr-spec-v text-emerald-300">
-                              {node.shard_size || '250 samples'} (Private RAM)
-                            </span>
-                          </div>
-                          <div className="tr-node-spec-row">
-                            <span className="tr-spec-k">
-                              <Lock size={10} className="text-amber-400 inline mr-1" />
-                              Privacy Spec:
-                            </span>
-                            <span className="tr-spec-v text-amber-200">
-                              {node.privacy || 'L2-Clip (1.5) + Gaussian σ=0.005'}
+                            <span className="tr-spec-v text-emerald-700 font-medium">
+                              {node.shard_size || '250 samples'}
                             </span>
                           </div>
                           <div className="tr-node-spec-row">
                             <span className="tr-spec-k">
-                              <Code size={10} className="text-blue-400 inline mr-1" />
-                              Code File:
+                              <Lock size={10} className="text-amber-600 inline mr-1" />
+                              Privacy:
                             </span>
-                            <span className="tr-spec-v text-blue-200 font-mono text-[10px]">
+                            <span className="tr-spec-v text-slate-600 truncate">
+                              {node.privacy || 'L2-Clip (1.5) + σ=0.005'}
+                            </span>
+                          </div>
+                          <div className="tr-node-spec-row">
+                            <span className="tr-spec-k">
+                              <Code size={10} className="text-blue-600 inline mr-1" />
+                              File:
+                            </span>
+                            <span className="tr-spec-v text-blue-700 font-mono text-[10px]">
                               {node.filename || 'model.py'} ({node.lines_count || 74} lines)
                             </span>
                           </div>
@@ -481,7 +483,7 @@ export const TrainingWorkspace = ({
                         {/* Node Card Footer */}
                         <div className="tr-node-footer">
                           <span className="tr-node-hash font-mono">
-                            SHA: {node.code_hash ? node.code_hash.substring(0, 14) + '...' : '0x0000'}
+                            SHA: {node.code_hash ? node.code_hash.substring(0, 12) + '...' : '0x0000'}
                           </span>
                           <span className="tr-node-inspect-tag">
                             {isNodeActive ? '● VIEWING SCRIPT' : 'INSPECT CODE →'}
@@ -1238,6 +1240,9 @@ export const TrainingWorkspace = ({
           box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
         .tr-nodes-count-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           font-size: 9px;
           font-weight: 800;
           color: #0284c7;
@@ -1246,10 +1251,24 @@ export const TrainingWorkspace = ({
           padding: 2px 8px;
           border-radius: 999px;
           letter-spacing: 0.06em;
+          line-height: 1.2;
+          white-space: nowrap;
+        }
+        .tr-nodes-header-right {
+          display: flex;
+          align-items: center;
+          gap: 6px;
         }
         .tr-nodes-body {
-          padding: 16px 20px;
+          padding: 14px 18px;
+          max-height: 380px;
+          overflow-y: auto;
         }
+        .tr-nodes-body::-webkit-scrollbar { width: 5px; }
+        .tr-nodes-body::-webkit-scrollbar-track { background: transparent; }
+        .tr-nodes-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .tr-nodes-body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
         .tr-no-nodes-card {
           background: #f8fafc;
           border: 1px dashed #cbd5e1;
@@ -1298,17 +1317,22 @@ export const TrainingWorkspace = ({
         }
         .tr-nodes-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 16px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+        @media (max-width: 960px) {
+          .tr-nodes-grid {
+            grid-template-columns: 1fr;
+          }
         }
         .tr-node-card {
           background: #f8fafc;
           border: 1px solid #e2e8f0;
           border-radius: 6px;
-          padding: 14px;
+          padding: 10px 12px;
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 8px;
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -1326,48 +1350,53 @@ export const TrainingWorkspace = ({
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
+          gap: 8px;
         }
         .tr-node-id-group {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
+          overflow: hidden;
         }
         .tr-node-status-dot-green {
-          width: 8px;
-          height: 8px;
+          width: 7px;
+          height: 7px;
           border-radius: 50%;
           background: #10b981;
-          box-shadow: 0 0 8px #10b981;
+          box-shadow: 0 0 6px #10b981;
           flex-shrink: 0;
         }
         .tr-node-name {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           color: #0f172a;
+          line-height: 1.2;
         }
         .tr-node-sub {
           font-family: var(--font-mono, monospace);
-          font-size: 9px;
+          font-size: 8.5px;
           color: #64748b;
+          line-height: 1.2;
         }
         .tr-node-rep-badge {
           display: inline-flex;
           align-items: center;
-          gap: 4px;
+          gap: 3px;
           background: #ecfdf5;
           color: #047857;
           border: 1px solid #a7f3d0;
-          padding: 2px 6px;
+          padding: 2px 5px;
           border-radius: 4px;
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 800;
+          flex-shrink: 0;
         }
         .tr-node-specs {
           display: flex;
           flex-direction: column;
-          gap: 5px;
+          gap: 3px;
           background: #ffffff;
-          padding: 10px 12px;
+          padding: 6px 8px;
           border-radius: 4px;
           border: 1px solid #f1f5f9;
         }
@@ -1375,38 +1404,39 @@ export const TrainingWorkspace = ({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          font-size: 10px;
+          font-size: 9px;
+          line-height: 1.3;
         }
         .tr-spec-k {
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 700;
           color: #64748b;
           text-transform: uppercase;
-          letter-spacing: 0.04em;
+          letter-spacing: 0.03em;
         }
         .tr-spec-v {
-          font-size: 10px;
-          max-width: 170px;
+          font-size: 9px;
+          max-width: 140px;
           text-align: right;
         }
         .tr-node-footer {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 4px;
+          padding-top: 2px;
         }
         .tr-node-hash {
-          font-size: 9px;
+          font-size: 8.5px;
           color: #059669;
           background: #f0fdf4;
-          padding: 2px 6px;
+          padding: 1px 5px;
           border-radius: 3px;
         }
         .tr-node-inspect-tag {
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 800;
           color: #2563eb;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.04em;
         }
 
         /* ─── High-Contrast Console & Pop-up Inspector ─── */
