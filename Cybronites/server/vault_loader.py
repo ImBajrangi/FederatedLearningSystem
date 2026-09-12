@@ -188,6 +188,27 @@ class VaultLoader:
         # Built-in robust fallback
         return self._get_builtin_dataset(name)
 
+    def load_torch(self, name: str):
+        """Load dataset and return as PyTorch tensors.
+
+        Returns:
+            tuple: (X: torch.Tensor, y: torch.Tensor, info: dict)
+        """
+        import torch
+
+        data, labels, info = self.load(name)
+        X = torch.tensor(data, dtype=torch.float32)
+        y = torch.tensor(labels, dtype=torch.long)
+        return X, y, info
+
+    def __repr__(self):
+        try:
+            ds = self.list()
+            names = [d["name"] for d in ds]
+            return f"<VaultLoader: {len(names)} datasets — {names}>"
+        except Exception:
+            return "<VaultLoader: connected>"
+
 
 def wipe_tracked_buffers():
     """Securely wipe all decrypted buffers after Lab execution."""
