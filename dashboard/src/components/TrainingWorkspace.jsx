@@ -1330,13 +1330,13 @@ export const TrainingWorkspace = ({
                     <table className="tr-fs-table">
                       <thead>
                         <tr>
-                          <th style={{ width: '85px' }}>RND</th>
-                          <th style={{ width: '220px' }}>NODE_ID</th>
-                          <th style={{ width: '200px' }}>PARAMETERS_GRID</th>
-                          <th style={{ width: '110px', textAlign: 'right' }}>ACCURACY</th>
-                          <th style={{ width: '110px', textAlign: 'right' }}>LOCAL LOSS</th>
-                          <th style={{ width: '200px', textAlign: 'right' }}>ON-CHAIN TX HASH</th>
-                          <th style={{ width: '160px', textAlign: 'right' }}>INTEGRITY STATUS</th>
+                          <th style={{ width: '65px' }}>RND</th>
+                          <th style={{ width: '180px' }}>NODE_ID</th>
+                          <th style={{ width: '170px' }}>PARAMETERS_GRID</th>
+                          <th style={{ width: '85px', textAlign: 'right' }}>ACCURACY</th>
+                          <th style={{ width: '85px', textAlign: 'right' }}>LOCAL LOSS</th>
+                          <th style={{ width: '160px', textAlign: 'right' }}>ON-CHAIN TX HASH</th>
+                          <th style={{ width: '125px', textAlign: 'right' }}>STATUS</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1375,46 +1375,46 @@ export const TrainingWorkspace = ({
                                   title="Click to inspect cryptographic audit trail"
                                 >
                                   <td>
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-1">
                                       {isRowOpen ? (
-                                        <ChevronDown size={11} className="text-blue-600 shrink-0" />
+                                        <ChevronDown size={10} className="text-blue-600 shrink-0" />
                                       ) : (
-                                        <ChevronRight size={11} className="text-slate-400 shrink-0" />
+                                        <ChevronRight size={10} className="text-slate-400 shrink-0" />
                                       )}
-                                      <span className="font-mono font-bold text-slate-800 text-[11px]">#{row.round.toString().padStart(2, '0')}</span>
+                                      <span className="font-mono font-medium text-slate-700 text-[9px]">#{row.round.toString().padStart(2, '0')}</span>
                                     </div>
                                   </td>
                                   <td>
-                                    <div className="flex flex-col gap-0.5">
-                                      <span className="font-mono font-semibold text-slate-800 text-[11px] select-all">{shortClient}</span>
-                                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">SECURE_EDGE_NODE</span>
+                                    <div className="flex flex-col leading-tight">
+                                      <span className="font-mono font-medium text-slate-700 text-[9px] select-all">{shortClient}</span>
+                                      <span className="text-[7px] font-semibold text-slate-400 uppercase tracking-wider">SECURE_EDGE_NODE</span>
                                     </div>
                                   </td>
                                   <td>
-                                    <div className="flex items-center gap-2.5 font-mono text-[10.5px]">
-                                      <span><b className="text-slate-400 font-medium">LR:</b> {row.lr || '0.01'}</span>
-                                      <span><b className="text-slate-400 font-medium">B:</b> {row.batch || '32'}</span>
-                                      <span><b className="text-slate-400 font-medium">σ:</b> 0.001</span>
+                                    <div className="flex items-center gap-2 font-mono text-[8.5px] text-slate-500">
+                                      <span><b className="text-slate-400 font-normal">LR:</b> {row.lr || '0.01'}</span>
+                                      <span><b className="text-slate-400 font-normal">B:</b> {row.batch || '32'}</span>
+                                      <span><b className="text-slate-400 font-normal">σ:</b> 0.001</span>
                                     </div>
                                   </td>
                                   <td style={{ textAlign: 'right' }}>
-                                    <span className="font-mono text-[11.5px] font-bold text-emerald-600">
+                                    <span className="font-mono text-[9px] font-semibold text-emerald-600">
                                       {row.acc !== undefined ? `${(row.acc * 100).toFixed(2)}%` : row.accuracy !== undefined ? `${(row.accuracy * 100).toFixed(2)}%` : '—'}
                                     </span>
                                   </td>
                                   <td style={{ textAlign: 'right' }}>
-                                    <span className="font-mono text-[11px] text-slate-600">
+                                    <span className="font-mono text-[8.5px] text-slate-500">
                                       {row.loss !== undefined ? Number(row.loss).toFixed(4) : '—'}
                                     </span>
                                   </td>
                                   <td style={{ textAlign: 'right' }}>
-                                    <span className="font-mono text-[10px] text-indigo-600 select-all font-medium">
-                                      Tx #{txId.startsWith('0x') ? txId.substring(0, 14) : `0x${txId.substring(0, 12)}`}...
+                                    <span className="font-mono text-[8px] text-indigo-500 select-all">
+                                      Tx #{txId.startsWith('0x') ? txId.substring(0, 10) : `0x${txId.substring(0, 8)}`}...
                                     </span>
                                   </td>
                                   <td style={{ textAlign: 'right' }}>
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[8.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wide">
-                                      <CheckCircle2 size={10} /> ON-CHAIN VERIFIED
+                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[7.5px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 uppercase tracking-wider">
+                                      <CheckCircle2 size={8.5} /> ON-CHAIN VERIFIED
                                     </span>
                                   </td>
                                 </tr>
@@ -3177,17 +3177,17 @@ export const TrainingWorkspace = ({
           background: #f8fafc;
         }
         .tr-fs-table th {
-          padding: 9px 16px;
-          font-size: 9px;
+          padding: 6px 12px;
+          font-size: 8px;
           font-weight: 700;
           color: var(--text-muted);
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.06em;
           border-bottom: 1px solid var(--border);
           font-family: var(--font-sans);
         }
         .tr-fs-table td {
-          padding: 10px 16px;
+          padding: 6px 12px;
           border-bottom: 1px solid #f1f5f9;
           vertical-align: middle;
         }
