@@ -386,12 +386,18 @@ export const TrainingWorkspace = ({
                 />
               ) : (
                 <div className="tr-code-view-wrap">
-                  <div className="tr-line-gutter">
-                    {displayedCode.split('\n').map((_, i) => (
-                      <span key={i} className="tr-gutter-num">{i + 1}</span>
-                    ))}
-                  </div>
-                  <pre className="tr-code-content"><code>{displayedCode}</code></pre>
+                  <table className="tr-code-table">
+                    <tbody>
+                      {displayedCode.split('\n').map((line, i) => (
+                        <tr key={i} className="tr-code-row">
+                          <td className="tr-gutter-num">{i + 1}</td>
+                          <td className="tr-code-line">
+                            <code>{line || ' '}</code>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
@@ -1022,42 +1028,59 @@ export const TrainingWorkspace = ({
         /* ── Script Body & Code Editor ── */
         .tr-script-body {
           padding: 0;
-          background: #050811;
+          background: #03060c;
           flex: 1;
           overflow-y: auto;
+          overflow-x: auto;
           max-height: 480px;
-          display: flex;
         }
         .tr-code-view-wrap {
-          display: flex;
           width: 100%;
-          min-height: 100%;
+          min-width: 100%;
         }
-        .tr-line-gutter {
-          padding: 16px 12px;
-          background: #03060c;
-          border-right: 1px solid rgba(255, 255, 255, 0.08);
-          display: flex;
-          flex-direction: column;
-          user-select: none;
-        }
-        .tr-gutter-num {
+        .tr-code-table {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           line-height: 1.6;
-          color: #64748b !important;
+        }
+        .tr-code-row {
+          transition: background 0.1s;
+        }
+        .tr-code-row:hover {
+          background: rgba(255, 255, 255, 0.03);
+        }
+        .tr-code-row .tr-gutter-num {
+          width: 46px;
+          min-width: 46px;
+          max-width: 46px;
+          padding: 0 10px;
           text-align: right;
-          min-width: 24px;
-        }
-        .tr-code-content {
-          margin: 0;
-          padding: 16px 20px;
-          font-family: var(--font-mono, monospace);
+          color: #475569 !important;
+          background: #020408;
+          border-right: 1px solid rgba(255, 255, 255, 0.08);
+          user-select: none;
+          vertical-align: top;
+          font-family: inherit;
           font-size: 11px;
           line-height: 1.6;
+        }
+        .tr-code-row .tr-code-line {
+          padding: 0 16px;
           color: #f1f5f9 !important;
-          flex: 1;
-          overflow-x: auto;
+          white-space: pre;
+          vertical-align: top;
+          overflow: hidden;
+          font-family: inherit;
+          font-size: 11px;
+          line-height: 1.6;
+        }
+        .tr-code-row .tr-code-line code {
+          font-family: inherit;
+          color: inherit;
+          font-size: inherit;
         }
         .tr-code-editor-area {
           width: 100%;

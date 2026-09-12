@@ -776,31 +776,28 @@ export const PrivacyVault = () => {
                     letter-spacing: 0.08em;
                 }
 
-                /* ─── Launch Card ─── */
+                /* ─── Launch Card (Institutional Theme) ─── */
                 .pv-launch-card {
-                    background: #0b1329;
-                    border: 1px solid rgba(56, 189, 248, 0.25);
-                    border-radius: 10px;
+                    background: var(--bg-surface);
+                    border: 1px solid var(--border);
+                    border-radius: 8px;
                     position: relative;
-                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.08);
+                    box-shadow: var(--shadow-sm);
+                    transition: border-color 0.2s, box-shadow 0.2s;
+                }
+                .pv-launch-card:hover {
+                    border-color: var(--primary);
+                    box-shadow: var(--shadow-md);
                 }
                 .pv-launch-glow {
-                    position: absolute;
-                    right: -20px;
-                    top: -20px;
-                    width: 140px;
-                    height: 140px;
-                    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
-                    border-radius: 50%;
-                    pointer-events: none;
+                    display: none;
                 }
                 .pv-launch-content {
                     position: relative;
-                    padding: 22px 20px;
+                    padding: 24px;
                     display: flex;
                     flex-direction: column;
-                    gap: 14px;
-                    color: #ffffff;
+                    gap: 16px;
                 }
                 .pv-launch-header {
                     display: flex;
@@ -808,29 +805,29 @@ export const PrivacyVault = () => {
                     gap: 12px;
                 }
                 .pv-launch-icon-wrapper {
-                    width: 32px;
-                    height: 32px;
+                    width: 36px;
+                    height: 36px;
                     border-radius: 8px;
-                    background: rgba(56, 189, 248, 0.15);
-                    border: 1px solid rgba(56, 189, 248, 0.35);
+                    background: rgba(54, 78, 104, 0.08);
+                    border: 1px solid rgba(54, 78, 104, 0.15);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: #38bdf8;
-                    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+                    color: var(--primary);
                     flex-shrink: 0;
                 }
                 .pv-launch-header h3 {
-                    font-size: 15px !important;
-                    font-weight: 800 !important;
-                    color: #ffffff !important;
+                    font-family: var(--font-serif) !important;
+                    font-size: 17px !important;
+                    font-weight: 600 !important;
+                    color: var(--text-main) !important;
                     margin: 0 !important;
-                    letter-spacing: -0.01em;
+                    line-height: 1.2;
                 }
                 .pv-launch-desc {
                     font-size: 11px !important;
-                    color: #94a3b8 !important;
-                    line-height: 1.55;
+                    color: var(--text-muted) !important;
+                    line-height: 1.6;
                     margin: 0;
                     font-style: normal;
                 }
@@ -839,64 +836,63 @@ export const PrivacyVault = () => {
                     align-items: center;
                     justify-content: space-between;
                     gap: 10px;
-                    background: #060a14;
-                    border: 1px solid #1e293b;
+                    background: #f8fafc;
+                    border: 1px solid var(--border);
                     border-radius: 6px;
                     padding: 10px 14px;
                 }
                 .pv-launch-target-label {
                     font-size: 9px;
-                    font-weight: 800;
+                    font-weight: 700;
                     text-transform: uppercase;
-                    letter-spacing: 0.1em;
-                    color: #64748b !important;
+                    letter-spacing: 0.12em;
+                    color: var(--text-muted) !important;
                 }
                 .pv-launch-target-value {
-                    font-size: 10px;
+                    font-size: 11px;
                     font-weight: 700;
                     font-family: var(--font-mono);
                     padding: 3px 8px;
                     border-radius: 4px;
-                    letter-spacing: 0.05em;
                 }
                 .pv-target-active {
-                    color: #10b981 !important;
-                    background: rgba(16, 185, 129, 0.12);
-                    border: 1px solid rgba(16, 185, 129, 0.3);
+                    color: #15803d !important;
+                    background: #f0fdf4;
+                    border: 1px solid #bbf7d0;
                 }
                 .pv-target-none {
-                    color: #fbbf24 !important;
-                    background: rgba(251, 191, 36, 0.1);
-                    border: 1px solid rgba(251, 191, 36, 0.25);
+                    color: #b45309 !important;
+                    background: #fffbeb;
+                    border: 1px solid #fef3c7;
                 }
                 .pv-launch-btn {
                     width: 100%;
                     padding: 12px 16px;
-                    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+                    background: var(--primary);
                     color: #ffffff !important;
-                    border: 1px solid #38bdf8;
+                    border: 1px solid var(--primary);
                     border-radius: 6px;
                     font-size: 10px;
-                    font-weight: 800;
+                    font-weight: 700;
                     text-transform: uppercase;
-                    letter-spacing: 0.15em;
+                    letter-spacing: 0.18em;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 8px;
                     transition: all 0.2s;
-                    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
                 }
                 .pv-launch-btn:hover:not(:disabled) {
+                    background: #2b3e53;
+                    border-color: #2b3e53;
                     transform: translateY(-1px);
-                    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
-                    background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+                    box-shadow: 0 4px 12px rgba(54, 78, 104, 0.2);
                 }
                 .pv-launch-btn:disabled {
-                    background: #131d31 !important;
-                    color: #64748b !important;
-                    border: 1px solid #1e293b !important;
+                    background: #f1f5f9 !important;
+                    color: #94a3b8 !important;
+                    border: 1px solid var(--border) !important;
                     cursor: not-allowed;
                     opacity: 1;
                     filter: none;
