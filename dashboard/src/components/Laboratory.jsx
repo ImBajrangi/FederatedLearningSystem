@@ -1,49 +1,45 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Editor from '@monaco-editor/react';
 import {
   Code, Play, ShieldCheck, Terminal, Zap,
   AlertCircle, RefreshCw, Download, BarChart2,
   Activity, Settings, CheckCircle2, StopCircle, Cpu, Box,
   ChevronRight, Package, Loader2, Database, Lock, Copy, Shield,
-  Trash2, AlertTriangle, X
+  Trash2, AlertTriangle, X, Sparkles, RotateCcw, Check, FileCode,
+  Maximize2, Minimize2, ExternalLink, ChevronDown
 } from 'lucide-react';
 import { API_BASE_URL } from '../hooks/useSecureFederated';
 
-const DEFAULT_MODEL_CODE = `# ╔══════════════════════════════════════════════════╗
+export const MODEL_TEMPLATES = {
+  iris: {
+    id: 'iris',
+    name: 'Iris Classifier',
+    dataset: 'Iris',
+    filename: 'iris_classifier.py',
+    description: 'Fisher’s Iris (4 features → 3 classes) with Privacy Vault memory-wipe decryption',
+    code: `# ╔══════════════════════════════════════════════════╗
 # ║  Federated Learning — Secure Training Sandbox   ║
-# ║  v2.0 | Privacy Vault Enabled                   ║
+# ║  v2.0 | Privacy Vault & Real-Time Aggregator     ║
 # ╚══════════════════════════════════════════════════╝
-#
-# AVAILABLE COMMANDS:
-#   vault.list()                  → View all encrypted datasets
-#   vault.load("Iris")            → Decrypt dataset to RAM (numpy)
-#   vault.load_torch("Digits")    → Decrypt dataset to RAM (PyTorch)
-#   !pip install [pkg]            → Install a package
-#   !ls                           → List files
-#
-# HOW IT WORKS:
-#   1. Click a dataset from "Vault Datasets" panel →
-#   2. Your model trains on encrypted vault data
-#   3. After training, decrypted data is wiped from RAM
-# ─────────────────────────────────────────────────
 
 import torch
 import torch.nn as nn
 import numpy as np
 
-# ── Step 1: Load encrypted dataset from Privacy Vault ──
+# ── Step 1: Decrypt edge partition directly to RAM ──
 data, labels, info = vault.load("Iris")
-print(f"🔐 Decrypted: {info['name']} → {data.shape[0]} samples, {info['num_classes']} classes")
-print(f"   Features: {info.get('feature_names', 'N/A')}")
+print(f"🔐 Decrypted dataset: {info['name']}")
+print(f"   Shape: {data.shape[0]} samples, {info['num_classes']} classes, {data.shape[1]} features")
 
-# ── Step 2: Define your model ──
+# ── Step 2: Define your neural network architecture ──
 class IrisClassifier(nn.Module):
     def __init__(self):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(4, 64),
             nn.ReLU(),
-            nn.Dropout(0.2),
+            nn.Dropout(0.15),
             nn.Linear(64, 32),
             nn.ReLU(),
             nn.Linear(32, 3)    # 3 classes: Setosa, Versicolor, Virginica
@@ -52,14 +48,136 @@ class IrisClassifier(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-# ── Hyperparameters (adjust in sidebar) ──
-def train(epochs=10, lr=0.001, batch_size=32):
-    pass
+# ── Hyperparameters (synchronized with control sidebar) ──
+epochs = 10
+lr = 0.001
+batch_size = 32
 
-print("🧪 Model ready. Press ▶ RUN to train on vault data.")
-print("   Data stays encrypted at rest — decrypted in RAM only during training.")
-`;
+print("🧪 Model verified. Press ▶ TRAIN MODEL or (Ctrl+Enter) to execute.")
+`
+  },
+  digits: {
+    id: 'digits',
+    name: 'Digits Classifier',
+    dataset: 'Digits',
+    filename: 'digits_classifier.py',
+    description: 'Optical 8x8 handwritten digits classifier (64 inputs → 10 classes)',
+    code: `# ╔══════════════════════════════════════════════════╗
+# ║  Optical Digits Recognition — Neural Network     ║
+# ╚══════════════════════════════════════════════════╝
 
+import torch
+import torch.nn as nn
+import numpy as np
+
+# Load encrypted Digits dataset
+data, labels, info = vault.load("Digits")
+print(f"🔐 Decrypted dataset: {info['name']} ({data.shape[0]} samples)")
+
+class DigitsNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.classifier = nn.Sequential(
+            nn.Linear(64, 128),
+            nn.ReLU(),
+            nn.BatchNorm1d(128),
+            nn.Dropout(0.25),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 10)
+        )
+
+    def forward(self, x):
+        x = x.view(x.size(0), -1)
+        return self.classifier(x)
+
+epochs = 12
+lr = 0.001
+batch_size = 64
+`
+  },
+  mnist_cnn: {
+    id: 'mnist_cnn',
+    name: 'MNIST ConvNet',
+    dataset: 'MNIST',
+    filename: 'mnist_cnn.py',
+    description: '2D Convolutional Neural Network for 28x28 federated image tensors',
+    code: `# ╔══════════════════════════════════════════════════╗
+# ║  Federated MNIST 2D Convolutional Architecture   ║
+# ╚══════════════════════════════════════════════════╝
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class MNISTConvNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.dropout1 = nn.Dropout2d(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(64 * 14 * 14, 128)
+        self.fc2 = nn.Linear(128, 10)
+
+    def forward(self, x):
+        if x.dim() == 2:
+            x = x.view(-1, 1, 28, 28)
+        elif x.dim() == 3:
+            x = x.unsqueeze(1)
+        x = F.relu(self.conv1(x))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = self.dropout1(x)
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.fc1(x))
+        x = self.dropout2(x)
+        return self.fc2(x)
+
+epochs = 5
+lr = 0.001
+batch_size = 32
+`
+  },
+  wine: {
+    id: 'wine',
+    name: 'Wine Recognition',
+    dataset: 'Wine',
+    filename: 'wine_net.py',
+    description: 'Chemical analysis classifier for 13 Italian wine constituents',
+    code: `# ╔══════════════════════════════════════════════════╗
+# ║  Wine Constituent Classifier (13 Features)       ║
+# ╚══════════════════════════════════════════════════╝
+
+import torch
+import torch.nn as nn
+
+data, labels, info = vault.load("Wine")
+print(f"🔐 Decrypted {info['name']}: {data.shape[0]} samples, {info['num_classes']} classes")
+
+class WineClassifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(13, 32),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, 3)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+epochs = 15
+lr = 0.002
+batch_size = 16
+`
+  }
+};
+
+const DEFAULT_MODEL_CODE = MODEL_TEMPLATES.iris.code;
 
 export function Laboratory({ 
   onAction = () => {}, 
@@ -68,9 +186,16 @@ export function Laboratory({
   onEvalCode = () => {} 
 }) {
   const [code, setCode] = useState(DEFAULT_MODEL_CODE);
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState('iris');
   const [status, setStatus] = useState('IDLE');
   const [logs, setLogs] = useState([]);
   const [errorLine, setErrorLine] = useState(null);
+  const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
+  const [copyCodeSuccess, setCopyCodeSuccess] = useState(false);
+  const [isFormatting, setIsFormatting] = useState(false);
+
+  const editorRef = useRef(null);
+  const monacoRef = useRef(null);
   const textAreaRef = useRef(null);
   const gutterRef = useRef(null);
 
@@ -88,7 +213,7 @@ export function Laboratory({
   const [isInspecting, setIsInspecting] = useState(false);
   const [isDeepScan, setIsDeepScan] = useState(false);
   const [isLiveSyncEnabled, setIsLiveSyncEnabled] = useState(true);
-  const [syncingLines, setSyncingLines] = useState([]); // Track lines being updated
+  const [syncingLines, setSyncingLines] = useState([]);
 
   // Terminal State
   const [terminalInput, setTerminalInput] = useState('');
@@ -185,15 +310,119 @@ export function Laboratory({
     setLogs(prev => [{ msg, type, time: new Date().toLocaleTimeString() }, ...prev].slice(0, 50));
   };
 
-  // Sync scroll between gutter and textarea
+  // Monaco lifecycle handler
+  const handleEditorDidMount = (editor, monaco) => {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
+
+    monaco.editor.defineTheme('lab-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        { token: 'comment', foreground: '64748b', fontStyle: 'italic' },
+        { token: 'keyword', foreground: '38bdf8', fontStyle: 'bold' },
+        { token: 'string', foreground: '34d399' },
+        { token: 'number', foreground: 'f59e0b' },
+        { token: 'type', foreground: '818cf8' },
+        { token: 'class', foreground: 'a78bfa', fontStyle: 'bold' },
+        { token: 'function', foreground: '60a5fa' },
+      ],
+      colors: {
+        'editor.background': '#0b0f19',
+        'editor.foreground': '#e2e8f0',
+        'editor.lineHighlightBackground': '#1e293b44',
+        'editorLineNumber.foreground': '#475569',
+        'editorLineNumber.activeForeground': '#94a3b8',
+        'editorIndentGuide.background': '#33415522',
+        'editorIndentGuide.activeBackground': '#3b82f644',
+        'editor.selectionBackground': '#3b82f633',
+        'editorCursor.foreground': '#38bdf8',
+      }
+    });
+    monaco.editor.setTheme('lab-dark');
+
+    // Run / Train on Ctrl+Enter or Cmd+Enter
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      handleTrain();
+    });
+
+    // Verify on Ctrl+S or Cmd+S
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+      handleCompile();
+    });
+
+    editor.onDidChangeCursorPosition((e) => {
+      setCursorPos({ line: e.position.lineNumber, col: e.position.column });
+    });
+  };
+
+  // Sync error markers in Monaco
   useEffect(() => {
-    const textarea = textAreaRef.current;
-    const gutter = gutterRef.current;
-    if (!textarea || !gutter) return;
-    const handleScroll = () => { gutter.scrollTop = textarea.scrollTop; };
-    textarea.addEventListener('scroll', handleScroll);
-    return () => textarea.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (!monacoRef.current || !editorRef.current) return;
+    const monaco = monacoRef.current;
+    const model = editorRef.current.getModel();
+    if (!model) return;
+
+    if (errorLine && errorLine > 0) {
+      monaco.editor.setModelMarkers(model, 'laboratory', [
+        {
+          startLineNumber: errorLine,
+          startColumn: 1,
+          endLineNumber: errorLine,
+          endColumn: 120,
+          message: `Execution / Syntax error on line ${errorLine}`,
+          severity: monaco.MarkerSeverity.Error,
+        }
+      ]);
+      editorRef.current.revealLineInCenter(errorLine);
+    } else {
+      monaco.editor.setModelMarkers(model, 'laboratory', []);
+    }
+  }, [errorLine]);
+
+  // Format code
+  const handleFormatCode = () => {
+    setIsFormatting(true);
+    if (editorRef.current) {
+      editorRef.current.getAction('editor.action.formatDocument')?.run?.();
+    }
+    setTimeout(() => setIsFormatting(false), 600);
+  };
+
+  // Switch template
+  const handleSelectTemplate = (templateKey) => {
+    const tmpl = MODEL_TEMPLATES[templateKey];
+    if (!tmpl) return;
+    setSelectedTemplateKey(templateKey);
+    setCode(tmpl.code);
+    setStatus('IDLE');
+    setErrorLine(null);
+    addLog(`Switched to template: ${tmpl.name}`, 'info');
+  };
+
+  // Copy code
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(code);
+    setCopyCodeSuccess(true);
+    setTimeout(() => setCopyCodeSuccess(false), 2000);
+    addLog('Source code copied to clipboard.', 'info');
+  };
+
+  // Download code as .py
+  const handleDownloadCode = () => {
+    const tmpl = MODEL_TEMPLATES[selectedTemplateKey];
+    const filename = tmpl ? tmpl.filename : 'model.py';
+    const blob = new Blob([code], { type: 'text/x-python;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    addLog(`Downloaded ${filename}`, 'success');
+  };
   useEffect(() => {
     if (!labState) return;
     if (labState.status === 'TRAINING') {
@@ -629,57 +858,133 @@ export function Laboratory({
       <div className="lab-workspace">
         {/* === Code Editor === */}
         <div className="lab-editor-panel">
-          <div className="lab-editor-wrap">
-            {/* Gutter */}
-            <div className="lab-gutter" ref={gutterRef}>
-              {lineNumbers.map(num => {
-                const isSyncing = syncingLines.includes(num);
-                return (
-                  <div
-                    key={num}
-                    className={`lab-gutter-line ${errorLine === num ? 'lab-gutter-error' : ''} ${isSyncing ? 'lab-gutter-syncing' : ''}`}
+          {/* Subbar with file info, templates, actions, and status */}
+          <div className="lab-editor-subbar">
+            <div className="lab-subbar-left">
+              <div className="lab-subbar-file">
+                <FileCode size={13} className="text-cyan-400" />
+                <span className="lab-subbar-filename">{MODEL_TEMPLATES[selectedTemplateKey]?.filename || 'model.py'}</span>
+              </div>
+              
+              <div className="lab-subbar-divider" />
+              
+              {/* Template Switcher Pills */}
+              <div className="lab-template-pills">
+                <span className="lab-template-label">Presets:</span>
+                {Object.entries(MODEL_TEMPLATES).map(([key, tmpl]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleSelectTemplate(key)}
+                    className={`lab-template-pill ${selectedTemplateKey === key ? 'lab-template-pill-active' : ''}`}
+                    title={tmpl.description}
                   >
-                    {isSyncing ? (
-                      <motion.div
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="lab-sync-indicator"
-                      >
-                        <Zap size={8} />
-                      </motion.div>
-                    ) : num}
-                  </div>
-                );
-              })}
+                    {tmpl.name}
+                  </button>
+                ))}
+              </div>
             </div>
-            {/* Textarea */}
-            <textarea
-              ref={textAreaRef}
-              value={code}
-              onChange={(e) => {
-                setCode(e.target.value);
-                if (status === 'READY' || status === 'COMPLETE') setStatus('IDLE');
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Tab') {
-                  e.preventDefault();
-                  const start = e.target.selectionStart;
-                  const end = e.target.selectionEnd;
-                  const val = e.target.value;
-                  setCode(val.substring(0, start) + '    ' + val.substring(end));
-                  setTimeout(() => {
-                    if (textAreaRef.current) {
-                      textAreaRef.current.selectionStart = textAreaRef.current.selectionEnd = start + 4;
-                    }
-                  }, 0);
-                } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                  e.preventDefault();
-                  handleRunLocal();
-                }
-              }}
-              spellCheck={false}
-              className="lab-textarea"
-            />
+
+            <div className="lab-subbar-right">
+              {/* Cursor position indicator */}
+              <div className="lab-subbar-pos">
+                <span>Ln {cursorPos.line}, Col {cursorPos.col}</span>
+                <span className="lab-subbar-pos-dim">Python 3.12</span>
+              </div>
+
+              {/* Action buttons */}
+              <div className="lab-subbar-actions">
+                <button
+                  type="button"
+                  onClick={handleFormatCode}
+                  className="lab-subbar-btn"
+                  title="Format & Auto-Indent Code"
+                >
+                  <Sparkles size={11} className={isFormatting ? 'animate-spin text-amber-400' : ''} />
+                  <span>Format</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectTemplate(selectedTemplateKey)}
+                  className="lab-subbar-btn"
+                  title="Reset to Template Default"
+                >
+                  <RotateCcw size={11} />
+                  <span>Reset</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyCode}
+                  className="lab-subbar-btn"
+                  title="Copy Full Source Code"
+                >
+                  {copyCodeSuccess ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                  <span>{copyCodeSuccess ? 'Copied' : 'Copy'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadCode}
+                  className="lab-subbar-btn lab-subbar-btn-accent"
+                  title="Download Python Script"
+                >
+                  <Download size={11} />
+                  <span>.py</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="lab-editor-wrap">
+            <div className="lab-monaco-container">
+              <Editor
+                height="100%"
+                defaultLanguage="python"
+                language="python"
+                theme="lab-dark"
+                value={code}
+                onChange={(val) => {
+                  setCode(val || '');
+                  if (status === 'READY' || status === 'COMPLETE' || status === 'ERROR') setStatus('IDLE');
+                }}
+                onMount={handleEditorDidMount}
+                options={{
+                  fontSize: 13,
+                  fontFamily: '"JetBrains Mono", "Fira Code", Menlo, Monaco, Consolas, monospace',
+                  fontLigatures: true,
+                  minimap: { enabled: false },
+                  lineNumbers: 'on',
+                  lineNumbersMinChars: 3,
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  tabSize: 4,
+                  insertSpaces: true,
+                  autoClosingBrackets: 'always',
+                  autoClosingQuotes: 'always',
+                  autoClosingDelete: 'always',
+                  autoClosingOvertype: 'always',
+                  matchBrackets: 'always',
+                  renderLineHighlight: 'all',
+                  cursorBlinking: 'smooth',
+                  cursorStyle: 'line',
+                  cursorWidth: 2,
+                  padding: { top: 12, bottom: 12 },
+                  wordWrap: 'off',
+                  folding: true,
+                  contextmenu: true,
+                  scrollbar: {
+                    verticalScrollbarSize: 8,
+                    horizontalScrollbarSize: 8,
+                  },
+                  suggest: {
+                    showKeywords: true,
+                    showSnippets: true,
+                  }
+                }}
+              />
+            </div>
 
             {/* 🪄 Smart Shell Command Detector — validates real packages */}
             <AnimatePresence>
@@ -1465,64 +1770,145 @@ export function Laboratory({
           flex-direction: column;
           min-width: 0;
           border-right: 1px solid var(--border);
+          background: #0b0f19;
         }
+
+        /* ─── Editor Subbar ─── */
+        .lab-editor-subbar {
+          height: 38px;
+          flex-shrink: 0;
+          background: #0f172a;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 14px;
+          user-select: none;
+          gap: 12px;
+        }
+        .lab-subbar-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+        }
+        .lab-subbar-file {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          font-weight: 700;
+          color: #f1f5f9;
+          white-space: nowrap;
+        }
+        .lab-subbar-divider {
+          width: 1px;
+          height: 14px;
+          background: rgba(255,255,255,0.12);
+        }
+        .lab-template-pills {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          overflow-x: auto;
+        }
+        .lab-template-label {
+          font-size: 9px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-right: 2px;
+        }
+        .lab-template-pill {
+          padding: 2px 8px;
+          font-size: 10px;
+          font-weight: 600;
+          border-radius: 4px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03);
+          color: #94a3b8;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          white-space: nowrap;
+        }
+        .lab-template-pill:hover {
+          color: #f8fafc;
+          background: rgba(56, 189, 248, 0.1);
+          border-color: rgba(56, 189, 248, 0.3);
+        }
+        .lab-template-pill-active {
+          background: rgba(56, 189, 248, 0.15) !important;
+          color: #38bdf8 !important;
+          border-color: rgba(56, 189, 248, 0.4) !important;
+        }
+
+        .lab-subbar-right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-shrink: 0;
+        }
+        .lab-subbar-pos {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-family: var(--font-mono);
+          font-size: 10px;
+          color: #64748b;
+        }
+        .lab-subbar-pos-dim {
+          color: #475569;
+          padding-left: 6px;
+          border-left: 1px solid rgba(255,255,255,0.08);
+        }
+        .lab-subbar-actions {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .lab-subbar-btn {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 10px;
+          font-weight: 600;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.08);
+          color: #cbd5e1;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .lab-subbar-btn:hover {
+          background: rgba(255,255,255,0.1);
+          color: #fff;
+          border-color: rgba(255,255,255,0.15);
+        }
+        .lab-subbar-btn-accent {
+          background: rgba(56, 189, 248, 0.1);
+          border-color: rgba(56, 189, 248, 0.25);
+          color: #38bdf8;
+        }
+        .lab-subbar-btn-accent:hover {
+          background: rgba(56, 189, 248, 0.2);
+          border-color: rgba(56, 189, 248, 0.4);
+          color: #7dd3fc;
+        }
+
         .lab-editor-wrap {
           flex: 1;
           display: flex;
           overflow: hidden;
           position: relative;
+          background: #0b0f19;
         }
-        .lab-gutter {
-          width: 52px;
-          flex-shrink: 0;
-          background: var(--bg-main);
-          border-right: 1px solid var(--border);
-          padding: 16px 0;
-          overflow: hidden;
-          user-select: none;
-        }
-        .lab-gutter-line {
-          height: 24px;
-          line-height: 24px;
-          text-align: right;
-          padding-right: 16px;
-          font-family: var(--font-mono);
-          font-size: 11px;
-          color: #c4c8cc;
-        }
-        .lab-gutter-error {
-          color: var(--error);
-          font-weight: 700;
-          background: rgba(239, 68, 68, 0.06);
-        }
-        .lab-gutter-syncing {
-          background: color-mix(in srgb, var(--primary) 10%, transparent);
-          color: var(--primary);
-        }
-        .lab-sync-indicator {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .lab-monaco-container {
+          width: 100%;
           height: 100%;
-          color: var(--primary);
-        }
-        .lab-textarea {
-          flex: 1;
-          border: none;
-          outline: none;
-          resize: none;
-          padding: 16px 20px;
-          margin: 0;
-          font-family: var(--font-mono);
-          font-size: 13px;
-          line-height: 24px;
-          color: var(--text-main);
-          background: var(--bg-surface);
-          caret-color: var(--accent);
-          tab-size: 4;
-        }
-        .lab-textarea::selection {
-          background: color-mix(in srgb, var(--primary) 12%, transparent);
+          overflow: hidden;
         }
 
         /* ═══ MAGIC COMMAND HINT ═══ */
