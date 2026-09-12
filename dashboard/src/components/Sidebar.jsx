@@ -597,25 +597,24 @@ export const Sidebar = ({
 
         .sb-tooltip {
           position: absolute;
-          left: calc(100% + 14px);
+          left: calc(100% + 12px);
           top: 50%;
-          transform: translateY(-50%) translateX(-6px);
-          background: #090d16;
-          border: 1px solid rgba(56, 189, 248, 0.3);
-          box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
-          padding: 10px 14px;
+          transform: translateY(-50%) translateX(-4px);
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.09), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+          padding: 9px 12px;
           border-radius: 6px;
-          width: 240px;
+          width: 220px;
           opacity: 0;
           visibility: hidden;
           pointer-events: none;
           z-index: 99999;
-          transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.18s;
+          transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
           display: flex;
           flex-direction: column;
-          gap: 3px;
+          gap: 2.5px;
           text-align: left;
-          backdrop-filter: blur(12px);
         }
 
         .sb-tooltip::before {
@@ -626,9 +625,9 @@ export const Sidebar = ({
           transform: translateY(-50%) rotate(45deg);
           width: 8px;
           height: 8px;
-          background: #090d16;
-          border-left: 1px solid rgba(56, 189, 248, 0.3);
-          border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+          background: #ffffff;
+          border-left: 1px solid #e2e8f0;
+          border-bottom: 1px solid #e2e8f0;
         }
 
         .sb-collapsed-toggle-wrap:hover .sb-tooltip,
@@ -643,39 +642,39 @@ export const Sidebar = ({
 
         .sb-tooltip-tag {
           font-family: var(--font-mono);
-          font-size: 8.5px;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-          color: #38bdf8;
+          font-size: 8px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          color: #0284c7;
           text-transform: uppercase;
         }
 
         .sb-tooltip-title {
-          font-size: 12px;
-          font-weight: 800;
-          color: #f8fafc;
-          letter-spacing: 0.02em;
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #0f172a;
+          letter-spacing: -0.01em;
         }
 
         .sb-tooltip-badge {
           display: inline-block;
           align-self: flex-start;
           font-family: var(--font-mono);
-          font-size: 10px;
-          font-weight: 800;
-          color: #38bdf8;
-          background: rgba(56, 189, 248, 0.12);
-          border: 1px solid rgba(56, 189, 248, 0.3);
-          padding: 2px 7px;
+          font-size: 9.5px;
+          font-weight: 700;
+          color: #0284c7;
+          background: #f0f9ff;
+          border: 1px solid #bae6fd;
+          padding: 1px 6px;
           border-radius: 3px;
           margin: 2px 0;
         }
 
         .sb-tooltip-desc {
-          font-size: 10.5px;
+          font-size: 10px;
           line-height: 1.4;
-          color: #94a3b8;
-          font-weight: 500;
+          color: #64748b;
+          font-weight: 400;
         }
       `}</style>
     </aside>
