@@ -67,6 +67,8 @@ export const TrainingWorkspace = ({
   let displayedDataset = liveDataset;
   let displayedHash = activeTrainingCode?.code_hash;
 
+  const safeNodeRegistry = (nodeRegistry && typeof nodeRegistry === 'object') ? nodeRegistry : {};
+
   if (selectedSource === 'active') {
     displayedCode = isEditing ? customCode : liveActiveCode;
     displayedFilename = liveActiveFilename;
@@ -83,8 +85,8 @@ export const TrainingWorkspace = ({
     displayedFilename = 'laboratory_sandbox.py';
     displayedTitle = 'Code Laboratory Sandbox Script';
     displayedDataset = 'Privacy Vault / In-Memory RAM';
-  } else if (nodeRegistry[selectedSource]) {
-    const node = nodeRegistry[selectedSource];
+  } else if (safeNodeRegistry[selectedSource]) {
+    const node = safeNodeRegistry[selectedSource];
     displayedCode = node.code || '# No code payload transmitted by node';
     displayedFilename = node.filename || 'node_train.py';
     displayedTitle = node.name || `Node: ${selectedSource.substring(0, 8)}`;
@@ -306,7 +308,7 @@ export const TrainingWorkspace = ({
                   <option value="active">⚡ Live Active Training Code</option>
                   <option value="global">🌐 Global Model (model.py)</option>
                   <option value="lab">🧪 Code Laboratory Sandbox</option>
-                  {Object.entries(nodeRegistry).map(([id, node]) => (
+                  {Object.entries(safeNodeRegistry).map(([id, node]) => (
                     <option key={id} value={id}>
                       💻 {node.name || id} ({node.filename || 'node.py'})
                     </option>

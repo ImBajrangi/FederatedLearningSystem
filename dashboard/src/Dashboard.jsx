@@ -222,7 +222,7 @@ function Dashboard() {
           </div>
         );
       case 'architecture': return <ArchitectureBuilder onAction={addToast} />;
-      case 'training': return <TrainingWorkspace clients={clients} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} hyperparams={hyperparams} roundHistory={roundHistory} modelArchitecture={modelArchitecture} />;
+      case 'training': return <TrainingWorkspace clients={clients} nodeRegistry={nodeRegistry} logs={logs} accuracyHistory={accuracyHistory} lossHistory={lossHistory} hyperparams={hyperparams} roundHistory={roundHistory} modelArchitecture={modelArchitecture} activeTrainingCode={activeTrainingCode} isActive={isActive} />;
       case 'datasets': return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
       case 'laboratory': return <Laboratory onAction={addToast} />;
       default: return <div>View not found</div>;
