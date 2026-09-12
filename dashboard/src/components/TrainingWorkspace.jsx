@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   Cpu, Activity, ShieldCheck, Server, Globe, Zap, 
   Network, Settings2, Code, Database, Terminal as TerminalIcon,
-  ChevronRight, BarChart3, Lock, RefreshCcw
+  ChevronRight, BarChart3, Lock, RefreshCcw, Copy, CheckCircle2, Edit3, Check
 } from 'lucide-react';
 import { MetricsChart } from './MetricsChart';
 
@@ -282,7 +282,7 @@ export const TrainingWorkspace = ({
           <section className="tr-card tr-script-card">
             <div className="tr-card-header flex-wrap gap-2">
               <div className="tr-card-title-wrap">
-                <Code size={13} className="tr-card-icon text-primary" />
+                <div className={`tr-code-status-dot ${isActive ? 'tr-dot-pulse-active' : 'tr-dot-idle'}`} />
                 <span className="tr-card-title">{displayedTitle}</span>
                 {isActive && (
                   <span className="tr-live-exec-badge">
@@ -294,9 +294,9 @@ export const TrainingWorkspace = ({
               </div>
 
               {/* Source Switcher & Actions */}
-              <div className="flex items-center gap-2">
+              <div className="tr-action-toolbar">
                 <select
-                  className="tr-node-select"
+                  className="tr-source-dropdown"
                   value={selectedSource}
                   onChange={(e) => {
                     setSelectedSource(e.target.value);
@@ -315,59 +315,63 @@ export const TrainingWorkspace = ({
 
                 <button 
                   onClick={handleCopyCode}
-                  className="tr-card-action px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-[10px] font-mono hover:text-primary transition"
+                  className="tr-tool-btn"
                   title="Copy Code"
                 >
-                  {copySuccess ? 'Copied!' : 'Copy'}
+                  {copySuccess ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+                  <span>{copySuccess ? 'COPIED' : 'COPY'}</span>
                 </button>
 
                 {!isEditing ? (
                   <button 
                     onClick={handleStartEdit}
-                    className="tr-card-action px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded text-[10px] font-bold hover:bg-primary/20 transition"
+                    className="tr-inject-btn"
                   >
-                    Edit / Inject
+                    <Edit3 size={11} />
+                    <span>EDIT / INJECT</span>
                   </button>
                 ) : (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button 
                       onClick={handleInjectCode}
                       disabled={isInjecting}
-                      className="px-2 py-1 bg-emerald-500 text-white rounded text-[10px] font-bold hover:bg-emerald-400 transition flex items-center gap-1"
+                      className="tr-confirm-inject-btn"
                     >
-                      {isInjecting ? <RefreshCcw size={10} className="animate-spin" /> : <Zap size={10} />}
-                      Inject
+                      {isInjecting ? <RefreshCcw size={11} className="animate-spin" /> : <Zap size={11} />}
+                      <span>INJECT</span>
                     </button>
                     <button 
                       onClick={handleCancelEdit}
-                      className="px-2 py-1 bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 rounded text-[10px] font-medium"
+                      className="tr-cancel-btn"
                     >
-                      Cancel
+                      CANCEL
                     </button>
                   </div>
                 )}
 
-                <span className="tr-file-tag">{displayedFilename}</span>
+                <span className="tr-filename-tag">{displayedFilename}</span>
               </div>
             </div>
             
-            {/* Dynamic Metadata Bar */}
+            {/* Dynamic High-Contrast Metadata Bar */}
             <div className="tr-code-meta-bar">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck size={11} className="text-emerald-400" />
-                  <span className="text-[10px] font-mono text-slate-300">
-                    SHA-256: <span className="text-emerald-400 select-all font-bold">{displayedHash}</span>
-                  </span>
+              <div className="tr-meta-left">
+                <div className="tr-meta-sha-pill">
+                  <ShieldCheck size={12} className="text-emerald-400" />
+                  <span className="tr-meta-label">SHA-256:</span>
+                  <span className="tr-meta-hash-text select-all">{displayedHash}</span>
                 </div>
-                <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono text-slate-400 border-l border-white/10 pl-3">
-                  <Database size={10} className="text-cyan-400" />
-                  <span>{displayedDataset}</span>
+                <div className="tr-meta-dataset-pill">
+                  <Database size={11} className="text-cyan-400" />
+                  <span className="tr-meta-dataset-text">{displayedDataset}</span>
                 </div>
               </div>
-              <span className="text-[9px] uppercase font-bold tracking-wider text-emerald-400/90 bg-emerald-500/10 px-2.5 py-0.5 rounded border border-emerald-500/20">
-                100% Code Transparency Verified
-              </span>
+              <div className="tr-meta-right">
+                <span className="tr-meta-audit-badge">
+                  <CheckCircle2 size={11} />
+                  100% CODE TRANSPARENCY VERIFIED
+                </span>
+              </div>
             </div>
 
             {/* Code Body / Live Editor */}
@@ -807,6 +811,21 @@ export const TrainingWorkspace = ({
         .tr-console-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
         .tr-console-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
 
+        .tr-code-status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        .tr-dot-idle {
+          background: #10b981;
+          box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        }
+        .tr-dot-pulse-active {
+          background: #ef4444;
+          box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+          animation: tr-pulse 1.5s infinite;
+        }
         .tr-live-exec-badge {
           display: inline-flex;
           align-items: center;
@@ -814,8 +833,8 @@ export const TrainingWorkspace = ({
           padding: 2px 8px;
           border-radius: 9999px;
           background: rgba(239, 68, 68, 0.15);
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.35);
+          color: #ef4444 !important;
           font-size: 8px;
           font-weight: 800;
           letter-spacing: 0.1em;
@@ -827,74 +846,226 @@ export const TrainingWorkspace = ({
           background: #ef4444;
         }
 
-        .tr-script-card { min-height: 360px; }
-        .tr-node-select {
+        /* ── Script Card & Action Toolbar ── */
+        .tr-script-card {
+          min-height: 380px;
+          display: flex;
+          flex-direction: column;
           background: #fff;
           border: 1px solid var(--border);
-          font-size: 10px;
+        }
+        .tr-action-toolbar {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        .tr-source-dropdown {
+          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          font-size: 11px;
           font-weight: 600;
-          color: var(--text-main);
-          padding: 4px 10px;
-          border-radius: 4px;
+          color: #0f172a !important;
+          padding: 5px 10px;
+          border-radius: 6px;
           outline: none;
           cursor: pointer;
-          transition: border-color 0.2s;
+          transition: all 0.2s;
         }
-        .tr-node-select:focus {
+        .tr-source-dropdown:focus {
           border-color: var(--primary);
+          box-shadow: 0 0 0 2px rgba(54, 78, 104, 0.15);
         }
+        .tr-tool-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 5px 10px;
+          background: #f1f5f9;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          color: #334155 !important;
+          font-size: 10px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .tr-tool-btn:hover {
+          background: #e2e8f0;
+          color: #0f172a !important;
+        }
+        .tr-inject-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 5px 12px;
+          background: rgba(54, 78, 104, 0.08);
+          border: 1px solid rgba(54, 78, 104, 0.25);
+          border-radius: 6px;
+          color: var(--primary) !important;
+          font-size: 10px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .tr-inject-btn:hover {
+          background: rgba(54, 78, 104, 0.16);
+        }
+        .tr-confirm-inject-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 5px 12px;
+          background: #10b981;
+          border: 1px solid #059669;
+          border-radius: 6px;
+          color: #ffffff !important;
+          font-size: 10px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        .tr-confirm-inject-btn:hover {
+          background: #059669;
+        }
+        .tr-cancel-btn {
+          padding: 5px 10px;
+          background: #e2e8f0;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          color: #475569 !important;
+          font-size: 10px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .tr-filename-tag {
+          font-size: 10px;
+          font-weight: 700;
+          font-family: var(--font-mono, monospace);
+          color: #0284c7 !important;
+          padding: 3px 8px;
+          background: #e0f2fe;
+          border: 1px solid #bae6fd;
+          border-radius: 4px;
+        }
+
+        /* ── Dynamic High-Contrast Metadata Bar ── */
         .tr-code-meta-bar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 8px 16px;
-          background: #0b1120;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          padding: 10px 18px;
+          background: #090e1a;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 10px;
         }
-        .tr-file-tag { font-size: 9px; font-weight: 700; color: var(--text-muted); padding: 2px 8px; background: var(--bg-main); border: 1px solid var(--border); margin-left: 4px; }
-        .tr-script-body { padding: 0; background: #070c18; flex: 1; overflow-y: auto; max-height: 440px; display: flex; }
-        
+        .tr-meta-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .tr-meta-sha-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          background: rgba(16, 185, 129, 0.12);
+          border: 1px solid rgba(16, 185, 129, 0.25);
+          border-radius: 6px;
+        }
+        .tr-meta-label {
+          font-size: 10px;
+          font-weight: 700;
+          color: #94a3b8 !important;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .tr-meta-hash-text {
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+          font-weight: 700;
+          color: #34d399 !important;
+        }
+        .tr-meta-dataset-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          background: rgba(56, 189, 248, 0.12);
+          border: 1px solid rgba(56, 189, 248, 0.25);
+          border-radius: 6px;
+        }
+        .tr-meta-dataset-text {
+          font-size: 10px;
+          font-weight: 700;
+          color: #38bdf8 !important;
+          font-family: var(--font-mono, monospace);
+        }
+        .tr-meta-audit-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          background: rgba(16, 185, 129, 0.18);
+          border: 1px solid rgba(16, 185, 129, 0.4);
+          color: #34d399 !important;
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          border-radius: 6px;
+          text-transform: uppercase;
+        }
+
+        /* ── Script Body & Code Editor ── */
+        .tr-script-body {
+          padding: 0;
+          background: #050811;
+          flex: 1;
+          overflow-y: auto;
+          max-height: 480px;
+          display: flex;
+        }
         .tr-code-view-wrap {
           display: flex;
           width: 100%;
           min-height: 100%;
         }
         .tr-line-gutter {
-          padding: 16px 10px 16px 14px;
-          background: #050811;
-          border-right: 1px solid rgba(255,255,255,0.06);
+          padding: 16px 12px;
+          background: #03060c;
+          border-right: 1px solid rgba(255, 255, 255, 0.08);
           display: flex;
           flex-direction: column;
           user-select: none;
         }
         .tr-gutter-num {
-          font-family: var(--font-mono);
+          font-family: var(--font-mono, monospace);
           font-size: 11px;
           line-height: 1.6;
-          color: rgba(255,255,255,0.2);
+          color: #64748b !important;
           text-align: right;
-          min-width: 20px;
+          min-width: 24px;
         }
         .tr-code-content {
           margin: 0;
           padding: 16px 20px;
-          font-family: var(--font-mono);
+          font-family: var(--font-mono, monospace);
           font-size: 11px;
           line-height: 1.6;
-          color: #e2e8f0;
-          opacity: 0.95;
+          color: #f1f5f9 !important;
           flex: 1;
           overflow-x: auto;
         }
         .tr-code-editor-area {
           width: 100%;
-          height: 380px;
-          padding: 16px 20px;
-          background: #050811;
-          color: #38bdf8;
-          font-family: var(--font-mono);
+          height: 420px;
+          padding: 18px 24px;
+          background: #03060c;
+          color: #38bdf8 !important;
+          font-family: var(--font-mono, monospace);
           font-size: 11px;
           line-height: 1.6;
           border: none;
