@@ -218,6 +218,31 @@ export const TrainingWorkspace = ({
 
   const safeNodeRegistry = (nodeRegistry && typeof nodeRegistry === 'object') ? nodeRegistry : {};
 
+  const [nodeCodeMap, setNodeCodeMap] = useState({});
+
+  React.useEffect(() => {
+    if (selectedSource && selectedSource !== 'active' && selectedSource !== 'global' && selectedSource !== 'lab') {
+      const node = safeNodeRegistry[selectedSource];
+      if (node && !node.code && !nodeCodeMap[selectedSource]) {
+        fetch(`/api/v1/distributed/node-code/${selectedSource}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.code) {
+              setNodeCodeMap(prev => ({
+                ...prev,
+                [selectedSource]: {
+                  code: data.code,
+                  filename: data.filename || 'model.py',
+                  code_hash: data.code_hash
+                }
+              }));
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, [selectedSource, safeNodeRegistry, nodeCodeMap]);
+
   if (selectedSource === 'active') {
     displayedCode = isEditing ? customCode : liveActiveCode;
     displayedFilename = liveActiveFilename;
@@ -236,11 +261,12 @@ export const TrainingWorkspace = ({
     displayedDataset = 'Privacy Vault / In-Memory RAM';
   } else if (safeNodeRegistry[selectedSource]) {
     const node = safeNodeRegistry[selectedSource];
-    displayedCode = node.code || '# No code payload transmitted by node';
-    displayedFilename = node.filename || 'node_train.py';
+    const cached = nodeCodeMap[selectedSource];
+    displayedCode = node.code || cached?.code || (node.filename === 'model.py' ? modelArchitecture : '') || '# No code payload transmitted by node';
+    displayedFilename = node.filename || cached?.filename || 'model.py';
     displayedTitle = node.name || `Node: ${selectedSource.substring(0, 8)}`;
     displayedDataset = `Edge Local Private Dataset (${node.ip || 'Local Device'})`;
-    displayedHash = node.code_hash;
+    displayedHash = node.code_hash || cached?.code_hash;
   }
 
   // Fallback hash calculation

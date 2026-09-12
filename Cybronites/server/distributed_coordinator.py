@@ -447,15 +447,31 @@ class DistributedCoordinator:
                     "tx_id": tx_id,
                 }
 
-            # Update node registry
-            self.node_registry[client_id] = {
+            # Update node registry without destroying code/telemetry
+            existing_entry = self.node_registry.get(client_id, {})
+            node_code = existing_entry.get("code") or client_info.get("code", "")
+            node_filename = existing_entry.get("filename") or client_info.get("filename", "model.py")
+            node_hash = existing_entry.get("code_hash") or client_info.get("code_hash", "")
+            
+            existing_entry.update({
                 "status": status_str,
                 "ip": client_info.get("ip", "unknown"),
                 "hash": f"0x{weight_hash[:12]}...",
                 "reputation": new_score,
                 "name": client_name,
                 "tx_id": tx_id[:16],
-            }
+                "code": node_code,
+                "filename": node_filename,
+                "code_hash": node_hash,
+                "lines_count": len(node_code.splitlines()) if node_code else 0,
+                "device": existing_entry.get("device") or client_info.get("device", "CPU Core"),
+                "os": existing_entry.get("os") or client_info.get("os", "Linux/Darwin"),
+                "arch": existing_entry.get("arch") or client_info.get("arch", "x86_64"),
+                "python": existing_entry.get("python") or client_info.get("python", "v3.12"),
+                "shard_size": existing_entry.get("shard_size") or client_info.get("shard_size", "250 samples"),
+                "privacy": existing_entry.get("privacy") or client_info.get("privacy", "L2-Clip (1.5) + Gaussian (σ=0.005)"),
+            })
+            self.node_registry[client_id] = existing_entry
 
             # Record in round history
             self.round_history.append({

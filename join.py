@@ -247,6 +247,28 @@ def prompt_tty(prompt_str, default_val=""):
         return default_val
 
 
+def normalize_input_path(raw_path: str) -> str:
+    """Cleans up paths entered interactively or via CLI, stripping quotes, spaces, shell escape sequences, and expanding user directories."""
+    if not raw_path:
+        return ""
+    p = str(raw_path).strip()
+    # Strip leading PowerShell call operator '& ' if present
+    if p.startswith("& "):
+        p = p[2:].strip()
+    # Strip matching or surrounding double/single quotes repeatedly
+    while (len(p) >= 2) and ((p[0] == '"' and p[-1] == '"') or (p[0] == "'" and p[-1] == "'")):
+        p = p[1:-1].strip()
+    # Strip stray quotes at beginning or end
+    p = p.strip('"\'').strip()
+    if not p:
+        return ""
+    # Expand user directory (~ on Unix / Windows) and environment variables
+    p = os.path.expanduser(p)
+    p = os.path.expandvars(p)
+    # Convert to clean absolute path
+    return os.path.abspath(p)
+
+
 def validate_model_code(code_str: str):
     """
     Statically and semantically validates Python code to ensure it defines a valid
@@ -335,7 +357,24 @@ def load_dynamic_model(code_str):
                     instance = cls()
                     return instance, name
                 except Exception:
-                    return None, name
+                    try:
+                        import inspect
+                        sig = inspect.signature(cls.__init__)
+                        params = list(sig.parameters.values())[1:]
+                        kwargs = {}
+                        for p in params:
+                            if p.default != inspect.Parameter.empty:
+                                continue
+                            elif "in" in p.name or "dim" in p.name or "channel" in p.name:
+                                kwargs[p.name] = 1
+                            elif "out" in p.name or "class" in p.name or "num" in p.name:
+                                kwargs[p.name] = 10
+                            else:
+                                kwargs[p.name] = 10
+                        instance = cls(**kwargs)
+                        return instance, name
+                    except Exception:
+                        return None, name
     except Exception:
         pass
     return MNISTNet(), "MNISTNet"
@@ -422,7 +461,7 @@ def main():
     except Exception:
         pass
 
-    chosen_file_path = args.file
+    chosen_file_path = normalize_input_path(args.file) if args.file else None
     training_code = ""
     training_filename = "model.py"
 
@@ -442,12 +481,12 @@ def main():
         choice = prompt_tty(f"  {Style.GREEN}👉 Select option [1]:{Style.RESET} ", "1")
         if choice == "2":
             while True:
-                custom_input = prompt_tty(f"  {Style.CYAN}📝 Enter path to training code file (.py):{Style.RESET} ", "").strip()
-                if not custom_input:
+                custom_input = prompt_tty(f"  {Style.CYAN}📝 Enter path to training code file (.py):{Style.RESET} ", "")
+                expanded_path = normalize_input_path(custom_input)
+                if not expanded_path:
                     print(f"  {Style.GOLD}▲ No file entered. Please provide a path to a model definition script.{Style.RESET}")
                     continue
 
-                expanded_path = os.path.abspath(os.path.expanduser(custom_input))
                 if not os.path.exists(expanded_path):
                     print(f"  {Style.RED}❌ File not found:{Style.RESET} {expanded_path}")
                     sub_opt = prompt_tty(f"  👉 [1] Try another path, [2] Use Platform Model ({active_platform_filename}), [3] Exit: ", "1")
@@ -508,7 +547,10 @@ def main():
         training_filename = active_platform_filename
 
     # If chosen_file_path specified via CLI argument --file
-    if chosen_file_path and os.path.exists(chosen_file_path) and not training_code:
+    if chosen_file_path and not training_code:
+        if not os.path.exists(chosen_file_path):
+            print(f"  {Style.RED}❌ File not found specified by --file:{Style.RESET} {chosen_file_path}")
+            sys.exit(1)
         try:
             with open(chosen_file_path, "r", encoding="utf-8") as f:
                 training_code = f.read()
