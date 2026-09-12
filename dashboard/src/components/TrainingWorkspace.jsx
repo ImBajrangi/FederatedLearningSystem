@@ -507,9 +507,11 @@ export const TrainingWorkspace = ({
                     <span className="tr-card-title">{displayedTitle}</span>
                     {isActive ? (
                       <span className="tr-live-exec-badge">
-                        <span className="tr-live-exec-dot animate-ping" />
-                        <span className="tr-live-exec-dot" />
-                        LIVE TRAINING
+                        <span className="tr-live-exec-dot-wrap">
+                          <span className="tr-live-exec-ping" />
+                          <span className="tr-live-exec-dot" />
+                        </span>
+                        <span>LIVE TRAINING</span>
                       </span>
                     ) : (
                       <span className="tr-sync-pill">
@@ -1902,27 +1904,55 @@ export const TrainingWorkspace = ({
         .tr-live-exec-badge {
           display: inline-flex;
           align-items: center;
+          white-space: nowrap;
+          flex-shrink: 0;
           gap: 6px;
-          padding: 2px 8px;
+          padding: 3px 9px;
           border-radius: 9999px;
-          background: rgba(239, 68, 68, 0.15);
+          background: rgba(239, 68, 68, 0.12);
           border: 1px solid rgba(239, 68, 68, 0.35);
           color: #ef4444 !important;
-          font-size: 8px;
+          font-size: 8.5px;
           font-weight: 800;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.08em;
+          line-height: 1;
+        }
+        .tr-live-exec-dot-wrap {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 7px;
+          height: 7px;
+          flex-shrink: 0;
+        }
+        .tr-live-exec-ping {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          background: #ef4444;
+          opacity: 0.75;
+          animation: tr-live-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
         .tr-live-exec-dot {
           width: 5px;
           height: 5px;
           border-radius: 50%;
           background: #ef4444;
+          position: relative;
+          z-index: 1;
+        }
+        @keyframes tr-live-ping {
+          0% { transform: scale(0.9); opacity: 0.9; }
+          75%, 100% { transform: scale(2.2); opacity: 0; }
         }
         .tr-sync-pill {
           display: inline-flex;
           align-items: center;
+          white-space: nowrap;
+          flex-shrink: 0;
           gap: 4px;
-          padding: 2px 8px;
+          padding: 3px 9px;
           border-radius: 999px;
           background: #ecfdf5;
           border: 1px solid #a7f3d0;
@@ -1931,6 +1961,7 @@ export const TrainingWorkspace = ({
           font-weight: 800;
           letter-spacing: 0.08em;
           text-transform: uppercase;
+          line-height: 1;
         }
 
         /* ── Script Card & Action Toolbar ── */
