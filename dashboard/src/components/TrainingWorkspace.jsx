@@ -502,36 +502,39 @@ export const TrainingWorkspace = ({
             <div className="tr-card-header tr-code-header">
               <div className="tr-card-title-wrap">
                 <div className={`tr-code-status-dot ${isActive ? 'tr-dot-pulse-active' : 'tr-dot-idle'}`} />
-                <span className="tr-card-title">{displayedTitle}</span>
-                {isActive && (
-                  <span className="tr-live-exec-badge">
-                    <span className="tr-live-exec-dot animate-ping" />
-                    <span className="tr-live-exec-dot" />
-                    LIVE TRAINING
-                  </span>
-                )}
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="tr-card-title">{displayedTitle}</span>
+                    {isActive ? (
+                      <span className="tr-live-exec-badge">
+                        <span className="tr-live-exec-dot animate-ping" />
+                        <span className="tr-live-exec-dot" />
+                        LIVE TRAINING
+                      </span>
+                    ) : (
+                      <span className="tr-sync-pill">
+                        ● REALTIME SYNCHRONIZED ({Object.keys(safeNodeRegistry).length} NODES)
+                      </span>
+                    )}
+                  </div>
+                  {selectedSource !== 'active' && selectedSource !== 'global' && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-blue-600 font-semibold flex items-center gap-1">
+                        Viewing Isolated Node Payload
+                      </span>
+                      <button 
+                        onClick={() => setSelectedSource('active')}
+                        className="text-[9px] font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                      >
+                        ← Back to Network Live Architecture
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Source Switcher & Actions */}
+              {/* Real-time Code Actions */}
               <div className="tr-action-toolbar">
-                <select
-                  className="tr-source-dropdown"
-                  value={selectedSource}
-                  onChange={(e) => {
-                    setSelectedSource(e.target.value);
-                    setIsEditing(false);
-                  }}
-                >
-                  <option value="active">⚡ Live Active Training Code</option>
-                  <option value="global">🌐 Global Model (model.py)</option>
-                  <option value="lab">🧪 Code Laboratory Sandbox</option>
-                  {Object.entries(safeNodeRegistry).map(([id, node]) => (
-                    <option key={id} value={id}>
-                      💻 {node.name || id} ({node.filename || 'node.py'})
-                    </option>
-                  ))}
-                </select>
-
                 <button 
                   onClick={handleCopyCode}
                   className="tr-tool-btn"
@@ -1908,6 +1911,20 @@ export const TrainingWorkspace = ({
           border-radius: 50%;
           background: #ef4444;
         }
+        .tr-sync-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 2px 8px;
+          border-radius: 999px;
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
+          color: #047857;
+          font-size: 8.5px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
 
         /* ── Script Card & Action Toolbar ── */
         .tr-script-card {
@@ -1933,23 +1950,6 @@ export const TrainingWorkspace = ({
           gap: 6px;
           flex-wrap: nowrap;
           flex-shrink: 0;
-        }
-        .tr-source-dropdown {
-          height: 28px;
-          background: #f8fafc;
-          border: 1px solid #cbd5e1;
-          font-size: 10px;
-          font-weight: 600;
-          color: #0f172a !important;
-          padding: 0 8px;
-          border-radius: 4px;
-          outline: none;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        .tr-source-dropdown:focus {
-          border-color: var(--primary);
-          box-shadow: 0 0 0 2px rgba(54, 78, 104, 0.15);
         }
         .tr-tool-btn {
           height: 28px;
