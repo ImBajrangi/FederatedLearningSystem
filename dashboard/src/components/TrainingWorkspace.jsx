@@ -767,7 +767,7 @@ export const TrainingWorkspace = ({
                     type="text" 
                     value={terminalSearch}
                     onChange={(e) => setTerminalSearch(e.target.value)}
-                    placeholder="Search logs & hashes..."
+                    placeholder="Filter logs..."
                     className="tr-search-input"
                   />
                   {terminalSearch && (
@@ -779,7 +779,7 @@ export const TrainingWorkspace = ({
 
                 <div className="tr-latency">
                   <div className="tr-latency-dot" />
-                  <span>2MS LATENCY</span>
+                  <span>2MS</span>
                 </div>
                 
                 {/* Expand / Maximize Button */}
@@ -788,7 +788,7 @@ export const TrainingWorkspace = ({
                   className="tr-btn-tool" 
                   title={isTerminalMaximized ? "Collapse to Standard View" : "Expand Fullscreen View"}
                 >
-                  {isTerminalMaximized ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                  {isTerminalMaximized ? <Minimize2 size={11} /> : <Maximize2 size={11} />}
                   <span>{isTerminalMaximized ? "COLLAPSE" : "EXPAND"}</span>
                 </button>
 
@@ -1603,26 +1603,50 @@ export const TrainingWorkspace = ({
           border-radius: 12px !important;
         }
         .tr-console-header {
-          padding: 0 16px;
-          height: 44px;
+          padding: 0 12px;
+          height: 42px;
           border-bottom: 1px solid #1e293b;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: #0e1626;
+          background: #0b1220;
           flex-shrink: 0;
-          gap: 12px;
+          gap: 8px;
+          overflow-x: auto;
         }
-        .tr-console-tabs { display: flex; height: 100%; background: #070c18; }
+        .tr-console-header::-webkit-scrollbar { height: 2px; }
+        .tr-console-header::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        .tr-console-tabs { 
+          display: flex; 
+          align-items: center;
+          height: 100%; 
+          background: transparent;
+          flex-shrink: 0;
+        }
         .tr-tab { 
-          display: flex; align-items: center; gap: 8px; padding: 0 16px;
-          font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-          color: #94a3b8 !important; border-right: 1px solid #1e293b;
-          background: #090e1a;
-          cursor: pointer; transition: all 0.2s;
+          display: inline-flex; 
+          align-items: center; 
+          gap: 6px; 
+          padding: 0 12px;
+          height: 100%;
+          font-size: 10px; 
+          font-weight: 700; 
+          text-transform: uppercase; 
+          letter-spacing: 0.06em;
+          white-space: nowrap !important;
+          flex-shrink: 0;
+          color: #94a3b8 !important; 
+          border-right: 1px solid rgba(255,255,255,0.06);
+          background: #080e1a;
+          cursor: pointer; 
+          transition: all 0.15s ease;
           user-select: none;
         }
-        .tr-tab .tr-tab-text { color: #94a3b8 !important; transition: color 0.2s; }
+        .tr-tab .tr-tab-text { 
+          color: #94a3b8 !important; 
+          white-space: nowrap !important;
+          transition: color 0.15s ease; 
+        }
         .tr-tab:hover { background: rgba(255,255,255,0.06); }
         .tr-tab:hover .tr-tab-text { color: #ffffff !important; }
         
@@ -1641,14 +1665,16 @@ export const TrainingWorkspace = ({
         .tr-tab.active.tab-audit .tr-tab-text { color: #fbbf24 !important; font-weight: 800; }
 
         .tr-tab-badge {
-          font-size: 9px;
+          font-size: 8.5px;
           font-family: var(--font-mono, monospace);
-          font-weight: 700;
-          padding: 1px 6px;
+          font-weight: 800;
+          padding: 1px 5px;
           border-radius: 999px;
           background: rgba(255,255,255,0.08);
           color: #cbd5e1;
           border: 1px solid rgba(255,255,255,0.05);
+          white-space: nowrap;
+          flex-shrink: 0;
         }
         .tr-tab.active.tab-telemetry .tr-tab-badge {
           background: rgba(56, 189, 248, 0.2);
@@ -1666,14 +1692,20 @@ export const TrainingWorkspace = ({
           border: 1px solid rgba(245, 158, 11, 0.4);
         }
 
-        .tr-console-actions { display: flex; align-items: center; gap: 14px; }
+        .tr-console-actions { 
+          display: flex; 
+          align-items: center; 
+          gap: 8px; 
+          flex-shrink: 0;
+          margin-left: auto;
+        }
         .tr-console-search-box {
           display: flex;
           align-items: center;
           gap: 6px;
           background: rgba(15, 23, 42, 0.8);
           border: 1px solid #334155;
-          padding: 4px 10px;
+          padding: 3px 8px;
           border-radius: 4px;
         }
         .tr-search-input {
@@ -1681,32 +1713,63 @@ export const TrainingWorkspace = ({
           border: none;
           outline: none;
           color: #f8fafc;
-          font-size: 10px;
-          width: 140px;
+          font-size: 9.5px;
+          width: 95px;
           font-family: var(--font-mono, monospace);
         }
         .tr-search-input::placeholder { color: #64748b; }
         .tr-latency { 
-          display: flex; align-items: center; gap: 6px; 
-          font-size: 9px; font-weight: 700; color: #94a3b8; 
+          display: flex; align-items: center; gap: 5px; 
+          font-size: 8.5px; font-weight: 700; color: #94a3b8; 
           text-transform: uppercase; letter-spacing: 0.05em; 
           font-family: var(--font-mono, monospace);
+          white-space: nowrap;
+          flex-shrink: 0;
         }
-        .tr-latency-dot { width: 6px; height: 6px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981; }
+        .tr-latency-dot { width: 5px; height: 5px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px #10B981; }
         .tr-btn-tool {
-          display: flex; align-items: center; gap: 5px;
-          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
-          padding: 4px 10px; border-radius: 4px; font-size: 9px; font-weight: 800;
-          color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.05em;
-          cursor: pointer; transition: all 0.2s;
+          display: inline-flex; 
+          align-items: center; 
+          gap: 5px;
+          background: rgba(56, 189, 248, 0.08); 
+          border: 1px solid rgba(56, 189, 248, 0.3);
+          padding: 3px 8px; 
+          border-radius: 4px; 
+          font-size: 8.5px; 
+          font-weight: 800;
+          color: #38bdf8; 
+          text-transform: uppercase; 
+          letter-spacing: 0.05em;
+          white-space: nowrap;
+          flex-shrink: 0;
+          cursor: pointer; 
+          transition: all 0.15s ease;
         }
-        .tr-btn-tool:hover { background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #38bdf8; }
+        .tr-btn-tool:hover { 
+          background: rgba(56, 189, 248, 0.22); 
+          border-color: #38bdf8; 
+          color: #ffffff; 
+          box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
         .tr-btn-clear { 
-          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); 
-          padding: 4px 8px; border-radius: 4px;
-          font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; cursor: pointer; transition: all 0.2s; 
+          background: rgba(255,255,255,0.04); 
+          border: 1px solid rgba(255,255,255,0.08); 
+          padding: 3px 8px; 
+          border-radius: 4px;
+          font-size: 8.5px; 
+          font-weight: 700; 
+          color: #94a3b8; 
+          text-transform: uppercase; 
+          cursor: pointer; 
+          transition: all 0.15s ease; 
+          white-space: nowrap;
+          flex-shrink: 0;
         }
-        .tr-btn-clear:hover { background: rgba(239, 68, 68, 0.15); border-color: rgba(239,68,68,0.4); color: #f87171; }
+        .tr-btn-clear:hover { 
+          background: rgba(239, 68, 68, 0.15); 
+          border-color: rgba(239,68,68,0.4); 
+          color: #f87171; 
+        }
 
         .tr-console-body { 
           flex: 1; overflow-y: auto; padding: 16px 20px; position: relative;
