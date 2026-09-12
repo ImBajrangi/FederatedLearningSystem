@@ -1,14 +1,47 @@
-import React, { useState } from 'react';
-import { ShieldCheck, Terminal, Copy, Check, X, Cpu, Globe, Laptop } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShieldCheck, Terminal, Copy, Check, X, Cpu, Globe, Laptop, Download, Code2, FileCode, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Header = ({ status }) => {
   const [showConnectModal, setShowConnectModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('stream'); // 'stream' | 'download' | 'code'
   const [copiedCloud, setCopiedCloud] = useState(false);
   const [copiedLocal, setCopiedLocal] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [scriptContent, setScriptContent] = useState('');
+  const [isLoadingScript, setIsLoadingScript] = useState(false);
 
   const cloudCommand = 'curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3';
-  const localCommand = 'python join.py';
+  const downloadAndRunCommand = 'curl -sSL https://mdark4025-cybronites.hf.space/join.py -o join.py && python3 join.py';
+  const localCommand = 'python3 join.py';
+
+  // Fetch join.py code dynamically when code tab is viewed
+  useEffect(() => {
+    if (showConnectModal && !scriptContent) {
+      setIsLoadingScript(true);
+      fetch('/join.py')
+        .then(res => {
+          if (!res.ok) throw new Error('Local route error');
+          return res.text();
+        })
+        .then(text => {
+          setScriptContent(text);
+          setIsLoadingScript(false);
+        })
+        .catch(() => {
+          // Fallback fetch to cloud space
+          fetch('https://mdark4025-cybronites.hf.space/join.py')
+            .then(res => res.text())
+            .then(text => {
+              setScriptContent(text);
+              setIsLoadingScript(false);
+            })
+            .catch(() => {
+              setIsLoadingScript(false);
+            });
+        });
+    }
+  }, [showConnectModal, scriptContent]);
 
   const handleCopyCloud = () => {
     navigator.clipboard.writeText(cloudCommand);
@@ -17,9 +50,35 @@ export const Header = ({ status }) => {
   };
 
   const handleCopyLocal = () => {
-    navigator.clipboard.writeText(localCommand);
+    navigator.clipboard.writeText(downloadAndRunCommand);
     setCopiedLocal(true);
     setTimeout(() => setCopiedLocal(false), 2000);
+  };
+
+  const handleCopyCode = () => {
+    if (scriptContent) {
+      navigator.clipboard.writeText(scriptContent);
+    } else {
+      navigator.clipboard.writeText(cloudCommand);
+    }
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const handleDownloadFile = () => {
+    if (scriptContent) {
+      const blob = new Blob([scriptContent], { type: 'text/x-python' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'join.py';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } else {
+      window.open('https://mdark4025-cybronites.hf.space/join.py', '_blank');
+    }
   };
 
   return (
@@ -40,7 +99,7 @@ export const Header = ({ status }) => {
           <button
             onClick={() => setShowConnectModal(true)}
             className="hd-connect-btn"
-            data-tooltip="Pair new distributed compute nodes with instant 1-line command"
+            data-tooltip="Pair new distributed compute nodes with instant 1-line command or download code directly"
             data-tooltip-pos="bottom"
           >
             <Terminal size={13} className="hd-btn-icon" />
@@ -103,7 +162,7 @@ export const Header = ({ status }) => {
                   </div>
                   <div>
                     <h3 className="hd-modal-title">Connect Any Device Node</h3>
-                    <p className="hd-modal-desc">Zero-file setup • Instant federated network enrollment</p>
+                    <p className="hd-modal-desc">Instant federated network enrollment • No repo cloning required</p>
                   </div>
                 </div>
                 <button
@@ -114,66 +173,179 @@ export const Header = ({ status }) => {
                 </button>
               </div>
 
+              {/* Modal Navigation Tabs */}
+              <div className="hd-modal-tabs">
+                <button
+                  onClick={() => setActiveTab('stream')}
+                  className={`hd-tab-btn ${activeTab === 'stream' ? 'active' : ''}`}
+                >
+                  <Globe size={13} />
+                  <span>1-Line Universal (Zero Files)</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('download')}
+                  className={`hd-tab-btn ${activeTab === 'download' ? 'active' : ''}`}
+                >
+                  <Download size={13} />
+                  <span>Download join.py</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('code')}
+                  className={`hd-tab-btn ${activeTab === 'code' ? 'active' : ''}`}
+                >
+                  <Code2 size={13} />
+                  <span>Direct Code</span>
+                </button>
+              </div>
+
               {/* Modal Body */}
               <div className="hd-modal-body">
-                {/* Cloud Command (Recommended for all external devices) */}
-                <div className="hd-section">
-                  <div className="hd-section-label">
-                    <Globe size={13} className="text-emerald-600" />
-                    <span>Option 1: Cloud & Remote Devices (No local files needed)</span>
-                  </div>
-                  <div className="hd-code-box">
-                    <code className="hd-code-text">{cloudCommand}</code>
-                    <button
-                      onClick={handleCopyCloud}
-                      className="hd-copy-btn"
-                    >
-                      {copiedCloud ? <Check size={12} className="hd-check-icon" /> : <Copy size={12} />}
-                      <span>{copiedCloud ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-                </div>
+                {activeTab === 'stream' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 4 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    className="flex flex-col gap-4"
+                  >
+                    <div className="hd-section">
+                      <div className="hd-section-label">
+                        <Globe size={13} className="text-emerald-600" />
+                        <span>Instant Universal Terminal Directive (Runs directly in memory)</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed mb-1">
+                        Paste this into any Mac, Linux, Windows WSL terminal, or Cloud GPU. Automatically verifies hardware, provisions ML dependencies, and connects:
+                      </p>
+                      <div className="hd-code-box">
+                        <code className="hd-code-text">{cloudCommand}</code>
+                        <button
+                          onClick={handleCopyCloud}
+                          className="hd-copy-btn"
+                        >
+                          {copiedCloud ? <Check size={12} className="hd-check-icon text-emerald-600" /> : <Copy size={12} />}
+                          <span>{copiedCloud ? 'Copied' : 'Copy'}</span>
+                        </button>
+                      </div>
+                    </div>
 
-                {/* Local Command (For working in this cloned repository) */}
-                <div className="hd-section">
-                  <div className="hd-section-label">
-                    <Laptop size={13} className="text-slate-600" />
-                    <span>Option 2: Local Workspace (In this project folder)</span>
-                  </div>
-                  <div className="hd-code-box">
-                    <code className="hd-code-text">{localCommand}</code>
-                    <button
-                      onClick={handleCopyLocal}
-                      className="hd-copy-btn"
-                    >
-                      {copiedLocal ? <Check size={12} className="hd-check-icon" /> : <Copy size={12} />}
-                      <span>{copiedLocal ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-                </div>
+                    {/* Interactive Steps */}
+                    <div className="hd-steps-list">
+                      <div className="hd-step-item">
+                        <span className="hd-step-num">1</span>
+                        <span className="hd-step-text"><strong>Zero Setup:</strong> No manual downloading or cloning needed.</span>
+                      </div>
+                      <div className="hd-step-item">
+                        <span className="hd-step-num">2</span>
+                        <span className="hd-step-text"><strong>Model Selection:</strong> Prompts you in terminal to choose the network model or custom Python architecture.</span>
+                      </div>
+                      <div className="hd-step-item">
+                        <span className="hd-step-num">3</span>
+                        <span className="hd-step-text"><strong>Encrypted Privacy:</strong> Applies Local Differential Privacy before gradient transmission.</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
 
-                {/* Interactive Steps */}
-                <div className="hd-steps-list">
-                  <div className="hd-step-item">
-                    <span className="hd-step-num">1</span>
-                    <span className="hd-step-text"><strong>Runs automatically:</strong> Provisions PyTorch / NumPy dependencies on device.</span>
-                  </div>
-                  <div className="hd-step-item">
-                    <span className="hd-step-num">2</span>
-                    <span className="hd-step-text"><strong>Interactive Selection:</strong> Prompts you in terminal to choose the platform model or your own custom file.</span>
-                  </div>
-                  <div className="hd-step-item">
-                    <span className="hd-step-num">3</span>
-                    <span className="hd-step-text"><strong>Realtime Sync:</strong> Your chosen model code and SHA-256 hash stream live into the Training Workspace.</span>
-                  </div>
-                </div>
+                {activeTab === 'download' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 4 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    className="flex flex-col gap-4"
+                  >
+                    <div className="hd-section">
+                      <div className="hd-section-label">
+                        <Download size={13} className="text-blue-600" />
+                        <span>Download Script or Run Auto-Download Command</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed mb-1">
+                        If you want the standalone <code>join.py</code> script file on your machine:
+                      </p>
+
+                      <div className="flex gap-2 mb-2">
+                        <button
+                          onClick={handleDownloadFile}
+                          className="hd-action-download-btn"
+                        >
+                          <Download size={13} />
+                          <span>Download join.py Script</span>
+                        </button>
+                      </div>
+
+                      <div className="hd-section-label mt-2">
+                        <Laptop size={13} className="text-slate-600" />
+                        <span>Or run 1-line auto-download and execute:</span>
+                      </div>
+                      <div className="hd-code-box">
+                        <code className="hd-code-text">{downloadAndRunCommand}</code>
+                        <button
+                          onClick={handleCopyLocal}
+                          className="hd-copy-btn"
+                        >
+                          {copiedLocal ? <Check size={12} className="hd-check-icon text-emerald-600" /> : <Copy size={12} />}
+                          <span>{copiedLocal ? 'Copied' : 'Copy'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-700 flex flex-col gap-1">
+                      <span className="font-semibold text-slate-900">Custom CLI Options:</span>
+                      <code className="text-[10px] text-slate-800 bg-white p-1.5 rounded border border-slate-200 font-mono">
+                        python3 join.py --name "Hospital-Alpha" --epochs 2
+                      </code>
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'code' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 4 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    className="flex flex-col gap-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <FileCode size={14} className="text-slate-700" />
+                        <span className="text-[11px] font-bold text-slate-800">join.py Standalone Client Source Code</span>
+                        <span className="text-[9px] px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded font-mono border border-slate-200">
+                          {scriptContent ? `${scriptContent.split('\n').length} lines` : 'Loading...'}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleCopyCode}
+                          className="hd-copy-code-full-btn"
+                        >
+                          {copiedCode ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                          <span>{copiedCode ? 'Code Copied!' : 'Copy Full Python Code'}</span>
+                        </button>
+                        <button
+                          onClick={handleDownloadFile}
+                          className="hd-copy-code-full-btn"
+                        >
+                          <Download size={12} />
+                          <span>Save as File</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="hd-raw-code-container">
+                      <pre className="hd-raw-code-text">
+                        {isLoadingScript ? (
+                          <span className="text-slate-400 italic">Fetching complete join.py script from coordinator...</span>
+                        ) : scriptContent ? (
+                          scriptContent
+                        ) : (
+                          `# You can copy the universal command:\n${cloudCommand}`
+                        )}
+                      </pre>
+                    </div>
+                  </motion.div>
+                )}
               </div>
 
               {/* Modal Footer */}
               <div className="hd-modal-footer">
                 <span className="hd-footer-info">
                   <Cpu size={13} className="text-emerald-600" />
-                  Supports Apple MPS, CUDA GPUs & CPU cores
+                  Supports Apple MPS, CUDA GPUs & CPU NumPy Vector cores
                 </span>
                 <button
                   onClick={() => setShowConnectModal(false)}
@@ -446,11 +618,97 @@ export const Header = ({ status }) => {
           background: #E2E8F0;
           color: #0F172A;
         }
+        .hd-modal-tabs {
+          display: flex;
+          background: #F1F5F9;
+          border-bottom: 1px solid #CBD5E1;
+          padding: 6px 16px 0 16px;
+          gap: 6px;
+        }
+        .hd-tab-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          font-size: 11px;
+          font-weight: 700;
+          color: #64748B;
+          border: none;
+          background: transparent;
+          border-bottom: 2px solid transparent;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          border-radius: 4px 4px 0 0;
+        }
+        .hd-tab-btn:hover {
+          color: #0F172A;
+          background: rgba(255, 255, 255, 0.5);
+        }
+        .hd-tab-btn.active {
+          color: #0F172A;
+          background: #FFFFFF;
+          border-bottom: 2px solid #364E68;
+          box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .hd-action-download-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          background: #364E68;
+          color: #ffffff;
+          border: none;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          box-shadow: 0 2px 6px rgba(54, 78, 104, 0.15);
+        }
+        .hd-action-download-btn:hover {
+          background: #27384A;
+          transform: translateY(-1px);
+        }
+        .hd-copy-code-full-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 10px;
+          background: #FFFFFF;
+          border: 1px solid #CBD5E1;
+          border-radius: 4px;
+          font-size: 10px;
+          font-weight: 700;
+          color: #1E293B;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .hd-copy-code-full-btn:hover {
+          background: #F8FAFC;
+          border-color: #94A3B8;
+        }
+        .hd-raw-code-container {
+          background: #0F172A;
+          border: 1px solid #334155;
+          border-radius: 6px;
+          padding: 12px;
+          max-height: 260px;
+          overflow-y: auto;
+          overflow-x: auto;
+        }
+        .hd-raw-code-text {
+          font-family: var(--font-mono, monospace);
+          font-size: 10px;
+          line-height: 1.5;
+          color: #E2E8F0;
+          margin: 0;
+          white-space: pre;
+        }
         .hd-modal-body {
-          padding: 24px;
+          padding: 20px 24px;
           display: flex;
           flex-direction: column;
-          gap: 18px;
+          gap: 16px;
           background: #ffffff;
         }
         .hd-section {

@@ -22,6 +22,27 @@ export const Dashboard = ({
 }) => {
   const [copyCloudSuccess, setCopyCloudSuccess] = useState(false);
   const [copyLocalSuccess, setCopyLocalSuccess] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+
+  const handleDownloadJoinScript = async () => {
+    try {
+      const res = await fetch('/join.py');
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'join.py';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 2000);
+    } catch (e) {
+      window.open('https://mdark4025-cybronites.hf.space/join.py', '_blank');
+    }
+  };
 
   const currentAccuracy = accuracyHistory.length > 0
     ? (accuracyHistory[accuracyHistory.length - 1] * 100).toFixed(2)
@@ -268,19 +289,29 @@ export const Dashboard = ({
 
           {/* Panel 3: CLI Edge Directive */}
           <div className="dist-panel">
-            <div className="dist-panel-header">
-              <Terminal size={14} className="text-accent" />
-              <span className="type-label-bold !text-main">Edge Connectivity</span>
+            <div className="dist-panel-header flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Terminal size={14} className="text-accent" />
+                <span className="type-label-bold !text-main">Edge Connectivity</span>
+              </div>
+              <button
+                onClick={handleDownloadJoinScript}
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 transition-colors"
+                title="Download standalone join.py script"
+              >
+                <Download size={10} className="text-slate-600" />
+                <span>{downloadSuccess ? 'SAVED' : 'DOWNLOAD SCRIPT'}</span>
+              </button>
             </div>
 
             <p className="text-[10px] leading-relaxed text-muted mb-3">
-              Run either directive on any Mac, Linux, or Cloud GPU to participate in consensus training:
+              Run on any Mac, Linux, Windows, or Cloud GPU (Zero repository cloning required):
             </p>
 
-            {/* Option 1: Cloud 1-Command */}
+            {/* Option 1: Cloud 1-Command Universal Stream */}
             <div className="mb-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 1: 1-Command Cloud</span>
+                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 1: 1-Command Universal (No files needed)</span>
                 <button 
                   onClick={() => {
                     navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3');
@@ -299,25 +330,25 @@ export const Dashboard = ({
               </div>
             </div>
 
-            {/* Option 2: Local Workspace Command */}
+            {/* Option 2: Download & Execute Script */}
             <div className="mb-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 2: Local Workspace</span>
+                <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-widest">Option 2: Auto-Download & Execute</span>
                 <button 
                   onClick={() => {
-                    navigator.clipboard.writeText('python join.py --server http://localhost:7880 --name "Hospital-Alpha"');
+                    navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py -o join.py && python3 join.py');
                     setCopyLocalSuccess(true);
                     setTimeout(() => setCopyLocalSuccess(false), 2000);
                   }}
                   className="dist-mini-copy-btn"
-                  title="Copy local workspace join command"
+                  title="Copy download and execute command"
                 >
                   {copyLocalSuccess ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
                   <span>{copyLocalSuccess ? 'COPIED' : 'COPY'}</span>
                 </button>
               </div>
               <div className="dist-code-box">
-                <code>python join.py --server http://localhost:7880 --name "Hospital-Alpha"</code>
+                <code>curl -sSL https://mdark4025-cybronites.hf.space/join.py -o join.py && python3 join.py</code>
               </div>
             </div>
 
