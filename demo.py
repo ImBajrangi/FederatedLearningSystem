@@ -101,7 +101,7 @@ def run_simulation(
 
     # Smart Contracts
     validation_contract = ValidationContract(
-        norm_threshold=10.0,
+        norm_threshold=50.0,
         cosine_threshold=-0.3,
     )
     aggregation_contract = AggregationContract()
