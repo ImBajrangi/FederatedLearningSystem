@@ -264,7 +264,7 @@ function App() {
           />
         );
       case 'datasets':
-        return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
+        return <DatasetExplorer shards={shards} clientsActive={clientsActive} roundHistory={roundHistory} nodeRegistry={nodeRegistry} />;
       case 'laboratory':
         return (
           <Laboratory 

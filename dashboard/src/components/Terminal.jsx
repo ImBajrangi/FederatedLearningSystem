@@ -1,6 +1,17 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, roundHistory = [], onClear, onAction, isMinimized, onToggleMinimize, onExecuteCommand }) => {
+export const Terminal = ({ 
+  logs = [], 
+  onResize, 
+  isResizing, 
+  nodeRegistry = {}, 
+  roundHistory = [], 
+  onClear = () => {}, 
+  onAction = () => {}, 
+  isMinimized, 
+  onToggleMinimize = () => {}, 
+  onExecuteCommand = () => {} 
+}) => {
   const logsRef = useRef(null);
   const inputRef = useRef(null);
   const [activeTab, setActiveTab] = useState('logs');
@@ -8,8 +19,10 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, roundH
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  const safeLogs = Array.isArray(logs) ? logs : [];
+
   const handleCopy = () => {
-    const text = logs.map(l => `[${new Date().toLocaleTimeString()}] $ ${l.msg}`).join('\n');
+    const text = safeLogs.map(l => `[${new Date().toLocaleTimeString()}] $ ${l?.msg || l}`).join('\n');
     navigator.clipboard.writeText(text);
     if (onAction) onAction('LOGS_COPIED');
   };

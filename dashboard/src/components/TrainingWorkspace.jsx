@@ -1479,12 +1479,13 @@ export const TrainingWorkspace = ({
 
       <style>{`
         .tr-root {
-          padding: 40px;
+          padding: 40px 40px 120px 40px;
           display: flex;
           flex-direction: column;
           gap: 32px;
           background: var(--bg-main);
           min-height: 100%;
+          box-sizing: border-box;
           font-family: var(--font-sans);
         }
 

@@ -61,7 +61,12 @@ print("   Data stays encrypted at rest — decrypted in RAM only during training
 `;
 
 
-export default function Laboratory({ onAction, labState, onExecuteCommand, onEvalCode }) {
+export function Laboratory({ 
+  onAction = () => {}, 
+  labState = {}, 
+  onExecuteCommand = () => {}, 
+  onEvalCode = () => {} 
+}) {
   const [code, setCode] = useState(DEFAULT_MODEL_CODE);
   const [status, setStatus] = useState('IDLE');
   const [logs, setLogs] = useState([]);
@@ -2747,3 +2752,4 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
     </div>
   );
 }
+export default Laboratory;

@@ -2,17 +2,18 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Box, Layers, History, ShieldCheck, Activity, Archive, Landmark, Database, X, Hash, Cpu, Key, CheckCircle, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const BlockchainRibbon = ({ blockchain }) => {
+export const BlockchainRibbon = ({ blockchain = [] }) => {
   const ribbonRef = useRef(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
+  const safeBlockchain = Array.isArray(blockchain) ? blockchain : [];
 
   useEffect(() => {
     if (ribbonRef.current) {
       ribbonRef.current.scrollTop = ribbonRef.current.scrollHeight;
     }
-  }, [blockchain]);
+  }, [safeBlockchain]);
 
-  const hasBlocks = blockchain && blockchain.length > 0;
+  const hasBlocks = safeBlockchain.length > 0;
 
   return (
     <div className="bl-root">

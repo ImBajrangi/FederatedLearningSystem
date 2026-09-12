@@ -243,7 +243,7 @@ function Dashboard() {
           status={status}
         />
       );
-      case 'datasets': return <DatasetExplorer shards={shards} clientsActive={clientsActive} />;
+      case 'datasets': return <DatasetExplorer shards={shards} clientsActive={clientsActive} roundHistory={roundHistory} nodeRegistry={nodeRegistry} />;
       case 'laboratory': return <Laboratory onAction={addToast} />;
       default: return <div>View not found</div>;
     }

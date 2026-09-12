@@ -488,7 +488,8 @@ export const PrivacyVault = () => {
                     flex: 1;
                     display: flex;
                     gap: 24px;
-                    padding: 24px 28px;
+                    padding: 24px 28px 120px 28px;
+                    box-sizing: border-box;
                     overflow-y: auto;
                 }
                 .pv-col-main { flex: 2; display: flex; flex-direction: column; gap: 24px; min-width: 0; }

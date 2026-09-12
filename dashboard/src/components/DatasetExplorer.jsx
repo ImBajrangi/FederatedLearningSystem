@@ -8,7 +8,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../hooks/useSecureFederated';
 
-export const DatasetExplorer = ({ shards = [], clientsActive = 0, roundHistory = [], nodeRegistry = [] }) => {
+export const DatasetExplorer = ({ shards = [], clientsActive = 0, roundHistory = [], nodeRegistry = {} }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('shards');
   const [vaultDatasets, setVaultDatasets] = useState([]);
@@ -32,10 +32,12 @@ export const DatasetExplorer = ({ shards = [], clientsActive = 0, roundHistory =
     }
   };
 
-  const realShards = shards.filter(s => s && typeof s === 'object');
+  const safeShards = Array.isArray(shards) ? shards : [];
+  const safeRoundHistory = Array.isArray(roundHistory) ? roundHistory : [];
+  const realShards = safeShards.filter(s => s && typeof s === 'object');
   const totalSamples = realShards.reduce((sum, s) => sum + (s.size || 0), 0);
-  const totalEncSize = vaultDatasets.reduce((sum, d) => sum + (d.encrypted_size || 0), 0);
-  const latestRound = roundHistory?.length || 0;
+  const totalEncSize = (Array.isArray(vaultDatasets) ? vaultDatasets : []).reduce((sum, d) => sum + (d?.encrypted_size || 0), 0);
+  const latestRound = safeRoundHistory?.length || 0;
 
   const filteredShards = realShards.filter(s => {
     const name = (s.name || s.org || s.id || '').toLowerCase();

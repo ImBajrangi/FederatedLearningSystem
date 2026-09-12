@@ -41,17 +41,17 @@ const MetricItem = ({ label, value, tag, description, icon: Icon, color, isColla
 };
 
 export const Sidebar = ({
-  currentView,
-  setView,
+  currentView = 'dashboard',
+  setView = () => {},
   clients = [],
   nodeRegistry = {},
   rejectedCount = 0,
   blockchain = [],
   width = 280,
   isCollapsed = false,
-  onToggleCollapse,
-  onResize,
-  onLogout
+  onToggleCollapse = () => {},
+  onResize = () => {},
+  onLogout = () => {}
 }) => {
   const { user, displayName, profile } = useAuth();
   const userEmail = user?.email || 'guest@node.local';
