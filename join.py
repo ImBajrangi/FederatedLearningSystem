@@ -22,6 +22,7 @@ import urllib.error
 import subprocess
 import base64
 import io
+import shutil
 
 # ── Auto-Install Essential ML Dependencies if missing ──
 REQUIRED_PKGS = ["numpy"]
