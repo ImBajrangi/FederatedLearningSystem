@@ -9,6 +9,7 @@ import asyncio
 import os
 import time
 import sqlite3
+import hashlib
 import urllib.request
 from Cybronites.server.auth import router as auth_router
 from Cybronites.utils.structured_logging import setup_structured_logging
