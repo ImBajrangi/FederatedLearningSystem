@@ -19,7 +19,7 @@ export const MODEL_TEMPLATES = {
     filename: 'iris_classifier.py',
     description: 'Fisher’s Iris (4 features → 3 classes) with Privacy Vault memory-wipe decryption',
     code: `# ╔══════════════════════════════════════════════════╗
-# ║  Federated Learning — Secure Training Sandbox   ║
+# ║  Federated Learning — Secure Training Sandbox    ║
 # ║  v2.0 | Privacy Vault & Real-Time Aggregator     ║
 # ╚══════════════════════════════════════════════════╝
 
@@ -179,11 +179,11 @@ batch_size = 16
 
 const DEFAULT_MODEL_CODE = MODEL_TEMPLATES.iris.code;
 
-export function Laboratory({ 
-  onAction = () => {}, 
-  labState = {}, 
-  onExecuteCommand = () => {}, 
-  onEvalCode = () => {} 
+export function Laboratory({
+  onAction = () => { },
+  labState = {},
+  onExecuteCommand = () => { },
+  onEvalCode = () => { }
 }) {
   const [code, setCode] = useState(DEFAULT_MODEL_CODE);
   const [selectedTemplateKey, setSelectedTemplateKey] = useState('iris');
@@ -315,31 +315,33 @@ export function Laboratory({
     editorRef.current = editor;
     monacoRef.current = monaco;
 
-    monaco.editor.defineTheme('lab-dark', {
-      base: 'vs-dark',
+    monaco.editor.defineTheme('lab-studio-theme', {
+      base: 'vs',
       inherit: true,
       rules: [
         { token: 'comment', foreground: '64748b', fontStyle: 'italic' },
-        { token: 'keyword', foreground: '38bdf8', fontStyle: 'bold' },
-        { token: 'string', foreground: '34d399' },
-        { token: 'number', foreground: 'f59e0b' },
-        { token: 'type', foreground: '818cf8' },
-        { token: 'class', foreground: 'a78bfa', fontStyle: 'bold' },
-        { token: 'function', foreground: '60a5fa' },
+        { token: 'keyword', foreground: '0284c7', fontStyle: 'bold' },
+        { token: 'string', foreground: '059669' },
+        { token: 'number', foreground: 'd97706' },
+        { token: 'type', foreground: '7c3aed', fontStyle: 'bold' },
+        { token: 'class', foreground: '4f46e5', fontStyle: 'bold' },
+        { token: 'function', foreground: '2563eb' },
+        { token: 'delimiter', foreground: '475569' },
       ],
       colors: {
-        'editor.background': '#0b0f19',
-        'editor.foreground': '#e2e8f0',
-        'editor.lineHighlightBackground': '#1e293b44',
-        'editorLineNumber.foreground': '#475569',
-        'editorLineNumber.activeForeground': '#94a3b8',
-        'editorIndentGuide.background': '#33415522',
-        'editorIndentGuide.activeBackground': '#3b82f644',
-        'editor.selectionBackground': '#3b82f633',
-        'editorCursor.foreground': '#38bdf8',
+        'editor.background': '#fafbfc',
+        'editor.foreground': '#0f172a',
+        'editor.lineHighlightBackground': '#f1f5f9',
+        'editorLineNumber.foreground': '#94a3b8',
+        'editorLineNumber.activeForeground': '#0f172a',
+        'editorIndentGuide.background': '#e2e8f0',
+        'editorIndentGuide.activeBackground': '#0284c7',
+        'editor.selectionBackground': '#bae6fd55',
+        'editorCursor.foreground': '#0284c7',
+        'editorGutter.background': '#f8fafc',
       }
     });
-    monaco.editor.setTheme('lab-dark');
+    monaco.editor.setTheme('lab-studio-theme');
 
     // Run / Train on Ctrl+Enter or Cmd+Enter
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
@@ -641,7 +643,7 @@ export function Laboratory({
     setStatus('COMPILING');
     addLog('Auto-validating code before training...', 'info');
     setErrorLine(null);
-    
+
     try {
       const valResponse = await fetch(`${API_BASE_URL}/api/v1/laboratory/validate`, {
         method: 'POST',
@@ -649,7 +651,7 @@ export function Laboratory({
         body: JSON.stringify({ code })
       });
       const valData = await valResponse.json();
-      
+
       if (!valData.success) {
         setStatus('ERROR');
         setErrorLine(valData.line || null);
@@ -865,9 +867,9 @@ export function Laboratory({
                 <FileCode size={13} className="text-cyan-400" />
                 <span className="lab-subbar-filename">{MODEL_TEMPLATES[selectedTemplateKey]?.filename || 'model.py'}</span>
               </div>
-              
+
               <div className="lab-subbar-divider" />
-              
+
               {/* Template Switcher Pills */}
               <div className="lab-template-pills">
                 <span className="lab-template-label">Presets:</span>
@@ -943,7 +945,7 @@ export function Laboratory({
                 height="100%"
                 defaultLanguage="python"
                 language="python"
-                theme="lab-dark"
+                theme="lab-studio-theme"
                 value={code}
                 onChange={(val) => {
                   setCode(val || '');
@@ -988,159 +990,159 @@ export function Laboratory({
 
             {/* 🪄 Smart Shell Command Detector — validates real packages */}
             <AnimatePresence>
-            {(() => {
-              const KNOWN_PACKAGES = [
-                'numpy', 'pandas', 'scipy', 'matplotlib', 'seaborn', 'plotly', 'bokeh',
-                'scikit-learn', 'sklearn', 'xgboost', 'lightgbm', 'catboost',
-                'torch', 'torchvision', 'torchaudio', 'pytorch-lightning',
-                'tensorflow', 'keras', 'jax', 'jaxlib', 'flax',
-                'transformers', 'datasets', 'tokenizers', 'accelerate', 'diffusers',
-                'opencv-python', 'cv2', 'pillow', 'imageio', 'albumentations',
-                'flask', 'fastapi', 'uvicorn', 'django', 'requests', 'httpx', 'aiohttp',
-                'sqlalchemy', 'psycopg2', 'pymongo', 'redis', 'celery',
-                'pytest', 'unittest', 'coverage', 'black', 'flake8', 'mypy', 'ruff',
-                'tqdm', 'rich', 'click', 'typer', 'pydantic', 'attrs',
-                'networkx', 'sympy', 'statsmodels', 'lifelines',
-                'nltk', 'spacy', 'gensim', 'textblob', 'langchain',
-                'openai', 'anthropic', 'cohere', 'replicate',
-                'wandb', 'mlflow', 'optuna', 'ray', 'dask',
-                'jupyter', 'ipython', 'notebook', 'jupyterlab',
-                'streamlit', 'gradio', 'panel', 'dash',
-                'cryptography', 'pynacl', 'bcrypt', 'pyotp',
-                'boto3', 'google-cloud-storage', 'azure-storage-blob',
-                'docker', 'kubernetes', 'ansible',
-                'flower', 'flwr', 'syft', 'pysyft',
-                'onnx', 'onnxruntime', 'tensorrt',
-                'huggingface-hub', 'safetensors', 'sentencepiece',
-                'einops', 'timm', 'fairscale', 'deepspeed',
-                'gym', 'gymnasium', 'stable-baselines3',
-                'polars', 'pyarrow', 'duckdb', 'vaex',
-                'beautifulsoup4', 'scrapy', 'selenium', 'playwright',
-                'pyyaml', 'toml', 'python-dotenv', 'configparser',
-                'Pillow', 'h5py', 'zarr', 'lmdb',
-              ];
+              {(() => {
+                const KNOWN_PACKAGES = [
+                  'numpy', 'pandas', 'scipy', 'matplotlib', 'seaborn', 'plotly', 'bokeh',
+                  'scikit-learn', 'sklearn', 'xgboost', 'lightgbm', 'catboost',
+                  'torch', 'torchvision', 'torchaudio', 'pytorch-lightning',
+                  'tensorflow', 'keras', 'jax', 'jaxlib', 'flax',
+                  'transformers', 'datasets', 'tokenizers', 'accelerate', 'diffusers',
+                  'opencv-python', 'cv2', 'pillow', 'imageio', 'albumentations',
+                  'flask', 'fastapi', 'uvicorn', 'django', 'requests', 'httpx', 'aiohttp',
+                  'sqlalchemy', 'psycopg2', 'pymongo', 'redis', 'celery',
+                  'pytest', 'unittest', 'coverage', 'black', 'flake8', 'mypy', 'ruff',
+                  'tqdm', 'rich', 'click', 'typer', 'pydantic', 'attrs',
+                  'networkx', 'sympy', 'statsmodels', 'lifelines',
+                  'nltk', 'spacy', 'gensim', 'textblob', 'langchain',
+                  'openai', 'anthropic', 'cohere', 'replicate',
+                  'wandb', 'mlflow', 'optuna', 'ray', 'dask',
+                  'jupyter', 'ipython', 'notebook', 'jupyterlab',
+                  'streamlit', 'gradio', 'panel', 'dash',
+                  'cryptography', 'pynacl', 'bcrypt', 'pyotp',
+                  'boto3', 'google-cloud-storage', 'azure-storage-blob',
+                  'docker', 'kubernetes', 'ansible',
+                  'flower', 'flwr', 'syft', 'pysyft',
+                  'onnx', 'onnxruntime', 'tensorrt',
+                  'huggingface-hub', 'safetensors', 'sentencepiece',
+                  'einops', 'timm', 'fairscale', 'deepspeed',
+                  'gym', 'gymnasium', 'stable-baselines3',
+                  'polars', 'pyarrow', 'duckdb', 'vaex',
+                  'beautifulsoup4', 'scrapy', 'selenium', 'playwright',
+                  'pyyaml', 'toml', 'python-dotenv', 'configparser',
+                  'Pillow', 'h5py', 'zarr', 'lmdb',
+                ];
 
-              const lines = code.split('\n');
+                const lines = code.split('\n');
 
-              const nonInstallPatterns = [
-                /^pip\s+(list|freeze|check)\s*$/,
-                /^pip\s+show\s+\S{2,}/,
-                /^python\s+\S+\.py/,
-                /^ls(\s+-[a-zA-Z]+)?(\s+\S+)?$/,
-              ];
+                const nonInstallPatterns = [
+                  /^pip\s+(list|freeze|check)\s*$/,
+                  /^pip\s+show\s+\S{2,}/,
+                  /^python\s+\S+\.py/,
+                  /^ls(\s+-[a-zA-Z]+)?(\s+\S+)?$/,
+                ];
 
-              const pipInstallMatch = lines.find(l => {
-                const t = l.trim();
-                if (!t || t.startsWith('!') || t.startsWith('#')) return false;
-                return /^(?:pip|conda)\s+install\s+/.test(t);
-              });
+                const pipInstallMatch = lines.find(l => {
+                  const t = l.trim();
+                  if (!t || t.startsWith('!') || t.startsWith('#')) return false;
+                  return /^(?:pip|conda)\s+install\s+/.test(t);
+                });
 
-              const shellMatch = !pipInstallMatch && lines.find(l => {
-                const t = l.trim();
-                if (!t || t.startsWith('!') || t.startsWith('#')) return false;
-                return nonInstallPatterns.some(pat => pat.test(t));
-              });
+                const shellMatch = !pipInstallMatch && lines.find(l => {
+                  const t = l.trim();
+                  if (!t || t.startsWith('!') || t.startsWith('#')) return false;
+                  return nonInstallPatterns.some(pat => pat.test(t));
+                });
 
-              // Non-install shell commands → just Run
-              if (shellMatch) {
-                const correctedCmd = `!${shellMatch.trim()}`;
-                return (
-                  <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint">
-                    <div className="lab-magic-hint-icon"><Zap size={14} /></div>
-                    <div className="lab-magic-hint-body">
-                      <span className="lab-magic-hint-title">Shell command detected</span>
-                      <span className="lab-magic-hint-sub">Execute <code>{correctedCmd}</code> in sandbox</span>
-                    </div>
-                    <div className="lab-magic-hint-actions">
-                      <button className="lab-magic-btn lab-magic-btn-run" onClick={() => { onExecuteCommand(correctedCmd); setCode(''); }}><Play size={10} /> Run</button>
-                    </div>
-                  </motion.div>
-                );
-              }
+                // Non-install shell commands → just Run
+                if (shellMatch) {
+                  const correctedCmd = `!${shellMatch.trim()}`;
+                  return (
+                    <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint">
+                      <div className="lab-magic-hint-icon"><Zap size={14} /></div>
+                      <div className="lab-magic-hint-body">
+                        <span className="lab-magic-hint-title">Shell command detected</span>
+                        <span className="lab-magic-hint-sub">Execute <code>{correctedCmd}</code> in sandbox</span>
+                      </div>
+                      <div className="lab-magic-hint-actions">
+                        <button className="lab-magic-btn lab-magic-btn-run" onClick={() => { onExecuteCommand(correctedCmd); setCode(''); }}><Play size={10} /> Run</button>
+                      </div>
+                    </motion.div>
+                  );
+                }
 
-              // pip/conda install → validate packages
-              if (pipInstallMatch) {
-                const trimmed = pipInstallMatch.trim();
-                const pkgPart = trimmed.replace(/^(?:pip|conda)\s+install\s+/, '').trim();
-                const pkgNames = pkgPart.split(/\s+/).filter(p => p && !p.startsWith('-'));
+                // pip/conda install → validate packages
+                if (pipInstallMatch) {
+                  const trimmed = pipInstallMatch.trim();
+                  const pkgPart = trimmed.replace(/^(?:pip|conda)\s+install\s+/, '').trim();
+                  const pkgNames = pkgPart.split(/\s+/).filter(p => p && !p.startsWith('-'));
 
-                if (pkgNames.length === 0) return null;
+                  if (pkgNames.length === 0) return null;
 
-                const lastPkg = pkgNames[pkgNames.length - 1];
-                if (lastPkg.length < 2) return null;
+                  const lastPkg = pkgNames[pkgNames.length - 1];
+                  if (lastPkg.length < 2) return null;
 
-                const allValid = pkgNames.every(p =>
-                  KNOWN_PACKAGES.some(kp => kp.toLowerCase() === p.toLowerCase())
-                );
+                  const allValid = pkgNames.every(p =>
+                    KNOWN_PACKAGES.some(kp => kp.toLowerCase() === p.toLowerCase())
+                  );
 
-                const suggestions = !allValid
-                  ? KNOWN_PACKAGES.filter(kp =>
+                  const suggestions = !allValid
+                    ? KNOWN_PACKAGES.filter(kp =>
                       kp.toLowerCase().startsWith(lastPkg.toLowerCase()) &&
                       kp.toLowerCase() !== lastPkg.toLowerCase()
                     ).slice(0, 5)
-                  : [];
+                    : [];
 
-                // All valid → show Install button
-                if (allValid) {
-                  return (
-                    <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint">
-                      <div className="lab-magic-hint-icon"><Package size={14} /></div>
-                      <div className="lab-magic-hint-body">
-                        <span className="lab-magic-hint-title">Install {pkgNames.join(', ')}</span>
-                        <span className="lab-magic-hint-sub">Package{pkgNames.length > 1 ? 's' : ''} verified — ready to install</span>
-                      </div>
-                      <div className="lab-magic-hint-actions">
-                        <button className="lab-magic-btn lab-magic-btn-run" onClick={() => { runPipInstall(pkgNames); setCode(''); }}>
-                          <Download size={10} /> Install Now
-                        </button>
-                      </div>
-                    </motion.div>
-                  );
-                }
+                  // All valid → show Install button
+                  if (allValid) {
+                    return (
+                      <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint">
+                        <div className="lab-magic-hint-icon"><Package size={14} /></div>
+                        <div className="lab-magic-hint-body">
+                          <span className="lab-magic-hint-title">Install {pkgNames.join(', ')}</span>
+                          <span className="lab-magic-hint-sub">Package{pkgNames.length > 1 ? 's' : ''} verified — ready to install</span>
+                        </div>
+                        <div className="lab-magic-hint-actions">
+                          <button className="lab-magic-btn lab-magic-btn-run" onClick={() => { runPipInstall(pkgNames); setCode(''); }}>
+                            <Download size={10} /> Install Now
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  }
 
-                // Partial match → show clickable suggestion pills that install directly
-                if (suggestions.length > 0) {
-                  return (
-                    <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint">
-                      <div className="lab-magic-hint-icon"><Package size={14} /></div>
-                      <div className="lab-magic-hint-body">
-                        <span className="lab-magic-hint-title">Did you mean?</span>
-                        <span className="lab-magic-hint-sub lab-magic-suggestions">
-                          {suggestions.map((s, i) => (
-                            <button key={i} className="lab-magic-suggestion" onClick={() => {
-                              runPipInstall([s]);
-                              setCode('');
-                            }}>
-                              <Download size={8} /> {s}
-                            </button>
-                          ))}
-                        </span>
-                      </div>
-                    </motion.div>
-                  );
-                }
+                  // Partial match → show clickable suggestion pills that install directly
+                  if (suggestions.length > 0) {
+                    return (
+                      <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint">
+                        <div className="lab-magic-hint-icon"><Package size={14} /></div>
+                        <div className="lab-magic-hint-body">
+                          <span className="lab-magic-hint-title">Did you mean?</span>
+                          <span className="lab-magic-hint-sub lab-magic-suggestions">
+                            {suggestions.map((s, i) => (
+                              <button key={i} className="lab-magic-suggestion" onClick={() => {
+                                runPipInstall([s]);
+                                setCode('');
+                              }}>
+                                <Download size={8} /> {s}
+                              </button>
+                            ))}
+                          </span>
+                        </div>
+                      </motion.div>
+                    );
+                  }
 
-                // Unknown package (≥3 chars) → warn but allow install attempt
-                if (lastPkg.length >= 3) {
-                  return (
-                    <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint lab-magic-hint-warn">
-                      <div className="lab-magic-hint-icon"><AlertCircle size={14} /></div>
-                      <div className="lab-magic-hint-body">
-                        <span className="lab-magic-hint-title">Unknown: {lastPkg}</span>
-                        <span className="lab-magic-hint-sub">Not in verified list — may still exist on PyPI</span>
-                      </div>
-                      <div className="lab-magic-hint-actions">
-                        <button className="lab-magic-btn lab-magic-btn-run" onClick={() => { runPipInstall(pkgNames); setCode(''); }}><Play size={10} /> Try Install</button>
-                      </div>
-                    </motion.div>
-                  );
+                  // Unknown package (≥3 chars) → warn but allow install attempt
+                  if (lastPkg.length >= 3) {
+                    return (
+                      <motion.div key="magic-hint" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="lab-magic-hint lab-magic-hint-warn">
+                        <div className="lab-magic-hint-icon"><AlertCircle size={14} /></div>
+                        <div className="lab-magic-hint-body">
+                          <span className="lab-magic-hint-title">Unknown: {lastPkg}</span>
+                          <span className="lab-magic-hint-sub">Not in verified list — may still exist on PyPI</span>
+                        </div>
+                        <div className="lab-magic-hint-actions">
+                          <button className="lab-magic-btn lab-magic-btn-run" onClick={() => { runPipInstall(pkgNames); setCode(''); }}><Play size={10} /> Try Install</button>
+                        </div>
+                      </motion.div>
+                    );
+                  }
+
+                  return null;
                 }
 
                 return null;
-              }
-
-              return null;
-            })()}
+              })()}
             </AnimatePresence>
           </div>
         </div>
@@ -1770,15 +1772,15 @@ export function Laboratory({
           flex-direction: column;
           min-width: 0;
           border-right: 1px solid var(--border);
-          background: #0b0f19;
+          background: #ffffff;
         }
 
         /* ─── Editor Subbar ─── */
         .lab-editor-subbar {
           height: 38px;
           flex-shrink: 0;
-          background: #0f172a;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -1799,13 +1801,13 @@ export function Laboratory({
           font-family: var(--font-mono);
           font-size: 11px;
           font-weight: 700;
-          color: #f1f5f9;
+          color: #0f172a;
           white-space: nowrap;
         }
         .lab-subbar-divider {
           width: 1px;
           height: 14px;
-          background: rgba(255,255,255,0.12);
+          background: #e2e8f0;
         }
         .lab-template-pills {
           display: flex;
@@ -1826,22 +1828,23 @@ export function Laboratory({
           font-size: 10px;
           font-weight: 600;
           border-radius: 4px;
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.03);
-          color: #94a3b8;
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          color: #64748b;
           cursor: pointer;
           transition: all 0.15s ease;
           white-space: nowrap;
         }
         .lab-template-pill:hover {
-          color: #f8fafc;
-          background: rgba(56, 189, 248, 0.1);
-          border-color: rgba(56, 189, 248, 0.3);
+          color: #0284c7;
+          background: #f0f9ff;
+          border-color: #bae6fd;
         }
         .lab-template-pill-active {
-          background: rgba(56, 189, 248, 0.15) !important;
-          color: #38bdf8 !important;
-          border-color: rgba(56, 189, 248, 0.4) !important;
+          background: #e0f2fe !important;
+          color: #0284c7 !important;
+          border-color: #0284c7 !important;
+          font-weight: 700 !important;
         }
 
         .lab-subbar-right {
@@ -1859,9 +1862,9 @@ export function Laboratory({
           color: #64748b;
         }
         .lab-subbar-pos-dim {
-          color: #475569;
+          color: #94a3b8;
           padding-left: 6px;
-          border-left: 1px solid rgba(255,255,255,0.08);
+          border-left: 1px solid #e2e8f0;
         }
         .lab-subbar-actions {
           display: flex;
@@ -1876,26 +1879,26 @@ export function Laboratory({
           border-radius: 4px;
           font-size: 10px;
           font-weight: 600;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.08);
-          color: #cbd5e1;
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          color: #334155;
           cursor: pointer;
           transition: all 0.15s ease;
         }
         .lab-subbar-btn:hover {
-          background: rgba(255,255,255,0.1);
-          color: #fff;
-          border-color: rgba(255,255,255,0.15);
+          background: #f8fafc;
+          color: #0f172a;
+          border-color: #94a3b8;
         }
         .lab-subbar-btn-accent {
-          background: rgba(56, 189, 248, 0.1);
-          border-color: rgba(56, 189, 248, 0.25);
-          color: #38bdf8;
+          background: #f0fdf4;
+          border-color: #86efac;
+          color: #16a34a;
         }
         .lab-subbar-btn-accent:hover {
-          background: rgba(56, 189, 248, 0.2);
-          border-color: rgba(56, 189, 248, 0.4);
-          color: #7dd3fc;
+          background: #dcfce7;
+          border-color: #4ade80;
+          color: #15803d;
         }
 
         .lab-editor-wrap {
@@ -1903,7 +1906,7 @@ export function Laboratory({
           display: flex;
           overflow: hidden;
           position: relative;
-          background: #0b0f19;
+          background: #fafbfc;
         }
         .lab-monaco-container {
           width: 100%;
@@ -2491,8 +2494,8 @@ export function Laboratory({
           min-height: 120px;
           flex-shrink: 0;
           position: relative;
-          background: #060913;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          background: #ffffff;
+          border-top: 1px solid #e2e8f0;
         }
         .lab-console-resize-handle {
           position: absolute;
@@ -2515,15 +2518,15 @@ export function Laboratory({
           align-items: center;
           justify-content: space-between;
           padding: 8px 16px;
-          background: #0a0f1d;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
           user-select: none;
         }
         .lab-console-title {
           font-size: 10px;
           font-weight: 800;
           letter-spacing: 0.12em;
-          color: #94a3b8;
+          color: #475569;
           text-transform: uppercase;
         }
         .lab-clear-btn {
@@ -2532,8 +2535,8 @@ export function Laboratory({
           text-transform: uppercase;
           letter-spacing: 0.1em;
           color: #64748b;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
           cursor: pointer;
           padding: 2px 7px;
           border-radius: 4px;
@@ -2541,9 +2544,9 @@ export function Laboratory({
           font-family: var(--font-sans);
         }
         .lab-clear-btn:hover {
-          color: #f1f5f9;
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.16);
+          color: #0f172a;
+          background: #f1f5f9;
+          border-color: #94a3b8;
         }
         .lab-console-body {
           flex: 1;
@@ -2553,11 +2556,11 @@ export function Laboratory({
           font-family: var(--font-mono);
           font-size: 11px;
           line-height: 1.65;
-          background: #060913;
+          background: #fafbfc;
         }
         .lab-console-body::-webkit-scrollbar { width: 4px; }
         .lab-console-body::-webkit-scrollbar-track { background: transparent; }
-        .lab-console-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 2px; }
+        .lab-console-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
 
         .lab-log-line {
           display: flex;
@@ -2566,7 +2569,7 @@ export function Laboratory({
           padding: 1px 0;
         }
         .lab-log-time {
-          color: #475569;
+          color: #94a3b8;
           flex-shrink: 0;
           font-size: 9.5px;
           font-weight: 600;
@@ -2574,31 +2577,31 @@ export function Laboratory({
           user-select: none;
         }
         .lab-log-msg {
-          color: #94a3b8;
+          color: #1e293b;
           word-break: break-word;
           white-space: pre-wrap;
         }
         .lab-log-error {
-          color: #f87171 !important;
+          color: #dc2626 !important;
           font-weight: 600;
         }
         .lab-log-success {
-          color: #34d399 !important;
+          color: #16a34a !important;
           font-weight: 600;
         }
         .lab-log-warn {
-          color: #fbbf24 !important;
+          color: #d97706 !important;
           font-weight: 600;
         }
         .lab-log-user {
-          color: #38bdf8 !important;
-          background: rgba(56, 189, 248, 0.1);
+          color: #0284c7 !important;
+          background: #e0f2fe;
           padding: 1px 6px;
           border-radius: 3px;
           font-weight: 700;
         }
         .lab-console-empty {
-          color: #475569;
+          color: #94a3b8;
           font-style: italic;
           text-align: center;
           padding: 30px 0;
@@ -2826,8 +2829,8 @@ export function Laboratory({
         /* 🧪 Research Shell Terminal Command Bar Styling */
         .lab-terminal-input-wrapper {
           padding: 8px 14px;
-          background: #090e1c;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          background: #f8fafc;
+          border-top: 1px solid #e2e8f0;
           display: flex;
           flex-direction: column;
         }
@@ -2835,15 +2838,15 @@ export function Laboratory({
           display: flex;
           align-items: center;
           gap: 8px;
-          background: rgba(0, 0, 0, 0.35);
-          border: 1px solid rgba(255, 255, 255, 0.09);
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
           border-radius: 6px;
           padding: 5px 10px;
           transition: border-color 0.15s;
         }
         .lab-terminal-input-inner:focus-within {
-          border-color: rgba(56, 189, 248, 0.4);
-          box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15);
+          border-color: #0284c7;
+          box-shadow: 0 0 0 1px #0284c7;
         }
         .lab-terminal-prompt {
           display: flex;
@@ -2856,7 +2859,7 @@ export function Laboratory({
           background: transparent;
           border: none;
           outline: none;
-          color: #f8fafc;
+          color: #0f172a;
           font-family: var(--font-mono);
           font-size: 11px;
           line-height: 1.45;
@@ -2864,7 +2867,7 @@ export function Laboratory({
           padding: 2px 0;
         }
         .lab-terminal-textarea::placeholder {
-          color: #475569;
+          color: #94a3b8;
           font-style: italic;
         }
         .lab-terminal-hint-badge {
@@ -2874,8 +2877,8 @@ export function Laboratory({
           letter-spacing: 0.08em;
           text-transform: uppercase;
           color: #64748b;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
           padding: 3px 6px;
           border-radius: 4px;
           user-select: none;
@@ -3049,7 +3052,7 @@ export function Laboratory({
       <AnimatePresence>
         {showPurgeModal && (
           <div className="lab-modal-backdrop" onClick={() => !isPurging && setShowPurgeModal(false)}>
-            <motion.div 
+            <motion.div
               className="lab-modal-card"
               initial={{ opacity: 0, scale: 0.94, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -3067,7 +3070,7 @@ export function Laboratory({
                     <p className="lab-modal-subtitle">Reclaim disk space & wipe installed packages</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => setShowPurgeModal(false)}
                   disabled={isPurging}
                   className="lab-modal-close-btn"
@@ -3104,7 +3107,7 @@ export function Laboratory({
               </div>
 
               <div className="lab-modal-footer">
-                <button 
+                <button
                   type="button"
                   onClick={() => setShowPurgeModal(false)}
                   disabled={isPurging}
@@ -3112,7 +3115,7 @@ export function Laboratory({
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={confirmPurgeSandbox}
                   disabled={isPurging}

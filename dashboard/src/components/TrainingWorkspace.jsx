@@ -2046,14 +2046,14 @@ export const TrainingWorkspace = ({
 
         /* ─── High-Contrast Console & Pop-up Inspector ─── */
         .tr-console-container {
-          background: #090d16;
-          border: 1px solid #1e293b;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           border-radius: 8px;
           display: flex;
           flex-direction: column;
           height: 460px;
           position: relative;
-          box-shadow: 0 16px 40px -10px rgba(0,0,0,0.7);
+          box-shadow: 0 4px 20px -4px rgba(0,0,0,0.05);
           overflow: hidden;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -2062,23 +2062,23 @@ export const TrainingWorkspace = ({
           inset: 24px !important;
           height: calc(100vh - 48px) !important;
           z-index: 9999 !important;
-          box-shadow: 0 25px 60px -12px rgba(0,0,0,0.95), 0 0 0 1px #334155 !important;
+          box-shadow: 0 25px 60px -12px rgba(15,23,42,0.3), 0 0 0 1px #cbd5e1 !important;
           border-radius: 12px !important;
         }
         .tr-console-header {
           padding: 0 12px;
           height: 42px;
-          border-bottom: 1px solid #1e293b;
+          border-bottom: 1px solid #e2e8f0;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: #0b1220;
+          background: #f8fafc;
           flex-shrink: 0;
           gap: 8px;
           overflow-x: auto;
         }
         .tr-console-header::-webkit-scrollbar { height: 2px; }
-        .tr-console-header::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        .tr-console-header::-webkit-scrollbar-thumb { background: #cbd5e1; }
         .tr-console-tabs { 
           display: flex; 
           align-items: center;
@@ -2098,34 +2098,34 @@ export const TrainingWorkspace = ({
           letter-spacing: 0.06em;
           white-space: nowrap !important;
           flex-shrink: 0;
-          color: #94a3b8 !important; 
-          border-right: 1px solid rgba(255,255,255,0.06);
-          background: #080e1a;
+          color: #64748b !important; 
+          border-right: 1px solid #e2e8f0;
+          background: #f8fafc;
           cursor: pointer; 
           transition: all 0.15s ease;
           user-select: none;
         }
         .tr-tab .tr-tab-text { 
-          color: #94a3b8 !important; 
+          color: #64748b !important; 
           white-space: nowrap !important;
           transition: color 0.15s ease; 
         }
-        .tr-tab:hover { background: rgba(255,255,255,0.06); }
-        .tr-tab:hover .tr-tab-text { color: #ffffff !important; }
+        .tr-tab:hover { background: #f1f5f9; }
+        .tr-tab:hover .tr-tab-text { color: #0f172a !important; }
         
         .tr-tab.active { 
-          background: #0e172a !important; 
-          border-top: 2px solid #38bdf8 !important; 
-          box-shadow: inset 0 2px 10px rgba(56, 189, 248, 0.15);
+          background: #ffffff !important; 
+          border-top: 2px solid #0284c7 !important; 
+          box-shadow: inset 0 2px 8px rgba(2, 132, 199, 0.08);
         }
-        .tr-tab.active.tab-telemetry { border-top-color: #38bdf8 !important; }
-        .tr-tab.active.tab-telemetry .tr-tab-text { color: #38bdf8 !important; font-weight: 800; }
+        .tr-tab.active.tab-telemetry { border-top-color: #0284c7 !important; }
+        .tr-tab.active.tab-telemetry .tr-tab-text { color: #0284c7 !important; font-weight: 800; }
         
-        .tr-tab.active.tab-feed { border-top-color: #10b981 !important; }
-        .tr-tab.active.tab-feed .tr-tab-text { color: #34d399 !important; font-weight: 800; }
+        .tr-tab.active.tab-feed { border-top-color: #059669 !important; }
+        .tr-tab.active.tab-feed .tr-tab-text { color: #059669 !important; font-weight: 800; }
         
-        .tr-tab.active.tab-audit { border-top-color: #f59e0b !important; }
-        .tr-tab.active.tab-audit .tr-tab-text { color: #fbbf24 !important; font-weight: 800; }
+        .tr-tab.active.tab-audit { border-top-color: #d97706 !important; }
+        .tr-tab.active.tab-audit .tr-tab-text { color: #d97706 !important; font-weight: 800; }
 
         .tr-tab-badge {
           font-size: 8.5px;
@@ -2133,26 +2133,26 @@ export const TrainingWorkspace = ({
           font-weight: 800;
           padding: 1px 5px;
           border-radius: 999px;
-          background: rgba(255,255,255,0.08);
-          color: #cbd5e1;
-          border: 1px solid rgba(255,255,255,0.05);
+          background: #e2e8f0;
+          color: #475569;
+          border: 1px solid #cbd5e1;
           white-space: nowrap;
           flex-shrink: 0;
         }
         .tr-tab.active.tab-telemetry .tr-tab-badge {
-          background: rgba(56, 189, 248, 0.2);
-          color: #38bdf8;
-          border: 1px solid rgba(56, 189, 248, 0.4);
+          background: #e0f2fe;
+          color: #0284c7;
+          border: 1px solid #bae6fd;
         }
         .tr-tab.active.tab-feed .tr-tab-badge {
-          background: rgba(16, 185, 129, 0.2);
-          color: #34d399;
-          border: 1px solid rgba(16, 185, 129, 0.4);
+          background: #ecfdf5;
+          color: #059669;
+          border: 1px solid #a7f3d0;
         }
         .tr-tab.active.tab-audit .tr-tab-badge {
-          background: rgba(245, 158, 11, 0.2);
-          color: #fbbf24;
-          border: 1px solid rgba(245, 158, 11, 0.4);
+          background: #fef3c7;
+          color: #d97706;
+          border: 1px solid #fde68a;
         }
 
         .tr-console-actions { 
@@ -2166,8 +2166,8 @@ export const TrainingWorkspace = ({
           display: flex;
           align-items: center;
           gap: 6px;
-          background: rgba(15, 23, 42, 0.8);
-          border: 1px solid #334155;
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
           padding: 3px 8px;
           border-radius: 4px;
         }
@@ -2175,32 +2175,32 @@ export const TrainingWorkspace = ({
           background: transparent;
           border: none;
           outline: none;
-          color: #f8fafc;
+          color: #0f172a;
           font-size: 9.5px;
           width: 95px;
           font-family: var(--font-mono, monospace);
         }
-        .tr-search-input::placeholder { color: #64748b; }
+        .tr-search-input::placeholder { color: #94a3b8; }
         .tr-latency { 
           display: flex; align-items: center; gap: 5px; 
-          font-size: 8.5px; font-weight: 700; color: #94a3b8; 
+          font-size: 8.5px; font-weight: 700; color: #64748b; 
           text-transform: uppercase; letter-spacing: 0.05em; 
           font-family: var(--font-mono, monospace);
           white-space: nowrap;
           flex-shrink: 0;
         }
-        .tr-latency-dot { width: 5px; height: 5px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px #10B981; }
+        .tr-latency-dot { width: 5px; height: 5px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px rgba(16,185,129,0.5); }
         .tr-btn-tool {
           display: inline-flex; 
           align-items: center; 
           gap: 5px;
-          background: rgba(56, 189, 248, 0.08); 
-          border: 1px solid rgba(56, 189, 248, 0.3);
+          background: #e0f2fe; 
+          border: 1px solid #bae6fd;
           padding: 3px 8px; 
           border-radius: 4px; 
           font-size: 8.5px; 
           font-weight: 800;
-          color: #38bdf8; 
+          color: #0284c7; 
           text-transform: uppercase; 
           letter-spacing: 0.05em;
           white-space: nowrap;
@@ -2209,19 +2209,18 @@ export const TrainingWorkspace = ({
           transition: all 0.15s ease;
         }
         .tr-btn-tool:hover { 
-          background: rgba(56, 189, 248, 0.22); 
-          border-color: #38bdf8; 
-          color: #ffffff; 
-          box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+          background: #bae6fd; 
+          border-color: #0284c7; 
+          color: #0369a1; 
         }
         .tr-btn-clear { 
-          background: rgba(255,255,255,0.04); 
-          border: 1px solid rgba(255,255,255,0.08); 
+          background: #ffffff; 
+          border: 1px solid #cbd5e1; 
           padding: 3px 8px; 
           border-radius: 4px;
           font-size: 8.5px; 
           font-weight: 700; 
-          color: #94a3b8; 
+          color: #64748b; 
           text-transform: uppercase; 
           cursor: pointer; 
           transition: all 0.15s ease; 
@@ -2229,21 +2228,18 @@ export const TrainingWorkspace = ({
           flex-shrink: 0;
         }
         .tr-btn-clear:hover { 
-          background: rgba(239, 68, 68, 0.15); 
-          border-color: rgba(239,68,68,0.4); 
-          color: #f87171; 
+          background: #fee2e2; 
+          border-color: #fca5a5; 
+          color: #dc2626; 
         }
 
         .tr-console-body { 
           flex: 1; overflow-y: auto; padding: 16px 20px; position: relative;
           font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
-          background: #070a12;
+          background: #fafbfc;
         }
         .tr-console-scanline {
-          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-          background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.15) 50%);
-          background-size: 100% 3px;
-          pointer-events: none; z-index: 10; opacity: 0.15;
+          display: none;
         }
         .tr-log-line { 
           display: flex; align-items: baseline; gap: 12px; padding: 4px 80px 4px 8px; 
@@ -2254,8 +2250,8 @@ export const TrainingWorkspace = ({
           box-sizing: border-box;
         }
         .tr-log-line:hover { 
-          background: rgba(56, 189, 248, 0.08); 
-          border-left-color: #38bdf8; 
+          background: #f1f5f9; 
+          border-left-color: #0284c7; 
         }
         .tr-log-ts { color: #94a3b8; flex-shrink: 0; width: 68px; font-size: 10px; font-family: var(--font-mono); }
         
@@ -2264,19 +2260,19 @@ export const TrainingWorkspace = ({
           display: inline-flex; align-items: center;
         }
         .tr-pfx-node1 {
-          color: #38bdf8 !important;
+          color: #0284c7 !important;
         }
         .tr-pfx-node2 {
-          color: #c084fc !important;
+          color: #7c3aed !important;
         }
         .tr-pfx-sys {
-          color: #34d399 !important;
+          color: #059669 !important;
         }
         .tr-pfx-default {
-          color: #94a3b8 !important;
+          color: #64748b !important;
         }
 
-        .tr-log-msg { white-space: pre-wrap; font-weight: 500; word-break: break-all; flex: 1; }
+        .tr-log-msg { white-space: pre-wrap; font-weight: 500; word-break: break-all; flex: 1; color: #0f172a; }
         .tr-log-inspect-badge {
           position: absolute;
           right: 8px;
@@ -2287,15 +2283,15 @@ export const TrainingWorkspace = ({
           gap: 4px;
           font-size: 8px;
           font-weight: 800;
-          color: #38bdf8;
-          background: rgba(15, 23, 42, 0.92);
-          border: 1px solid rgba(56, 189, 248, 0.4);
+          color: #0284c7;
+          background: #ffffff;
+          border: 1px solid #bae6fd;
           padding: 2px 7px;
           border-radius: 3px;
           opacity: 0;
           pointer-events: none;
           transition: opacity 0.15s ease;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
           white-space: nowrap;
         }
         .tr-log-line:hover .tr-log-inspect-badge { 
@@ -2303,7 +2299,7 @@ export const TrainingWorkspace = ({
         }
         .tr-log-glow { 
           position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-          background: rgba(56, 189, 248, 0.03); opacity: 0;
+          background: rgba(2, 132, 199, 0.03); opacity: 0;
           transition: opacity 0.15s ease; pointer-events: none;
         }
         .tr-log-line:hover .tr-log-glow { opacity: 1; }
@@ -2311,13 +2307,12 @@ export const TrainingWorkspace = ({
         /* ─── Floating Pop-Up Bar on Selection ─── */
         .tr-popup-quickbar {
           position: absolute; bottom: 12px; left: 16px; right: 16px;
-          background: rgba(15, 23, 42, 0.95);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(56, 189, 248, 0.4);
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
           border-radius: 8px;
           padding: 8px 14px;
           display: flex; align-items: center; justify-content: space-between;
-          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.15);
+          box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 0 1px rgba(0,0,0,0.1);
           z-index: 20;
           gap: 12px;
         }
@@ -2327,118 +2322,118 @@ export const TrainingWorkspace = ({
         }
         .tr-popup-bar-badge {
           display: inline-flex; align-items: center; gap: 4px;
-          background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);
-          color: #38bdf8; font-size: 8px; font-weight: 800;
+          background: #e0f2fe; border: 1px solid #bae6fd;
+          color: #0284c7; font-size: 8px; font-weight: 800;
           padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0;
         }
         .tr-popup-bar-ts {
-          font-family: var(--font-mono, monospace); font-size: 10px; color: #94a3b8; flex-shrink: 0;
+          font-family: var(--font-mono, monospace); font-size: 10px; color: #64748b; flex-shrink: 0;
         }
         .tr-popup-bar-prefix {
-          font-family: var(--font-mono, monospace); font-size: 10px; font-weight: 800; color: #38bdf8; flex-shrink: 0;
+          font-family: var(--font-mono, monospace); font-size: 10px; font-weight: 800; color: #0284c7; flex-shrink: 0;
         }
         .tr-popup-bar-msg {
-          font-family: var(--font-mono, monospace); font-size: 10px; color: #e2e8f0;
+          font-family: var(--font-mono, monospace); font-size: 10px; color: #0f172a;
         }
         .tr-popup-bar-actions {
           display: flex; align-items: center; gap: 6px; flex-shrink: 0;
         }
         .tr-popup-bar-btn-copy {
           display: flex; align-items: center; gap: 4px;
-          background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);
-          color: #38bdf8; font-size: 9px; font-weight: 800;
+          background: #e0f2fe; border: 1px solid #bae6fd;
+          color: #0284c7; font-size: 9px; font-weight: 800;
           padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
         }
-        .tr-popup-bar-btn-copy:hover { background: rgba(56, 189, 248, 0.3); color: #ffffff; }
+        .tr-popup-bar-btn-copy:hover { background: #bae6fd; color: #0369a1; }
         .tr-popup-bar-btn-close {
-          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-          color: #94a3b8; padding: 4px 6px; border-radius: 4px;
+          background: #f1f5f9; border: 1px solid #cbd5e1;
+          color: #64748b; padding: 4px 6px; border-radius: 4px;
           cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
         }
-        .tr-popup-bar-btn-close:hover { background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239,68,68,0.4); }
+        .tr-popup-bar-btn-close:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
 
         /* ─── Pop-up Inspector Modal ─── */
         .tr-modal-backdrop {
           position: fixed; inset: 0; z-index: 10000;
-          background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
+          background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);
           display: flex; align-items: center; justify-content: center;
           padding: 20px;
         }
         .tr-modal-card {
           width: 100%; max-width: 680px;
-          background: #0b1220 !important; border: 1px solid #334155 !important;
-          border-radius: 12px; box-shadow: 0 25px 60px -10px rgba(0,0,0,0.95), 0 0 25px rgba(56, 189, 248, 0.15) !important;
+          background: #ffffff !important; border: 1px solid #cbd5e1 !important;
+          border-radius: 12px; box-shadow: 0 25px 60px -10px rgba(15,23,42,0.25) !important;
           display: flex; flex-direction: column; overflow: hidden;
-          color: #f8fafc !important;
+          color: #0f172a !important;
         }
         .tr-modal-header {
-          padding: 16px 20px; background: #0f172a !important;
-          border-bottom: 1px solid #1e293b !important;
+          padding: 16px 20px; background: #f8fafc !important;
+          border-bottom: 1px solid #e2e8f0 !important;
           display: flex; justify-content: space-between; align-items: center;
         }
         .tr-modal-tool-btn {
           display: flex; align-items: center; gap: 5px;
-          background: rgba(56, 189, 248, 0.15) !important; border: 1px solid rgba(56, 189, 248, 0.35) !important;
-          color: #38bdf8 !important; font-size: 9px; font-weight: 800;
+          background: #e0f2fe !important; border: 1px solid #bae6fd !important;
+          color: #0284c7 !important; font-size: 9px; font-weight: 800;
           padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
         }
-        .tr-modal-tool-btn:hover { background: rgba(56, 189, 248, 0.3) !important; color: #ffffff !important; }
+        .tr-modal-tool-btn:hover { background: #bae6fd !important; color: #0369a1 !important; }
         .tr-modal-close-btn {
-          background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.15) !important;
-          color: #cbd5e1 !important; border-radius: 6px; padding: 6px;
+          background: #ffffff !important; border: 1px solid #cbd5e1 !important;
+          color: #64748b !important; border-radius: 6px; padding: 6px;
           display: flex; align-items: center; justify-content: center;
           cursor: pointer; transition: all 0.2s;
         }
-        .tr-modal-close-btn:hover { background: rgba(239,68,68,0.25) !important; color: #f87171 !important; border-color: rgba(239,68,68,0.5) !important; }
+        .tr-modal-close-btn:hover { background: #fee2e2 !important; color: #dc2626 !important; border-color: #fca5a5 !important; }
         
         .tr-modal-meta-grid {
           display: grid; grid-template-columns: repeat(2, 1fr);
-          gap: 10px; padding: 16px 20px; background: #080d18 !important;
-          border-bottom: 1px solid #1e293b !important;
+          gap: 10px; padding: 16px 20px; background: #f8fafc !important;
+          border-bottom: 1px solid #e2e8f0 !important;
         }
         .tr-meta-item {
           display: flex; flex-direction: column; gap: 4px;
-          background: #0f172a !important; padding: 10px 14px;
-          border-radius: 6px; border: 1px solid #1e293b !important;
+          background: #ffffff !important; padding: 10px 14px;
+          border-radius: 6px; border: 1px solid #e2e8f0 !important;
         }
-        .tr-meta-k { font-size: 9px; font-weight: 800; color: #94a3b8 !important; text-transform: uppercase; letter-spacing: 0.08em; }
-        .tr-meta-v { font-size: 12px; font-weight: 700; color: #f8fafc !important; }
+        .tr-meta-k { font-size: 9px; font-weight: 800; color: #64748b !important; text-transform: uppercase; letter-spacing: 0.08em; }
+        .tr-meta-v { font-size: 12px; font-weight: 700; color: #0f172a !important; }
 
         .tr-modal-payload-box {
           padding: 16px 20px; display: flex; flex-direction: column; gap: 8px;
-          background: #0b1220 !important;
+          background: #fafbfc !important;
         }
         .tr-payload-header {
           display: flex; justify-content: space-between; align-items: center;
         }
         .tr-payload-copy-btn {
           display: flex; align-items: center; gap: 5px;
-          background: rgba(56, 189, 248, 0.15) !important; border: 1px solid rgba(56, 189, 248, 0.35) !important;
-          color: #38bdf8 !important; font-size: 9px; font-weight: 800;
+          background: #e0f2fe !important; border: 1px solid #bae6fd !important;
+          color: #0284c7 !important; font-size: 9px; font-weight: 800;
           padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
         }
-        .tr-payload-copy-btn:hover { background: rgba(56, 189, 248, 0.3) !important; color: #ffffff !important; }
+        .tr-payload-copy-btn:hover { background: #bae6fd !important; color: #0369a1 !important; }
         .tr-payload-content {
-          background: #030712 !important; border: 1px solid #1e293b !important;
+          background: #ffffff !important; border: 1px solid #e2e8f0 !important;
           border-radius: 6px; padding: 14px 16px;
           font-family: var(--font-mono, monospace); font-size: 11.5px;
           line-height: 1.6; max-height: 220px; overflow-y: auto;
           white-space: pre-wrap; word-break: break-all;
-          color: #38bdf8 !important;
+          color: #0f172a !important;
         }
 
         .tr-modal-footer {
-          padding: 12px 20px; background: #0f172a !important;
-          border-top: 1px solid #1e293b !important;
+          padding: 12px 20px; background: #f8fafc !important;
+          border-top: 1px solid #e2e8f0 !important;
           display: flex; justify-content: space-between; align-items: center;
         }
         .tr-footer-btn-secondary {
           display: flex; align-items: center; gap: 6px;
-          background: #1e293b !important; border: 1px solid #334155 !important;
-          color: #f1f5f9 !important; font-size: 10px; font-weight: 700;
+          background: #ffffff !important; border: 1px solid #cbd5e1 !important;
+          color: #334155 !important; font-size: 10px; font-weight: 700;
           padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
         }
-        .tr-footer-btn-secondary:hover { background: #334155 !important; color: #ffffff !important; border-color: #475569 !important; }
+        .tr-footer-btn-secondary:hover { background: #f1f5f9 !important; color: #0f172a !important; border-color: #94a3b8 !important; }
         .tr-footer-btn-primary {
           background: #0284c7 !important; border: none; color: #ffffff !important;
           font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
@@ -2520,15 +2515,15 @@ export const TrainingWorkspace = ({
           flex-wrap: wrap;
           gap: 6px;
           padding-top: 6px;
-          border-top: 1px dashed rgba(255, 255, 255, 0.08);
+          border-top: 1px dashed #cbd5e1;
         }
         .tr-cmd-tag {
           font-family: var(--font-mono, monospace);
           font-size: 9px;
           font-weight: 700;
-          color: #38bdf8 !important;
-          background: rgba(56, 189, 248, 0.1) !important;
-          border: 1px solid rgba(56, 189, 248, 0.25) !important;
+          color: #0284c7 !important;
+          background: #e0f2fe !important;
+          border: 1px solid #bae6fd !important;
           padding: 2px 6px;
           border-radius: 3px;
           cursor: pointer;
@@ -2536,9 +2531,9 @@ export const TrainingWorkspace = ({
           outline: none;
         }
         .tr-cmd-tag:hover {
-          background: rgba(56, 189, 248, 0.22) !important;
-          border-color: #38bdf8 !important;
-          color: #ffffff !important;
+          background: #bae6fd !important;
+          border-color: #0284c7 !important;
+          color: #0369a1 !important;
         }
 
         .tr-cli-input-row {
@@ -2547,10 +2542,10 @@ export const TrainingWorkspace = ({
           gap: 8px;
           margin-top: 14px;
           padding-top: 10px;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
+          border-top: 1px solid #e2e8f0;
         }
         .tr-cli-prompt-label {
-          color: #10b981;
+          color: #059669;
           font-weight: 800;
           font-family: var(--font-mono, monospace);
           font-size: 12px;
@@ -2561,20 +2556,20 @@ export const TrainingWorkspace = ({
           background: transparent;
           border: none;
           outline: none;
-          color: #38bdf8;
+          color: #0f172a;
           font-family: var(--font-mono, monospace);
           font-size: 11px;
         }
         .tr-cli-text-input::placeholder {
-          color: rgba(255, 255, 255, 0.25);
+          color: #94a3b8;
           font-style: italic;
         }
         .tr-cli-send-btn {
           height: 22px;
           padding: 0 8px;
-          background: #1e293b;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: #94a3b8;
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          color: #334155;
           font-size: 8px;
           font-weight: 800;
           border-radius: 3px;
@@ -2583,8 +2578,9 @@ export const TrainingWorkspace = ({
           transition: all 0.15s;
         }
         .tr-cli-send-btn:hover {
-          background: #334155;
-          color: #ffffff;
+          background: #f1f5f9;
+          color: #0f172a;
+          border-color: #94a3b8;
         }
 
         .tr-console-body::-webkit-scrollbar { width: 6px; }
@@ -2840,8 +2836,8 @@ export const TrainingWorkspace = ({
           align-items: center;
           justify-content: space-between;
           padding: 10px 18px;
-          background: #090e1a;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
           flex-wrap: wrap;
           gap: 10px;
         }
@@ -2856,14 +2852,14 @@ export const TrainingWorkspace = ({
           align-items: center;
           gap: 6px;
           padding: 4px 10px;
-          background: rgba(16, 185, 129, 0.12);
-          border: 1px solid rgba(16, 185, 129, 0.25);
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
           border-radius: 6px;
         }
         .tr-meta-label {
           font-size: 10px;
           font-weight: 700;
-          color: #94a3b8 !important;
+          color: #047857 !important;
           text-transform: uppercase;
           letter-spacing: 0.08em;
         }
@@ -2871,21 +2867,21 @@ export const TrainingWorkspace = ({
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           font-weight: 700;
-          color: #34d399 !important;
+          color: #065f46 !important;
         }
         .tr-meta-dataset-pill {
           display: inline-flex;
           align-items: center;
           gap: 6px;
           padding: 4px 10px;
-          background: rgba(56, 189, 248, 0.12);
-          border: 1px solid rgba(56, 189, 248, 0.25);
+          background: #f0f9ff;
+          border: 1px solid #bae6fd;
           border-radius: 6px;
         }
         .tr-meta-dataset-text {
           font-size: 10px;
           font-weight: 700;
-          color: #38bdf8 !important;
+          color: #0369a1 !important;
           font-family: var(--font-mono, monospace);
         }
         .tr-meta-audit-badge {
@@ -2893,9 +2889,9 @@ export const TrainingWorkspace = ({
           align-items: center;
           gap: 6px;
           padding: 4px 10px;
-          background: rgba(16, 185, 129, 0.18);
-          border: 1px solid rgba(16, 185, 129, 0.4);
-          color: #34d399 !important;
+          background: #ecfdf5;
+          border: 1px solid #6ee7b7;
+          color: #047857 !important;
           font-size: 9px;
           font-weight: 800;
           letter-spacing: 0.1em;
@@ -2906,11 +2902,12 @@ export const TrainingWorkspace = ({
         /* ── Script Body & Code Editor ── */
         .tr-script-body {
           padding: 0;
-          background: #03060c;
+          background: #fafbfc;
           flex: 1;
           overflow-y: auto;
           overflow-x: auto;
           max-height: 480px;
+          border-bottom: 1px solid #e2e8f0;
         }
         .tr-code-view-wrap {
           width: 100%;
@@ -2928,7 +2925,7 @@ export const TrainingWorkspace = ({
           transition: background 0.1s;
         }
         .tr-code-row:hover {
-          background: rgba(255, 255, 255, 0.03);
+          background: #f1f5f9;
         }
         .tr-code-row .tr-gutter-num {
           width: 46px;
@@ -2936,9 +2933,9 @@ export const TrainingWorkspace = ({
           max-width: 46px;
           padding: 0 10px;
           text-align: right;
-          color: #475569 !important;
-          background: #020408;
-          border-right: 1px solid rgba(255, 255, 255, 0.08);
+          color: #94a3b8 !important;
+          background: #f8fafc;
+          border-right: 1px solid #e2e8f0;
           user-select: none;
           vertical-align: top;
           font-family: inherit;
@@ -2947,7 +2944,7 @@ export const TrainingWorkspace = ({
         }
         .tr-code-row .tr-code-line {
           padding: 0 16px;
-          color: #f1f5f9 !important;
+          color: #0f172a !important;
           white-space: pre;
           vertical-align: top;
           overflow: hidden;
@@ -2964,12 +2961,12 @@ export const TrainingWorkspace = ({
           width: 100%;
           height: 420px;
           padding: 18px 24px;
-          background: #03060c;
-          color: #38bdf8 !important;
+          background: #fafbfc;
+          color: #0f172a !important;
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           line-height: 1.6;
-          border: none;
+          border: 1px solid #e2e8f0;
           outline: none;
           resize: vertical;
         }

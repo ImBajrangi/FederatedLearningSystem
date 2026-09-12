@@ -251,30 +251,31 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           flex-direction: column;
           height: 100%;
           overflow: hidden;
-          background: #0a0e17;
-          border-radius: 4px;
+          background: #ffffff;
+          border-radius: 8px;
           position: relative;
-          border: 1px solid rgba(255,255,255,0.06);
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
         .bl-root::before {
           content: '';
           position: absolute;
           top: 0; left: 0; right: 0;
-          height: 1px;
+          height: 2px;
           background: linear-gradient(90deg, transparent, #10b981, transparent);
-          opacity: 0.4;
+          opacity: 0.6;
           z-index: 5;
         }
 
         /* ── Header ── */
         .bl-header {
           padding: 12px 20px;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          border-bottom: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
           justify-content: space-between;
           flex-shrink: 0;
-          background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+          background: #f8fafc;
         }
         .bl-header-left {
           display: flex;
@@ -283,12 +284,11 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         }
         .bl-header-icon {
           color: #10b981;
-          opacity: 0.85;
         }
         .bl-header-title {
           font-size: 10px;
           font-weight: 800;
-          color: rgba(255,255,255,0.55);
+          color: #64748b;
           text-transform: uppercase;
           letter-spacing: 0.25em;
           font-family: monospace;
@@ -305,12 +305,11 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         }
         .bl-db-icon {
           color: #10b981;
-          opacity: 0.8;
         }
         .bl-header-name {
           font-size: 12px;
-          font-weight: 600;
-          color: rgba(255,255,255,0.85);
+          font-weight: 700;
+          color: #0f172a;
           margin: 0;
         }
         .bl-sync-badge {
@@ -318,15 +317,15 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           align-items: center;
           gap: 8px;
           padding: 4px 12px;
-          background: rgba(16,185,129,0.08);
-          border: 1px solid rgba(16,185,129,0.2);
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
           border-radius: 4px;
         }
         .bl-sync-dot {
           width: 6px; height: 6px;
           border-radius: 50%;
           background: #10b981;
-          box-shadow: 0 0 8px rgba(16,185,129,0.6);
+          box-shadow: 0 0 8px rgba(16,185,129,0.5);
           animation: bl-pulse 2s infinite;
         }
         @keyframes bl-pulse {
@@ -337,7 +336,7 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-sync-badge span {
           font-size: 9px;
           font-weight: 700;
-          color: #34d399;
+          color: #047857;
           text-transform: uppercase;
           letter-spacing: 0.08em;
         }
@@ -348,12 +347,12 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           grid-template-columns: 140px 1fr 110px 130px;
           align-items: center;
           padding: 10px 20px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          background: rgba(0,0,0,0.4);
+          border-bottom: 1px solid #e2e8f0;
+          background: #f8fafc;
           flex-shrink: 0;
           font-size: 9px;
           font-weight: 800;
-          color: rgba(255,255,255,0.4);
+          color: #64748b;
           text-transform: uppercase;
           letter-spacing: 0.2em;
           font-family: monospace;
@@ -369,27 +368,27 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-rows {
           flex: 1;
           overflow-y: auto;
-          background: #060a12;
+          background: #ffffff;
         }
         .bl-rows::-webkit-scrollbar { width: 5px; }
-        .bl-rows::-webkit-scrollbar-track { background: #060a12; }
-        .bl-rows::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        .bl-rows::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .bl-rows::-webkit-scrollbar-track { background: #fafbfc; }
+        .bl-rows::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .bl-rows::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .bl-row {
           display: grid;
           grid-template-columns: 140px 1fr 110px 130px;
           align-items: center;
           padding: 12px 20px;
-          border-bottom: 1px solid rgba(255,255,255,0.04);
-          transition: background 0.2s;
+          border-bottom: 1px solid #f1f5f9;
+          transition: background 0.15s;
         }
         .bl-row:hover {
-          background: rgba(255,255,255,0.04);
+          background: #f8fafc;
         }
         .bl-row-genesis {
-          background: rgba(16,185,129,0.04);
-          border-left: 2px solid #10b981;
+          background: #f0fdf4;
+          border-left: 3px solid #10b981;
         }
 
         /* ── Cells ── */
@@ -401,19 +400,19 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-block-dot {
           width: 6px; height: 6px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.3);
+          background: #94a3b8;
           flex-shrink: 0;
         }
         .bl-dot-genesis {
           background: #10b981;
-          box-shadow: 0 0 10px rgba(16,185,129,0.6);
+          box-shadow: 0 0 10px rgba(16,185,129,0.5);
         }
         .bl-block-name {
           font-size: 11px;
           font-weight: 700;
-          color: rgba(255,255,255,0.9);
+          color: #0f172a;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.08em;
           font-family: monospace;
         }
 
@@ -428,21 +427,22 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-hash-text {
           font-family: monospace;
           font-size: 10px;
-          color: rgba(255,255,255,0.5);
+          color: #475569;
           letter-spacing: 0.02em;
-          transition: color 0.2s;
+          transition: color 0.15s;
         }
         .bl-merkle-badge {
           font-size: 8px;
           padding: 1px 6px;
-          background: rgba(6,182,212,0.1);
-          border: 1px solid rgba(6,182,212,0.25);
-          color: #22d3ee;
-          border-radius: 2px;
+          background: #e0f2fe;
+          border: 1px solid #bae6fd;
+          color: #0369a1;
+          border-radius: 3px;
           font-family: monospace;
+          font-weight: 600;
         }
         .bl-row:hover .bl-hash-text {
-          color: rgba(255,255,255,0.8);
+          color: #0f172a;
         }
 
         .bl-cell-load {
@@ -454,7 +454,7 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-load-text {
           font-size: 10px;
           font-weight: 700;
-          color: rgba(255,255,255,0.4);
+          color: #64748b;
           text-transform: uppercase;
           font-family: monospace;
           white-space: nowrap;
@@ -468,11 +468,11 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           width: 3px;
           height: 10px;
           background: #10b981;
-          opacity: 0.4;
+          opacity: 0.5;
           transition: opacity 0.2s;
         }
         .bl-row:hover .bl-load-bar {
-          opacity: 0.85;
+          opacity: 1;
         }
 
         .bl-cell-status {
@@ -486,25 +486,25 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           letter-spacing: 0.12em;
           padding: 3px 10px;
           border: 1px solid;
-          border-radius: 3px;
+          border-radius: 4px;
           white-space: nowrap;
         }
         .bl-tag-auth {
-          color: #34d399;
-          border-color: rgba(52,211,153,0.3);
-          background: rgba(52,211,153,0.08);
+          color: #047857;
+          border-color: #a7f3d0;
+          background: #ecfdf5;
         }
         .bl-tag-verified {
-          color: #10b981;
-          border-color: rgba(16,185,129,0.25);
-          background: rgba(16,185,129,0.08);
+          color: #047857;
+          border-color: #a7f3d0;
+          background: #ecfdf5;
         }
 
         /* ── Modal ── */
         .bl-modal-backdrop {
           position: fixed;
           inset: 0;
-          background: rgba(4, 8, 16, 0.85);
+          background: rgba(15, 23, 42, 0.6);
           backdrop-filter: blur(8px);
           z-index: 1000;
           display: flex;
@@ -513,25 +513,25 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           padding: 20px;
         }
         .bl-modal-content {
-          background: #090e1a;
-          border: 1px solid rgba(255, 255, 255, 0.16);
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
           border-radius: 12px;
           width: 100%;
           max-width: 760px;
           max-height: 88vh;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(16, 185, 129, 0.1);
+          box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
           overflow: hidden;
-          color: #f1f5f9;
+          color: #0f172a;
         }
         .bl-modal-header {
           padding: 18px 24px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+          background: #f8fafc;
         }
         .bl-modal-title-group {
           display: flex;
@@ -542,8 +542,8 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           width: 36px;
           height: 36px;
           border-radius: 8px;
-          background: rgba(16, 185, 129, 0.12);
-          border: 1px solid rgba(16, 185, 129, 0.3);
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -551,31 +551,32 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-modal-title {
           font-size: 15px;
           font-weight: 800;
-          color: #ffffff !important;
+          color: #0f172a !important;
           margin: 0;
-          letter-spacing: 0.02em;
+          letter-spacing: 0.01em;
         }
         .bl-modal-subtitle {
           font-size: 10px;
           font-weight: 600;
-          color: #94a3b8;
+          color: #64748b;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.08em;
           display: block;
           margin-top: 2px;
         }
         .bl-modal-close {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
           border-radius: 6px;
-          color: #cbd5e1;
+          color: #64748b;
           cursor: pointer;
           padding: 6px;
           transition: all 0.2s;
         }
         .bl-modal-close:hover {
-          background: rgba(255, 255, 255, 0.15);
-          color: #ffffff;
+          background: #fee2e2;
+          color: #dc2626;
+          border-color: #fca5a5;
         }
         .bl-modal-body {
           padding: 24px;
@@ -583,16 +584,16 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           display: flex;
           flex-direction: column;
           gap: 20px;
-          background: #070b14;
+          background: #fafbfc;
         }
         .bl-meta-grid {
           display: flex;
           flex-direction: column;
           gap: 14px;
-          background: rgba(15, 23, 42, 0.7);
+          background: #ffffff;
           padding: 18px;
           border-radius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid #e2e8f0;
         }
         .bl-meta-item {
           display: flex;
@@ -602,33 +603,33 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-meta-label {
           font-size: 10px;
           font-weight: 700;
-          color: #94a3b8 !important;
+          color: #475569 !important;
           text-transform: uppercase;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.08em;
         }
         .bl-meta-badge-verified {
           font-size: 9px;
           font-weight: 700;
-          color: #34d399;
-          background: rgba(16, 185, 129, 0.12);
-          border: 1px solid rgba(16, 185, 129, 0.25);
+          color: #047857;
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
           padding: 2px 8px;
           border-radius: 4px;
         }
         .bl-hash-box {
-          background: #030712;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           border-radius: 6px;
           padding: 10px 14px;
           display: flex;
           align-items: center;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
         }
         .bl-hash-val-primary {
           font-family: var(--font-mono, monospace);
           font-size: 11px;
-          font-weight: 600;
-          color: #34d399 !important;
+          font-weight: 700;
+          color: #059669 !important;
           word-break: break-all;
           line-height: 1.5;
         }
@@ -636,15 +637,15 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           font-weight: 600;
-          color: #94a3b8 !important;
+          color: #475569 !important;
           word-break: break-all;
           line-height: 1.5;
         }
         .bl-hash-val-merkle {
           font-family: var(--font-mono, monospace);
           font-size: 11px;
-          font-weight: 600;
-          color: #38bdf8 !important;
+          font-weight: 700;
+          color: #0284c7 !important;
           word-break: break-all;
           line-height: 1.5;
         }
@@ -655,7 +656,7 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           grid-template-columns: repeat(4, 1fr);
           gap: 12px;
           padding-top: 10px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          border-top: 1px solid #e2e8f0;
         }
         @media (max-width: 640px) {
           .bl-meta-cards-grid {
@@ -663,8 +664,8 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           }
         }
         .bl-metric-card {
-          background: #030712;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           border-radius: 6px;
           padding: 10px 12px;
           display: flex;
@@ -681,7 +682,7 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-metric-card-val {
           font-size: 11px;
           font-weight: 700;
-          color: #ffffff !important;
+          color: #0f172a !important;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -696,25 +697,25 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
         .bl-txs-title {
           font-size: 11px;
           font-weight: 800;
-          color: #e2e8f0 !important;
+          color: #0f172a !important;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.08em;
           margin: 0;
         }
         .bl-txs-count-badge {
           font-size: 9px;
           font-weight: 700;
-          color: #94a3b8;
-          background: rgba(255, 255, 255, 0.06);
+          color: #475569;
+          background: #f1f5f9;
           padding: 2px 8px;
           border-radius: 9999px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid #e2e8f0;
         }
         .bl-txs-table-wrapper {
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid #e2e8f0;
           border-radius: 8px;
           overflow: hidden;
-          background: #030712;
+          background: #ffffff;
         }
         .bl-txs-table {
           width: 100%;
@@ -722,45 +723,45 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           font-size: 11px;
         }
         .bl-txs-table th {
-          background: #0b1220;
+          background: #f8fafc;
           padding: 10px 14px;
           text-align: left;
-          color: #94a3b8 !important;
+          color: #475569 !important;
           font-size: 9px;
           font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          letter-spacing: 0.08em;
+          border-bottom: 1px solid #e2e8f0;
         }
         .bl-txs-table td {
           padding: 12px 14px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-          color: #f1f5f9 !important;
+          border-top: 1px solid #f1f5f9;
+          color: #0f172a !important;
           vertical-align: middle;
         }
         .bl-tx-node-name {
           font-weight: 700;
-          color: #ffffff !important;
+          color: #0f172a !important;
         }
         .bl-tx-hash-cell {
           font-family: var(--font-mono, monospace);
           font-size: 11px;
-          color: #38bdf8 !important;
+          color: #0284c7 !important;
         }
         .bl-tx-rep-val {
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           font-weight: 700;
-          color: #34d399 !important;
+          color: #059669 !important;
         }
         .bl-badge-type {
           font-size: 8px;
           font-weight: 800;
           padding: 3px 8px;
           border-radius: 4px;
-          background: rgba(59, 130, 246, 0.15);
-          color: #60a5fa !important;
-          border: 1px solid rgba(59, 130, 246, 0.3);
+          background: #eff6ff;
+          color: #2563eb !important;
+          border: 1px solid #bfdbfe;
           letter-spacing: 0.05em;
         }
         .bl-badge-status {
@@ -769,15 +770,15 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           letter-spacing: 0.05em;
         }
         .bl-status-valid {
-          color: #34d399 !important;
+          color: #059669 !important;
         }
         .bl-status-err {
-          color: #f87171 !important;
+          color: #dc2626 !important;
         }
         .bl-tx-empty {
           text-align: center;
           padding: 24px;
-          color: #64748b !important;
+          color: #94a3b8 !important;
           font-style: italic;
         }
 
@@ -792,12 +793,12 @@ export const BlockchainRibbon = ({ blockchain = [] }) => {
           height: 100%;
         }
         .bl-empty-icon {
-          color: rgba(255,255,255,0.08);
+          color: #cbd5e1;
         }
         .bl-empty span {
           font-size: 10px;
           font-weight: 700;
-          color: rgba(255,255,255,0.4) !important;
+          color: #94a3b8 !important;
           text-transform: uppercase;
           letter-spacing: 0.15em;
         }
