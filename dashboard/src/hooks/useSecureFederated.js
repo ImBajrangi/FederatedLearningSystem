@@ -259,25 +259,41 @@ export function useSecureFederated() {
     const connect = () => {
       if (ws.current) {
         ws.current.onclose = null;
-        ws.current.close();
+        ws.current.onerror = null;
+        if (ws.current.readyState === WebSocket.OPEN) {
+          ws.current.close();
+        }
       }
 
-      console.log("Connecting to Secure Bridge:", WS_URL);
-      ws.current = new WebSocket(WS_URL);
+      try {
+        const socket = new WebSocket(WS_URL);
+        ws.current = socket;
 
-      ws.current.onopen = () => {
-        setIsConnected(true);
-        console.log("Bridge Connected");
-      };
+        socket.onopen = () => {
+          if (!isMounted) return;
+          setIsConnected(true);
+        };
 
-      ws.current.onmessage = onMessage;
+        socket.onmessage = (evt) => {
+          if (isMounted) onMessage(evt);
+        };
 
-      ws.current.onclose = () => {
-        setIsConnected(false);
-        if (isMounted) reconnectTimeout = setTimeout(connect, 3000);
-      };
+        socket.onclose = () => {
+          if (!isMounted) return;
+          setIsConnected(false);
+          reconnectTimeout = setTimeout(connect, 4000);
+        };
 
-      ws.current.onerror = (err) => console.error("WS Error:", err);
+        socket.onerror = () => {
+          if (!isMounted) return;
+          setIsConnected(false);
+        };
+      } catch (err) {
+        if (isMounted) {
+          setIsConnected(false);
+          reconnectTimeout = setTimeout(connect, 4000);
+        }
+      }
     };
 
     connect();
@@ -287,7 +303,10 @@ export function useSecureFederated() {
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
       if (ws.current) {
         ws.current.onclose = null;
-        ws.current.close();
+        ws.current.onerror = null;
+        if (ws.current.readyState === WebSocket.OPEN) {
+          ws.current.close();
+        }
       }
     };
   }, [onMessage]);

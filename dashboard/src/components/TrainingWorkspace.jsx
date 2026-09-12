@@ -32,6 +32,7 @@ export const TrainingWorkspace = ({
   isActive 
 }) => {
   const consoleRef = React.useRef(null);
+  const ledgerRef = React.useRef(null);
   const [activeTab, setActiveTab] = useState('telemetry');
   const [selectedSource, setSelectedSource] = useState('active'); // 'active' | 'global' | 'lab' | nodeId
   const [isEditing, setIsEditing] = useState(false);
