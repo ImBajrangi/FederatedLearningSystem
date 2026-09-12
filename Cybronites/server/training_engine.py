@@ -59,9 +59,29 @@ class TrainingSession:
     def __init__(self, code, hyperparams, bridge_broadcast_callback):
         self.original_code = code
         self.code = sanitize_code(code)
-        self.epochs = hyperparams.get("epochs", 5)
-        self.lr = hyperparams.get("lr", 0.001)
-        self.batch_size = hyperparams.get("batch_size", 32)
+        
+        # Dynamically extract hyperparameters directly from user code if defined
+        def _extract_var(pattern, default, cast_fn=int):
+            match = re.search(pattern, self.original_code)
+            if match:
+                try:
+                    return cast_fn(match.group(1))
+                except Exception:
+                    pass
+            return default
+
+        code_epochs = _extract_var(r'epochs\s*=\s*(\d+)', None, int)
+        code_lr = _extract_var(r'lr\s*=\s*([0-9\.e\-]+)', None, float)
+        code_batch = _extract_var(r'batch_size\s*=\s*(\d+)', None, int)
+
+        self.epochs = code_epochs if code_epochs is not None else hyperparams.get("epochs", 10)
+        self.lr = code_lr if code_lr is not None else hyperparams.get("lr", 0.001)
+        self.batch_size = code_batch if code_batch is not None else hyperparams.get("batch_size", 32)
+        
+        # Guard bounds
+        self.epochs = max(1, min(100, self.epochs))
+        self.batch_size = max(1, min(1024, self.batch_size))
+        
         self.broadcast = bridge_broadcast_callback
         self.stop_event = threading.Event()
         self.model = None
@@ -90,6 +110,7 @@ class TrainingSession:
                 'vault': vault_instance,
                 'torch': torch,
                 'nn': nn,
+                'F': nn.functional,
                 'np': np,
                 'numpy': np,
                 'DataLoader': DataLoader,
@@ -181,10 +202,12 @@ class TrainingSession:
                     optimizer.zero_grad()
                     output = self.model(data)
 
-                    if target.dtype in (torch.int64, torch.int32, torch.long) and output.dim() >= 2:
+                    if target.dtype in (torch.int64, torch.int32, torch.long) and output.dim() >= 2 and output.shape[-1] > 1:
                         loss = nn.functional.cross_entropy(output, target.long().view(-1))
                     elif output.shape == target.shape:
                         loss = nn.functional.mse_loss(output, target.float())
+                    elif output.dim() >= 2 and output.shape[-1] == 1:
+                        loss = nn.functional.binary_cross_entropy_with_logits(output.view(-1), target.float().view(-1))
                     else:
                         loss = nn.functional.cross_entropy(output, target.long().view(-1))
 
@@ -192,19 +215,22 @@ class TrainingSession:
                     optimizer.step()
                     running_loss += loss.item()
 
+                    # Dynamic calculation of training accuracy
                     if output.dim() >= 2 and output.shape[-1] > 1:
-                        pred = output.argmax(dim=1)
-                        if target.dim() > 1:
-                            target_val = target.argmax(dim=1)
-                        else:
-                            target_val = target.view(-1)
-                        correct_train += pred.eq(target_val).sum().item()
+                        pred = output.argmax(dim=-1)
+                        target_cls = target.argmax(dim=-1) if (target.dim() > 1 and target.shape[-1] > 1) else target.view(-1)
+                        correct_train += (pred == target_cls).sum().item()
+                    elif output.shape == target.shape:
+                        correct_train += (output.round() == target.round()).sum().item()
+                    else:
+                        pred = (output.view(-1) > 0.0).long()
+                        correct_train += (pred == target.view(-1).long()).sum().item()
                     total_train += len(data)
 
                 # Validation step
                 self.model.eval()
-                correct = 0
-                total = 0
+                correct_val = 0
+                total_val = 0
                 val_loss = 0.0
                 with torch.no_grad():
                     for batch in test_loader:
@@ -216,33 +242,46 @@ class TrainingSession:
                         data, target = data.to(self.device), target.to(self.device)
                         output = self.model(data)
 
-                        if target.dtype in (torch.int64, torch.int32, torch.long) and output.dim() >= 2:
+                        if target.dtype in (torch.int64, torch.int32, torch.long) and output.dim() >= 2 and output.shape[-1] > 1:
                             v_l = nn.functional.cross_entropy(output, target.long().view(-1))
+                        elif output.shape == target.shape:
+                            v_l = nn.functional.mse_loss(output, target.float())
+                        elif output.dim() >= 2 and output.shape[-1] == 1:
+                            v_l = nn.functional.binary_cross_entropy_with_logits(output.view(-1), target.float().view(-1))
                         else:
-                            v_l = nn.functional.mse_loss(output, target.float()) if output.shape == target.shape else 0.0
+                            v_l = nn.functional.cross_entropy(output, target.long().view(-1))
+                        
                         val_loss += getattr(v_l, 'item', lambda: 0.0)()
 
                         if output.dim() >= 2 and output.shape[-1] > 1:
-                            pred = output.argmax(dim=1, keepdim=True)
-                            target_cmp = target.view_as(pred) if target.dim() == pred.dim() else target.view(-1, 1)
-                            correct += pred.eq(target_cmp).sum().item()
-                        total += len(data)
+                            pred = output.argmax(dim=-1)
+                            target_cls = target.argmax(dim=-1) if (target.dim() > 1 and target.shape[-1] > 1) else target.view(-1)
+                            correct_val += (pred == target_cls).sum().item()
+                        elif output.shape == target.shape:
+                            correct_val += (output.round() == target.round()).sum().item()
+                        else:
+                            pred = (output.view(-1) > 0.0).long()
+                            correct_val += (pred == target.view(-1).long()).sum().item()
+                        total_val += len(data)
 
-                accuracy = correct / total if total > 0 else (correct_train / max(total_train, 1))
+                val_acc = (correct_val / total_val) if total_val > 0 else 0.0
+                train_acc = (correct_train / total_train) if total_train > 0 else 0.0
+                # Use validation accuracy if available, else train accuracy
+                accuracy = val_acc if total_val > 0 else train_acc
                 avg_loss = running_loss / max(len(train_loader), 1)
-                train_acc = correct_train / total_train if total_train > 0 else accuracy
 
-                self.metrics["loss"].append(avg_loss)
-                self.metrics["accuracy"].append(accuracy)
+                self.metrics["loss"].append(float(avg_loss))
+                self.metrics["accuracy"].append(float(accuracy))
                 self.progress = ((epoch + 1) / self.epochs) * 100
 
                 self.broadcast("LAB_PROGRESS", {
                     "epoch": epoch + 1,
                     "total_epochs": self.epochs,
-                    "loss": avg_loss,
-                    "accuracy": accuracy,
-                    "train_accuracy": train_acc,
-                    "progress": self.progress,
+                    "loss": float(avg_loss),
+                    "accuracy": float(accuracy),
+                    "train_accuracy": float(train_acc),
+                    "val_accuracy": float(val_acc),
+                    "progress": float(self.progress),
                     "status": "TRAINING",
                     "mode": "FEDERATED"
                 })
@@ -314,6 +353,8 @@ class TrainingSession:
                 "metrics": self.metrics,
                 "final_accuracy": self.metrics["accuracy"][-1] if self.metrics["accuracy"] else 0,
                 "final_loss": self.metrics["loss"][-1] if self.metrics["loss"] else 0,
+                "epoch": self.epochs,
+                "total_epochs": self.epochs,
             })
 
             final_acc = self.metrics["accuracy"][-1] if self.metrics["accuracy"] else 0
@@ -393,32 +434,60 @@ class TrainingSession:
                     vault_tensors_y = torch.tensor(val, dtype=torch.long)
                     break
 
-        if vault_tensors_x is None:
-            for var_name, val in namespace.items():
-                if var_name.startswith("_"):
-                    continue
-                if isinstance(val, (torch.Tensor, np.ndarray)) and getattr(val, 'ndim', getattr(val, 'dim', lambda: 0)()) >= 2:
-                    vault_tensors_x = val if isinstance(val, torch.Tensor) else torch.tensor(val, dtype=torch.float32)
-                    ds_name = f"Decrypted Array ({var_name})"
-                    break
-
-        if vault_tensors_y is None:
-            for var_name, val in namespace.items():
-                if var_name.startswith("_"):
-                    continue
-                if isinstance(val, (torch.Tensor, np.ndarray)) and getattr(val, 'ndim', getattr(val, 'dim', lambda: 0)()) == 1:
-                    vault_tensors_y = val if isinstance(val, torch.Tensor) else torch.tensor(val, dtype=torch.long)
-                    break
+        if vault_tensors_x is None and vault_instance is not None:
+            # Dynamic auto-binding based on model name
+            m_name = (model_class.__name__ if model_class else "").lower()
+            try:
+                if "mnist" in m_name or "conv" in m_name:
+                    X_np, y_np, info = vault_instance.load("MNIST")
+                    vault_tensors_x = torch.tensor(X_np, dtype=torch.float32)
+                    vault_tensors_y = torch.tensor(y_np, dtype=torch.long)
+                    ds_name = f"Privacy Vault (MNIST Partition)"
+                elif "iris" in m_name:
+                    X_np, y_np, info = vault_instance.load("Iris")
+                    vault_tensors_x = torch.tensor(X_np, dtype=torch.float32)
+                    vault_tensors_y = torch.tensor(y_np, dtype=torch.long)
+                    ds_name = f"Privacy Vault (Iris Partition)"
+                elif "digit" in m_name:
+                    X_np, y_np, info = vault_instance.load("Digits")
+                    vault_tensors_x = torch.tensor(X_np, dtype=torch.float32)
+                    vault_tensors_y = torch.tensor(y_np, dtype=torch.long)
+                    ds_name = f"Privacy Vault (Digits Partition)"
+                elif "wine" in m_name:
+                    X_np, y_np, info = vault_instance.load("Wine")
+                    vault_tensors_x = torch.tensor(X_np, dtype=torch.float32)
+                    vault_tensors_y = torch.tensor(y_np, dtype=torch.long)
+                    ds_name = f"Privacy Vault (Wine Partition)"
+            except Exception as v_err:
+                logger.warning(f"Vault auto-bind fallback: {v_err}")
 
         if vault_tensors_x is not None and vault_tensors_y is not None:
-            self.broadcast("LOG", f"SYSTEM: 🔐 Using local decrypted data tensor: {vault_tensors_x.shape}")
+            # Adaptive dynamic tensor reshaping for ConvNet vs Linear architectures
+            if self.model is not None:
+                # Check if model has 2D Conv layers
+                has_conv = any(isinstance(m, (nn.Conv2d, nn.Conv1d)) for m in self.model.modules())
+                if has_conv:
+                    if vault_tensors_x.dim() == 2:
+                        if vault_tensors_x.size(1) == 784:
+                            vault_tensors_x = vault_tensors_x.view(-1, 1, 28, 28)
+                        elif vault_tensors_x.size(1) == 64:
+                            vault_tensors_x = vault_tensors_x.view(-1, 1, 8, 8)
+                        else:
+                            side = int(np.sqrt(vault_tensors_x.size(1)))
+                            if side * side == vault_tensors_x.size(1):
+                                vault_tensors_x = vault_tensors_x.view(-1, 1, side, side)
+                    elif vault_tensors_x.dim() == 3:
+                        vault_tensors_x = vault_tensors_x.unsqueeze(1)
+
+            self.broadcast("LOG", f"SYSTEM: 🔐 Using local decrypted data tensor: {tuple(vault_tensors_x.shape)} ({len(vault_tensors_x)} samples)")
             n = len(vault_tensors_x)
             split = max(1, int(0.8 * n))
             train_ds = TensorDataset(vault_tensors_x[:split], vault_tensors_y[:split])
             test_ds = TensorDataset(vault_tensors_x[split:] if split < n else vault_tensors_x[:split],
                                      vault_tensors_y[split:] if split < n else vault_tensors_y[:split])
 
-            train_loader = DataLoader(train_ds, batch_size=min(self.batch_size, n), shuffle=True)
+            batch_sz = min(self.batch_size, split)
+            train_loader = DataLoader(train_ds, batch_size=max(1, batch_sz), shuffle=True)
             test_loader = DataLoader(test_ds, batch_size=min(1000, max(1, n - split)), shuffle=False)
             return train_loader, test_loader, ds_name
 
@@ -428,13 +497,21 @@ class TrainingSession:
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ])
-        train_dataset = datasets.MNIST('./data', train=True, download=True, transform=transform)
-        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
+        try:
+            train_dataset = datasets.MNIST('./data', train=True, download=True, transform=transform)
+            train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
 
-        test_dataset = datasets.MNIST('./data', train=False, transform=transform)
-        test_loader = DataLoader(test_dataset, batch_size=1000, shuffle=False)
-
-        return train_loader, test_loader, "MNIST (Local Shard)"
+            test_dataset = datasets.MNIST('./data', train=False, transform=transform)
+            test_loader = DataLoader(test_dataset, batch_size=1000, shuffle=False)
+            return train_loader, test_loader, "MNIST (Local Shard)"
+        except Exception:
+            # Pure local synthetic tensor dataset
+            np.random.seed(42)
+            X = torch.randn(500, 1, 28, 28, dtype=torch.float32)
+            y = torch.randint(0, 10, (500,), dtype=torch.long)
+            train_ds = TensorDataset(X[:400], y[:400])
+            test_ds = TensorDataset(X[400:], y[400:])
+            return DataLoader(train_ds, batch_size=self.batch_size, shuffle=True), DataLoader(test_ds, batch_size=100), "MNIST (Synthetic Fallback)"
 
     def _safe_print(self, *args, **kwargs):
         msg = ' '.join(str(a) for a in args)

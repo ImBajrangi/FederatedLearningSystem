@@ -110,6 +110,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# ── Step 1: Decrypt edge MNIST partition directly to RAM ──
+data, labels, info = vault.load("MNIST")
+print(f"🔐 Decrypted dataset: {info['name']}")
+print(f"   Shape: {data.shape[0]} samples, {info['num_classes']} classes, shape {data.shape[1:]}")
+
+# ── Step 2: Define 2D Deep Convolutional Architecture ──
 class MNISTConvNet(nn.Module):
     def __init__(self):
         super().__init__()
@@ -123,9 +129,15 @@ class MNISTConvNet(nn.Module):
 
     def forward(self, x):
         if x.dim() == 2:
-            x = x.view(-1, 1, 28, 28)
+            if x.size(1) == 784:
+                x = x.view(-1, 1, 28, 28)
+            elif x.size(1) == 64:
+                x = F.interpolate(x.view(-1, 1, 8, 8), size=(28, 28), mode='bilinear', align_corners=False)
+            else:
+                x = x.view(-1, 1, 28, 28)
         elif x.dim() == 3:
             x = x.unsqueeze(1)
+            
         x = F.relu(self.conv1(x))
         x = self.pool(F.relu(self.conv2(x)))
         x = self.dropout1(x)
@@ -134,9 +146,12 @@ class MNISTConvNet(nn.Module):
         x = self.dropout2(x)
         return self.fc2(x)
 
-epochs = 5
+# ── Hyperparameters ──
+epochs = 10
 lr = 0.001
 batch_size = 32
+
+print("🧪 Model verified. Press ▶ TRAIN MODEL or (Ctrl+Enter) to execute.")
 `
   },
   wine: {
@@ -664,14 +679,28 @@ export function Laboratory({
       return;
     }
 
+    // Dynamically extract hyperparameters from code if present
+    let currentEpochs = epochs;
+    let currentLr = lr;
+    let currentBatch = batchSize;
+
+    const matchEpochs = code.match(/epochs\s*=\s*(\d+)/);
+    if (matchEpochs) currentEpochs = parseInt(matchEpochs[1], 10);
+
+    const matchLr = code.match(/lr\s*=\s*([0-9\.e\-]+)/);
+    if (matchLr) currentLr = parseFloat(matchLr[1]);
+
+    const matchBatch = code.match(/batch_size\s*=\s*(\d+)/);
+    if (matchBatch) currentBatch = parseInt(matchBatch[1], 10);
+
     // Validation passed — start training
     setStatus('TRAINING');
-    addLog(`Starting execution (Epochs: ${epochs}, LR: ${lr}, Batch: ${batchSize})...`, 'info');
+    addLog(`Starting execution (Epochs: ${currentEpochs}, LR: ${currentLr}, Batch: ${currentBatch})...`, 'info');
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/train`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, hyperparams: { epochs, lr, batch_size: batchSize } })
+        body: JSON.stringify({ code, hyperparams: { epochs: currentEpochs, lr: currentLr, batch_size: currentBatch } })
       });
       const data = await response.json();
       if (!data.success) {
@@ -835,21 +864,21 @@ export function Laboratory({
                 <>
                   <div className="lab-stat">
                     <span className="lab-stat-label">Epoch</span>
-                    <span className="lab-stat-value">{labState?.epoch || 0}/{epochs}</span>
+                    <span className="lab-stat-value">{labState?.epoch || 0}/{labState?.total_epochs || epochs}</span>
                   </div>
                   <div className="lab-stat">
                     <span className="lab-stat-label">Loss</span>
-                    <span className="lab-stat-value lab-stat-loss">{(labState?.loss || 0).toFixed(4)}</span>
+                    <span className="lab-stat-value lab-stat-loss">{(labState?.loss ?? 0).toFixed(4)}</span>
                   </div>
                   <div className="lab-stat">
                     <span className="lab-stat-label">Accuracy</span>
-                    <span className="lab-stat-value lab-stat-acc">{((labState?.accuracy || 0) * 100).toFixed(2)}%</span>
+                    <span className="lab-stat-value lab-stat-acc">{((labState?.accuracy ?? 0) * 100).toFixed(2)}%</span>
                   </div>
                 </>
               )}
               <div className="lab-stat">
                 <span className="lab-stat-label">Progress</span>
-                <span className="lab-stat-value">{progress.toFixed(0)}%</span>
+                <span className="lab-stat-value">{(labState?.progress ?? progress).toFixed(0)}%</span>
               </div>
             </div>
           </motion.div>

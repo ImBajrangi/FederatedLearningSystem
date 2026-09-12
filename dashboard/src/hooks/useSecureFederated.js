@@ -218,8 +218,10 @@ export function useSecureFederated() {
             status: payload.status || 'TRAINING',
             progress: payload.progress,
             epoch: payload.epoch,
+            total_epochs: payload.total_epochs,
             loss: payload.loss,
             accuracy: payload.accuracy,
+            train_accuracy: payload.train_accuracy,
             mode: payload.mode || 'FEDERATED'
           }));
           break;
@@ -230,6 +232,10 @@ export function useSecureFederated() {
             ...prev,
             status: 'COMPLETE',
             progress: 100,
+            epoch: payload.epoch || payload.total_epochs || prev.epoch,
+            total_epochs: payload.total_epochs || prev.total_epochs,
+            loss: payload.final_loss !== undefined ? payload.final_loss : prev.loss,
+            accuracy: payload.final_accuracy !== undefined ? payload.final_accuracy : prev.accuracy,
             ptPath: payload.pt_path,
             onnxPath: payload.onnx_path,
             mode: payload.mode
