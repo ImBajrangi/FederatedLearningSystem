@@ -4,15 +4,15 @@ const isProd = import.meta.env.PROD;
 export const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '7880';
 export const BACKEND_IP = import.meta.env.VITE_BACKEND_IP || '127.0.0.1';
 
-// Production: connect to HuggingFace Space backend
-const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://mdark4025-cybronites.hf.space';
-export const API_BASE_URL = isProd ? HF_BACKEND : `http://${BACKEND_IP}:${BACKEND_PORT}`;
+// Production & Fallback: connect to HuggingFace Space backend
+export const HF_BACKEND = import.meta.env.VITE_HF_BACKEND_URL || 'https://mdark4025-cybronites.hf.space';
+export const LOCAL_BACKEND = `http://${BACKEND_IP}:${BACKEND_PORT}`;
+export let API_BASE_URL = isProd ? HF_BACKEND : LOCAL_BACKEND;
 
-// WebSocket: derive from HF backend URL in production
-const hfWsUrl = HF_BACKEND.replace('https://', 'wss://').replace('http://', 'ws://');
-export const WS_URL = isProd
-  ? `${hfWsUrl}/ws`
-  : `ws://${BACKEND_IP}:${BACKEND_PORT}/ws`;
+// WebSocket targets with graceful fallback
+const hfWsUrl = HF_BACKEND.replace('https://', 'wss://').replace('http://', 'ws://') + '/ws';
+const localWsUrl = `ws://${BACKEND_IP}:${BACKEND_PORT}/ws`;
+export const WS_URL = isProd ? hfWsUrl : localWsUrl;
 
 export function useSecureFederated() {
   const [round, setRound] = useState(0);
@@ -252,6 +252,9 @@ export function useSecureFederated() {
     setLogs([]);
   }, []);
 
+  const targetEndpoints = isProd ? [hfWsUrl] : [localWsUrl, hfWsUrl];
+  const activeEndpointIndex = useRef(0);
+
   useEffect(() => {
     let isMounted = true;
     let reconnectTimeout = null;
@@ -265,8 +268,12 @@ export function useSecureFederated() {
         }
       }
 
+      const targetUrl = targetEndpoints[activeEndpointIndex.current % targetEndpoints.length];
+      const isHf = targetUrl.includes('hf.space');
+      API_BASE_URL = isHf ? HF_BACKEND : LOCAL_BACKEND;
+
       try {
-        const socket = new WebSocket(WS_URL);
+        const socket = new WebSocket(targetUrl);
         ws.current = socket;
 
         socket.onopen = () => {
@@ -281,7 +288,8 @@ export function useSecureFederated() {
         socket.onclose = () => {
           if (!isMounted) return;
           setIsConnected(false);
-          reconnectTimeout = setTimeout(connect, 4000);
+          activeEndpointIndex.current = (activeEndpointIndex.current + 1) % targetEndpoints.length;
+          reconnectTimeout = setTimeout(connect, 3500);
         };
 
         socket.onerror = () => {
@@ -291,7 +299,8 @@ export function useSecureFederated() {
       } catch (err) {
         if (isMounted) {
           setIsConnected(false);
-          reconnectTimeout = setTimeout(connect, 4000);
+          activeEndpointIndex.current = (activeEndpointIndex.current + 1) % targetEndpoints.length;
+          reconnectTimeout = setTimeout(connect, 3500);
         }
       }
     };
