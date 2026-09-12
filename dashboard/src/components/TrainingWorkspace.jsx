@@ -218,7 +218,7 @@ export const TrainingWorkspace = ({
   if (selectedSource === 'active') {
     displayedCode = isEditing ? customCode : liveActiveCode;
     displayedFilename = liveActiveFilename;
-    displayedTitle = isActive ? 'Active In-Flight Training Code' : 'Current Active Training Engine Code';
+    displayedTitle = isActive ? 'Active Training Code' : 'Active Training Engine';
     displayedDataset = liveDataset;
     displayedHash = activeTrainingCode?.code_hash;
   } else if (selectedSource === 'global') {
@@ -649,45 +649,44 @@ export const TrainingWorkspace = ({
             <div className="tr-card-header tr-code-header">
               <div className="tr-card-title-wrap">
                 <div className={`tr-code-status-dot ${isActive ? 'tr-dot-pulse-active' : 'tr-dot-idle'}`} />
-                <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="tr-card-title">{displayedTitle}</span>
-                    {isActive ? (
-                      <span className="tr-live-exec-badge">
-                        <span className="tr-live-exec-dot-wrap">
-                          <span className="tr-live-exec-ping" />
-                          <span className="tr-live-exec-dot" />
-                        </span>
-                        <span>LIVE TRAINING</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="tr-card-title">{displayedTitle}</span>
+                  {isActive ? (
+                    <span className="tr-live-exec-badge">
+                      <span className="tr-live-exec-dot-wrap">
+                        <span className="tr-live-exec-ping" />
+                        <span className="tr-live-exec-dot" />
                       </span>
-                    ) : (
-                      <span className="tr-sync-pill">
-                        ● REALTIME SYNCHRONIZED ({Object.keys(safeNodeRegistry).length} NODES)
-                      </span>
-                    )}
-                  </div>
-                  {selectedSource !== 'active' && selectedSource !== 'global' && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-blue-600 font-semibold flex items-center gap-1">
-                        Viewing Isolated Node Payload
-                      </span>
-                      <button 
-                        onClick={() => setSelectedSource('active')}
-                        className="text-[9px] font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
-                      >
-                        ← Back to Network Live Architecture
-                      </button>
-                    </div>
+                      <span>LIVE TRAINING</span>
+                    </span>
+                  ) : (
+                    <span className="tr-sync-pill">
+                      ● SYNCHRONIZED ({Object.keys(safeNodeRegistry).length} NODES)
+                    </span>
                   )}
+                  <span className="tr-filename-tag">{displayedFilename}</span>
                 </div>
+                {selectedSource !== 'active' && selectedSource !== 'global' && (
+                  <div className="flex items-center gap-2 w-full mt-0.5">
+                    <span className="text-[10px] text-blue-600 font-semibold flex items-center gap-1">
+                      Viewing Isolated Node Payload
+                    </span>
+                    <button 
+                      onClick={() => setSelectedSource('active')}
+                      className="text-[9px] font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                    >
+                      ← Back to Network Live Architecture
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {/* Real-time Code Actions */}
+              {/* Real-time Code Actions & Downloads */}
               <div className="tr-action-toolbar">
                 <button 
                   onClick={handleCopyCode}
                   className="tr-tool-btn"
-                  title="Copy Code"
+                  title="Copy Code to Clipboard"
                 >
                   {copySuccess ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
                   <span>{copySuccess ? 'COPIED' : 'COPY'}</span>
@@ -697,12 +696,13 @@ export const TrainingWorkspace = ({
                   <button 
                     onClick={handleStartEdit}
                     className="tr-inject-btn"
+                    title="Edit and Inject Custom Architecture"
                   >
                     <Edit3 size={11} />
                     <span>EDIT / INJECT</span>
                   </button>
                 ) : (
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <button 
                       onClick={handleInjectCode}
                       disabled={isInjecting}
@@ -720,12 +720,12 @@ export const TrainingWorkspace = ({
                   </div>
                 )}
 
-                <div className="flex items-center gap-1.5 ml-auto">
+                <div className="tr-download-group">
                   <a
                     href={`${API_BASE_URL}/api/v1/distributed/download/pt`}
                     download="federated_model_final.pt"
-                    className="tr-download-model-btn"
-                    title="Download Trained PyTorch Weights (.pt)"
+                    className="tr-download-item-btn"
+                    title="Download PyTorch Model Weights (.pt)"
                   >
                     <Download size={11} />
                     <span>.PT</span>
@@ -734,8 +734,8 @@ export const TrainingWorkspace = ({
                   <a
                     href={`${API_BASE_URL}/api/v1/distributed/download/onnx`}
                     download="federated_model_final.onnx"
-                    className="tr-download-model-btn"
-                    title="Download ONNX Deployment Model (.onnx)"
+                    className="tr-download-item-btn"
+                    title="Download Universal ONNX Runtime Model (.onnx)"
                   >
                     <Box size={11} />
                     <span>.ONNX</span>
@@ -744,15 +744,13 @@ export const TrainingWorkspace = ({
                   <a
                     href={`${API_BASE_URL}/api/v1/distributed/download/report`}
                     download="federated_audit_performance_report.json"
-                    className="tr-download-model-btn tr-download-report-btn"
-                    title="Download Full Performance & Audit Report (.json)"
+                    className="tr-download-item-btn tr-download-item-report"
+                    title="Download Compliance Audit & Performance Report (.json)"
                   >
                     <FileText size={11} />
                     <span>REPORT</span>
                   </a>
                 </div>
-
-                <span className="tr-filename-tag">{displayedFilename}</span>
               </div>
             </div>
             
@@ -1580,11 +1578,12 @@ export const TrainingWorkspace = ({
         .tr-card-title-wrap { display: flex; align-items: center; gap: 10px; }
         .tr-card-icon { color: var(--primary); opacity: 0.6; }
         .tr-card-title {
-          font-size: 10px;
+          font-size: 10.5px;
           font-weight: 700;
           color: var(--text-main);
           text-transform: uppercase;
-          letter-spacing: 0.15em;
+          letter-spacing: 0.08em;
+          white-space: nowrap;
         }
         .tr-card-action {
           background: none; border: none; cursor: pointer;
@@ -2647,24 +2646,25 @@ export const TrainingWorkspace = ({
           border: 1px solid var(--border);
         }
         .tr-code-header {
-          padding: 10px 16px;
+          padding: 8px 14px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          gap: 12px;
-          min-height: 48px;
+          gap: 10px;
+          min-height: 46px;
           background: #fff;
           border-bottom: 1px solid var(--border);
+          flex-wrap: wrap;
         }
         .tr-action-toolbar {
           display: flex;
           align-items: center;
           gap: 6px;
-          flex-wrap: nowrap;
-          flex-shrink: 0;
+          flex-wrap: wrap;
+          justify-content: flex-end;
         }
         .tr-tool-btn {
-          height: 28px;
+          height: 26px;
           display: inline-flex;
           align-items: center;
           gap: 5px;
@@ -2673,7 +2673,7 @@ export const TrainingWorkspace = ({
           border: 1px solid #cbd5e1;
           border-radius: 4px;
           color: #334155 !important;
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 700;
           cursor: pointer;
           white-space: nowrap;
@@ -2684,7 +2684,7 @@ export const TrainingWorkspace = ({
           color: #0f172a !important;
         }
         .tr-inject-btn {
-          height: 28px;
+          height: 26px;
           display: inline-flex;
           align-items: center;
           gap: 5px;
@@ -2693,7 +2693,7 @@ export const TrainingWorkspace = ({
           border: 1px solid var(--border);
           border-radius: 4px;
           color: var(--primary) !important;
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 700;
           cursor: pointer;
           white-space: nowrap;
@@ -2704,13 +2704,13 @@ export const TrainingWorkspace = ({
           border-color: var(--primary);
         }
         .tr-confirm-inject-btn {
-          height: 28px;
+          height: 26px;
           padding: 0 10px;
           background: #10b981;
           color: #fff !important;
           border: none;
           border-radius: 4px;
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 800;
           cursor: pointer;
           transition: all 0.2s;
@@ -2722,52 +2722,58 @@ export const TrainingWorkspace = ({
           background: #059669;
         }
         .tr-cancel-btn {
-          height: 28px;
+          height: 26px;
           padding: 0 8px;
           background: #e2e8f0;
           border: 1px solid #cbd5e1;
           border-radius: 4px;
           color: #475569 !important;
-          font-size: 9px;
+          font-size: 8.5px;
           font-weight: 700;
           cursor: pointer;
         }
-        .tr-download-model-btn {
-          height: 28px;
-          padding: 0 10px;
-          background: #ffffff;
+        .tr-download-group {
+          display: inline-flex;
+          align-items: center;
+          background: #f8fafc;
           border: 1px solid #cbd5e1;
-          color: #0f172a !important;
           border-radius: 4px;
-          font-size: 9px;
+          padding: 1px;
+          gap: 1px;
+        }
+        .tr-download-item-btn {
+          height: 24px;
+          padding: 0 8px;
+          background: transparent;
+          color: #334155 !important;
+          font-size: 8.5px;
           font-weight: 700;
           display: inline-flex;
           align-items: center;
-          gap: 5px;
+          gap: 4px;
           text-decoration: none;
-          cursor: pointer;
-          transition: all 0.15s ease-in-out;
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+          border-radius: 3px;
+          transition: all 0.15s ease;
+          white-space: nowrap;
         }
-        .tr-download-model-btn:hover {
-          background: #f8fafc;
-          border-color: #94a3b8;
+        .tr-download-item-btn:hover {
+          background: #ffffff;
+          color: #0f172a !important;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
-        .tr-download-report-btn {
-          background: #f0fdf4;
-          color: #15803d !important;
-          border-color: #bbf7d0;
+        .tr-download-item-report {
+          color: #16a34a !important;
         }
-        .tr-download-report-btn:hover {
+        .tr-download-item-report:hover {
           background: #dcfce7;
-          border-color: #86efac;
+          color: #15803d !important;
         }
         .tr-filename-tag {
-          height: 28px;
-          padding: 0 8px;
+          height: 22px;
+          padding: 0 7px;
           display: inline-flex;
           align-items: center;
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 700;
           font-family: var(--font-mono, monospace);
           color: #0284c7 !important;
