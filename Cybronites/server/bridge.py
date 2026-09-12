@@ -344,10 +344,16 @@ async def health_check():
 
 @app.post("/api/v1/federated/start")
 async def start_federated_training():
-    """Triggers a new federated training session using in-process threads.
-    Uses the same pattern as the working app.py auto-start."""
+    """Triggers a new federated training session using in-process threads and distributed coordinator."""
     import threading
     import flwr as fl
+    
+    # 1. Also activate the distributed coordinator session for all connected remote/local edge nodes
+    try:
+        coord = DistributedCoordinator.get_instance()
+        coord.start_session(num_rounds=5, min_clients=1)
+    except Exception as e:
+        logger.warning(f"Could not trigger DistributedCoordinator on federated/start: {e}")
     
     FLOWER_PORT = 8080
     _flower_ready = threading.Event()

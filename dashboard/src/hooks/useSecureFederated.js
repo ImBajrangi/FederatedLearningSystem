@@ -294,6 +294,15 @@ export function useSecureFederated() {
 
   const runRound = async () => {
     try {
+      try {
+        await fetch(`${API_BASE_URL}/api/v1/distributed/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ num_rounds: 5, min_clients: 1 })
+        });
+      } catch (distErr) {
+        console.warn("Distributed start dispatch (non-blocking):", distErr);
+      }
       const response = await fetch(`${API_BASE_URL}/api/v1/federated/start`, { method: 'POST' });
       if (!response.ok) throw new Error('Backend Offline');
       const data = await response.json();

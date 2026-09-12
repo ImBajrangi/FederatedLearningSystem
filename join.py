@@ -417,7 +417,7 @@ class MNISTNet(nn.Module):
             current_round = status_res.get("round", 0)
             total_rounds = status_res.get("total_rounds", 5)
 
-            if session_status == "WAITING" and current_round != last_participated_round and current_round > 0:
+            if session_status in ("WAITING", "IN_PROGRESS", "TRAINING") and current_round != last_participated_round and current_round > 0:
                 print(f"  {Style.BOLD}{Style.CYAN}╭── 🚀 ORCHESTRATION CYCLE [ROUND {current_round:02d}/{total_rounds:02d}] ──────────────────────────────╮{Style.RESET}")
                 
                 # 1. Fetch Global Model
