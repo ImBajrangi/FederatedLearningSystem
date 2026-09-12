@@ -1092,8 +1092,23 @@ for s_dir in paths_to_check:
             if full_path.startswith("api") or full_path.startswith("ws"):
                 from fastapi import HTTPException
                 raise HTTPException(status_code=404)
-            # Try to serve index.html from whichever static dir we found
-            return FileResponse(os.path.join(s_dir, "index.html"))
+            # If requesting a direct static asset file that exists (like favicon.svg, icons.svg, etc.)
+            target_path = os.path.join(s_dir, full_path)
+            if full_path and os.path.isfile(target_path):
+                return FileResponse(target_path)
+            # Fallback to SPA index.html with strict cache-busting headers
+            index_path = os.path.join(s_dir, "index.html")
+            if os.path.exists(index_path):
+                return FileResponse(
+                    index_path,
+                    headers={
+                        "Cache-Control": "no-cache, no-store, must-revalidate",
+                        "Pragma": "no-cache",
+                        "Expires": "0"
+                    }
+                )
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="Dashboard index.html not found")
         logger.info(f"Serving dashboard from {s_dir}")
         break
 
