@@ -38,6 +38,7 @@ export function useSecureFederated() {
   const [roundHistory, setRoundHistory] = useState([]);
   const [shards, setShards] = useState([]); 
   const [modelArchitecture, setModelArchitecture] = useState('# Loading Model source...');
+  const [activeTrainingCode, setActiveTrainingCode] = useState(null);
   const [labState, setLabState] = useState({ status: 'IDLE', progress: 0, epoch: 0, loss: 0, accuracy: 0, ptPath: null, onnxPath: null });
   
   // State for distributed status sync (from simulation/HF updates)
@@ -89,6 +90,7 @@ export function useSecureFederated() {
           }
           if (state.shards) setShards(state.shards);
           if (state.model_architecture) setModelArchitecture(state.model_architecture);
+          if (state.active_training_code) setActiveTrainingCode(state.active_training_code);
           if (state.lab_state) {
             setLabState(prev => ({ ...prev, ...state.lab_state }));
           }
@@ -134,6 +136,7 @@ export function useSecureFederated() {
           }
           if (payload.shards) setShards(payload.shards);
           if (payload.model_architecture) setModelArchitecture(payload.model_architecture);
+          if (payload.active_training_code) setActiveTrainingCode(payload.active_training_code);
           if (payload.lab_state) {
             setLabState(prev => ({ ...prev, ...payload.lab_state }));
           }
@@ -149,6 +152,15 @@ export function useSecureFederated() {
               updatesReceived: payload.updates_received ?? prev.updatesReceived,
               updatesNeeded: payload.updates_needed ?? prev.updatesNeeded,
             }));
+          }
+          break;
+        }
+
+        case 'CODE_SYNC': {
+          console.log("CODE_SYNC", payload);
+          setActiveTrainingCode(payload);
+          if (payload.code) {
+            setModelArchitecture(payload.code);
           }
           break;
         }
@@ -331,6 +343,25 @@ export function useSecureFederated() {
     }
   };
 
+  const updateActiveTrainingCode = useCallback(async (code, filename = 'model.py', source = 'custom', name = 'Custom Injected Script', dataset = 'Dynamic Dataset Binding') => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/training/active-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, filename, source, name, dataset })
+      });
+      const data = await response.json();
+      if (data.success && data.active_code) {
+        setActiveTrainingCode(data.active_code);
+        setModelArchitecture(code);
+      }
+      return data;
+    } catch (err) {
+      console.error("Failed to update active training code:", err);
+      return { success: false, error: err.message };
+    }
+  }, []);
+
   return {
     round,
     isActive,
@@ -350,6 +381,8 @@ export function useSecureFederated() {
     hyperparams,
     roundHistory,
     modelArchitecture,
+    activeTrainingCode,
+    updateActiveTrainingCode,
     shards,
     clientsActive,
     executeDashboardCommand,

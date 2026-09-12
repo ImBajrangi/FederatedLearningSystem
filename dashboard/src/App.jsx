@@ -39,6 +39,8 @@ function App() {
     hyperparams,
     roundHistory,
     modelArchitecture,
+    activeTrainingCode,
+    updateActiveTrainingCode,
     shards,
     clientsActive,
     labState,
@@ -230,6 +232,8 @@ function App() {
             hyperparams={hyperparams}
             roundHistory={roundHistory}
             modelArchitecture={modelArchitecture}
+            activeTrainingCode={activeTrainingCode}
+            onUpdateActiveCode={updateActiveTrainingCode}
             onClear={clearLogs}
             onInitiate={startSimulation}
             isActive={isActive}

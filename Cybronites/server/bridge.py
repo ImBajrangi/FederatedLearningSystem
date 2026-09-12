@@ -62,7 +62,18 @@ class ConnectionManager:
             for model_path in paths:
                 if os.path.exists(model_path):
                     with open(model_path, "r") as f:
-                        self.state["model_architecture"] = f.read()
+                        code_str = f.read()
+                        self.state["model_architecture"] = code_str
+                        code_hash = hashlib.sha256(code_str.encode("utf-8")).hexdigest()
+                        self.state["active_training_code"] = {
+                            "source": "global",
+                            "name": "Global Model Specification",
+                            "filename": os.path.basename(model_path),
+                            "code": code_str,
+                            "code_hash": f"0x{code_hash[:16]}",
+                            "status": self.state.get("status", "IDLE"),
+                            "dataset": "MNIST (28x28) / Federated Partition",
+                        }
                         logger.info(f"Model source code loaded from {model_path}")
                         return
         except Exception as e:
@@ -499,8 +510,81 @@ async def start_lab_training(data: Dict[str, Any]):
     if not code:
         return {"success": False, "error": "No code provided."}
     
+    # Dynamically update the active training code state and notify dashboard
+    code_hash = hashlib.sha256(code.encode("utf-8")).hexdigest()
+    active_obj = {
+        "source": "laboratory",
+        "name": "Laboratory Dynamic Training Script",
+        "filename": "laboratory_train.py",
+        "code": code,
+        "code_hash": f"0x{code_hash[:16]}",
+        "status": "TRAINING",
+        "dataset": "Privacy Vault / Dynamic Data Loader"
+    }
+    bridge.state["model_architecture"] = code
+    bridge.state["active_training_code"] = active_obj
+    
+    bridge.broadcast_sync("CODE_SYNC", active_obj)
+    bridge.broadcast_sync("STAT_UPDATE", {
+        "model_architecture": code,
+        "status": "TRAINING",
+        "active_training_code": active_obj
+    })
+    
     success, msg = engine.start_training(code, hyperparams, bridge.broadcast_sync)
     return {"success": success, "message": msg}
+
+@app.get("/api/v1/training/active-code")
+async def get_active_training_code():
+    """Retrieve the exact dynamic code on which training is actively happening."""
+    active = bridge.state.get("active_training_code")
+    if not active:
+        code = bridge.state.get("model_architecture", "")
+        code_hash = hashlib.sha256(code.encode("utf-8")).hexdigest() if code else "0x0000_DEFAULT"
+        active = {
+            "source": "global",
+            "name": "Global Federated Model",
+            "filename": "model.py",
+            "code": code,
+            "code_hash": f"0x{code_hash[:16]}",
+            "status": bridge.state.get("status", "IDLE"),
+            "dataset": "MNIST (28x28) / Federated Partition"
+        }
+        bridge.state["active_training_code"] = active
+    return {"success": True, "active_code": active}
+
+@app.post("/api/v1/training/active-code")
+async def set_active_training_code(data: Dict[str, Any]):
+    """Set or inject dynamic training code into the federated convergence engine."""
+    code = data.get("code", "")
+    filename = data.get("filename", "model.py")
+    source = data.get("source", "custom")
+    name = data.get("name", "Custom Injected Training Code")
+    dataset = data.get("dataset", "Dynamic Dataset Binding")
+    
+    if not code:
+        return {"success": False, "error": "Code cannot be empty."}
+        
+    code_hash = hashlib.sha256(code.encode("utf-8")).hexdigest()
+    active_obj = {
+        "source": source,
+        "name": name,
+        "filename": filename,
+        "code": code,
+        "code_hash": f"0x{code_hash[:16]}",
+        "status": "READY",
+        "dataset": dataset
+    }
+    bridge.state["model_architecture"] = code
+    bridge.state["active_training_code"] = active_obj
+    
+    bridge.broadcast_sync("CODE_SYNC", active_obj)
+    bridge.broadcast_sync("STAT_UPDATE", {
+        "model_architecture": code,
+        "active_training_code": active_obj
+    })
+    
+    return {"success": True, "active_code": active_obj}
 
 @app.post("/api/v1/laboratory/execute")
 async def execute_lab_code(data: Dict[str, Any]):

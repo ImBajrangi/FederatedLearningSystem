@@ -17,7 +17,7 @@ const ConfigInput = ({ label, value }) => (
 );
 
 export const TrainingWorkspace = ({ 
-  clients, 
+  clients = [], 
   nodeRegistry = {},
   logs = [], 
   accuracyHistory = [], 
@@ -25,13 +25,19 @@ export const TrainingWorkspace = ({
   hyperparams, 
   roundHistory = [], 
   modelArchitecture, 
+  activeTrainingCode,
+  onUpdateActiveCode,
   onClear,
   onInitiate,
   isActive 
 }) => {
   const consoleRef = React.useRef(null);
   const [activeTab, setActiveTab] = useState('telemetry');
-  const [selectedNodeId, setSelectedNodeId] = useState('global');
+  const [selectedSource, setSelectedSource] = useState('active'); // 'active' | 'global' | 'lab' | nodeId
+  const [isEditing, setIsEditing] = useState(false);
+  const [customCode, setCustomCode] = useState('');
+  const [isInjecting, setIsInjecting] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   const ledgerRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -48,11 +54,85 @@ export const TrainingWorkspace = ({
   
   const hp = hyperparams || defaultHyperparams;
 
-  // Derive displayed source code and checksum based on selected node
-  const activeNode = selectedNodeId !== 'global' ? nodeRegistry[selectedNodeId] : null;
-  const displayedCode = activeNode?.code || modelArchitecture || '# No source code loaded';
-  const displayedFilename = activeNode?.filename || 'model.py';
-  const displayedCodeHash = activeNode?.code_hash || (modelArchitecture ? '0x' + Array.from(modelArchitecture).reduce((s, c) => (Math.imul(31, s) + c.charCodeAt(0)) | 0, 0).toString(16).padStart(8, '0') : '0x0000_GENESIS');
+  // Determine active dynamic training source
+  const liveActiveCode = activeTrainingCode?.code || modelArchitecture || '# Initializing Convergence Engine...';
+  const liveActiveFilename = activeTrainingCode?.filename || 'model.py';
+  const liveActiveName = activeTrainingCode?.name || (isActive ? 'Active Real-Time Convergence Engine' : 'Global Verified Specification');
+  const liveDataset = activeTrainingCode?.dataset || 'MNIST (28x28) / Federated Shard';
+
+  // Compute displayed code and metadata based on selection
+  let displayedCode = liveActiveCode;
+  let displayedFilename = liveActiveFilename;
+  let displayedTitle = liveActiveName;
+  let displayedDataset = liveDataset;
+  let displayedHash = activeTrainingCode?.code_hash;
+
+  if (selectedSource === 'active') {
+    displayedCode = isEditing ? customCode : liveActiveCode;
+    displayedFilename = liveActiveFilename;
+    displayedTitle = isActive ? '⚡ Active In-Flight Training Code' : '🟢 Current Active Training Engine Code';
+    displayedDataset = liveDataset;
+    displayedHash = activeTrainingCode?.code_hash;
+  } else if (selectedSource === 'global') {
+    displayedCode = isEditing ? customCode : (modelArchitecture || '# Global Genesis Spec');
+    displayedFilename = 'model.py';
+    displayedTitle = '🌐 Global Genesis Model Specification';
+    displayedDataset = 'Institutional Global Distribution';
+  } else if (selectedSource === 'lab') {
+    displayedCode = isEditing ? customCode : (activeTrainingCode?.source === 'laboratory' ? activeTrainingCode.code : liveActiveCode);
+    displayedFilename = 'laboratory_sandbox.py';
+    displayedTitle = '🧪 Code Laboratory Sandbox Script';
+    displayedDataset = 'Privacy Vault / In-Memory RAM';
+  } else if (nodeRegistry[selectedSource]) {
+    const node = nodeRegistry[selectedSource];
+    displayedCode = node.code || '# No code payload transmitted by node';
+    displayedFilename = node.filename || 'node_train.py';
+    displayedTitle = `💻 Node: ${node.name || selectedSource}`;
+    displayedDataset = `Edge Local Private Dataset (${node.ip || 'Local Device'})`;
+    displayedHash = node.code_hash;
+  }
+
+  // Fallback hash calculation
+  if (!displayedHash && displayedCode) {
+    displayedHash = '0x' + Array.from(displayedCode).reduce((s, c) => (Math.imul(31, s) + c.charCodeAt(0)) | 0, 0).toString(16).padStart(8, '0');
+  }
+
+  const handleStartEdit = () => {
+    setCustomCode(displayedCode);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setCustomCode('');
+  };
+
+  const handleInjectCode = async () => {
+    if (!customCode.trim()) return;
+    setIsInjecting(true);
+    try {
+      if (onUpdateActiveCode) {
+        await onUpdateActiveCode(
+          customCode,
+          displayedFilename,
+          selectedSource === 'active' ? 'custom_injected' : selectedSource,
+          `Injected (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`,
+          displayedDataset
+        );
+      }
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Failed to inject code:', err);
+    } finally {
+      setIsInjecting(false);
+    }
+  };
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(displayedCode);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
 
   return (
     <div className="tr-root section-fade">
@@ -70,7 +150,9 @@ export const TrainingWorkspace = ({
         <div className="tr-header-right">
           <div className="tr-status-card">
             <div className={`tr-status-dot ${isActive ? 'tr-status-active' : ''}`} />
-            <span className="tr-status-text">GPU CLUSTER: {isActive ? 'COMMITED' : 'READY'}</span>
+            <span className="tr-status-text">
+              {isActive ? '⚡ TRAINING ACTIVE ON CLUSTER' : 'GPU CLUSTER: READY'}
+            </span>
           </div>
           <button 
             onClick={onInitiate}
@@ -78,7 +160,7 @@ export const TrainingWorkspace = ({
             className={`tr-run-btn group ${isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Zap size={14} fill="currentColor" />
-            <span>{isActive ? 'Training Active' : 'Initiate Training'}</span>
+            <span>{isActive ? 'Training in Progress...' : 'Initiate Training Cycle'}</span>
             <div className="tr-btn-line group-hover:w-8" />
           </button>
         </div>
@@ -158,26 +240,28 @@ export const TrainingWorkspace = ({
                         <td>
                           <div className="tr-params-grid">
                             <div className="tr-param-item">
-                              <span className="tr-param-label">LR:</span>
-                              <span className="tr-param-val">{row.lr.toFixed(4)}</span>
+                              <span className="tr-param-k">LR</span>
+                              <span className="tr-param-v">{row.lr}</span>
                             </div>
                             <div className="tr-param-item">
-                              <span className="tr-param-label">BATCH:</span>
-                              <span className="tr-param-val">{row.batch}</span>
+                              <span className="tr-param-k">BATCH</span>
+                              <span className="tr-param-v">{row.batch}</span>
+                            </div>
+                            <div className="tr-param-item">
+                              <span className="tr-param-k">SIGMA</span>
+                              <span className="tr-param-v">0.001</span>
                             </div>
                           </div>
                         </td>
-                        <td className="tr-text-right">
-                          <div className="tr-acc-badge">
-                            <span className="tr-acc-val">{(row.acc * 100).toFixed(2)}</span>
-                            <span className="tr-acc-unit">%</span>
-                          </div>
+                        <td className="tr-td-acc">
+                          <span className="tr-acc-yield">
+                            {row.accuracy ? `${(row.accuracy * 100).toFixed(1)}%` : '—'}
+                          </span>
                         </td>
-                        <td className="tr-text-right">
-                          <div className="tr-status-badge tr-status-verified">
-                            <ShieldCheck size={9} />
-                            <span>VERIFIED</span>
-                          </div>
+                        <td className="tr-td-status">
+                          <span className="tr-status-pill tr-status-verified">
+                            ON-CHAIN VERIFIED
+                          </span>
                         </td>
                       </tr>
                     ))
@@ -194,46 +278,118 @@ export const TrainingWorkspace = ({
             </div>
           </section>
 
-          {/* Code Transparency & Model Source Specification */}
+          {/* Dynamic Code Transparency & Active Execution Engine */}
           <section className="tr-card tr-script-card">
-            <div className="tr-card-header">
+            <div className="tr-card-header flex-wrap gap-2">
               <div className="tr-card-title-wrap">
-                <Code size={13} className="tr-card-icon" />
-                <span className="tr-card-title">Code Transparency & Source Audit</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {Object.keys(nodeRegistry || {}).length > 0 && (
-                  <select
-                    className="tr-node-select"
-                    value={selectedNodeId}
-                    onChange={(e) => setSelectedNodeId(e.target.value)}
-                  >
-                    <option value="global">Global Model (model.py)</option>
-                    {Object.entries(nodeRegistry).map(([id, node]) => (
-                      <option key={id} value={id}>
-                        {node.name || id} ({node.filename || 'model.py'})
-                      </option>
-                    ))}
-                  </select>
+                <Code size={13} className="tr-card-icon text-primary" />
+                <span className="tr-card-title">{displayedTitle}</span>
+                {isActive && (
+                  <span className="tr-live-exec-badge">
+                    <span className="tr-live-exec-dot animate-ping" />
+                    <span className="tr-live-exec-dot" />
+                    LIVE TRAINING
+                  </span>
                 )}
+              </div>
+
+              {/* Source Switcher & Actions */}
+              <div className="flex items-center gap-2">
+                <select
+                  className="tr-node-select"
+                  value={selectedSource}
+                  onChange={(e) => {
+                    setSelectedSource(e.target.value);
+                    setIsEditing(false);
+                  }}
+                >
+                  <option value="active">⚡ Live Active Training Code</option>
+                  <option value="global">🌐 Global Model (model.py)</option>
+                  <option value="lab">🧪 Code Laboratory Sandbox</option>
+                  {Object.entries(nodeRegistry).map(([id, node]) => (
+                    <option key={id} value={id}>
+                      💻 {node.name || id} ({node.filename || 'node.py'})
+                    </option>
+                  ))}
+                </select>
+
+                <button 
+                  onClick={handleCopyCode}
+                  className="tr-card-action px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-[10px] font-mono hover:text-primary transition"
+                  title="Copy Code"
+                >
+                  {copySuccess ? 'Copied!' : 'Copy'}
+                </button>
+
+                {!isEditing ? (
+                  <button 
+                    onClick={handleStartEdit}
+                    className="tr-card-action px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded text-[10px] font-bold hover:bg-primary/20 transition"
+                  >
+                    Edit / Inject
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={handleInjectCode}
+                      disabled={isInjecting}
+                      className="px-2 py-1 bg-emerald-500 text-white rounded text-[10px] font-bold hover:bg-emerald-400 transition flex items-center gap-1"
+                    >
+                      {isInjecting ? <RefreshCcw size={10} className="animate-spin" /> : <Zap size={10} />}
+                      Inject
+                    </button>
+                    <button 
+                      onClick={handleCancelEdit}
+                      className="px-2 py-1 bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 rounded text-[10px] font-medium"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+
                 <span className="tr-file-tag">{displayedFilename}</span>
               </div>
             </div>
             
+            {/* Dynamic Metadata Bar */}
             <div className="tr-code-meta-bar">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={11} className="text-emerald-400" />
-                <span className="text-[10px] font-mono text-slate-400">
-                  SHA-256: <span className="text-emerald-400 select-all">{displayedCodeHash}</span>
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck size={11} className="text-emerald-400" />
+                  <span className="text-[10px] font-mono text-slate-300">
+                    SHA-256: <span className="text-emerald-400 select-all font-bold">{displayedHash}</span>
+                  </span>
+                </div>
+                <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono text-slate-400 border-l border-white/10 pl-3">
+                  <Database size={10} className="text-cyan-400" />
+                  <span>{displayedDataset}</span>
+                </div>
               </div>
-              <span className="text-[9px] uppercase font-bold tracking-wider text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              <span className="text-[9px] uppercase font-bold tracking-wider text-emerald-400/90 bg-emerald-500/10 px-2.5 py-0.5 rounded border border-emerald-500/20">
                 100% Code Transparency Verified
               </span>
             </div>
 
+            {/* Code Body / Live Editor */}
             <div className="tr-script-body">
-              <pre><code>{displayedCode}</code></pre>
+              {isEditing ? (
+                <textarea
+                  className="tr-code-editor-area"
+                  value={customCode}
+                  onChange={(e) => setCustomCode(e.target.value)}
+                  placeholder="Enter custom training code..."
+                  spellCheck="false"
+                />
+              ) : (
+                <div className="tr-code-view-wrap">
+                  <div className="tr-line-gutter">
+                    {displayedCode.split('\n').map((_, i) => (
+                      <span key={i} className="tr-gutter-num">{i + 1}</span>
+                    ))}
+                  </div>
+                  <pre className="tr-code-content"><code>{displayedCode}</code></pre>
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -651,17 +807,38 @@ export const TrainingWorkspace = ({
         .tr-console-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
         .tr-console-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
 
-        .tr-script-card { min-height: 320px; }
+        .tr-live-exec-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          background: rgba(239, 68, 68, 0.15);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: #ef4444;
+          font-size: 8px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+        }
+        .tr-live-exec-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #ef4444;
+        }
+
+        .tr-script-card { min-height: 360px; }
         .tr-node-select {
           background: #fff;
           border: 1px solid var(--border);
           font-size: 10px;
           font-weight: 600;
           color: var(--text-main);
-          padding: 3px 8px;
-          border-radius: 3px;
+          padding: 4px 10px;
+          border-radius: 4px;
           outline: none;
           cursor: pointer;
+          transition: border-color 0.2s;
         }
         .tr-node-select:focus {
           border-color: var(--primary);
@@ -673,10 +850,57 @@ export const TrainingWorkspace = ({
           padding: 8px 16px;
           background: #0b1120;
           border-bottom: 1px solid rgba(255,255,255,0.06);
+          flex-wrap: wrap;
+          gap: 8px;
         }
-        .tr-file-tag { font-size: 9px; font-weight: 700; color: var(--text-muted); padding: 2px 8px; background: var(--bg-main); border: 1px solid var(--border); margin-left: 8px; }
-        .tr-script-body { padding: 20px 24px; background: #070c18; flex: 1; overflow-y: auto; max-height: 420px; }
-        .tr-script-body pre { margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.6; color: #e2e8f0; opacity: 0.9; }
+        .tr-file-tag { font-size: 9px; font-weight: 700; color: var(--text-muted); padding: 2px 8px; background: var(--bg-main); border: 1px solid var(--border); margin-left: 4px; }
+        .tr-script-body { padding: 0; background: #070c18; flex: 1; overflow-y: auto; max-height: 440px; display: flex; }
+        
+        .tr-code-view-wrap {
+          display: flex;
+          width: 100%;
+          min-height: 100%;
+        }
+        .tr-line-gutter {
+          padding: 16px 10px 16px 14px;
+          background: #050811;
+          border-right: 1px solid rgba(255,255,255,0.06);
+          display: flex;
+          flex-direction: column;
+          user-select: none;
+        }
+        .tr-gutter-num {
+          font-family: var(--font-mono);
+          font-size: 11px;
+          line-height: 1.6;
+          color: rgba(255,255,255,0.2);
+          text-align: right;
+          min-width: 20px;
+        }
+        .tr-code-content {
+          margin: 0;
+          padding: 16px 20px;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          line-height: 1.6;
+          color: #e2e8f0;
+          opacity: 0.95;
+          flex: 1;
+          overflow-x: auto;
+        }
+        .tr-code-editor-area {
+          width: 100%;
+          height: 380px;
+          padding: 16px 20px;
+          background: #050811;
+          color: #38bdf8;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          line-height: 1.6;
+          border: none;
+          outline: none;
+          resize: vertical;
+        }
 
         .tr-metrics-card { min-height: 400px; }
         .tr-metrics-legend { display: flex; gap: 16px; }
