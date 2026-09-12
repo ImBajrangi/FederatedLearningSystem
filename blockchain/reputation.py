@@ -98,7 +98,9 @@ class ReputationManager:
     # ------------------------------------------------------------------
     def _ensure_registered(self, client_id: str):
         if client_id not in self.scores:
-            self.register_client(client_id)
+            self.scores[client_id] = self.initial_score
+        if client_id not in self._history:
+            self._history[client_id] = [("REGISTERED", self.scores[client_id])]
 
     # ------------------------------------------------------------------
     # Pretty print

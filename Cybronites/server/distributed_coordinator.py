@@ -226,8 +226,8 @@ class DistributedCoordinator:
             "code_hash": code_hash,
         }
 
-        # Set default initial reputation score
-        self.reputation.scores[client_id] = 100.0
+        # Register client in blockchain reputation ledger
+        self.reputation.register_client(client_id)
 
         # Update node registry for dashboard
         self.node_registry[client_id] = {
