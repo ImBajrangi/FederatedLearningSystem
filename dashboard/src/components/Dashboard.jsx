@@ -133,17 +133,24 @@ export const Dashboard = ({
         {/* Right Sidebar Stats */}
         <div className="dash-sidebar-stats">
           {/* Security Policy */}
-          <div className="dash-card dash-card-accent bg-primary shadow-xl overflow-hidden group">
-            <ShieldCheck size={20} className="text-accent mb-6" />
-            <h3 className="dash-accent-title serif">Security Policy Active</h3>
-            <p className="dash-accent-text opacity-70">Differential Privacy calibration active. Coordination via Secure gRPC Tunnel.</p>
+          <div className="dash-card dash-card-accent">
+            <div className="flex items-center gap-2.5 mb-2.5">
+              <div className="w-7 h-7 rounded-md bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <ShieldCheck size={16} />
+              </div>
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Active Protection</span>
+            </div>
+            <h3 className="dash-accent-title">Security Policy Active</h3>
+            <p className="dash-accent-text">Differential privacy calibration active. Zero raw telemetry exposure via secure gRPC tunnel.</p>
           </div>
 
           {/* Network Resilience */}
-          <div className="dash-card">
+          <div className="dash-card dash-resilience-card">
             <div className="dash-card-header">
-              <Activity size={12} className="dash-card-icon" />
-              <span className="dash-card-title">Network Resilience</span>
+              <div className="flex items-center gap-2">
+                <Activity size={13} className="dash-card-icon" />
+                <span className="dash-card-title">Network Resilience</span>
+              </div>
             </div>
             <div className="dash-card-body dash-metrics-list">
               <div className="dash-metric-row" data-tooltip="Active client devices and private datasets connected to the network">
@@ -589,10 +596,11 @@ export const Dashboard = ({
         }
         .dist-organizer-grid {
           display: grid;
-          grid-template-columns: minmax(260px, 280px) minmax(0, 1fr) minmax(280px, 320px);
-          gap: 20px;
+          grid-template-columns: minmax(260px, 280px) minmax(0, 1fr) minmax(280px, 340px);
+          gap: 16px;
           position: relative;
           z-index: 10;
+          align-items: stretch;
         }
         @media (max-width: 1280px) { .dist-organizer-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 860px) { .dist-organizer-grid { grid-template-columns: 1fr; } }
@@ -600,21 +608,23 @@ export const Dashboard = ({
         .dist-panel {
           background: var(--bg-surface);
           border: 1px solid var(--border);
-          padding: 24px;
+          border-radius: 8px;
+          padding: 20px;
           display: flex;
           flex-direction: column;
           position: relative;
           min-width: 0;
-          transition: border-color 0.3s, transform 0.3s;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+          transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .dist-panel:hover { border-color: var(--accent); }
+        .dist-panel:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
         .dist-panel-header {
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 24px;
-          padding-bottom: 16px;
+          gap: 10px;
+          margin-bottom: 16px;
+          padding-bottom: 12px;
           border-bottom: 1px solid var(--border);
         }
 
@@ -631,56 +641,62 @@ export const Dashboard = ({
         .dist-metric-box {
           display: flex;
           flex-direction: column;
-          gap: 4px;
-          margin-bottom: 24px;
+          gap: 2px;
+          margin-bottom: 12px;
+          background: rgba(0,0,0,0.02);
+          padding: 12px 14px;
+          border: 1px solid var(--border);
+          border-radius: 6px;
         }
         .dist-metric-value-row {
           display: flex;
           align-items: baseline;
-          gap: 8px;
+          gap: 6px;
         }
         .dist-metric-val { 
-          font-family: var(--font-serif); 
-          font-size: 32px; 
+          font-family: var(--font-mono, monospace); 
+          font-size: 26px; 
+          font-weight: 700;
           color: var(--text-main);
           line-height: 1;
         }
         .dist-metric-label-mini {
           font-size: 9px;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.08em;
           color: var(--text-muted);
-          font-weight: 600;
+          font-weight: 700;
         }
 
         .dist-btn-action-large {
           margin-top: auto;
-          padding: 18px;
-          background: var(--accent);
+          padding: 14px 20px;
+          background: #0284c7;
           color: white;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.15em;
           font-size: 10px;
           border: none;
+          border-radius: 6px;
           cursor: pointer;
-          transition: all 0.3s;
+          transition: all 0.2s;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 12px;
-          box-shadow: 0 4px 15px var(--accent-glow);
+          gap: 10px;
+          box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
         }
-        .dist-btn-action-large:hover { box-shadow: 0 6px 20px var(--accent-glow); filter: brightness(1.05); }
-        .dist-btn-stop-large { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: none; }
-        .dist-btn-stop-large:hover { background: var(--error); color: white; }
+        .dist-btn-action-large:hover { filter: brightness(1.08); box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35); }
+        .dist-btn-stop-large { background: #ef4444 !important; color: white !important; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important; }
+        .dist-btn-stop-large:hover { background: #dc2626 !important; }
 
         .dist-ring-center {
-          width: 110px; height: 110px;
+          width: 90px; height: 90px;
           position: relative;
           display: flex;
           align-items: center; justify-content: center;
-          margin: 0 auto;
+          margin: 8px auto;
         }
         
         .dist-terminal {
@@ -700,30 +716,32 @@ export const Dashboard = ({
           gap: 12px;
         }
         .dash-btn-primary {
-          height: 44px;
+          height: 40px;
           background: var(--primary);
           color: #fff;
           border: none;
-          padding: 0 32px;
-          font-size: 11px;
+          padding: 0 24px;
+          font-size: 10px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.25em;
+          letter-spacing: 0.2em;
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 12px;
+          border-radius: 6px;
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .dash-btn-primary:hover:not(.dash-btn-disabled) { box-shadow: 0 6px 20px rgba(0,0,0,0.15); filter: brightness(1.08); }
+        .dash-btn-primary:hover:not(.dash-btn-disabled) { box-shadow: 0 4px 14px rgba(0,0,0,0.15); filter: brightness(1.08); }
         .dash-btn-primary:active:not(.dash-btn-disabled) { transform: scale(0.99); }
         .dash-btn-disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); box-shadow: none; }
         
         .dash-btn-icon {
-          width: 44px; height: 44px;
+          width: 40px; height: 40px;
           display: flex; align-items: center; justify-content: center;
           border: 1px solid var(--border);
+          border-radius: 6px;
           background: transparent;
           color: var(--text-muted);
           cursor: pointer;
@@ -735,7 +753,8 @@ export const Dashboard = ({
         .dash-grid {
           display: grid;
           grid-template-columns: minmax(0, 1fr) 300px;
-          gap: 24px;
+          gap: 16px;
+          align-items: stretch;
         }
         @media (max-width: 1024px) {
           .dash-grid {
@@ -745,11 +764,13 @@ export const Dashboard = ({
         .dash-card {
           background: var(--bg-surface);
           border: 1px solid var(--border);
+          border-radius: 8px;
           display: flex;
           flex-direction: column;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
         .dash-card-header {
-          padding: 16px 24px;
+          padding: 12px 18px;
           border-bottom: 1px solid var(--border);
           display: flex;
           justify-content: space-between;
@@ -759,76 +780,95 @@ export const Dashboard = ({
         .dash-card-title-wrap {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
         }
-        .dash-card-icon { color: var(--primary); opacity: 0.6; }
+        .dash-card-icon { color: var(--primary); opacity: 0.7; }
         .dash-card-title {
           font-size: 10px;
           font-weight: 700;
           color: var(--text-main);
           text-transform: uppercase;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.15em;
         }
         .dash-card-legend {
           font-size: 10px;
           font-weight: 700;
           color: var(--text-muted);
-          opacity: 0.6;
+          opacity: 0.7;
           text-transform: uppercase;
-          letter-spacing: 0.15em;
+          letter-spacing: 0.1em;
         }
         .dash-legend-item { display: flex; align-items: center; gap: 8px; }
-        .dash-legend-color { width: 10px; height: 4px; background: var(--primary); }
+        .dash-legend-color { width: 10px; height: 4px; background: var(--primary); border-radius: 2px; }
 
         .dash-chart-container {
-          padding: 32px;
-          height: 380px;
+          padding: 18px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
           background: #fff;
+          border-radius: 0 0 8px 8px;
         }
 
         .dash-sidebar-stats {
           display: flex;
           flex-direction: column;
-          gap: 40px;
+          gap: 14px;
+          height: 100%;
+          justify-content: space-between;
         }
         .dash-card-accent {
-          background: var(--primary);
-          color: #fff;
-          border: none;
-          padding: 32px;
+          background: linear-gradient(135deg, #090e17 0%, #131c2e 100%) !important;
+          color: #fff !important;
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          padding: 18px !important;
+          border-radius: 8px !important;
           position: relative;
           overflow: hidden;
+          box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35) !important;
         }
         .dash-card-accent::after {
           content: '';
           position: absolute;
           top: -20%; right: -10%;
           width: 80%; height: 140%;
-          background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05));
+          background: linear-gradient(135deg, transparent, rgba(56, 189, 248, 0.08));
           transform: rotate(15deg);
+          pointer-events: none;
         }
-        .dash-accent-icon { margin-bottom: 24px; opacity: 0.4; }
         .dash-accent-title {
-          font-family: var(--font-serif);
-          font-size: 20px;
-          font-weight: 500;
-          margin: 0 0 12px 0;
+          font-family: var(--font-sans) !important;
+          font-size: 15px !important;
+          font-weight: 700 !important;
+          color: #f8fafc !important;
+          margin: 0 0 6px 0 !important;
+          letter-spacing: -0.01em !important;
         }
         .dash-accent-text {
-          font-size: 11px;
-          line-height: 1.6;
-          opacity: 0.8;
-          text-transform: uppercase;
-          letter-spacing: 0.02em;
-          margin: 0;
+          font-size: 11px !important;
+          line-height: 1.5 !important;
+          color: #94a3b8 !important;
+          letter-spacing: 0.01em !important;
+          margin: 0 !important;
         }
 
-        .dash-metrics-list { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
+        .dash-resilience-card {
+          border-radius: 8px !important;
+          flex: 1;
+        }
+        .dash-metrics-list { 
+          padding: 16px 18px !important; 
+          display: flex; 
+          flex-direction: column; 
+          gap: 14px; 
+          flex: 1;
+          justify-content: space-around;
+        }
         .dash-metric-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding-bottom: 24px;
+          padding-bottom: 12px;
           border-bottom: 1px solid var(--border);
         }
         .dash-metric-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -837,9 +877,9 @@ export const Dashboard = ({
           font-weight: 700;
           color: var(--text-muted);
           text-transform: uppercase;
-          letter-spacing: 0.15em;
+          letter-spacing: 0.1em;
         }
-        .dash-metric-value { font-size: 14px; font-weight: 700; color: var(--primary); }
+        .dash-metric-value { font-size: 13px; font-weight: 700; font-family: var(--font-mono, monospace); color: var(--primary); }
         .dash-value-error { color: var(--error); }
         .dash-value-success { color: var(--success); }
 
