@@ -1,23 +1,26 @@
-Option 1: Direct Execution
+# 🚀 Node Client Commands & Model Synchronization
 
+### 1. Interactive Model Selection (Prompts you to choose or enter file path)
+```bash
+.venv/bin/python join.py --name "Hospital-Alpha"
+```
+
+### 2. Run with Specific Model File (Syncs code directly to platform)
+```bash
+# Default Architecture
 .venv/bin/python join.py --file Cybronites/client/model.py --name "Hospital-Alpha"
 
-Option 2: Activate Environment First
+# Custom Architecture File (e.g., custom_resnet.py)
+.venv/bin/python join.py --file path/to/your_model.py --name "Hospital-Beta"
+```
 
+### 3. Or Activate Virtual Environment First
+```bash
 source .venv/bin/activate
-python join.py --file Cybronites/client/model.py --name "Hospital-Alpha"
+python join.py
+```
 
-The virtual environment .venv is configured and verified.
-
-You can now run your node participant command:
-
-.venv/bin/python join.py --file Cybronites/client/model.py --name "Hospital-Alpha"
-Or activate the environment in your shell:
-
-source .venv/bin/activate
-python join.py --file Cybronites/client/model.py --name "Hospital-Alpha"
-
-You can download the active global model parameters directly via HTTP:
-
-# Get the global model parameter dictionary
+### 4. Fetch Active Global Model from Network
+```bash
 curl -X GET "https://mdark4025-cybronites.hf.space/api/v1/distributed/get-model" -o global_model.json
+```

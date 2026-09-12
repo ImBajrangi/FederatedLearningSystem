@@ -149,6 +149,27 @@ def http_post(url, payload):
 #  MAIN PARTICIPANT LOOP
 # ═══════════════════════════════════════════════════════════════════════
 
+def load_dynamic_model(code_str):
+    """Dynamically parses and instantiates any PyTorch nn.Module defined in code_str."""
+    if not HAVE_TORCH:
+        return None, "NumPyEngine"
+    try:
+        scope = {
+            "torch": torch,
+            "nn": torch.nn,
+            "F": torch.nn.functional,
+            "np": np,
+            "__name__": "__dynamic__"
+        }
+        exec(code_str, scope)
+        for name, cls in scope.items():
+            if isinstance(cls, type) and issubclass(cls, nn.Module) and cls is not nn.Module:
+                instance = cls()
+                return instance, name
+    except Exception as e:
+        print(f"  ⚠️  Dynamic model initialization notice: {e}. Using base MNISTNet.")
+    return MNISTNet(), "MNISTNet"
+
 def main():
     parser = argparse.ArgumentParser(description="Zero-Config Federated Learning Participant")
     parser.add_argument("--server", type=str, default=None, help="Target Server URL (e.g., http://localhost:7880)")
@@ -186,20 +207,53 @@ def main():
     node_name = args.name or f"{platform.node() or 'Node'}-{str(uuid.uuid4())[:4]}"
     device_type = "CUDA GPU" if HAVE_TORCH and torch.cuda.is_available() else ("Apple MPS" if HAVE_TORCH and hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "CPU")
 
-    # Load local training code file for transparency
-    training_code = ""
-    training_filename = "MNISTNet.py"
+    # ── Interactive / CLI Training Code Resolution ──
+    chosen_file_path = args.file
     
-    file_candidates = [
-        args.file,
+    # If no file specified and running interactively in a terminal, prompt user
+    if not chosen_file_path and sys.stdin.isatty():
+        print("""
+╔════════════════════════════════════════════════════════════════════════╗
+║    🛡️ SECURE FEDERATED LEARNING & BLOCKCHAIN CLIENT NODE               ║
+║    Privacy-Preserving Training • Local Computation • Smart Contracts   ║
+╚════════════════════════════════════════════════════════════════════════╝
+""")
+        default_file = "Cybronites/client/model.py" if os.path.exists("Cybronites/client/model.py") else ("model.py" if os.path.exists("model.py") else None)
+        print("  📁 Select Training Code Architecture to train locally & sync with platform:")
+        if default_file:
+            print(f"    [1] {default_file} (Default Institutional Architecture)")
+        else:
+            print("    [1] Default Embedded Convolutional Network (MNISTNet)")
+        print("    [2] Custom local Python file (enter path)")
+        
+        try:
+            choice = input("  👉 Enter selection [1]: ").strip()
+            if choice == "2":
+                custom_input = input("  📝 Enter path to training code (.py): ").strip()
+                if custom_input and os.path.exists(custom_input):
+                    chosen_file_path = custom_input
+                else:
+                    print(f"  ⚠️  File '{custom_input}' not found. Using default architecture.")
+            elif default_file:
+                chosen_file_path = default_file
+        except (KeyboardInterrupt, EOFError):
+            print("\n  Cancelled.")
+            sys.exit(0)
+
+    # Load chosen training code file
+    training_code = ""
+    training_filename = "model.py"
+    
+    candidates = [
+        chosen_file_path,
         os.path.join(os.getcwd(), "Cybronites", "client", "model.py"),
         os.path.join(os.getcwd(), "client", "model.py"),
         os.path.join(os.getcwd(), "model.py"),
     ]
-    for fpath in file_candidates:
+    for fpath in candidates:
         if fpath and os.path.exists(fpath):
             try:
-                with open(fpath, "r") as f:
+                with open(fpath, "r", encoding="utf-8") as f:
                     training_code = f.read()
                     training_filename = os.path.basename(fpath)
                     break
@@ -231,7 +285,11 @@ class MNISTNet(nn.Module):
 
     code_checksum = hashlib.sha256(training_code.encode("utf-8")).hexdigest()
 
-    print("""
+    # Dynamic Model Instantiation from Loaded Code
+    local_model, model_class_name = load_dynamic_model(training_code)
+
+    if not sys.stdin.isatty() or args.file:
+        print("""
 ╔════════════════════════════════════════════════════════════════════════╗
 ║    🛡️ SECURE FEDERATED LEARNING & BLOCKCHAIN CLIENT NODE               ║
 ║    Privacy-Preserving Training • Local Computation • Smart Contracts   ║
@@ -239,6 +297,7 @@ class MNISTNet(nn.Module):
 """)
     print(f"  🖥️  Device Node:     {node_name}")
     print(f"  ⚡ Compute Engine:   {device_type} (PyTorch {torch.__version__ if HAVE_TORCH else 'NumPy'})")
+    print(f"  🧠 Model Class:      {model_class_name}")
     print(f"  🔒 Privacy:          Local Differential Privacy (L2-Clip + Gaussian)")
     print(f"  📜 Training File:    {training_filename} ({len(training_code.splitlines())} lines)")
     print(f"  🔑 Code Checksum:    SHA-256: 0x{code_checksum[:16]}...")
@@ -263,12 +322,11 @@ class MNISTNet(nn.Module):
         sys.exit(1)
 
     # Model & Data Initialization
-    if HAVE_TORCH:
+    if HAVE_TORCH and local_model:
         device = torch.device("cuda" if torch.cuda.is_available() else ("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu"))
-        local_model = MNISTNet().to(device)
+        local_model = local_model.to(device)
     else:
         device = "cpu"
-        local_model = None
 
     X_train, y_train = get_local_shard(num_samples=250)
     print(f"  📦 Local Private Data Shard Loaded: {len(X_train)} samples")
