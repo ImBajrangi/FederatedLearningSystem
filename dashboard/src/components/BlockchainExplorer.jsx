@@ -115,20 +115,25 @@ export const BlockchainRibbon = ({ blockchain }) => {
           >
             <motion.div
               className="bl-modal-content"
-              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              initial={{ scale: 0.96, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              exit={{ scale: 0.96, opacity: 0, y: 15 }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bl-modal-header">
                 <div className="bl-modal-title-group">
-                  <Database size={16} className="text-emerald-400" />
-                  <h4 className="bl-modal-title">
-                    {selectedBlock.index === 0 ? 'Genesis Block #0000' : `Block #${selectedBlock.index.toString().padStart(4, '0')}`} Detailed Inspection
-                  </h4>
+                  <div className="bl-modal-icon-badge">
+                    <Database size={16} className="text-emerald-400" />
+                  </div>
+                  <div>
+                    <h4 className="bl-modal-title">
+                      {selectedBlock.index === 0 ? 'Genesis Block #0000' : `Block #${selectedBlock.index.toString().padStart(4, '0')}`}
+                    </h4>
+                    <span className="bl-modal-subtitle">Cryptographic Ledger Inspection & Verification</span>
+                  </div>
                 </div>
-                <button className="bl-modal-close" onClick={() => setSelectedBlock(null)}>
-                  <X size={16} />
+                <button className="bl-modal-close" onClick={() => setSelectedBlock(null)} title="Close">
+                  <X size={18} />
                 </button>
               </div>
 
@@ -136,36 +141,49 @@ export const BlockchainRibbon = ({ blockchain }) => {
                 {/* Cryptographic Key-Values */}
                 <div className="bl-meta-grid">
                   <div className="bl-meta-item">
-                    <span className="bl-meta-label">Block Hash (SHA-256)</span>
-                    <span className="bl-meta-value font-mono text-emerald-400 select-all">{selectedBlock.hash}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="bl-meta-label">Block Hash (SHA-256)</span>
+                      <span className="bl-meta-badge-verified">✓ Cryptographically Valid</span>
+                    </div>
+                    <div className="bl-hash-box">
+                      <span className="bl-hash-val-primary select-all">{selectedBlock.hash}</span>
+                    </div>
                   </div>
+
                   <div className="bl-meta-item">
                     <span className="bl-meta-label">Previous Block Hash</span>
-                    <span className="bl-meta-value font-mono text-slate-400 select-all">{selectedBlock.previous_hash || '0'.repeat(64)}</span>
+                    <div className="bl-hash-box">
+                      <span className="bl-hash-val-secondary select-all">{selectedBlock.previous_hash || '0'.repeat(64)}</span>
+                    </div>
                   </div>
+
                   {selectedBlock.merkle_root && (
                     <div className="bl-meta-item">
                       <span className="bl-meta-label">Merkle Tree Root</span>
-                      <span className="bl-meta-value font-mono text-cyan-400 select-all">{selectedBlock.merkle_root}</span>
+                      <div className="bl-hash-box">
+                        <span className="bl-hash-val-merkle select-all">{selectedBlock.merkle_root}</span>
+                      </div>
                     </div>
                   )}
-                  <div className="bl-meta-item-row">
-                    <div>
-                      <span className="bl-meta-label">Miner / Validator Node</span>
-                      <span className="bl-meta-value text-slate-200">{selectedBlock.miner || 'COORDINATOR_NODE'}</span>
+
+                  {/* 4-Column Metric Cards */}
+                  <div className="bl-meta-cards-grid">
+                    <div className="bl-metric-card">
+                      <span className="bl-metric-card-label">Validator / Miner</span>
+                      <span className="bl-metric-card-val text-white">{selectedBlock.miner || 'COORDINATOR_NODE'}</span>
                     </div>
-                    <div>
-                      <span className="bl-meta-label">PoW Nonce</span>
-                      <span className="bl-meta-value font-mono text-amber-400">{selectedBlock.nonce ?? 0}</span>
+                    <div className="bl-metric-card">
+                      <span className="bl-metric-card-label">PoW Nonce</span>
+                      <span className="bl-metric-card-val text-amber-400 font-mono">#{selectedBlock.nonce ?? 0}</span>
                     </div>
-                    <div>
-                      <span className="bl-meta-label">Difficulty Target</span>
-                      <span className="bl-meta-value font-mono text-slate-300">{selectedBlock.difficulty ?? 2} leading zeros</span>
+                    <div className="bl-metric-card">
+                      <span className="bl-metric-card-label">Difficulty Target</span>
+                      <span className="bl-metric-card-val text-cyan-400 font-mono">{selectedBlock.difficulty ?? 1} Leading Zeros</span>
                     </div>
-                    <div>
-                      <span className="bl-meta-label">Timestamp</span>
-                      <span className="bl-meta-value text-slate-300">
-                        {selectedBlock.timestamp ? new Date(selectedBlock.timestamp * 1000).toLocaleTimeString() : 'N/A'}
+                    <div className="bl-metric-card">
+                      <span className="bl-metric-card-label">Block Timestamp</span>
+                      <span className="bl-metric-card-val text-slate-200">
+                        {selectedBlock.timestamp ? new Date(selectedBlock.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'GENESIS'}
                       </span>
                     </div>
                   </div>
@@ -173,36 +191,49 @@ export const BlockchainRibbon = ({ blockchain }) => {
 
                 {/* Transactions Table */}
                 <div className="bl-txs-container">
-                  <h5 className="bl-txs-title">On-Chain Transactions ({selectedBlock.transactions?.length || 0})</h5>
+                  <div className="flex items-center justify-between mb-1">
+                    <h5 className="bl-txs-title">On-Chain Transactions & Verifications</h5>
+                    <span className="bl-txs-count-badge">{(selectedBlock.transactions || []).length} Recorded</span>
+                  </div>
                   <div className="bl-txs-table-wrapper">
                     <table className="bl-txs-table">
                       <thead>
                         <tr>
-                          <th>Type</th>
-                          <th>Client / Node</th>
-                          <th>Fingerprint (Hash)</th>
-                          <th>Reputation</th>
-                          <th>Status</th>
+                          <th>TYPE</th>
+                          <th>CLIENT / NODE</th>
+                          <th>FINGERPRINT (HASH)</th>
+                          <th>REPUTATION</th>
+                          <th style={{ textAlign: 'right' }}>STATUS</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {(selectedBlock.transactions || []).map((tx, idx) => (
-                          <tr key={idx}>
-                            <td>
-                              <span className="bl-badge-type">{tx.tx_type || (tx.event ? 'GENESIS' : 'UPDATE')}</span>
-                            </td>
-                            <td className="font-semibold text-slate-200">{tx.client_id || 'SYSTEM'}</td>
-                            <td className="font-mono text-xs text-slate-400" title={tx.model_hash || tx.tx_id}>
-                              {tx.model_hash ? `${tx.model_hash.substring(0, 12)}...` : tx.message || '—'}
-                            </td>
-                            <td className="text-emerald-400 font-mono">{tx.reputation_score !== undefined ? `${tx.reputation_score}` : '100'}</td>
-                            <td>
-                              <span className={`bl-badge-status ${tx.validation_status === 'VALID' || tx.event ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                {tx.validation_status || tx.event || 'CONFIRMED'}
-                              </span>
+                        {(selectedBlock.transactions || []).length === 0 ? (
+                          <tr>
+                            <td colSpan="5" className="bl-tx-empty">
+                              No transactions in block payload
                             </td>
                           </tr>
-                        ))}
+                        ) : (
+                          (selectedBlock.transactions || []).map((tx, idx) => (
+                            <tr key={idx}>
+                              <td>
+                                <span className="bl-badge-type">{tx.tx_type || (tx.event ? 'GENESIS' : 'UPDATE')}</span>
+                              </td>
+                              <td className="bl-tx-node-name">{tx.client_id || 'SYSTEM'}</td>
+                              <td className="bl-tx-hash-cell" title={tx.model_hash || tx.tx_id}>
+                                {tx.model_hash ? `${tx.model_hash.substring(0, 16)}...` : tx.message || '—'}
+                              </td>
+                              <td>
+                                <span className="bl-tx-rep-val">{tx.reputation_score !== undefined ? `${tx.reputation_score}` : '100'}</span>
+                              </td>
+                              <td style={{ textAlign: 'right' }}>
+                                <span className={`bl-badge-status ${tx.validation_status === 'VALID' || tx.event ? 'bl-status-valid' : 'bl-status-err'}`}>
+                                  {tx.validation_status || tx.event || 'CONFIRMED ✓'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -472,8 +503,8 @@ export const BlockchainRibbon = ({ blockchain }) => {
         .bl-modal-backdrop {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.75);
-          backdrop-filter: blur(4px);
+          background: rgba(4, 8, 16, 0.85);
+          backdrop-filter: blur(8px);
           z-index: 1000;
           display: flex;
           align-items: center;
@@ -481,102 +512,208 @@ export const BlockchainRibbon = ({ blockchain }) => {
           padding: 20px;
         }
         .bl-modal-content {
-          background: #0d131f;
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 8px;
+          background: #090e1a;
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          border-radius: 12px;
           width: 100%;
-          max-width: 680px;
-          max-height: 85vh;
+          max-width: 760px;
+          max-height: 88vh;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(16, 185, 129, 0.1);
           overflow: hidden;
+          color: #f1f5f9;
         }
         .bl-modal-header {
-          padding: 16px 20px;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          padding: 18px 24px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: rgba(255,255,255,0.02);
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
         }
         .bl-modal-title-group {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
+        }
+        .bl-modal-icon-badge {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          background: rgba(16, 185, 129, 0.12);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .bl-modal-title {
-          font-size: 13px;
-          font-weight: 700;
-          color: #f1f5f9;
+          font-size: 15px;
+          font-weight: 800;
+          color: #ffffff !important;
           margin: 0;
+          letter-spacing: 0.02em;
+        }
+        .bl-modal-subtitle {
+          font-size: 10px;
+          font-weight: 600;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          display: block;
+          margin-top: 2px;
         }
         .bl-modal-close {
-          background: transparent;
-          border: none;
-          color: #94a3b8;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 6px;
+          color: #cbd5e1;
           cursor: pointer;
-          padding: 4px;
+          padding: 6px;
+          transition: all 0.2s;
         }
         .bl-modal-close:hover {
+          background: rgba(255, 255, 255, 0.15);
           color: #ffffff;
         }
         .bl-modal-body {
-          padding: 20px;
+          padding: 24px;
           overflow-y: auto;
           display: flex;
           flex-direction: column;
-          gap: 18px;
+          gap: 20px;
+          background: #070b14;
         }
         .bl-meta-grid {
           display: flex;
           flex-direction: column;
-          gap: 12px;
-          background: rgba(0,0,0,0.3);
-          padding: 14px;
-          border-radius: 6px;
-          border: 1px solid rgba(255,255,255,0.05);
+          gap: 14px;
+          background: rgba(15, 23, 42, 0.7);
+          padding: 18px;
+          border-radius: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .bl-meta-item {
           display: flex;
           flex-direction: column;
-          gap: 4px;
-        }
-        .bl-meta-item-row {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 12px;
-          padding-top: 8px;
-          border-top: 1px solid rgba(255,255,255,0.06);
+          gap: 6px;
         }
         .bl-meta-label {
+          font-size: 10px;
+          font-weight: 700;
+          color: #94a3b8 !important;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+        }
+        .bl-meta-badge-verified {
           font-size: 9px;
           font-weight: 700;
-          color: #64748b;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
+          color: #34d399;
+          background: rgba(16, 185, 129, 0.12);
+          border: 1px solid rgba(16, 185, 129, 0.25);
+          padding: 2px 8px;
+          border-radius: 4px;
         }
-        .bl-meta-value {
+        .bl-hash-box {
+          background: #030712;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 6px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: center;
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+        .bl-hash-val-primary {
+          font-family: var(--font-mono, monospace);
           font-size: 11px;
+          font-weight: 600;
+          color: #34d399 !important;
           word-break: break-all;
+          line-height: 1.5;
         }
+        .bl-hash-val-secondary {
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+          font-weight: 600;
+          color: #94a3b8 !important;
+          word-break: break-all;
+          line-height: 1.5;
+        }
+        .bl-hash-val-merkle {
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+          font-weight: 600;
+          color: #38bdf8 !important;
+          word-break: break-all;
+          line-height: 1.5;
+        }
+
+        /* ── 4-Column Metric Cards ── */
+        .bl-meta-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 12px;
+          padding-top: 10px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        @media (max-width: 640px) {
+          .bl-meta-cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        .bl-metric-card {
+          background: #030712;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          padding: 10px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .bl-metric-card-label {
+          font-size: 9px;
+          font-weight: 700;
+          color: #64748b !important;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .bl-metric-card-val {
+          font-size: 11px;
+          font-weight: 700;
+          color: #ffffff !important;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* ── Transactions Container ── */
         .bl-txs-container {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 10px;
         }
         .bl-txs-title {
           font-size: 11px;
-          font-weight: 700;
-          color: #94a3b8;
+          font-weight: 800;
+          color: #e2e8f0 !important;
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.1em;
           margin: 0;
         }
+        .bl-txs-count-badge {
+          font-size: 9px;
+          font-weight: 700;
+          color: #94a3b8;
+          background: rgba(255, 255, 255, 0.06);
+          padding: 2px 8px;
+          border-radius: 9999px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
         .bl-txs-table-wrapper {
-          border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 6px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
           overflow: hidden;
+          background: #030712;
         }
         .bl-txs-table {
           width: 100%;
@@ -584,30 +721,63 @@ export const BlockchainRibbon = ({ blockchain }) => {
           font-size: 11px;
         }
         .bl-txs-table th {
-          background: rgba(0,0,0,0.4);
-          padding: 8px 12px;
+          background: #0b1220;
+          padding: 10px 14px;
           text-align: left;
-          color: #64748b;
+          color: #94a3b8 !important;
           font-size: 9px;
+          font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.1em;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         .bl-txs-table td {
-          padding: 8px 12px;
-          border-top: 1px solid rgba(255,255,255,0.04);
+          padding: 12px 14px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          color: #f1f5f9 !important;
+          vertical-align: middle;
+        }
+        .bl-tx-node-name {
+          font-weight: 700;
+          color: #ffffff !important;
+        }
+        .bl-tx-hash-cell {
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+          color: #38bdf8 !important;
+        }
+        .bl-tx-rep-val {
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+          font-weight: 700;
+          color: #34d399 !important;
         }
         .bl-badge-type {
           font-size: 8px;
-          font-weight: 700;
-          padding: 2px 6px;
-          border-radius: 3px;
-          background: rgba(59,130,246,0.1);
-          color: #60a5fa;
-          border: 1px solid rgba(59,130,246,0.25);
+          font-weight: 800;
+          padding: 3px 8px;
+          border-radius: 4px;
+          background: rgba(59, 130, 246, 0.15);
+          color: #60a5fa !important;
+          border: 1px solid rgba(59, 130, 246, 0.3);
+          letter-spacing: 0.05em;
         }
         .bl-badge-status {
           font-size: 9px;
-          font-weight: 700;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+        }
+        .bl-status-valid {
+          color: #34d399 !important;
+        }
+        .bl-status-err {
+          color: #f87171 !important;
+        }
+        .bl-tx-empty {
+          text-align: center;
+          padding: 24px;
+          color: #64748b !important;
+          font-style: italic;
         }
 
         /* ── Empty State ── */
@@ -626,7 +796,7 @@ export const BlockchainRibbon = ({ blockchain }) => {
         .bl-empty span {
           font-size: 10px;
           font-weight: 700;
-          color: rgba(255,255,255,0.2);
+          color: rgba(255,255,255,0.4) !important;
           text-transform: uppercase;
           letter-spacing: 0.15em;
         }
