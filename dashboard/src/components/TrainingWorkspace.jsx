@@ -293,45 +293,52 @@ export const TrainingWorkspace = ({
                       </td>
                     </tr>
                   ) : (
-                    [...roundHistory].reverse().map((row, idx) => (
-                      <tr key={idx} className="tr-ledger-row">
-                        <td className="tr-td-rnd">
-                          <span className="tr-rnd-num">#{row.round.toString().padStart(2, '0')}</span>
-                        </td>
-                        <td>
-                          <div className="tr-node-info">
-                            <span className="tr-node-id">{row.client}</span>
-                            <span className="tr-node-label">SECURE_EDGE_NODE</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="tr-params-grid">
-                            <div className="tr-param-item">
-                              <span className="tr-param-k">LR</span>
-                              <span className="tr-param-v">{row.lr}</span>
+                    [...roundHistory].reverse().map((row, idx) => {
+                      const clientName = row.client || row.client_id || 'NODE';
+                      const shortClient = clientName.length > 16 
+                        ? `${clientName.substring(0, 8)}...${clientName.substring(clientName.length - 5)}`
+                        : clientName;
+
+                      return (
+                        <tr key={idx} className="tr-ledger-row">
+                          <td className="tr-td-rnd">
+                            <span className="tr-rnd-num">#{row.round.toString().padStart(2, '0')}</span>
+                          </td>
+                          <td style={{ maxWidth: '170px' }}>
+                            <div className="tr-node-info">
+                              <span className="tr-node-id select-all" title={clientName}>{shortClient}</span>
+                              <span className="tr-node-label">SECURE_EDGE_NODE</span>
                             </div>
-                            <div className="tr-param-item">
-                              <span className="tr-param-k">BATCH</span>
-                              <span className="tr-param-v">{row.batch}</span>
+                          </td>
+                          <td>
+                            <div className="tr-params-grid">
+                              <div className="tr-param-item">
+                                <span className="tr-param-k">LR</span>
+                                <span className="tr-param-v">{row.lr || '0.01'}</span>
+                              </div>
+                              <div className="tr-param-item">
+                                <span className="tr-param-k">BATCH</span>
+                                <span className="tr-param-v">{row.batch || '32'}</span>
+                              </div>
+                              <div className="tr-param-item">
+                                <span className="tr-param-k">SIGMA</span>
+                                <span className="tr-param-v">0.001</span>
+                              </div>
                             </div>
-                            <div className="tr-param-item">
-                              <span className="tr-param-k">SIGMA</span>
-                              <span className="tr-param-v">0.001</span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="tr-td-acc" style={{ textAlign: 'right' }}>
-                          <span className="tr-acc-yield">
-                            {row.accuracy ? `${(row.accuracy * 100).toFixed(1)}%` : '—'}
-                          </span>
-                        </td>
-                        <td className="tr-td-status" style={{ textAlign: 'right' }}>
-                          <span className="tr-status-pill tr-status-verified">
-                            ON-CHAIN VERIFIED
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                          <td className="tr-td-acc" style={{ textAlign: 'right' }}>
+                            <span className="tr-acc-yield">
+                              {row.acc !== undefined ? `${(row.acc * 100).toFixed(1)}%` : row.accuracy !== undefined ? `${(row.accuracy * 100).toFixed(1)}%` : '—'}
+                            </span>
+                          </td>
+                          <td className="tr-td-status" style={{ textAlign: 'right' }}>
+                            <span className="tr-status-pill tr-status-verified">
+                              ON-CHAIN VERIFIED
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -851,16 +858,24 @@ export const TrainingWorkspace = ({
         /* ─── Grid ─── */
         .tr-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 32px;
+          grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+          gap: 28px;
+          align-items: start;
         }
-        .tr-col { display: flex; flex-direction: column; gap: 32px; }
+        @media (max-width: 1280px) {
+          .tr-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .tr-col { display: flex; flex-direction: column; gap: 28px; }
 
         .tr-card {
           background: var(--bg-surface);
           border: 1px solid var(--border);
+          border-radius: 6px;
           display: flex;
           flex-direction: column;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
         .tr-card-header {
           padding: 14px 20px;
@@ -1164,13 +1179,15 @@ export const TrainingWorkspace = ({
 
         /* ─── Console Overhaul ─── */
         .tr-console-container {
-          background: #0f172a;
+          background: #090d16;
           border: 1px solid #1e293b;
+          border-radius: 6px;
           display: flex;
           flex-direction: column;
-          height: 380px;
+          height: 440px;
           position: relative;
-          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+          box-shadow: 0 12px 36px -10px rgba(0,0,0,0.6);
+          overflow: hidden;
         }
         .tr-console-header {
           padding: 0 16px;
