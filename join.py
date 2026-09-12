@@ -23,6 +23,7 @@ import subprocess
 import base64
 import io
 import shutil
+import ast
 
 # Embedded origin when downloaded dynamically from server
 EMBEDDED_SERVER_ORIGIN = None
@@ -246,10 +247,79 @@ def prompt_tty(prompt_str, default_val=""):
         return default_val
 
 
+def validate_model_code(code_str: str):
+    """
+    Statically and semantically validates Python code to ensure it defines a valid
+    neural network architecture (e.g., PyTorch nn.Module or trainable model class).
+    Returns: (is_valid: bool, message: str, detected_classes: list[str])
+    """
+    if not code_str or not code_str.strip():
+        return False, "Code content is completely empty.", []
+
+    try:
+        tree = ast.parse(code_str)
+    except SyntaxError as e:
+        return False, f"Python SyntaxError at line {e.lineno}: {e.msg}", []
+    except Exception as e:
+        return False, f"Failed to parse Python AST: {str(e)}", []
+
+    class_defs = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+    all_class_names = [c.name for c in class_defs]
+
+    if not class_defs:
+        return False, "No class definitions found. A model script must define a neural network class (e.g. class MNISTNet(nn.Module)).", []
+
+    valid_model_classes = []
+    
+    for cls in class_defs:
+        # Check base classes (e.g. nn.Module, Module, torch.nn.Module, Model)
+        is_module_subclass = False
+        for base in cls.bases:
+            base_str = ""
+            if isinstance(base, ast.Name):
+                base_str = base.id
+            elif isinstance(base, ast.Attribute):
+                parts = []
+                curr = base
+                while isinstance(curr, ast.Attribute):
+                    parts.append(curr.attr)
+                    curr = curr.value
+                if isinstance(curr, ast.Name):
+                    parts.append(curr.id)
+                base_str = ".".join(reversed(parts))
+
+            if any(target in base_str for target in ["Module", "nn.Module", "torch.nn.Module", "Model"]):
+                is_module_subclass = True
+                break
+
+        # Check for forward(), call(), or __call__()
+        method_names = [n.name for n in cls.body if isinstance(n, ast.FunctionDef)]
+        has_forward = "forward" in method_names or "call" in method_names or "__call__" in method_names
+
+        # Exclude client / orchestrator / dataset classes
+        is_client_or_util = any(bad in cls.name for bad in ["Client", "FlowerClient", "DataLoader", "Dataset", "Strategy", "Orchestrator", "Server", "Config"])
+
+        if (is_module_subclass or has_forward) and not is_client_or_util:
+            valid_model_classes.append(cls.name)
+        elif is_module_subclass and not (cls.name.endswith("Client") or cls.name.endswith("Dataset")):
+            valid_model_classes.append(cls.name)
+
+    if not valid_model_classes:
+        return (
+            False,
+            f"No neural network architecture (torch.nn.Module with forward()) found. Detected classes: {all_class_names}. Provided file is a client/orchestration script, not a model architecture.",
+            all_class_names
+        )
+
+    return True, f"Valid neural network model found: {valid_model_classes[0]}", valid_model_classes
+
+
 def load_dynamic_model(code_str):
     """Dynamically parses and instantiates any PyTorch nn.Module defined in code_str."""
     if not HAVE_TORCH:
-        return None, "NumPyEngine"
+        is_valid, msg, classes = validate_model_code(code_str)
+        cls_name = classes[0] if is_valid and classes else "NumPyEngine"
+        return None, cls_name
     try:
         scope = {
             "torch": torch,
@@ -261,8 +331,11 @@ def load_dynamic_model(code_str):
         exec(code_str, scope)
         for name, cls in scope.items():
             if isinstance(cls, type) and issubclass(cls, nn.Module) and cls is not nn.Module:
-                instance = cls()
-                return instance, name
+                try:
+                    instance = cls()
+                    return instance, name
+                except Exception:
+                    return None, name
     except Exception:
         pass
     return MNISTNet(), "MNISTNet"
@@ -368,13 +441,64 @@ def main():
         
         choice = prompt_tty(f"  {Style.GREEN}👉 Select option [1]:{Style.RESET} ", "1")
         if choice == "2":
-            custom_input = prompt_tty(f"  {Style.CYAN}📝 Enter path to training code file (.py):{Style.RESET} ", "").strip()
-            if custom_input and os.path.exists(custom_input):
-                chosen_file_path = custom_input
-            else:
-                print(f"  {Style.GOLD}▲ File '{custom_input}' not found. Defaulting to Platform Active Model.{Style.RESET}")
-                training_code = active_platform_code
-                training_filename = active_platform_filename
+            while True:
+                custom_input = prompt_tty(f"  {Style.CYAN}📝 Enter path to training code file (.py):{Style.RESET} ", "").strip()
+                if not custom_input:
+                    print(f"  {Style.GOLD}▲ No file entered. Please provide a path to a model definition script.{Style.RESET}")
+                    continue
+
+                expanded_path = os.path.abspath(os.path.expanduser(custom_input))
+                if not os.path.exists(expanded_path):
+                    print(f"  {Style.RED}❌ File not found:{Style.RESET} {expanded_path}")
+                    sub_opt = prompt_tty(f"  👉 [1] Try another path, [2] Use Platform Model ({active_platform_filename}), [3] Exit: ", "1")
+                    if sub_opt == "2":
+                        training_code = active_platform_code
+                        training_filename = active_platform_filename
+                        break
+                    elif sub_opt == "3":
+                        print(f"  👋 Exiting client enrollment.")
+                        sys.exit(0)
+                    else:
+                        continue
+
+                try:
+                    with open(expanded_path, "r", encoding="utf-8") as f:
+                        candidate_code = f.read()
+                except Exception as e:
+                    print(f"  {Style.RED}❌ Could not read '{expanded_path}': {e}{Style.RESET}")
+                    continue
+
+                is_valid, validation_msg, detected_classes = validate_model_code(candidate_code)
+                if not is_valid:
+                    term_w = get_term_width()
+                    err_top = f"╭── ❌ Invalid Model File {'─' * max(2, term_w - 28)}╮"
+                    err_bot = f"╰{'─' * (term_w - 2)}╯"
+                    print(f"\n{Style.RED}{err_top}")
+                    print(f"│  {Style.BOLD}Target File:{Style.RESET}      {os.path.basename(expanded_path)} ({len(candidate_code.splitlines())} lines)")
+                    print(f"│  {Style.BOLD}Detected Classes:{Style.RESET} {detected_classes if detected_classes else 'None'}")
+                    print(f"│  {Style.BOLD}Validation Issue:{Style.RESET} {validation_msg}")
+                    print(f"│")
+                    print(f"│  {Style.YELLOW}⚠️  A valid training model must define a neural network architecture{Style.RESET}")
+                    print(f"│     (e.g., class MNISTNet(nn.Module) with a forward() pass).")
+                    print(f"│     Files like client.py, dataset.py, or utility scripts cannot be trained.")
+                    print(f"{Style.RED}{err_bot}{Style.RESET}\n")
+
+                    sub_opt = prompt_tty(f"  👉 [1] Enter correct model path, [2] Use Platform Model ({active_platform_filename}), [3] Exit: ", "1")
+                    if sub_opt == "2":
+                        training_code = active_platform_code
+                        training_filename = active_platform_filename
+                        break
+                    elif sub_opt == "3":
+                        print(f"  👋 Exiting client enrollment.")
+                        sys.exit(0)
+                    else:
+                        continue
+
+                # Valid model file verified
+                chosen_file_path = expanded_path
+                training_code = candidate_code
+                training_filename = os.path.basename(expanded_path)
+                break
         else:
             training_code = active_platform_code
             training_filename = active_platform_filename
@@ -383,14 +507,23 @@ def main():
         training_code = active_platform_code
         training_filename = active_platform_filename
 
-    # If chosen_file_path specified
-    if chosen_file_path and os.path.exists(chosen_file_path):
+    # If chosen_file_path specified via CLI argument --file
+    if chosen_file_path and os.path.exists(chosen_file_path) and not training_code:
         try:
             with open(chosen_file_path, "r", encoding="utf-8") as f:
                 training_code = f.read()
                 training_filename = os.path.basename(chosen_file_path)
         except Exception as e:
-            print(f"  {Style.GOLD}▲ Could not read '{chosen_file_path}': {e}{Style.RESET}")
+            print(f"  {Style.RED}❌ Could not read '{chosen_file_path}': {e}{Style.RESET}")
+            sys.exit(1)
+
+        is_valid, validation_msg, detected_classes = validate_model_code(training_code)
+        if not is_valid:
+            print(f"\n{Style.RED}❌ Invalid Model Architecture in '{chosen_file_path}':{Style.RESET}")
+            print(f"  {Style.SLATE}Detected Classes:{Style.RESET} {detected_classes if detected_classes else 'None'}")
+            print(f"  {Style.SLATE}Validation Error:{Style.RESET} {validation_msg}")
+            print(f"  {Style.YELLOW}Please provide a file defining a neural network (e.g. model.py).{Style.RESET}\n")
+            sys.exit(1)
 
     # Fallback to repository files if still empty
     if not training_code:
@@ -403,9 +536,12 @@ def main():
             if os.path.exists(fpath):
                 try:
                     with open(fpath, "r", encoding="utf-8") as f:
-                        training_code = f.read()
-                        training_filename = os.path.basename(fpath)
-                        break
+                        candidate_text = f.read()
+                        is_valid, _, _ = validate_model_code(candidate_text)
+                        if is_valid:
+                            training_code = candidate_text
+                            training_filename = os.path.basename(fpath)
+                            break
                 except Exception:
                     pass
 
@@ -437,7 +573,7 @@ class MNISTNet(nn.Module):
     local_model, model_class_name = load_dynamic_model(training_code)
 
     print(f"    {Style.SLATE}├─ Architecture File:{Style.RESET} {Style.CYAN}{training_filename}{Style.RESET} ({len(training_code.splitlines())} lines)")
-    print(f"    {Style.SLATE}├─ Class Binding:{Style.RESET}     {Style.BOLD}{model_class_name}{Style.RESET}")
+    print(f"    {Style.SLATE}├─ Class Binding:{Style.RESET}     {Style.BOLD}{Style.PURPLE}{model_class_name}{Style.RESET}")
     print(f"    {Style.SLATE}└─ Code Fingerprint:{Style.RESET}  {Style.EMERALD}SHA-256: 0x{code_checksum[:16]}...{Style.RESET}")
     print_step(2, 3, "Training Code Loaded & Verified for Transparency Audit", "DONE")
     print()

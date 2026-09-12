@@ -216,3 +216,13 @@
 {"timestamp":"2026-09-12 16:49:15","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/client/model.py","epoch":1789211955.019486,"taskName":"Task-69"}
 {"timestamp":"2026-09-12 16:49:15","level":"INFO","component":"GuardianBridge","message":"Loaded 2 FL nodes from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/guardian.db","epoch":1789211955.0202591,"taskName":"Task-69"}
 {"timestamp":"2026-09-12 16:49:15","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1789211955.020864,"taskName":"Task-69"}
+{"timestamp":"2026-09-12 16:59:56","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 1","epoch":1789212596.432378,"taskName":"Task-69"}
+{"timestamp":"2026-09-12 17:02:16","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/client/model.py","epoch":1789212736.7302039,"taskName":"Task-725"}
+{"timestamp":"2026-09-12 17:02:16","level":"INFO","component":"GuardianBridge","message":"Loaded 2 FL nodes from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/guardian.db","epoch":1789212736.7719061,"taskName":"Task-725"}
+{"timestamp":"2026-09-12 17:02:16","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 2","epoch":1789212736.779187,"taskName":"Task-725"}
+{"timestamp":"2026-09-12 17:02:16","level":"INFO","component":"GuardianBridge","message":"Model source code loaded from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/client/model.py","epoch":1789212736.802368,"taskName":"Task-726"}
+{"timestamp":"2026-09-12 17:02:16","level":"INFO","component":"GuardianBridge","message":"Loaded 2 FL nodes from /Users/sakhi/Code/Company/Projects/FederatedLearningSystem/Cybronites/guardian.db","epoch":1789212736.80548,"taskName":"Task-726"}
+{"timestamp":"2026-09-12 17:02:16","level":"INFO","component":"GuardianBridge","message":"Dashboard connected. Total subscribers: 3","epoch":1789212736.80741,"taskName":"Task-726"}
+{"timestamp":"2026-09-12 17:03:08","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 2","epoch":1789212788.3953521,"taskName":"Task-726"}
+{"timestamp":"2026-09-12 17:03:55","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 1","epoch":1789212835.705398,"taskName":"Task-725"}
+{"timestamp":"2026-09-12 17:03:55","level":"INFO","component":"GuardianBridge","message":"Dashboard disconnected. Remaining: 0","epoch":1789212835.766251,"taskName":"Task-68"}

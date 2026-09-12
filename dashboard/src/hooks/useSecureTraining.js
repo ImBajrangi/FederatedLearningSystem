@@ -5,7 +5,7 @@ const DEFAULT_VAULT_DATASETS = [
     {
         id: "ds-mnist-enc-01",
         name: "Encrypted MNIST Edge Partition",
-        description: "Homomorphically encrypted and differential privacy guarded image tensors across 10 hospital edge nodes.",
+        description: "Homomorphically encrypted and differential privacy guarded image tensors across 10 distributed edge devices.",
         num_samples: 60000,
         input_shape: [1, 28, 28],
         classes: 10,

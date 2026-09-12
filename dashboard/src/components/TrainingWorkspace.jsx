@@ -303,12 +303,20 @@ export const TrainingWorkspace = ({
             </span>
           </div>
           <button 
-            onClick={onInitiate}
+            onClick={() => {
+              if (Object.keys(safeNodeRegistry).length === 0 && !isActive) {
+                alert("No edge nodes connected.\n\nPlease run 'python join.py' on at least one device to join the cluster before starting training.");
+                return;
+              }
+              onInitiate();
+            }}
             disabled={isActive}
-            className={`tr-run-btn group ${isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`tr-run-btn group ${isActive ? 'opacity-50 cursor-not-allowed' : (Object.keys(safeNodeRegistry).length === 0 ? 'bg-slate-100 !text-slate-600 border border-slate-300 hover:bg-slate-200' : '')}`}
+            data-tooltip={isActive ? "Federated training in progress across active cluster" : (Object.keys(safeNodeRegistry).length === 0 ? "Connect at least 1 node via 'python join.py' to enable training" : "Start training round across connected cluster nodes")}
+            data-tooltip-pos="bottom"
           >
-            <Zap size={14} fill="currentColor" />
-            <span>{isActive ? 'Training in Progress...' : 'Initiate Training Cycle'}</span>
+            <Zap size={14} fill="currentColor" className={Object.keys(safeNodeRegistry).length === 0 && !isActive ? 'text-slate-400' : ''} />
+            <span>{isActive ? 'Training in Progress...' : (Object.keys(safeNodeRegistry).length === 0 ? 'Connect Node to Train' : 'Initiate Training Cycle')}</span>
             <div className="tr-btn-line group-hover:w-8" />
           </button>
         </div>
@@ -686,7 +694,8 @@ export const TrainingWorkspace = ({
                 <button 
                   onClick={handleCopyCode}
                   className="tr-tool-btn"
-                  title="Copy Code to Clipboard"
+                  data-tooltip="Copy entire neural network code to clipboard"
+                  data-tooltip-pos="bottom"
                 >
                   {copySuccess ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
                   <span>{copySuccess ? 'COPIED' : 'COPY'}</span>
@@ -696,7 +705,8 @@ export const TrainingWorkspace = ({
                   <button 
                     onClick={handleStartEdit}
                     className="tr-inject-btn"
-                    title="Edit and Inject Custom Architecture"
+                    data-tooltip="Live edit code & broadcast custom model architecture to all edge nodes"
+                    data-tooltip-pos="bottom"
                   >
                     <Edit3 size={11} />
                     <span>EDIT / INJECT</span>
@@ -707,6 +717,7 @@ export const TrainingWorkspace = ({
                       onClick={handleInjectCode}
                       disabled={isInjecting}
                       className="tr-confirm-inject-btn"
+                      data-tooltip="Commit & hot-reload model onto cluster"
                     >
                       {isInjecting ? <RefreshCcw size={11} className="animate-spin" /> : <Zap size={11} />}
                       <span>INJECT</span>
@@ -714,42 +725,60 @@ export const TrainingWorkspace = ({
                     <button 
                       onClick={handleCancelEdit}
                       className="tr-cancel-btn"
+                      data-tooltip="Discard live changes"
                     >
                       CANCEL
                     </button>
                   </div>
                 )}
 
-                <div className="tr-download-group">
-                  <a
-                    href={`${API_BASE_URL}/api/v1/distributed/download/pt`}
-                    download="federated_model_final.pt"
-                    className="tr-download-item-btn"
-                    title="Download PyTorch Model Weights (.pt)"
-                  >
-                    <Download size={11} />
-                    <span>.PT</span>
-                  </a>
+                {/* Download Group: Only unlocked / validated when training has generated real weights */}
+                <div className={`tr-download-group ${!((round && round > 0) || (accuracyHistory && accuracyHistory.length > 0) || status === 'COMPLETE' || status === 'FINISHED') ? 'tr-download-group-untrained' : 'tr-download-group-trained'}`}>
+                  {((round && round > 0) || (accuracyHistory && accuracyHistory.length > 0) || status === 'COMPLETE' || status === 'FINISHED') ? (
+                    <>
+                      <a
+                        href={`${API_BASE_URL}/api/v1/distributed/download/pt`}
+                        download="federated_model_final.pt"
+                        className="tr-download-item-btn tr-download-item-active"
+                        data-tooltip="Download Real PyTorch Model: Contains actual trained weights aggregated across participating nodes"
+                        data-tooltip-pos="bottom"
+                      >
+                        <Download size={11} />
+                        <span>.PT</span>
+                      </a>
 
-                  <a
-                    href={`${API_BASE_URL}/api/v1/distributed/download/onnx`}
-                    download="federated_model_final.onnx"
-                    className="tr-download-item-btn"
-                    title="Download Universal ONNX Runtime Model (.onnx)"
-                  >
-                    <Box size={11} />
-                    <span>.ONNX</span>
-                  </a>
+                      <a
+                        href={`${API_BASE_URL}/api/v1/distributed/download/onnx`}
+                        download="federated_model_final.onnx"
+                        className="tr-download-item-btn tr-download-item-active"
+                        data-tooltip="Download Universal ONNX Model: Ready to run in web apps, mobile apps, or Python"
+                        data-tooltip-pos="bottom"
+                      >
+                        <Box size={11} />
+                        <span>.ONNX</span>
+                      </a>
 
-                  <a
-                    href={`${API_BASE_URL}/api/v1/distributed/download/report`}
-                    download="federated_audit_performance_report.json"
-                    className="tr-download-item-btn tr-download-item-report"
-                    title="Download Compliance Audit & Performance Report (.json)"
-                  >
-                    <FileText size={11} />
-                    <span>REPORT</span>
-                  </a>
+                      <a
+                        href={`${API_BASE_URL}/api/v1/distributed/download/report`}
+                        download="federated_audit_performance_report.json"
+                        className="tr-download-item-btn tr-download-item-report"
+                        data-tooltip="Download Full Performance & Audit Report: Shows accuracy scores, loss trajectory & blockchain proof"
+                        data-tooltip-pos="bottom"
+                      >
+                        <FileText size={11} />
+                        <span>REPORT</span>
+                      </a>
+                    </>
+                  ) : (
+                    <div 
+                      className="flex items-center px-2 py-0.5 gap-1.5 cursor-not-allowed opacity-60 text-[9px] text-slate-500 font-bold"
+                      data-tooltip="Downloads Locked: Start & complete training first to generate real aggregated model weights"
+                      data-tooltip-pos="bottom"
+                    >
+                      <Download size={11} className="text-slate-400" />
+                      <span>TRAIN TO DOWNLOAD</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -2740,6 +2769,16 @@ export const TrainingWorkspace = ({
           border-radius: 4px;
           padding: 1px;
           gap: 1px;
+          transition: all 0.2s ease;
+        }
+        .tr-download-group-trained {
+          background: #f0fdf4;
+          border-color: #86efac;
+          box-shadow: 0 1px 3px rgba(16, 185, 129, 0.12);
+        }
+        .tr-download-group-untrained {
+          background: #f1f5f9;
+          border-color: #e2e8f0;
         }
         .tr-download-item-btn {
           height: 24px;
@@ -2760,6 +2799,14 @@ export const TrainingWorkspace = ({
           background: #ffffff;
           color: #0f172a !important;
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .tr-download-item-active {
+          color: #0f766e !important;
+          font-weight: 800;
+        }
+        .tr-download-item-active:hover {
+          background: #ffffff;
+          color: #047857 !important;
         }
         .tr-download-item-report {
           color: #16a34a !important;

@@ -91,7 +91,7 @@ export const Sidebar = ({
       label: 'Shard Registry',
       num: '03',
       tag: '03 • DATA STORAGE',
-      desc: 'Distributed datasets, hospital edge shards & cryptographic partition proofs.',
+      desc: 'Distributed datasets, edge device shards & cryptographic partition proofs.',
       icon: Database
     },
     {
@@ -214,7 +214,7 @@ export const Sidebar = ({
             label="Node Count"
             value={nodeCount}
             tag="CLUSTER NODES"
-            description="Active edge workers & hospitals participating in federated learning."
+            description="Active edge devices & client organizations participating in federated learning."
             icon={Server}
             color="primary"
             isCollapsed={isCollapsed}
@@ -332,6 +332,13 @@ export const Sidebar = ({
           letter-spacing: 0.15em;
           color: var(--text-muted);
         }
+        .sb-collapsed .sb-section-header {
+          padding: 16px 0 10px 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+        }
         .sb-header-left {
           display: flex;
           align-items: center;
@@ -366,11 +373,17 @@ export const Sidebar = ({
           border-color: #94a3b8;
         }
 
+        .sb-collapsed-toggle-wrap {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .sb-expand-toggle-btn {
-          width: 36px;
+          width: 32px;
           height: 32px;
-          margin: 0 auto;
-          border-radius: 4px;
+          border-radius: 5px;
           border: 1px solid var(--border);
           background: #f8fafc;
           color: var(--primary);

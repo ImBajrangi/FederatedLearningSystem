@@ -47,7 +47,11 @@ export const Dashboard = ({
         </div>
 
         <div className="dash-header-controls">
-          <div className="dash-stat-group border-r border-border/50">
+          <div 
+            className="dash-stat-group border-r border-border/50"
+            data-tooltip="Aggregated global test accuracy evaluated across all distributed shards"
+            data-tooltip-pos="bottom"
+          >
             <span className="dash-stat-label">Convergence</span>
             <div className="dash-stat-value-wrap">
               <span className="dash-stat-value text-accent-glow font-serif">{currentAccuracy}%</span>
@@ -62,11 +66,18 @@ export const Dashboard = ({
               onClick={startSimulation}
               disabled={isActive || !isConnected}
               className={`dash-btn-primary ${(!isConnected || isActive) ? 'dash-btn-disabled' : ''}`}
+              data-tooltip="Initiate distributed gradient aggregation round across enrolled nodes"
+              data-tooltip-pos="bottom"
             >
               <Zap size={12} fill="currentColor" />
               <span>{status === 'IDLE' ? 'Connect Sessions' : status === 'FINISHED' ? 'Report Complete' : 'Synchronized'}</span>
             </button>
-            <button onClick={clearSimulation} className="dash-btn-icon">
+            <button 
+              onClick={clearSimulation} 
+              className="dash-btn-icon"
+              data-tooltip="Reset telemetry and convergence charts"
+              data-tooltip-pos="bottom"
+            >
               <TrendingUp size={14} />
             </button>
           </div>
@@ -77,7 +88,10 @@ export const Dashboard = ({
       <div className="dash-grid">
         {/* Main Chart */}
         <div className="dash-card dash-card-main card-shadow-premium bg-white border-border/40">
-          <div className="dash-card-header bg-slate-50/50 backdrop-blur-sm">
+          <div 
+            className="dash-card-header bg-slate-50/50 backdrop-blur-sm"
+            data-tooltip="Real-time multi-epoch accuracy convergence graph"
+          >
             <div className="dash-card-title-wrap">
               <Activity size={14} className="text-accent" />
               <span className="dash-card-title">Real-Time Model Convergence</span>
@@ -110,15 +124,15 @@ export const Dashboard = ({
               <span className="dash-card-title">Network Resilience</span>
             </div>
             <div className="dash-card-body dash-metrics-list">
-              <div className="dash-metric-row">
+              <div className="dash-metric-row" data-tooltip="Active client devices and private datasets connected to the network">
                 <span className="dash-metric-label">Active Shards</span>
                 <span className="dash-metric-value">{clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length} / 8</span>
               </div>
-              <div className="dash-metric-row">
+              <div className="dash-metric-row" data-tooltip="Total completed training rounds across all devices">
                 <span className="dash-metric-label">Rounds Synced</span>
                 <span className="dash-metric-value">{round}</span>
               </div>
-              <div className="dash-metric-row">
+              <div className="dash-metric-row" data-tooltip="Security alerts: Any corrupted or invalid updates blocked automatically">
                 <span className="dash-metric-label">Integrity Alerts</span>
                 <span className={`dash-metric-value ${rejectedCount > 0 ? 'dash-value-error' : 'dash-value-success'}`}>{rejectedCount}</span>
               </div>
@@ -166,11 +180,31 @@ export const Dashboard = ({
             </div>
 
             {(() => {
+              const regCount = (distributedStatus.registeredClients || Object.keys(nodeRegistry || {}).length || 0);
               const isSessionActive = ['WAITING', 'TRAINING', 'AGGREGATING', 'IN_PROGRESS'].includes(distributedStatus.status);
+              
+              if (!isSessionActive && regCount === 0) {
+                return (
+                  <button 
+                    onClick={() => {
+                      alert("No edge nodes are currently connected.\n\nPlease connect at least one device by running:\n\npython join.py\n\nor\n\ncurl -sSL https://mdark4025-cybronites.hf.space/join.py | python3");
+                    }}
+                    className="dist-btn-action-large bg-slate-100 !text-slate-600 border border-slate-300 cursor-pointer hover:bg-slate-200"
+                    data-tooltip="Connect a client node first using 'python join.py' to start training"
+                    data-tooltip-pos="bottom"
+                  >
+                    <Terminal size={12} className="text-slate-500" />
+                    <span>Connect Node to Train</span>
+                  </button>
+                );
+              }
+
               return (
                 <button 
-                  onClick={() => isSessionActive ? stopDistributedSession() : startDistributedSession(5, Math.max(1, distributedStatus.registeredClients || 1))}
+                  onClick={() => isSessionActive ? stopDistributedSession() : startDistributedSession(5, Math.max(1, regCount))}
                   className={`dist-btn-action-large ${isSessionActive ? 'dist-btn-stop-large' : ''}`}
+                  data-tooltip={isSessionActive ? "Halt active distributed training cycle" : "Begin federated training cycle across connected nodes"}
+                  data-tooltip-pos="bottom"
                 >
                   {isSessionActive ? <TrendingUp size={12} /> : <Zap size={12} fill="currentColor" />}
                   <span>{isSessionActive ? 'Terminate' : (distributedStatus.status === 'COMPLETE' ? 'Start Training' : 'Initiate Session')}</span>

@@ -40,17 +40,23 @@ export const Header = ({ status }) => {
           <button
             onClick={() => setShowConnectModal(true)}
             className="hd-connect-btn"
+            data-tooltip="Pair new distributed compute nodes with instant 1-line command"
+            data-tooltip-pos="bottom"
           >
             <Terminal size={13} className="hd-btn-icon" />
             <span>Connect Node</span>
           </button>
 
-          <div className={`hd-status-pill ${
-            status === 'TRAINING' ? 'hd-status-training' :
-            status === 'OFFLINE' ? 'hd-status-offline' :
-            status === 'COMPLETE' || status === 'FINISHED' ? 'hd-status-complete' :
-            status === 'READY' || status === 'WAITING' ? 'hd-status-ready' : 'hd-status-idle'
-          }`}>
+          <div 
+            className={`hd-status-pill ${
+              status === 'TRAINING' ? 'hd-status-training' :
+              status === 'OFFLINE' ? 'hd-status-offline' :
+              status === 'COMPLETE' || status === 'FINISHED' ? 'hd-status-complete' :
+              status === 'READY' || status === 'WAITING' ? 'hd-status-ready' : 'hd-status-idle'
+            }`}
+            data-tooltip={`Orchestrator state: ${status || 'ONLINE'} across active cluster`}
+            data-tooltip-pos="bottom"
+          >
             <div className={`hd-status-dot ${status === 'TRAINING' ? 'animate-pulse' : ''}`} />
             <span className="hd-status-text">
               {status === 'TRAINING' ? 'LIVE TRAINING' :
@@ -61,7 +67,11 @@ export const Header = ({ status }) => {
             </span>
           </div>
 
-          <div className="hd-secure-pill">
+          <div 
+            className="hd-secure-pill"
+            data-tooltip="Differential privacy (ε, δ) & TLS gradient encryption active"
+            data-tooltip-pos="bottom"
+          >
             <ShieldCheck size={14} className="hd-shield-icon" />
             <span className="hd-secure-text">Node Secured</span>
           </div>

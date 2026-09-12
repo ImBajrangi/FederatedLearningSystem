@@ -20,6 +20,7 @@ import hashlib
 import urllib.request
 import uuid
 import random
+import ast
 from Cybronites.server.auth import router as auth_router
 from Cybronites.utils.structured_logging import setup_structured_logging
 import Cybronites.server.training_engine as engine
@@ -588,6 +589,42 @@ async def get_active_training_code():
         bridge.state["active_training_code"] = active
     return {"success": True, "active_code": active}
 
+def validate_model_code(code_str: str) -> tuple[bool, str, list[str]]:
+    """Statically validates Python code to ensure it defines a valid neural network architecture."""
+    if not code_str or not code_str.strip():
+        return False, "Code content is empty.", []
+    try:
+        tree = ast.parse(code_str)
+    except SyntaxError as e:
+        return False, f"Python SyntaxError at line {e.lineno}: {e.msg}", []
+    except Exception as e:
+        return False, f"Failed to parse Python AST: {str(e)}", []
+
+    class_defs = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+    all_class_names = [c.name for c in class_defs]
+    if not class_defs:
+        return False, "No class definitions found. Must define a neural network model class.", []
+
+    valid_classes = []
+    for cls in class_defs:
+        is_module = any(
+            (isinstance(b, ast.Name) and "Module" in b.id) or
+            (isinstance(b, ast.Attribute) and "Module" in b.attr)
+            for b in cls.bases
+        )
+        method_names = [n.name for n in cls.body if isinstance(n, ast.FunctionDef)]
+        has_forward = "forward" in method_names or "call" in method_names or "__call__" in method_names
+        is_client = any(bad in cls.name for bad in ["Client", "FlowerClient", "DataLoader", "Dataset", "Strategy", "Orchestrator", "Server", "Config"])
+
+        if (is_module or has_forward) and not is_client:
+            valid_classes.append(cls.name)
+
+    if not valid_classes:
+        return False, f"No neural network architecture found in script (detected non-model classes: {all_class_names}).", all_class_names
+
+    return True, f"Found valid model class: {valid_classes[0]}", valid_classes
+
+
 @app.post("/api/v1/training/active-code")
 async def set_active_training_code(data: Dict[str, Any]):
     """Set or inject dynamic training code into the federated convergence engine."""
@@ -599,6 +636,13 @@ async def set_active_training_code(data: Dict[str, Any]):
     
     if not code:
         return {"success": False, "error": "Code cannot be empty."}
+
+    is_valid, reason, detected = validate_model_code(code)
+    if not is_valid:
+        return {
+            "success": False,
+            "error": f"Invalid model file '{filename}': {reason}. A valid model file must define a neural network architecture (e.g. torch.nn.Module with forward())."
+        }
         
     code_hash = hashlib.sha256(code.encode("utf-8")).hexdigest()
     active_obj = {
@@ -1008,6 +1052,14 @@ async def register_distributed_client(data: Dict[str, Any] = {}):
     shard_size = data.get("shard_size", "250 samples")
     privacy = data.get("privacy", "L2-Clip (1.5) + Gaussian (σ=0.005)")
     
+    if code:
+        is_valid, reason, _ = validate_model_code(code)
+        if not is_valid:
+            return {
+                "success": False,
+                "error": f"Model architecture verification failed: {reason}. Only valid PyTorch nn.Module or neural net architectures can be enrolled."
+            }
+
     client_id = coord.register_client(
         name=name, ip=ip, code=code, filename=filename,
         device=device, os_info=os_info, arch=arch,
