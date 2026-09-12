@@ -4,7 +4,8 @@ import {
   Code, Play, ShieldCheck, Terminal, Zap,
   AlertCircle, RefreshCw, Download, BarChart2,
   Activity, Settings, CheckCircle2, StopCircle, Cpu, Box,
-  ChevronRight, Package, Loader2, Database, Lock, Copy, Shield
+  ChevronRight, Package, Loader2, Database, Lock, Copy, Shield,
+  Trash2, AlertTriangle, X
 } from 'lucide-react';
 import { API_BASE_URL } from '../hooks/useSecureFederated';
 
@@ -99,6 +100,10 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
   const [vaultDatasets, setVaultDatasets] = useState([]);
   const [isVaultLoading, setIsVaultLoading] = useState(false);
   const [copiedSnippet, setCopiedSnippet] = useState(null);
+
+  // Software Pop-up Modal State
+  const [showPurgeModal, setShowPurgeModal] = useState(false);
+  const [isPurging, setIsPurging] = useState(false);
 
   useEffect(() => {
     const onMouseMove = (e) => {
@@ -347,8 +352,12 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
     }
   };
 
-  const handlePurgeSandbox = async () => {
-    if (!window.confirm("🧺 LIQUIDATE RESOURCE? This will delete all installed libraries in the sandbox to reclaim disk space. You will need to wait for a warm-up on next execution.")) return;
+  const handlePurgeSandbox = () => {
+    setShowPurgeModal(true);
+  };
+
+  const confirmPurgeSandbox = async () => {
+    setIsPurging(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/laboratory/purge`, { method: 'POST' });
       const data = await response.json();
@@ -360,6 +369,9 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
       }
     } catch (err) {
       addLog("Failed to connect to liquidation engine.", "error");
+    } finally {
+      setIsPurging(false);
+      setShowPurgeModal(false);
     }
   };
 
@@ -2419,6 +2431,146 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
           font-weight: 700;
         }
 
+        /* 🧺 Software Confirmation Pop-Up Modal */
+        .lab-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
+          background: rgba(4, 7, 15, 0.75);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+        }
+        .lab-modal-card {
+          width: 100%;
+          max-width: 440px;
+          background: #0b1120;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 12px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(239, 68, 68, 0.15);
+          overflow: hidden;
+          color: #f8fafc;
+          display: flex;
+          flex-direction: column;
+        }
+        .lab-modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 18px 12px 18px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .lab-modal-icon-badge {
+          width: 34px;
+          height: 34px;
+          border-radius: 8px;
+          background: rgba(239, 68, 68, 0.15);
+          border: 1px solid rgba(239, 68, 68, 0.35);
+          color: #ef4444;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .lab-modal-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #f8fafc;
+          margin: 0;
+          letter-spacing: -0.01em;
+        }
+        .lab-modal-subtitle {
+          font-size: 10.5px;
+          color: #94a3b8;
+          margin: 2px 0 0 0;
+        }
+        .lab-modal-close-btn {
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: #94a3b8;
+          border-radius: 6px;
+          padding: 5px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s ease;
+        }
+        .lab-modal-close-btn:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: #f8fafc;
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+        .lab-modal-body {
+          padding: 16px 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .lab-modal-warning-box {
+          background: rgba(245, 158, 11, 0.08);
+          border: 1px solid rgba(245, 158, 11, 0.25);
+          border-radius: 8px;
+          padding: 10px 12px;
+        }
+        .lab-modal-info-meta {
+          background: rgba(0, 0, 0, 0.35);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 8px;
+          padding: 8px 12px;
+        }
+        .lab-modal-footer {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 10px;
+          padding: 12px 18px;
+          background: rgba(0, 0, 0, 0.25);
+          border-top: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .lab-modal-cancel-btn {
+          padding: 7px 14px;
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #cbd5e1;
+          font-size: 11.5px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .lab-modal-cancel-btn:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+        }
+        .lab-modal-confirm-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 7px 16px;
+          border-radius: 6px;
+          background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+          border: 1px solid rgba(239, 68, 68, 0.6);
+          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+          color: #ffffff;
+          font-size: 11.5px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .lab-modal-confirm-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+          transform: translateY(-1px);
+        }
+        .lab-modal-confirm-btn:disabled, .lab-modal-cancel-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
         /* 📱 Market-Ready Responsiveness */
         @media (max-width: 1024px) {
           .lab-workspace {
@@ -2441,6 +2593,97 @@ export default function Laboratory({ onAction, labState, onExecuteCommand, onEva
           }
         }
       `}</style>
+
+      {/* ── Liquidate / Purge Confirmation Modal (Software Pop-Up) ── */}
+      <AnimatePresence>
+        {showPurgeModal && (
+          <div className="lab-modal-backdrop" onClick={() => !isPurging && setShowPurgeModal(false)}>
+            <motion.div 
+              className="lab-modal-card"
+              initial={{ opacity: 0, scale: 0.94, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 12 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="lab-modal-header">
+                <div className="flex items-center gap-2.5">
+                  <div className="lab-modal-icon-badge">
+                    <Trash2 size={16} />
+                  </div>
+                  <div>
+                    <h3 className="lab-modal-title">Liquidate Sandbox Environment</h3>
+                    <p className="lab-modal-subtitle">Reclaim disk space & wipe installed packages</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowPurgeModal(false)}
+                  disabled={isPurging}
+                  className="lab-modal-close-btn"
+                  title="Close Modal"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+
+              <div className="lab-modal-body">
+                <div className="lab-modal-warning-box">
+                  <div className="flex items-start gap-2.5">
+                    <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <div className="text-[11.5px] leading-relaxed text-slate-300">
+                      This action will <strong>delete all installed third-party libraries and cached wheels</strong> from the sandbox environment filesystem to free system resources.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="lab-modal-info-meta">
+                  <div className="flex items-center justify-between text-[11px] py-1 border-b border-white/5">
+                    <span className="text-slate-400 font-medium">Target Environment</span>
+                    <span className="font-mono text-emerald-400 font-bold">{envData?.python_version ? `Python ${envData.python_version}` : 'Isolated Sandbox'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] py-1 border-b border-white/5">
+                    <span className="text-slate-400 font-medium">Packages to Reset</span>
+                    <span className="font-mono text-amber-400 font-bold">{envData?.installed_packages?.length || 0} packages</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] py-1">
+                    <span className="text-slate-400 font-medium">Next Execution</span>
+                    <span className="text-slate-300 text-[10.5px]">Automatic warm-up / re-install</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lab-modal-footer">
+                <button 
+                  type="button"
+                  onClick={() => setShowPurgeModal(false)}
+                  disabled={isPurging}
+                  className="lab-modal-cancel-btn"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={confirmPurgeSandbox}
+                  disabled={isPurging}
+                  className="lab-modal-confirm-btn"
+                >
+                  {isPurging ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>Liquidating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={13} />
+                      <span>Confirm Liquidation</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
