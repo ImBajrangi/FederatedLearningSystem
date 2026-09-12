@@ -546,51 +546,59 @@ export function Laboratory({
     return () => clearTimeout(timer);
   }, [code]);
 
+  const getParamLine = (paramName, srcCode) => {
+    const lines = (srcCode || code).split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line.startsWith('#') && new RegExp(`^${paramName}\\s*[:=]`, 'i').test(line)) {
+        return i + 1;
+      }
+    }
+    return null;
+  };
+
   const syncParamToSource = (paramName, newValue) => {
     if (!isLiveSyncEnabled) return;
 
-    const param = neededParams.find(p => p.name === paramName);
-    if (!param || !param.lineno) return;
+    let lineNum = neededParams.find(p => p.name === paramName)?.lineno || getParamLine(paramName, code);
+    if (!lineNum) return;
 
     const lines = code.split('\n');
-    const lineIndex = param.lineno - 1;
+    const lineIndex = lineNum - 1;
     const line = lines[lineIndex];
 
     if (line) {
-      // Robust regex for variable assignment/dictionary mapping
-      // Captures group 1 (everything up to the value) and follows with the numeric value
-      const regex = new RegExp(`(${paramName}[^\\n]*?[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
+      const regex = new RegExp(`(${paramName}\\s*[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
       if (regex.test(line)) {
         lines[lineIndex] = line.replace(regex, `$1${newValue}`);
         setCode(lines.join('\n'));
 
-        // Trigger visual sync indicator
-        setSyncingLines(prev => [...new Set([...prev, param.lineno])]);
+        setSyncingLines(prev => [...new Set([...prev, lineNum])]);
         setTimeout(() => {
-          setSyncingLines(prev => prev.filter(l => l !== param.lineno));
+          setSyncingLines(prev => prev.filter(l => l !== lineNum));
         }, 1200);
       }
     }
   };
 
   const pushParamToSource = (paramName, newValue) => {
-    const param = neededParams.find(p => p.name === paramName);
-    if (!param || !param.lineno) return;
+    let lineNum = neededParams.find(p => p.name === paramName)?.lineno || getParamLine(paramName, code);
+    if (!lineNum) return;
 
     const lines = code.split('\n');
-    const lineIndex = param.lineno - 1;
+    const lineIndex = lineNum - 1;
     const line = lines[lineIndex];
 
     if (line) {
-      const regex = new RegExp(`(${paramName}[^\\n]*?[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
+      const regex = new RegExp(`(${paramName}\\s*[:=]\\s*)([0-9\\.e\\-]+)`, 'i');
       if (regex.test(line)) {
         lines[lineIndex] = line.replace(regex, `$1${newValue}`);
         setCode(lines.join('\n'));
-        addLog(`Pushed ${paramName}=${newValue} to source line ${param.lineno}.`, 'success');
+        addLog(`Pushed ${paramName}=${newValue} to line ${lineNum}`, 'success');
 
-        setSyncingLines(prev => [...new Set([...prev, param.lineno])]);
+        setSyncingLines(prev => [...new Set([...prev, lineNum])]);
         setTimeout(() => {
-          setSyncingLines(prev => prev.filter(l => l !== param.lineno));
+          setSyncingLines(prev => prev.filter(l => l !== lineNum));
         }, 1200);
       }
     }
@@ -1204,13 +1212,13 @@ export function Laboratory({
               {/* Dynamic Parameter Instruments */}
               {neededParams.map((p, idx) => {
                 const isCore = ['epochs', 'lr', 'batch_size'].includes(p.name);
-                const isSlider = ['epochs', 'dropout', 'momentum', 'weight_decay', 'privacy_epsilon'].includes(p.name);
+                const isSlider = ['epochs', 'batch_size', 'dropout', 'momentum', 'weight_decay', 'privacy_epsilon'].includes(p.name);
 
                 // Determine value and setter mapping
                 let val, setter, min = 0, max = 100, step = 1;
                 if (p.name === 'epochs') { val = epochs; setter = setEpochs; min = 1; max = 50; step = 1; }
-                else if (p.name === 'lr') { val = lr; setter = setLr; min = 0.0001; max = 1; step = 0.0001; }
-                else if (p.name === 'batch_size') { val = batchSize; setter = setBatchSize; min = 16; max = 128; step = 16; }
+                else if (p.name === 'lr' || p.name === 'learning_rate') { val = lr; setter = setLr; min = 0.0001; max = 0.05; step = 0.0005; }
+                else if (p.name === 'batch_size' || p.name === 'batch') { val = batchSize; setter = setBatchSize; min = 8; max = 128; step = 8; }
                 else {
                   // Fallback for dynamic extra params
                   val = p.value || 0;
@@ -1218,9 +1226,22 @@ export function Laboratory({
                   min = 0; max = 1; step = 0.01;
                 }
 
+                const formatReadout = (name, v) => {
+                  if (typeof v !== 'number') return v || '0';
+                  if (name === 'epochs' || name === 'batch_size' || name === 'batch' || Number.isInteger(v)) {
+                    return v.toString();
+                  }
+                  if (name === 'lr' || name === 'learning_rate') {
+                    return v < 0.0001 ? v.toExponential(2) : v.toFixed(4);
+                  }
+                  return v.toFixed(4);
+                };
+
+                const lineNum = p.lineno || getParamLine(p.name, code);
+
                 return (
                   <div key={idx} className="transition-all opacity-100 group">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-2">
                       <div className="flex items-center gap-2">
                         <div className={`link-indicator ${isLiveSyncEnabled ? 'active' : ''}`}></div>
                         <span className="text-[10px] font-bold uppercase tracking-wide text-text-main">
@@ -1231,13 +1252,13 @@ export function Laboratory({
                         {!isLiveSyncEnabled && (
                           <button
                             onClick={() => pushParamToSource(p.name, val)}
-                            className="px-2 py-0.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-[7px] font-bold uppercase transition-all"
+                            className="px-2 py-0.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-[7px] font-bold uppercase transition-all rounded"
                           >
                             Push
                           </button>
                         )}
                         <span className="instrument-readout">
-                          {typeof val === 'number' ? (p.name === 'epochs' ? val.toString().padStart(2, '0') : val.toFixed(4)) : (val || '0.00')}
+                          {formatReadout(p.name, val)}
                         </span>
                       </div>
                     </div>
@@ -1245,7 +1266,7 @@ export function Laboratory({
                     {isSlider ? (
                       <input
                         type="range" min={min} max={max} step={step} value={val || 0}
-                        onChange={(e) => handleParamChange(p.name, parseFloat(e.target.value), setter)}
+                        onChange={(e) => handleParamChange(p.name, step >= 1 ? parseInt(e.target.value, 10) : parseFloat(e.target.value), setter)}
                         className="instrument-slider"
                       />
                     ) : (
@@ -1258,8 +1279,9 @@ export function Laboratory({
                         />
                       </div>
                     )}
-                    <div className="mt-1 text-[7px] font-mono text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                      SYNCED_TO_SOURCE:LINE_{p.lineno || 'AUTO'}
+                    <div className="mt-1 flex items-center gap-1.5 text-[8px] font-mono text-gray-500 opacity-60 group-hover:opacity-100 transition-opacity">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                      <span>{lineNum ? `Synced to line ${lineNum}` : 'Auto-bound to code'}</span>
                     </div>
                   </div>
                 );
