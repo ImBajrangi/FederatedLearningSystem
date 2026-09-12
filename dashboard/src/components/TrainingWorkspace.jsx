@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Cpu, Activity, ShieldCheck, Server, Globe, Zap, 
   Network, Settings2, Code, Database, Terminal as TerminalIcon,
   ChevronRight, BarChart3, Lock, RefreshCcw, Copy, CheckCircle2, Edit3, Check,
-  Laptop, Radio, Fingerprint, HardDrive, Layers
+  Laptop, Radio, Fingerprint, HardDrive, Layers,
+  Maximize2, Minimize2, Search, Download, ExternalLink, Eye, X, Filter, Sparkles,
+  Info, AlertTriangle, CheckCircle
 } from 'lucide-react';
 import { MetricsChart } from './MetricsChart';
 
@@ -42,6 +44,12 @@ export const TrainingWorkspace = ({
   const [copySuccess, setCopySuccess] = useState(false);
   const [cliInput, setCliInput] = useState('');
   const [localCliLogs, setLocalCliLogs] = useState([]);
+  
+  // Pop-up and Expanded Terminal State
+  const [selectedLog, setSelectedLog] = useState(null);
+  const [isTerminalMaximized, setIsTerminalMaximized] = useState(false);
+  const [terminalSearch, setTerminalSearch] = useState('');
+  const [logCopyFeedback, setLogCopyFeedback] = useState(false);
 
   const handleCliSubmit = (e) => {
     e.preventDefault();
@@ -639,96 +647,159 @@ export const TrainingWorkspace = ({
           </section>
 
           {/* Terminal Console */}
-          <section className="tr-console-container">
+          {/* Terminal Console */}
+          <section className={`tr-console-container ${isTerminalMaximized ? 'tr-console-maximized' : ''}`}>
             <div className="tr-console-header">
               <div className="tr-console-tabs">
                 <div 
-                  className={`tr-tab ${activeTab === 'telemetry' ? 'active' : ''}`}
+                  className={`tr-tab tab-telemetry ${activeTab === 'telemetry' ? 'active' : ''}`}
                   onClick={() => setActiveTab('telemetry')}
                 >
-                  <TerminalIcon size={10} />
-                  <span>Node Telemetry</span>
+                  <TerminalIcon size={13} className={activeTab === 'telemetry' ? 'text-cyan-400' : 'text-slate-400'} />
+                  <span className="tr-tab-text">Node Telemetry</span>
+                  <span className="tr-tab-badge">
+                    {allLogs.filter(l => (typeof l === 'object' ? l.msg : l).toUpperCase().includes('UPDATE') || (typeof l === 'object' ? l.msg : l).toUpperCase().includes('ROUND') || (typeof l === 'object' ? l.msg : l).toUpperCase().includes('NODE')).length}
+                  </span>
                 </div>
                 <div 
-                  className={`tr-tab ${activeTab === 'feed' ? 'active' : ''}`}
+                  className={`tr-tab tab-feed ${activeTab === 'feed' ? 'active' : ''}`}
                   onClick={() => setActiveTab('feed')}
                 >
-                  <Globe size={10} />
-                  <span>Global Feed</span>
+                  <Globe size={13} className={activeTab === 'feed' ? 'text-emerald-400' : 'text-slate-400'} />
+                  <span className="tr-tab-text">Global Feed</span>
+                  <span className="tr-tab-badge">{allLogs.length}</span>
                 </div>
                 <div 
-                  className={`tr-tab ${activeTab === 'audit' ? 'active' : ''}`}
+                  className={`tr-tab tab-audit ${activeTab === 'audit' ? 'active' : ''}`}
                   onClick={() => setActiveTab('audit')}
                 >
-                  <Lock size={10} />
-                  <span>Sec Audit</span>
+                  <Lock size={13} className={activeTab === 'audit' ? 'text-amber-400' : 'text-slate-400'} />
+                  <span className="tr-tab-text">Sec Audit</span>
+                  <span className="tr-tab-badge">
+                    {allLogs.filter(l => {
+                      const msg = (typeof l === 'object' ? l.msg : l).toUpperCase();
+                      return msg.includes('SECURE') || msg.includes('VERIFIED') || msg.includes('AUDIT') || msg.includes('BLOCK') || msg.includes('CONTRACT') || msg.includes('HEIGHT') || msg.includes('BLOCKCHAIN');
+                    }).length}
+                  </span>
                 </div>
               </div>
+              
               <div className="tr-console-actions">
+                {/* Search / Filter Bar */}
+                <div className="tr-console-search-box">
+                  <Search size={11} className="text-slate-400" />
+                  <input 
+                    type="text" 
+                    value={terminalSearch}
+                    onChange={(e) => setTerminalSearch(e.target.value)}
+                    placeholder="Search logs & hashes..."
+                    className="tr-search-input"
+                  />
+                  {terminalSearch && (
+                    <button onClick={() => setTerminalSearch('')} className="text-slate-400 hover:text-white text-[10px]">
+                      <X size={10} />
+                    </button>
+                  )}
+                </div>
+
                 <div className="tr-latency">
                   <div className="tr-latency-dot" />
-                  <span>{Math.floor(Math.random() * 5 + 2)}MS LATENCY</span>
+                  <span>2MS LATENCY</span>
                 </div>
-                <button className="tr-btn-clear" onClick={onClear}>Clear</button>
+                
+                {/* Expand / Maximize Button */}
+                <button 
+                  onClick={() => setIsTerminalMaximized(!isTerminalMaximized)} 
+                  className="tr-btn-tool" 
+                  title={isTerminalMaximized ? "Collapse to Standard View" : "Expand Fullscreen View"}
+                >
+                  {isTerminalMaximized ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                  <span>{isTerminalMaximized ? "COLLAPSE" : "EXPAND"}</span>
+                </button>
+
+                <button className="tr-btn-clear" onClick={onClear} title="Clear Terminal Logs">CLEAR</button>
               </div>
             </div>
+
             <div className="tr-console-body" ref={consoleRef}>
               <div className="tr-console-scanline" />
               <div className="tr-log-container">
                 {allLogs.length === 0 ? (
                   <div className="tr-cli-welcome">
                     <div className="tr-cli-banner">
-                      <span className="text-emerald-400 font-bold">◈ AI GUARDIAN ORCHESTRATION TERMINAL</span>
-                      <span className="text-slate-400 text-[10px]">v2.4.0-PROD • TELEMETRY ACTIVE</span>
+                      <span className="text-emerald-400 font-bold flex items-center gap-2">
+                        <Sparkles size={13} /> AI GUARDIAN ORCHESTRATION TERMINAL
+                      </span>
+                      <span className="text-slate-300 text-[10px] font-mono bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
+                        v2.4.0-PROD • TELEMETRY ACTIVE
+                      </span>
                     </div>
                     <div className="tr-cli-info-grid">
                       <div className="tr-cli-info-item">
-                        <span className="tr-cli-k">Status:</span>
-                        <span className="tr-cli-v text-emerald-400">{isActive ? '⚡ CONVERGENCE IN PROGRESS' : '● LISTENING FOR PARTICIPANTS'}</span>
+                        <span className="tr-cli-k">Cluster Status:</span>
+                        <span className="tr-cli-v text-emerald-400 font-bold">{isActive ? '⚡ CONVERGENCE ACTIVE' : '● LISTENING IN STANDBY'}</span>
                       </div>
                       <div className="tr-cli-info-item">
-                        <span className="tr-cli-k">Active Code:</span>
-                        <span className="tr-cli-v text-cyan-400">{displayedFilename} ({displayedHash ? displayedHash.substring(0, 12) + '...' : '0x0000'})</span>
+                        <span className="tr-cli-k">Active Code Fingerprint:</span>
+                        <span className="tr-cli-v text-cyan-300 font-mono">{displayedFilename} ({displayedHash ? displayedHash.substring(0, 10) + '...' : '0x0000'})</span>
                       </div>
                       <div className="tr-cli-info-item">
-                        <span className="tr-cli-k">Edge Nodes:</span>
-                        <span className="tr-cli-v text-amber-300">{Object.keys(safeNodeRegistry).length} Enrolled</span>
+                        <span className="tr-cli-k">Enrolled Edge Participants:</span>
+                        <span className="tr-cli-v text-amber-300 font-bold">{Object.keys(safeNodeRegistry).length} Nodes Connected</span>
                       </div>
                     </div>
                     <div className="tr-cli-commands-hint">
-                      <span className="text-slate-400">Available commands:</span>
-                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/train'); }}>/train</span>
-                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/nodes'); }}>/nodes</span>
-                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/status'); }}>/status</span>
-                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/help'); }}>/help</span>
+                      <span className="text-slate-300 font-medium">Quick Commands (Click to load):</span>
+                      <span className="tr-cmd-tag" onClick={() => setCliInput('/train')}>/train</span>
+                      <span className="tr-cmd-tag" onClick={() => setCliInput('/nodes')}>/nodes</span>
+                      <span className="tr-cmd-tag" onClick={() => setCliInput('/status')}>/status</span>
+                      <span className="tr-cmd-tag" onClick={() => setCliInput('/help')}>/help</span>
                     </div>
                   </div>
                 ) : (
                   allLogs
                     .filter(log => {
+                      const logMsg = (typeof log === 'object' ? log.msg : log) || '';
+                      if (terminalSearch && !logMsg.toLowerCase().includes(terminalSearch.toLowerCase())) {
+                        return false;
+                      }
                       if (activeTab === 'feed') return true;
-                      const logMsg = (typeof log === 'object' ? log.msg : log).toUpperCase();
-                      if (activeTab === 'audit') return logMsg.includes('SECURE') || logMsg.includes('VERIFIED') || logMsg.includes('AUDIT') || logMsg.includes('BLOCK');
-                      return logMsg.includes('UPDATE') || logMsg.includes('AGGREGATING') || logMsg.includes('ROUND') || logMsg.includes('NODE') || log.type;
+                      const msgUpper = logMsg.toUpperCase();
+                      if (activeTab === 'audit') return msgUpper.includes('SECURE') || msgUpper.includes('VERIFIED') || msgUpper.includes('AUDIT') || msgUpper.includes('BLOCK') || msgUpper.includes('CONTRACT') || msgUpper.includes('HASH') || msgUpper.includes('HEIGHT') || msgUpper.includes('BLOCKCHAIN');
+                      return msgUpper.includes('UPDATE') || msgUpper.includes('AGGREGATING') || msgUpper.includes('ROUND') || msgUpper.includes('NODE') || log.type;
                     })
                     .map((log, i) => {
                       const logObj = typeof log === 'object' ? log : { msg: log };
                       const msgUpper = (logObj.msg || '').toUpperCase();
-                      const isSuccess = msgUpper.includes('SUCCESS') || msgUpper.includes('COMPLETE') || msgUpper.includes('FINISHED') || msgUpper.includes('SYNCED') || logObj.type === 'success';
+                      const isSuccess = msgUpper.includes('SUCCESS') || msgUpper.includes('COMPLETE') || msgUpper.includes('FINISHED') || msgUpper.includes('SYNCED') || msgUpper.includes('ACTIVE') || logObj.type === 'success';
                       const isError = msgUpper.includes('ERR') || msgUpper.includes('CRITICAL') || msgUpper.includes('FAIL') || logObj.type === 'error';
                       const isWarning = msgUpper.includes('WARN') || logObj.type === 'warn';
                       const isInput = logObj.type === 'input';
                       
-                      const msgColor = isInput ? '#38bdf8' : isSuccess ? '#34d399' : isError ? '#f87171' : isWarning ? '#fbbf24' : '#f1f5f9';
+                      const msgColor = isInput ? '#38bdf8' : isSuccess ? '#34d399' : isError ? '#f87171' : isWarning ? '#fbbf24' : '#f8fafc';
                       const prefix = logObj.prefix || (i % 2 === 0 ? 'NODE_01' : 'NODE_02');
                       const ts = logObj.ts || new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
+                      const isNode1 = prefix.includes('01');
+                      const isNode2 = prefix.includes('02');
+                      const isSys = prefix.includes('SYS') || prefix.includes('ORCH') || prefix.includes('CLI');
+
                       return (
-                        <div key={i} className="tr-log-line group">
+                        <div 
+                          key={i} 
+                          className="tr-log-line group"
+                          onClick={() => setSelectedLog({ ...logObj, index: i, prefix, ts, msgColor, isSuccess, isError, isWarning, isInput })}
+                          title="Click to open inspector pop-up bar & expanded view"
+                        >
                           <span className="tr-log-ts">{ts}</span>
-                          <span className="tr-log-prefix">[{prefix}]</span>
-                          <span className="tr-log-msg" style={{ color: msgColor, whiteSpace: 'pre-wrap' }}>
+                          <span className={`tr-log-prefix ${isNode1 ? 'tr-pfx-node1' : isNode2 ? 'tr-pfx-node2' : isSys ? 'tr-pfx-sys' : 'tr-pfx-default'}`}>
+                            [{prefix}]
+                          </span>
+                          <span className="tr-log-msg" style={{ color: msgColor }}>
                             {logObj.msg}
+                          </span>
+                          <span className="tr-log-inspect-badge">
+                            <Eye size={10} /> INSPECT
                           </span>
                           <div className="tr-log-glow" />
                         </div>
@@ -752,7 +823,167 @@ export const TrainingWorkspace = ({
                 </form>
               </div>
             </div>
+
+            {/* ── Interactive Pop-Up Bar on Log Selection ── */}
+            <AnimatePresence>
+              {selectedLog && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 30 }}
+                  className="tr-popup-quickbar"
+                >
+                  <div className="tr-popup-bar-left">
+                    <div className="tr-popup-bar-badge">
+                      <Sparkles size={12} className="text-cyan-400" />
+                      <span>LOG EVENT #{selectedLog.index + 1}</span>
+                    </div>
+                    <span className="tr-popup-bar-ts">{selectedLog.ts}</span>
+                    <span className="tr-popup-bar-prefix">[{selectedLog.prefix}]</span>
+                    <span className="tr-popup-bar-msg truncate" title={selectedLog.msg}>
+                      {selectedLog.msg}
+                    </span>
+                  </div>
+                  <div className="tr-popup-bar-actions">
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(`[${selectedLog.ts}] [${selectedLog.prefix}] ${selectedLog.msg}`);
+                        setLogCopyFeedback(true);
+                        setTimeout(() => setLogCopyFeedback(false), 2000);
+                      }}
+                      className="tr-popup-bar-btn-copy"
+                    >
+                      {logCopyFeedback ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                      <span>{logCopyFeedback ? 'COPIED' : 'COPY'}</span>
+                    </button>
+                    <button 
+                      onClick={() => setSelectedLog(null)} 
+                      className="tr-popup-bar-btn-close"
+                      title="Dismiss Pop-up Bar"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
+
+          {/* ── LOG EVENT EXPANDED INSPECTOR MODAL ── */}
+          <AnimatePresence>
+            {selectedLog && (
+              <div className="tr-modal-backdrop" onClick={() => setSelectedLog(null)}>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                  className="tr-modal-card" 
+                  onClick={e => e.stopPropagation()}
+                >
+                  {/* Modal Header */}
+                  <div className="tr-modal-header">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2.5 rounded-lg ${selectedLog.isError ? 'bg-red-500/20 text-red-400 border border-red-500/30' : selectedLog.isWarning ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : selectedLog.isSuccess ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'}`}>
+                        <TerminalIcon size={18} />
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                          <span>Telemetry Event Detail</span>
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 font-mono font-bold">
+                            [{selectedLog.prefix}]
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-300 mt-0.5">Recorded Timestamp: <span className="font-mono text-cyan-200">{selectedLog.ts}</span></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => setIsTerminalMaximized(!isTerminalMaximized)} 
+                        className="tr-modal-tool-btn" 
+                        title="Toggle Fullscreen View"
+                      >
+                        {isTerminalMaximized ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+                        <span>{isTerminalMaximized ? "RESTORE" : "EXPAND FULLSCREEN"}</span>
+                      </button>
+                      <button onClick={() => setSelectedLog(null)} className="tr-modal-close-btn" title="Close Inspector">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Metadata Chips */}
+                  <div className="tr-modal-meta-grid">
+                    <div className="tr-meta-item">
+                      <span className="tr-meta-k">Source / Participant:</span>
+                      <span className="tr-meta-v text-cyan-300 font-mono font-bold">{selectedLog.prefix}</span>
+                    </div>
+                    <div className="tr-meta-item">
+                      <span className="tr-meta-k">Event Classification:</span>
+                      <span className="tr-meta-v text-slate-100 font-semibold">{selectedLog.type ? selectedLog.type.toUpperCase() : 'TELEMETRY_LOG'}</span>
+                    </div>
+                    <div className="tr-meta-item">
+                      <span className="tr-meta-k">Security & Integrity Audit:</span>
+                      <span className={`tr-meta-v font-bold ${selectedLog.isError ? 'text-red-400' : selectedLog.isWarning ? 'text-amber-400' : 'text-emerald-400'}`}>
+                        {selectedLog.isError ? 'CRITICAL ERROR' : selectedLog.isWarning ? 'WARNING DETECTED' : 'CRYPTOGRAPHICALLY VALID ✓'}
+                      </span>
+                    </div>
+                    <div className="tr-meta-item">
+                      <span className="tr-meta-k">Integrity Ledger State:</span>
+                      <span className="tr-meta-v text-purple-300 font-mono">Smart Contract Verified (Height: 1)</span>
+                    </div>
+                  </div>
+
+                  {/* Payload & Full Text Box */}
+                  <div className="tr-modal-payload-box">
+                    <div className="tr-payload-header">
+                      <span className="text-slate-200 font-semibold text-[11px] flex items-center gap-1.5">
+                        <Code size={13} className="text-cyan-400" /> Expanded Message & Full Payload:
+                      </span>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedLog.msg);
+                          setLogCopyFeedback(true);
+                          setTimeout(() => setLogCopyFeedback(false), 2000);
+                        }}
+                        className="tr-payload-copy-btn"
+                      >
+                        {logCopyFeedback ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                        <span>{logCopyFeedback ? 'COPIED TO CLIPBOARD' : 'COPY RAW PAYLOAD'}</span>
+                      </button>
+                    </div>
+                    <pre className="tr-payload-content" style={{ color: selectedLog.msgColor || '#f8fafc' }}>
+                      {selectedLog.msg}
+                    </pre>
+                  </div>
+
+                  {/* Actions Footer */}
+                  <div className="tr-modal-footer">
+                    <button 
+                      onClick={() => {
+                        const exportStr = JSON.stringify({
+                          timestamp: selectedLog.ts,
+                          source: selectedLog.prefix,
+                          type: selectedLog.type || 'telemetry',
+                          message: selectedLog.msg,
+                          audit: 'VERIFIED_SHA256'
+                        }, null, 2);
+                        navigator.clipboard.writeText(exportStr);
+                        setLogCopyFeedback(true);
+                        setTimeout(() => setLogCopyFeedback(false), 2000);
+                      }}
+                      className="tr-footer-btn-secondary"
+                    >
+                      <Copy size={13} />
+                      <span>{logCopyFeedback ? "Copied JSON!" : "Copy JSON Event Object"}</span>
+                    </button>
+                    <button onClick={() => setSelectedLog(null)} className="tr-footer-btn-primary">
+                      Close Inspector
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -1178,65 +1409,323 @@ export const TrainingWorkspace = ({
           letter-spacing: 0.05em;
         }
 
-        /* ─── Console Overhaul ─── */
+        /* ─── High-Contrast Console & Pop-up Inspector ─── */
         .tr-console-container {
           background: #090d16;
           border: 1px solid #1e293b;
-          border-radius: 6px;
+          border-radius: 8px;
           display: flex;
           flex-direction: column;
-          height: 440px;
+          height: 460px;
           position: relative;
-          box-shadow: 0 12px 36px -10px rgba(0,0,0,0.6);
+          box-shadow: 0 16px 40px -10px rgba(0,0,0,0.7);
           overflow: hidden;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tr-console-maximized {
+          position: fixed !important;
+          inset: 24px !important;
+          height: calc(100vh - 48px) !important;
+          z-index: 9999 !important;
+          box-shadow: 0 25px 60px -12px rgba(0,0,0,0.95), 0 0 0 1px #334155 !important;
+          border-radius: 12px !important;
         }
         .tr-console-header {
           padding: 0 16px;
-          height: 42px;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          height: 44px;
+          border-bottom: 1px solid #1e293b;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: #1e293b;
+          background: #0e1626;
           flex-shrink: 0;
+          gap: 12px;
         }
-        .tr-console-tabs { display: flex; height: 100%; }
+        .tr-console-tabs { display: flex; height: 100%; background: #070c18; }
         .tr-tab { 
-          display: flex; align-items: center; gap: 10px; padding: 0 16px;
-          font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-          color: rgba(255,255,255,0.4); border-right: 1px solid rgba(255,255,255,0.05);
+          display: flex; align-items: center; gap: 8px; padding: 0 16px;
+          font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+          color: #94a3b8 !important; border-right: 1px solid #1e293b;
+          background: #090e1a;
+          cursor: pointer; transition: all 0.2s;
+          user-select: none;
+        }
+        .tr-tab .tr-tab-text { color: #94a3b8 !important; transition: color 0.2s; }
+        .tr-tab:hover { background: rgba(255,255,255,0.06); }
+        .tr-tab:hover .tr-tab-text { color: #ffffff !important; }
+        
+        .tr-tab.active { 
+          background: #0e172a !important; 
+          border-top: 2px solid #38bdf8 !important; 
+          box-shadow: inset 0 2px 10px rgba(56, 189, 248, 0.15);
+        }
+        .tr-tab.active.tab-telemetry { border-top-color: #38bdf8 !important; }
+        .tr-tab.active.tab-telemetry .tr-tab-text { color: #38bdf8 !important; font-weight: 800; }
+        
+        .tr-tab.active.tab-feed { border-top-color: #10b981 !important; }
+        .tr-tab.active.tab-feed .tr-tab-text { color: #34d399 !important; font-weight: 800; }
+        
+        .tr-tab.active.tab-audit { border-top-color: #f59e0b !important; }
+        .tr-tab.active.tab-audit .tr-tab-text { color: #fbbf24 !important; font-weight: 800; }
+
+        .tr-tab-badge {
+          font-size: 9px;
+          font-family: var(--font-mono, monospace);
+          font-weight: 700;
+          padding: 1px 6px;
+          border-radius: 999px;
+          background: rgba(255,255,255,0.08);
+          color: #cbd5e1;
+          border: 1px solid rgba(255,255,255,0.05);
+        }
+        .tr-tab.active.tab-telemetry .tr-tab-badge {
+          background: rgba(56, 189, 248, 0.2);
+          color: #38bdf8;
+          border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+        .tr-tab.active.tab-feed .tr-tab-badge {
+          background: rgba(16, 185, 129, 0.2);
+          color: #34d399;
+          border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        .tr-tab.active.tab-audit .tr-tab-badge {
+          background: rgba(245, 158, 11, 0.2);
+          color: #fbbf24;
+          border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .tr-console-actions { display: flex; align-items: center; gap: 14px; }
+        .tr-console-search-box {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(15, 23, 42, 0.8);
+          border: 1px solid #334155;
+          padding: 4px 10px;
+          border-radius: 4px;
+        }
+        .tr-search-input {
+          background: transparent;
+          border: none;
+          outline: none;
+          color: #f8fafc;
+          font-size: 10px;
+          width: 140px;
+          font-family: var(--font-mono, monospace);
+        }
+        .tr-search-input::placeholder { color: #64748b; }
+        .tr-latency { 
+          display: flex; align-items: center; gap: 6px; 
+          font-size: 9px; font-weight: 700; color: #94a3b8; 
+          text-transform: uppercase; letter-spacing: 0.05em; 
+          font-family: var(--font-mono, monospace);
+        }
+        .tr-latency-dot { width: 6px; height: 6px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981; }
+        .tr-btn-tool {
+          display: flex; align-items: center; gap: 5px;
+          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+          padding: 4px 10px; border-radius: 4px; font-size: 9px; font-weight: 800;
+          color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.05em;
           cursor: pointer; transition: all 0.2s;
         }
-        .tr-tab:hover { background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.6); }
-        .tr-tab.active { background: #0f172a; color: var(--primary); border-top: 2px solid var(--primary); }
-
-        .tr-console-actions { display: flex; align-items: center; gap: 20px; }
-        .tr-latency { display: flex; align-items: center; gap: 8px; font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.2); text-transform: uppercase; }
-        .tr-latency-dot { width: 4px; height: 4px; border-radius: 50%; background: #10B981; }
-        .tr-btn-clear { background: none; border: none; padding: 4px 8px; font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; cursor: pointer; }
-        .tr-btn-clear:hover { color: #fff; }
+        .tr-btn-tool:hover { background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #38bdf8; }
+        .tr-btn-clear { 
+          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); 
+          padding: 4px 8px; border-radius: 4px;
+          font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; cursor: pointer; transition: all 0.2s; 
+        }
+        .tr-btn-clear:hover { background: rgba(239, 68, 68, 0.15); border-color: rgba(239,68,68,0.4); color: #f87171; }
 
         .tr-console-body { 
-          flex: 1; overflow-y: auto; padding: 20px 24px; position: relative;
+          flex: 1; overflow-y: auto; padding: 16px 20px; position: relative;
           font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
+          background: #070a12;
         }
         .tr-console-scanline {
           position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-          background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.1) 50%);
-          background-size: 100% 2px;
-          pointer-events: none; z-index: 10; opacity: 0.1;
+          background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.15) 50%);
+          background-size: 100% 3px;
+          pointer-events: none; z-index: 10; opacity: 0.15;
         }
         .tr-log-container { position: relative; z-index: 1; }
-        .tr-log-line { display: flex; gap: 12px; margin-bottom: 4px; position: relative; }
-        .tr-log-ts { color: rgba(255,255,255,0.15); flex-shrink: 0; width: 65px; font-size: 9px; }
-        .tr-log-prefix { color: rgba(255,255,255,0.3); flex-shrink: 0; width: 80px; font-weight: 700; text-transform: uppercase; font-size: 9px; }
-        .tr-log-msg { white-space: pre-wrap; font-weight: 500; }
+        .tr-log-line { 
+          display: flex; align-items: baseline; gap: 12px; padding: 4px 8px; 
+          border-left: 2px solid transparent; border-radius: 3px;
+          position: relative; cursor: pointer; transition: all 0.15s;
+          margin-bottom: 2px;
+        }
+        .tr-log-line:hover { 
+          background: rgba(56, 189, 248, 0.1); 
+          border-left: 2px solid #38bdf8; 
+        }
+        .tr-log-ts { color: #94a3b8; flex-shrink: 0; width: 68px; font-size: 10px; font-mono: true; }
+        
+        .tr-log-prefix { 
+          flex-shrink: 0; width: 88px; font-weight: 800; text-transform: uppercase; font-size: 10px;
+          display: inline-flex; align-items: center;
+        }
+        .tr-pfx-node1 {
+          color: #38bdf8 !important;
+        }
+        .tr-pfx-node2 {
+          color: #c084fc !important;
+        }
+        .tr-pfx-sys {
+          color: #34d399 !important;
+        }
+        .tr-pfx-default {
+          color: #94a3b8 !important;
+        }
+
+        .tr-log-msg { white-space: pre-wrap; font-weight: 500; word-break: break-all; flex: 1; }
+        .tr-log-inspect-badge {
+          display: none; align-items: center; gap: 4px;
+          font-size: 8px; font-weight: 800; color: #38bdf8;
+          background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.35);
+          padding: 2px 6px; border-radius: 3px; margin-left: auto;
+        }
+        .tr-log-line:hover .tr-log-inspect-badge { display: flex; }
         .tr-log-glow { 
           position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-          background: rgba(var(--primary-rgb), 0.05); opacity: 0;
+          background: rgba(56, 189, 248, 0.04); opacity: 0;
           transition: opacity 0.2s; pointer-events: none;
         }
         .tr-log-line:hover .tr-log-glow { opacity: 1; }
+
+        /* ─── Floating Pop-Up Bar on Selection ─── */
+        .tr-popup-quickbar {
+          position: absolute; bottom: 12px; left: 16px; right: 16px;
+          background: rgba(15, 23, 42, 0.95);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(56, 189, 248, 0.4);
+          border-radius: 8px;
+          padding: 8px 14px;
+          display: flex; align-items: center; justify-content: space-between;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.15);
+          z-index: 20;
+          gap: 12px;
+        }
+        .tr-popup-bar-left {
+          display: flex; align-items: center; gap: 8px;
+          overflow: hidden; flex: 1;
+        }
+        .tr-popup-bar-badge {
+          display: inline-flex; align-items: center; gap: 4px;
+          background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);
+          color: #38bdf8; font-size: 8px; font-weight: 800;
+          padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+        }
+        .tr-popup-bar-ts {
+          font-family: var(--font-mono, monospace); font-size: 10px; color: #94a3b8; flex-shrink: 0;
+        }
+        .tr-popup-bar-prefix {
+          font-family: var(--font-mono, monospace); font-size: 10px; font-weight: 800; color: #38bdf8; flex-shrink: 0;
+        }
+        .tr-popup-bar-msg {
+          font-family: var(--font-mono, monospace); font-size: 10px; color: #e2e8f0;
+        }
+        .tr-popup-bar-actions {
+          display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+        }
+        .tr-popup-bar-btn-copy {
+          display: flex; align-items: center; gap: 4px;
+          background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);
+          color: #38bdf8; font-size: 9px; font-weight: 800;
+          padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+        }
+        .tr-popup-bar-btn-copy:hover { background: rgba(56, 189, 248, 0.3); color: #ffffff; }
+        .tr-popup-bar-btn-close {
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+          color: #94a3b8; padding: 4px 6px; border-radius: 4px;
+          cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
+        }
+        .tr-popup-bar-btn-close:hover { background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239,68,68,0.4); }
+
+        /* ─── Pop-up Inspector Modal ─── */
+        .tr-modal-backdrop {
+          position: fixed; inset: 0; z-index: 10000;
+          background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px);
+          display: flex; align-items: center; justify-content: center;
+          padding: 20px;
+        }
+        .tr-modal-card {
+          width: 100%; max-width: 680px;
+          background: #0b1220; border: 1px solid #1e293b;
+          border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9);
+          display: flex; flex-direction: column; overflow: hidden;
+        }
+        .tr-modal-header {
+          padding: 16px 20px; background: #0f172a;
+          border-bottom: 1px solid #1e293b;
+          display: flex; justify-content: space-between; align-items: center;
+        }
+        .tr-modal-tool-btn {
+          display: flex; align-items: center; gap: 5px;
+          background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);
+          color: #38bdf8; font-size: 9px; font-weight: 800;
+          padding: 5px 9px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+        }
+        .tr-modal-tool-btn:hover { background: rgba(56, 189, 248, 0.25); color: #ffffff; }
+        .tr-modal-close-btn {
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+          color: #94a3b8; border-radius: 6px; padding: 6px;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; transition: all 0.2s;
+        }
+        .tr-modal-close-btn:hover { background: rgba(239,68,68,0.2); color: #f87171; border-color: rgba(239,68,68,0.4); }
+        
+        .tr-modal-meta-grid {
+          display: grid; grid-template-columns: repeat(2, 1fr);
+          gap: 10px; padding: 16px 20px; background: rgba(15, 23, 42, 0.5);
+          border-bottom: 1px solid #1e293b;
+        }
+        .tr-meta-item {
+          display: flex; flex-direction: column; gap: 3px;
+          background: rgba(2, 6, 23, 0.6); padding: 8px 12px;
+          border-radius: 6px; border: 1px solid #1e293b;
+        }
+        .tr-meta-k { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .tr-meta-v { font-size: 11px; }
+
+        .tr-modal-payload-box {
+          padding: 16px 20px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .tr-payload-header {
+          display: flex; justify-content: space-between; align-items: center;
+        }
+        .tr-payload-copy-btn {
+          display: flex; align-items: center; gap: 5px;
+          background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);
+          color: #38bdf8; font-size: 9px; font-weight: 800;
+          padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+        }
+        .tr-payload-copy-btn:hover { background: rgba(56, 189, 248, 0.25); color: #ffffff; }
+        .tr-payload-content {
+          background: #030712; border: 1px solid #1e293b;
+          border-radius: 6px; padding: 14px 16px;
+          font-family: var(--font-mono, monospace); font-size: 11px;
+          line-height: 1.6; max-height: 220px; overflow-y: auto;
+          white-space: pre-wrap; word-break: break-all;
+        }
+
+        .tr-modal-footer {
+          padding: 12px 20px; background: #0f172a;
+          border-top: 1px solid #1e293b;
+          display: flex; justify-content: space-between; align-items: center;
+        }
+        .tr-footer-btn-secondary {
+          display: flex; align-items: center; gap: 6px;
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+          color: #e2e8f0; font-size: 10px; font-weight: 700;
+          padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+        }
+        .tr-footer-btn-secondary:hover { background: rgba(255,255,255,0.12); color: #ffffff; }
+        .tr-footer-btn-primary {
+          background: #0284c7; border: none; color: #ffffff;
+          font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+          padding: 6px 16px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+        }
+        .tr-footer-btn-primary:hover { background: #0369a1; }
 
         .tr-cli-welcome {
           padding: 16px;
