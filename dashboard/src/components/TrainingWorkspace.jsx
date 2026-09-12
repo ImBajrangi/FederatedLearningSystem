@@ -37,8 +37,71 @@ export const TrainingWorkspace = ({
   const [isEditing, setIsEditing] = useState(false);
   const [customCode, setCustomCode] = useState('');
   const [isInjecting, setIsInjecting] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const ledgerRef = React.useRef(null);
+  const [cliInput, setCliInput] = useState('');
+  const [localCliLogs, setLocalCliLogs] = useState([]);
+
+  const handleCliSubmit = (e) => {
+    e.preventDefault();
+    const cmd = cliInput.trim();
+    if (!cmd) return;
+
+    const timeStr = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const userEntry = { ts: timeStr, prefix: 'USER_INPUT', msg: `> ${cmd}`, type: 'input' };
+
+    let replyEntry = null;
+    const lower = cmd.toLowerCase();
+
+    if (lower === '/help' || lower === 'help') {
+      replyEntry = {
+        ts: timeStr,
+        prefix: 'CLI_AGENT',
+        msg: 'Available Commands:\n  /train   - Trigger federated training round\n  /nodes   - List active connected participants\n  /status  - Inspect cluster status & throughput\n  /clear   - Flush terminal stream',
+        type: 'info'
+      };
+    } else if (lower === '/train' || lower === 'train') {
+      if (onInitiate && !isActive) {
+        onInitiate();
+        replyEntry = { ts: timeStr, prefix: 'ORCHESTRATOR', msg: '⚡ Dispatched federated training cycle to all active nodes.', type: 'success' };
+      } else {
+        replyEntry = { ts: timeStr, prefix: 'ORCHESTRATOR', msg: '⚠️ Training cycle is already in progress.', type: 'warn' };
+      }
+    } else if (lower === '/nodes' || lower === 'nodes') {
+      const count = Object.keys(safeNodeRegistry).length;
+      replyEntry = {
+        ts: timeStr,
+        prefix: 'REGISTRY',
+        msg: count === 0 ? 'No remote edge nodes connected. Connect via: curl -sSL https://.../join.py | python3' : `Connected nodes (${count}):\n${Object.entries(safeNodeRegistry).map(([id, n]) => `  ● ${n.name || id} (${n.ip || '127.0.0.1'}, Rep: ${n.reputation || 100})`).join('\n')}`,
+        type: 'info'
+      };
+    } else if (lower === '/status' || lower === 'status') {
+      replyEntry = {
+        ts: timeStr,
+        prefix: 'SYSTEM',
+        msg: `Cluster Status: ${isActive ? '⚡ TRAINING ACTIVE' : 'IDLE / READY'} | Active File: ${displayedFilename} | Checksum: ${displayedHash || '0x0000'}`,
+        type: 'info'
+      };
+    } else if (lower === '/clear' || lower === 'clear') {
+      setLocalCliLogs([]);
+      if (onClear) onClear();
+      setCliInput('');
+      return;
+    } else {
+      replyEntry = {
+        ts: timeStr,
+        prefix: 'SYS_ERR',
+        msg: `Command not recognized: '${cmd}'. Type /help for available CLI commands.`,
+        type: 'error'
+      };
+    }
+
+    setLocalCliLogs(prev => [...prev, userEntry, replyEntry]);
+    setCliInput('');
+  };
+
+  const allLogs = [
+    ...logs.map(l => (typeof l === 'object' ? l : { msg: l })),
+    ...localCliLogs
+  ];
 
   React.useEffect(() => {
     if (consoleRef.current) {
@@ -468,34 +531,59 @@ export const TrainingWorkspace = ({
             <div className="tr-console-body" ref={consoleRef}>
               <div className="tr-console-scanline" />
               <div className="tr-log-container">
-                {logs.length === 0 ? (
-                  <div className="tr-console-empty">
-                    <RefreshCcw size={14} className="animate-spin opacity-20" />
-                    <span>Awaiting system initialization...</span>
+                {allLogs.length === 0 ? (
+                  <div className="tr-cli-welcome">
+                    <div className="tr-cli-banner">
+                      <span className="text-emerald-400 font-bold">◈ AI GUARDIAN ORCHESTRATION TERMINAL</span>
+                      <span className="text-slate-400 text-[10px]">v2.4.0-PROD • TELEMETRY ACTIVE</span>
+                    </div>
+                    <div className="tr-cli-info-grid">
+                      <div className="tr-cli-info-item">
+                        <span className="tr-cli-k">Status:</span>
+                        <span className="tr-cli-v text-emerald-400">{isActive ? '⚡ CONVERGENCE IN PROGRESS' : '● LISTENING FOR PARTICIPANTS'}</span>
+                      </div>
+                      <div className="tr-cli-info-item">
+                        <span className="tr-cli-k">Active Code:</span>
+                        <span className="tr-cli-v text-cyan-400">{displayedFilename} ({displayedHash ? displayedHash.substring(0, 12) + '...' : '0x0000'})</span>
+                      </div>
+                      <div className="tr-cli-info-item">
+                        <span className="tr-cli-k">Edge Nodes:</span>
+                        <span className="tr-cli-v text-amber-300">{Object.keys(safeNodeRegistry).length} Enrolled</span>
+                      </div>
+                    </div>
+                    <div className="tr-cli-commands-hint">
+                      <span className="text-slate-400">Available commands:</span>
+                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/train'); }}>/train</span>
+                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/nodes'); }}>/nodes</span>
+                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/status'); }}>/status</span>
+                      <span className="tr-cmd-tag" onClick={() => { setCliInput('/help'); }}>/help</span>
+                    </div>
                   </div>
                 ) : (
-                  logs
+                  allLogs
                     .filter(log => {
                       if (activeTab === 'feed') return true;
                       const logMsg = (typeof log === 'object' ? log.msg : log).toUpperCase();
                       if (activeTab === 'audit') return logMsg.includes('SECURE') || logMsg.includes('VERIFIED') || logMsg.includes('AUDIT') || logMsg.includes('BLOCK');
-                      return logMsg.includes('UPDATE') || logMsg.includes('AGGREGATING') || logMsg.includes('ROUND') || logMsg.includes('NODE');
+                      return logMsg.includes('UPDATE') || logMsg.includes('AGGREGATING') || logMsg.includes('ROUND') || logMsg.includes('NODE') || log.type;
                     })
                     .map((log, i) => {
                       const logObj = typeof log === 'object' ? log : { msg: log };
-                      const msgUpper = logObj.msg.toUpperCase();
-                      const isSuccess = msgUpper.includes('SUCCESS') || msgUpper.includes('COMPLETE') || msgUpper.includes('FINISHED') || msgUpper.includes('SYNCED');
-                      const isError = msgUpper.includes('ERR') || msgUpper.includes('CRITICAL') || msgUpper.includes('FAIL');
-                      const isWarning = msgUpper.includes('WARN');
+                      const msgUpper = (logObj.msg || '').toUpperCase();
+                      const isSuccess = msgUpper.includes('SUCCESS') || msgUpper.includes('COMPLETE') || msgUpper.includes('FINISHED') || msgUpper.includes('SYNCED') || logObj.type === 'success';
+                      const isError = msgUpper.includes('ERR') || msgUpper.includes('CRITICAL') || msgUpper.includes('FAIL') || logObj.type === 'error';
+                      const isWarning = msgUpper.includes('WARN') || logObj.type === 'warn';
+                      const isInput = logObj.type === 'input';
                       
-                      // Using Hex for reliability on darker terminal backgrounds
-                      const msgColor = isSuccess ? '#10b981' : isError ? '#f87171' : isWarning ? '#fbbf24' : '#ffffff';
-                      
+                      const msgColor = isInput ? '#38bdf8' : isSuccess ? '#34d399' : isError ? '#f87171' : isWarning ? '#fbbf24' : '#f1f5f9';
+                      const prefix = logObj.prefix || (i % 2 === 0 ? 'NODE_01' : 'NODE_02');
+                      const ts = logObj.ts || new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
                       return (
                         <div key={i} className="tr-log-line group">
-                          <span className="tr-log-ts" style={{ color: 'rgba(255,255,255,0.3)' }}>{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-                          <span className="tr-log-prefix ml-2" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>[{i % 2 === 0 ? 'NODE_01' : 'NODE_02'}]</span>
-                          <span className="tr-log-msg" style={{ color: msgColor, textShadow: isSuccess ? '0 0 10px rgba(16,185,129,0.3)' : 'none' }}>
+                          <span className="tr-log-ts">{ts}</span>
+                          <span className="tr-log-prefix">[{prefix}]</span>
+                          <span className="tr-log-msg" style={{ color: msgColor, whiteSpace: 'pre-wrap' }}>
                             {logObj.msg}
                           </span>
                           <div className="tr-log-glow" />
@@ -503,14 +591,21 @@ export const TrainingWorkspace = ({
                       );
                     })
                 )}
-                <div className="tr-console-prompt">
-                  <span className="tr-log-ts">{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-                  <span className="tr-log-prefix ml-2">[SYS_PROMPT]</span>
-                  <div className="tr-cursor-wrap">
-                    <span className="tr-cursor">_</span>
-                    <span className="text-slate-500 italic opacity-50 ml-1">Awaiting next sequence...</span>
-                  </div>
-                </div>
+
+                {/* Interactive CLI Prompt */}
+                <form onSubmit={handleCliSubmit} className="tr-cli-input-row">
+                  <span className="tr-cli-prompt-label">◈ &gt;</span>
+                  <input
+                    type="text"
+                    className="tr-cli-text-input"
+                    value={cliInput}
+                    onChange={(e) => setCliInput(e.target.value)}
+                    placeholder="Type /train, /nodes, /status, /help or command..."
+                    spellCheck="false"
+                    autoComplete="off"
+                  />
+                  <button type="submit" className="tr-cli-send-btn">RUN</button>
+                </form>
               </div>
             </div>
           </section>
@@ -811,12 +906,117 @@ export const TrainingWorkspace = ({
         }
         .tr-log-line:hover .tr-log-glow { opacity: 1; }
 
-        .tr-console-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 16px; color: rgba(255,255,255,0.15); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
-        
-        .tr-console-prompt { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
-        .tr-cursor-wrap { display: flex; align-items: center; }
-        .tr-cursor { color: var(--primary); font-weight: 800; animation: tr-blink 1s step-end infinite; text-shadow: 0 0 10px var(--primary); }
-        @keyframes tr-blink { 50% { opacity: 0; } }
+        .tr-cli-welcome {
+          padding: 16px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          margin-bottom: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .tr-cli-banner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 8px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          font-size: 11px;
+          letter-spacing: 0.05em;
+        }
+        .tr-cli-info-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        }
+        .tr-cli-info-item {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          font-size: 10px;
+        }
+        .tr-cli-k {
+          color: #64748b;
+          font-weight: 700;
+          text-transform: uppercase;
+          font-size: 8px;
+          letter-spacing: 0.08em;
+        }
+        .tr-cli-v {
+          font-family: var(--font-mono, monospace);
+          font-weight: 700;
+          font-size: 10px;
+        }
+        .tr-cli-commands-hint {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 10px;
+          padding-top: 4px;
+        }
+        .tr-cmd-tag {
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          font-weight: 700;
+          color: #38bdf8;
+          background: rgba(56, 189, 248, 0.12);
+          border: 1px solid rgba(56, 189, 248, 0.3);
+          padding: 2px 6px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .tr-cmd-tag:hover {
+          background: rgba(56, 189, 248, 0.25);
+          transform: translateY(-1px);
+        }
+
+        .tr-cli-input-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 14px;
+          padding-top: 10px;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .tr-cli-prompt-label {
+          color: #10b981;
+          font-weight: 800;
+          font-family: var(--font-mono, monospace);
+          font-size: 12px;
+          flex-shrink: 0;
+        }
+        .tr-cli-text-input {
+          flex: 1;
+          background: transparent;
+          border: none;
+          outline: none;
+          color: #38bdf8;
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+        }
+        .tr-cli-text-input::placeholder {
+          color: rgba(255, 255, 255, 0.25);
+          font-style: italic;
+        }
+        .tr-cli-send-btn {
+          height: 22px;
+          padding: 0 8px;
+          background: #1e293b;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #94a3b8;
+          font-size: 8px;
+          font-weight: 800;
+          border-radius: 3px;
+          cursor: pointer;
+          letter-spacing: 0.08em;
+          transition: all 0.15s;
+        }
+        .tr-cli-send-btn:hover {
+          background: #334155;
+          color: #ffffff;
+        }
 
         .tr-console-body::-webkit-scrollbar { width: 6px; }
         .tr-console-body::-webkit-scrollbar-track { background: transparent; }
