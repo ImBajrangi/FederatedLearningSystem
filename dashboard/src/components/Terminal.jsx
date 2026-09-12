@@ -242,26 +242,134 @@ export const Terminal = ({ logs, onResize, isResizing, nodeRegistry = {}, roundH
 
           {/* REGISTRY TAB */}
           {activeTab === 'registry' && (
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
               <div style={{
-                display: 'flex', gap: 24, marginBottom: 12, paddingBottom: 8,
-                borderBottom: '1px solid #1e2937', color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase'
+                background: '#070c18',
+                border: '1px solid #1e293b',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.4)'
               }}>
-                <span style={{ width: 140 }}>Node_ID</span>
-                <span style={{ width: 120 }}>IP_Address</span>
-                <span style={{ width: 100 }}>Status</span>
-                <span style={{ width: 100 }}>Reputation</span>
-                <span style={{ flex: 1 }}>Security_Hash</span>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'fixed' }}>
+                  <thead>
+                    <tr style={{ background: '#0f172a', borderBottom: '1px solid #1e293b' }}>
+                      <th style={{ width: '220px', padding: '10px 16px', fontSize: '9px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>NODE_ID</th>
+                      <th style={{ width: '150px', padding: '10px 16px', fontSize: '9px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>IP_ADDRESS</th>
+                      <th style={{ width: '120px', padding: '10px 16px', fontSize: '9px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>STATUS</th>
+                      <th style={{ width: '130px', padding: '10px 16px', fontSize: '9px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>REPUTATION</th>
+                      <th style={{ padding: '10px 16px', fontSize: '9px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>SECURITY_HASH</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.keys(nodeRegistry || {}).length === 0 ? (
+                      <tr>
+                        <td colSpan="5" style={{ padding: '32px 16px', textAlign: 'center', color: '#64748b', fontSize: '11px', fontStyle: 'italic' }}>
+                          No edge nodes currently connected. Connect devices via <code>python join.py</code>
+                        </td>
+                      </tr>
+                    ) : (
+                      Object.entries(nodeRegistry).map(([id, info]) => {
+                        const shortId = id.length > 18 ? `${id.substring(0, 10)}...${id.substring(id.length - 6)}` : id;
+                        const statusColor = info.status === 'REJECTED' ? '#ef4444' : info.status === 'BUSY' ? '#fbbf24' : '#10b981';
+                        const statusBg = info.status === 'REJECTED' ? 'rgba(239, 68, 68, 0.12)' : info.status === 'BUSY' ? 'rgba(251, 191, 36, 0.12)' : 'rgba(16, 185, 129, 0.12)';
+                        const statusBorder = info.status === 'REJECTED' ? 'rgba(239, 68, 68, 0.3)' : info.status === 'BUSY' ? 'rgba(251, 191, 36, 0.3)' : 'rgba(16, 185, 129, 0.3)';
+
+                        return (
+                          <tr key={id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', transition: 'background 0.15s' }}>
+                            {/* Node ID */}
+                            <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#818cf8', flexShrink: 0 }} />
+                                <span
+                                  title={id}
+                                  style={{
+                                    fontFamily: '"JetBrains Mono", monospace',
+                                    fontSize: '11px',
+                                    fontWeight: 700,
+                                    color: '#a5b4fc',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '190px',
+                                    display: 'inline-block',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  {shortId}
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* IP Address */}
+                            <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                              <span style={{
+                                fontFamily: '"JetBrains Mono", monospace',
+                                fontSize: '11px',
+                                color: '#38bdf8',
+                                background: 'rgba(56, 189, 248, 0.08)',
+                                padding: '2px 8px',
+                                borderRadius: '4px',
+                                border: '1px solid rgba(56, 189, 248, 0.2)',
+                                display: 'inline-block'
+                              }}>
+                                {info.ip || '127.0.0.1'}
+                              </span>
+                            </td>
+
+                            {/* Status */}
+                            <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                              <span style={{
+                                fontSize: '9px',
+                                fontWeight: 800,
+                                color: statusColor,
+                                background: statusBg,
+                                border: `1px solid ${statusBorder}`,
+                                padding: '3px 8px',
+                                borderRadius: '4px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.08em',
+                                display: 'inline-block'
+                              }}>
+                                {info.status || 'VALID'}
+                              </span>
+                            </td>
+
+                            {/* Reputation */}
+                            <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                              <span style={{
+                                fontFamily: '"JetBrains Mono", monospace',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                color: '#10b981'
+                              }}>
+                                {info.reputation !== undefined ? Number(info.reputation).toFixed(2) : '150.00'} REP
+                              </span>
+                            </td>
+
+                            {/* Security Hash */}
+                            <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                              <span
+                                title={info.hash || info.code_hash || 'Verified on Chain'}
+                                style={{
+                                  fontFamily: '"JetBrains Mono", monospace',
+                                  fontSize: '11px',
+                                  color: '#94a3b8',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  display: 'block'
+                                }}
+                              >
+                                {info.hash || (info.code_hash ? `0x-${info.code_hash.substring(0, 12)}...` : '0x-631843415143...')}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
               </div>
-              {Object.entries(nodeRegistry).map(([id, info]) => (
-                <div key={id} style={{ display: 'flex', gap: 24, padding: '8px 0', borderBottom: '1px solid #111827', fontSize: 10, color: '#94a3b8' }}>
-                  <span style={{ width: 140, color: '#818cf8', fontWeight: 600 }}>{id}</span>
-                  <span style={{ width: 120, fontFamily: 'monospace', fontSize: 9 }}>{info.ip || '127.0.0.1'}</span>
-                  <span style={{ width: 100, color: info.status === 'REJECTED' ? '#ef4444' : info.status === 'BUSY' ? '#fbbf24' : '#10b981' }}>{info.status || 'ACTIVE'}</span>
-                  <span style={{ width: 100 }}>{info.reputation ? info.reputation.toFixed(2) : '1.00'} REP</span>
-                  <span style={{ flex: 1, opacity: 0.4 }}>{info.hash || 'Verified on Chain'}</span>
-                </div>
-              ))}
             </div>
           )}
 
