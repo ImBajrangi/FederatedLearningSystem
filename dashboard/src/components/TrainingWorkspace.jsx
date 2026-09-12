@@ -70,24 +70,24 @@ export const TrainingWorkspace = ({
   if (selectedSource === 'active') {
     displayedCode = isEditing ? customCode : liveActiveCode;
     displayedFilename = liveActiveFilename;
-    displayedTitle = isActive ? '⚡ Active In-Flight Training Code' : '🟢 Current Active Training Engine Code';
+    displayedTitle = isActive ? 'Active In-Flight Training Code' : 'Current Active Training Engine Code';
     displayedDataset = liveDataset;
     displayedHash = activeTrainingCode?.code_hash;
   } else if (selectedSource === 'global') {
     displayedCode = isEditing ? customCode : (modelArchitecture || '# Global Genesis Spec');
     displayedFilename = 'model.py';
-    displayedTitle = '🌐 Global Genesis Model Specification';
+    displayedTitle = 'Global Model Specification';
     displayedDataset = 'Institutional Global Distribution';
   } else if (selectedSource === 'lab') {
     displayedCode = isEditing ? customCode : (activeTrainingCode?.source === 'laboratory' ? activeTrainingCode.code : liveActiveCode);
     displayedFilename = 'laboratory_sandbox.py';
-    displayedTitle = '🧪 Code Laboratory Sandbox Script';
+    displayedTitle = 'Code Laboratory Sandbox Script';
     displayedDataset = 'Privacy Vault / In-Memory RAM';
   } else if (nodeRegistry[selectedSource]) {
     const node = nodeRegistry[selectedSource];
     displayedCode = node.code || '# No code payload transmitted by node';
     displayedFilename = node.filename || 'node_train.py';
-    displayedTitle = `💻 Node: ${node.name || selectedSource}`;
+    displayedTitle = node.name || `Node: ${selectedSource.substring(0, 8)}`;
     displayedDataset = `Edge Local Private Dataset (${node.ip || 'Local Device'})`;
     displayedHash = node.code_hash;
   }
@@ -280,7 +280,7 @@ export const TrainingWorkspace = ({
 
           {/* Dynamic Code Transparency & Active Execution Engine */}
           <section className="tr-card tr-script-card">
-            <div className="tr-card-header flex-wrap gap-2">
+            <div className="tr-card-header tr-code-header">
               <div className="tr-card-title-wrap">
                 <div className={`tr-code-status-dot ${isActive ? 'tr-dot-pulse-active' : 'tr-dot-idle'}`} />
                 <span className="tr-card-title">{displayedTitle}</span>
@@ -860,20 +860,32 @@ export const TrainingWorkspace = ({
           background: #fff;
           border: 1px solid var(--border);
         }
+        .tr-code-header {
+          padding: 10px 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          min-height: 48px;
+          background: #fff;
+          border-bottom: 1px solid var(--border);
+        }
         .tr-action-toolbar {
           display: flex;
           align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
+          gap: 6px;
+          flex-wrap: nowrap;
+          flex-shrink: 0;
         }
         .tr-source-dropdown {
+          height: 28px;
           background: #f8fafc;
           border: 1px solid #cbd5e1;
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 600;
           color: #0f172a !important;
-          padding: 5px 10px;
-          border-radius: 6px;
+          padding: 0 8px;
+          border-radius: 4px;
           outline: none;
           cursor: pointer;
           transition: all 0.2s;
@@ -883,17 +895,19 @@ export const TrainingWorkspace = ({
           box-shadow: 0 0 0 2px rgba(54, 78, 104, 0.15);
         }
         .tr-tool-btn {
+          height: 28px;
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          padding: 5px 10px;
+          padding: 0 9px;
           background: #f1f5f9;
           border: 1px solid #cbd5e1;
-          border-radius: 6px;
+          border-radius: 4px;
           color: #334155 !important;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
           cursor: pointer;
+          white-space: nowrap;
           transition: all 0.2s;
         }
         .tr-tool-btn:hover {
@@ -901,59 +915,67 @@ export const TrainingWorkspace = ({
           color: #0f172a !important;
         }
         .tr-inject-btn {
+          height: 28px;
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          padding: 5px 12px;
-          background: rgba(54, 78, 104, 0.08);
-          border: 1px solid rgba(54, 78, 104, 0.25);
-          border-radius: 6px;
+          padding: 0 9px;
+          background: #f8fafc;
+          border: 1px solid var(--border);
+          border-radius: 4px;
           color: var(--primary) !important;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
           cursor: pointer;
+          white-space: nowrap;
           transition: all 0.2s;
         }
         .tr-inject-btn:hover {
-          background: rgba(54, 78, 104, 0.16);
+          background: #f1f5f9;
+          border-color: var(--primary);
         }
         .tr-confirm-inject-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          padding: 5px 12px;
+          height: 28px;
+          padding: 0 10px;
           background: #10b981;
-          border: 1px solid #059669;
-          border-radius: 6px;
-          color: #ffffff !important;
-          font-size: 10px;
+          color: #fff !important;
+          border: none;
+          border-radius: 4px;
+          font-size: 9px;
           font-weight: 800;
           cursor: pointer;
           transition: all 0.2s;
-          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
         }
         .tr-confirm-inject-btn:hover {
           background: #059669;
         }
         .tr-cancel-btn {
-          padding: 5px 10px;
+          height: 28px;
+          padding: 0 8px;
           background: #e2e8f0;
           border: 1px solid #cbd5e1;
-          border-radius: 6px;
+          border-radius: 4px;
           color: #475569 !important;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
           cursor: pointer;
         }
         .tr-filename-tag {
+          height: 28px;
+          padding: 0 8px;
+          display: inline-flex;
+          align-items: center;
           font-size: 10px;
           font-weight: 700;
           font-family: var(--font-mono, monospace);
           color: #0284c7 !important;
-          padding: 3px 8px;
           background: #e0f2fe;
           border: 1px solid #bae6fd;
           border-radius: 4px;
+          white-space: nowrap;
         }
 
         /* ── Dynamic High-Contrast Metadata Bar ── */
