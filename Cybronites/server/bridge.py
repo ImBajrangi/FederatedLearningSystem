@@ -839,14 +839,24 @@ async def stop_distributed_session():
 
 @app.post("/api/v1/distributed/register")
 async def register_distributed_client(data: Dict[str, Any] = {}):
-    """Register a remote client node with transparent training code. Returns a unique client ID."""
+    """Register a remote client node with transparent training code and hardware telemetry."""
     coord = DistributedCoordinator.get_instance()
     name = data.get("name", "Unknown-Node")
     ip = data.get("ip", "0.0.0.0")
     code = data.get("code", "")
     filename = data.get("filename", "model.py")
+    device = data.get("device", "CPU Core")
+    os_info = data.get("os", "Linux/Darwin")
+    arch = data.get("arch", "x86_64")
+    python_ver = data.get("python", "v3.12")
+    shard_size = data.get("shard_size", "250 samples")
+    privacy = data.get("privacy", "L2-Clip (1.5) + Gaussian (σ=0.005)")
     
-    client_id = coord.register_client(name, ip, code=code, filename=filename)
+    client_id = coord.register_client(
+        name=name, ip=ip, code=code, filename=filename,
+        device=device, os_info=os_info, arch=arch,
+        python_ver=python_ver, shard_size=shard_size, privacy=privacy
+    )
     return {
         "success": True, 
         "client_id": client_id,

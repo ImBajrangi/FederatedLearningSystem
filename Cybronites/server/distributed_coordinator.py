@@ -201,14 +201,23 @@ class DistributedCoordinator:
 
     # ─── Client Registration & Code Transparency ───
 
-    def register_client(self, name: str, ip: str, code: str = "", filename: str = "model.py") -> str:
-        """Register a remote client and store its training file code for transparent audit."""
+    def register_client(self, name: str, ip: str, code: str = "", filename: str = "model.py",
+                        device: str = "CPU Core", os_info: str = "Linux/Darwin", arch: str = "x86_64",
+                        python_ver: str = "v3.12", shard_size: str = "250 samples",
+                        privacy: str = "L2-Clip (1.5) + Gaussian (σ=0.005)") -> str:
+        """Register a remote client with rich hardware telemetry and transparent training code."""
         client_id = str(uuid.uuid4())[:12]
         code_hash = hashlib.sha256(code.encode("utf-8")).hexdigest() if code else "0x0000_DEFAULT"
 
         self.registered_clients[client_id] = {
             "name": name,
             "ip": ip,
+            "device": device,
+            "os": os_info,
+            "arch": arch,
+            "python": python_ver,
+            "shard_size": shard_size,
+            "privacy": privacy,
             "last_seen": time.time(),
             "rounds_participated": 0,
             "status": "CONNECTED",
@@ -224,6 +233,12 @@ class DistributedCoordinator:
         self.node_registry[client_id] = {
             "status": "CONNECTED",
             "ip": ip,
+            "device": device,
+            "os": os_info,
+            "arch": arch,
+            "python": python_ver,
+            "shard_size": shard_size,
+            "privacy": privacy,
             "hash": f"0x{code_hash[:12]}",
             "reputation": 100.0,
             "name": name,
@@ -233,7 +248,7 @@ class DistributedCoordinator:
             "lines_count": len(code.splitlines()) if code else 0,
         }
 
-        self._broadcast("LOG", f"🖥️  NODE JOINED: {name} ({ip}) → ID: {client_id} | File: {filename} (SHA-256: {code_hash[:10]}...)")
+        self._broadcast("LOG", f"🖥️  NODE JOINED: {name} ({ip}) → ID: {client_id} | Engine: {device} | OS: {os_info} | File: {filename} (SHA-256: {code_hash[:10]}...)")
         
         stat_payload = {
             "clients_active": len(self.registered_clients),
@@ -244,7 +259,7 @@ class DistributedCoordinator:
 
         self._broadcast("STAT_UPDATE", stat_payload)
 
-        logger.info(f"Client registered: {name} ({ip}) → {client_id} (Code: {filename})")
+        logger.info(f"Client registered: {name} ({ip}) [{device}] → {client_id} (Code: {filename})")
         return client_id
 
     def update_client_code(self, client_id: str, code: str, filename: str = "model.py") -> bool:

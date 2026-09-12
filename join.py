@@ -161,6 +161,7 @@ class Style:
     GREEN = "\033[38;5;48m"
     EMERALD = "\033[38;5;42m"
     GOLD = "\033[38;5;220m"
+    YELLOW = "\033[38;5;226m"
     ORANGE = "\033[38;5;208m"
     RED = "\033[38;5;203m"
     PURPLE = "\033[38;5;141m"
@@ -406,27 +407,6 @@ class MNISTNet(nn.Module):
     print_step(2, 3, "Training Code Loaded & Verified for Transparency Audit", "DONE")
     print()
 
-    # ── STEP 3: Coordinator Handshake & Node Enrollment ──
-    print_step(3, 3, "Coordinator Handshake & Decentralized Node Registration", "IN_PROGRESS")
-    client_id = None
-    try:
-        reg_payload = {
-            "name": node_name,
-            "ip": "127.0.0.1",
-            "code": training_code,
-            "filename": training_filename
-        }
-        reg_res = http_post(f"{server_url}/api/v1/distributed/register", reg_payload, timeout=10)
-        client_id = reg_res.get("client_id")
-        print(f"    {Style.SLATE}├─ Client ID Assigned:{Style.RESET} {Style.BOLD}{Style.GREEN}{client_id}{Style.RESET}")
-        print(f"    {Style.SLATE}├─ Differential Privacy:{Style.RESET} {Style.PURPLE}L2-Norm Clip (1.5) + Gaussian (σ=0.005){Style.RESET}")
-        print(f"    {Style.SLATE}└─ Code Audit Ledger:{Style.RESET}  {Style.BLUE}100% Verified on Platform{Style.RESET}")
-        print_step(3, 3, "Node Successfully Enrolled on Federated Cluster", "DONE")
-    except Exception as e:
-        print(f"    {Style.RED}❌ Enrollment failed to {server_url}: {e}{Style.RESET}")
-        print(f"    Ensure backend server is running or specify with --server.")
-        sys.exit(1)
-
     # Initialize Private Memory Shard
     if HAVE_TORCH and local_model:
         device = torch.device("cuda" if torch.cuda.is_available() else ("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu"))
@@ -435,8 +415,38 @@ class MNISTNet(nn.Module):
         device = "cpu"
 
     X_train, y_train = get_local_shard(num_samples=250)
+
+    # ── STEP 3: Coordinator Handshake & Node Enrollment ──
+    print_step(3, 3, "Coordinator Handshake & Decentralized Node Registration", "IN_PROGRESS")
+    client_id = None
+    try:
+        reg_payload = {
+            "name": node_name,
+            "ip": "127.0.0.1",
+            "device": device_label,
+            "os": f"{platform.system()} {platform.release()}",
+            "arch": platform.machine(),
+            "python": f"v{platform.python_version()}",
+            "shard_size": f"{len(X_train)} samples",
+            "privacy": "L2-Clip (1.5) + Gaussian (σ=0.005)",
+            "code": training_code,
+            "filename": training_filename
+        }
+        reg_res = http_post(f"{server_url}/api/v1/distributed/register", reg_payload, timeout=10)
+        client_id = reg_res.get("client_id")
+        print(f"    {Style.SLATE}├─ Client ID Assigned:{Style.RESET} {Style.BOLD}{Style.GREEN}{client_id}{Style.RESET}")
+        print(f"    {Style.SLATE}├─ Compute Engine:{Style.RESET}    {Style.PURPLE}{device_label}{Style.RESET}")
+        print(f"    {Style.SLATE}├─ Private Edge Shard:{Style.RESET}{Style.EMERALD} {len(X_train)} samples into Secure Memory{Style.RESET}")
+        print(f"    {Style.SLATE}├─ Differential Privacy:{Style.RESET} {Style.GOLD}L2-Norm Clip (1.5) + Gaussian (σ=0.005){Style.RESET}")
+        print(f"    {Style.SLATE}└─ Code Audit Ledger:{Style.RESET}  {Style.BLUE}100% Verified on Platform{Style.RESET}")
+        print_step(3, 3, "Node Successfully Enrolled on Federated Cluster", "DONE")
+    except Exception as e:
+        print(f"    {Style.RED}❌ Enrollment failed to {server_url}: {e}{Style.RESET}")
+        print(f"    Ensure backend server is running or specify with --server.")
+        sys.exit(1)
+
     print()
-    print(f"  {Style.EMERALD}📦 Private Edge Shard Loaded:{Style.RESET} {Style.BOLD}{len(X_train)} samples{Style.RESET} isolated into encrypted local memory")
+    print(f"  {Style.EMERALD}📦 Node Ready:{Style.RESET} {Style.BOLD}{node_name}{Style.RESET} enrolled on cluster with {Style.CYAN}{training_filename}{Style.RESET}")
     print(f"{Style.DARK_SLATE}────────────────────────────────────────────────────────────────────────{Style.RESET}")
     print(f"  {Style.CYAN}⏳ Node Active & Ready — Listening for Federated Orchestration Rounds...{Style.RESET}\n")
 

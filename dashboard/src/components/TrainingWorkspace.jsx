@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { 
   Cpu, Activity, ShieldCheck, Server, Globe, Zap, 
   Network, Settings2, Code, Database, Terminal as TerminalIcon,
-  ChevronRight, BarChart3, Lock, RefreshCcw, Copy, CheckCircle2, Edit3, Check
+  ChevronRight, BarChart3, Lock, RefreshCcw, Copy, CheckCircle2, Edit3, Check,
+  Laptop, Radio, Fingerprint, HardDrive, Layers
 } from 'lucide-react';
 import { MetricsChart } from './MetricsChart';
 
@@ -341,6 +342,140 @@ export const TrainingWorkspace = ({
                 <span className="tr-stat-label">TOTAL ROUNDS:</span>
                 <span className="tr-stat-val">{roundHistory.length}</span>
               </div>
+            </div>
+          </section>
+
+          {/* Connected Edge Nodes & Device Telemetry Audit */}
+          <section className="tr-card tr-nodes-section">
+            <div className="tr-card-header">
+              <div className="tr-card-title-wrap">
+                <Laptop size={13} className="tr-card-icon text-cyan-400" />
+                <span className="tr-card-title">Enrolled Edge Nodes & Device Telemetry</span>
+                <span className="tr-nodes-count-badge">
+                  {Object.keys(safeNodeRegistry).length} ACTIVE
+                </span>
+              </div>
+              <div className="tr-card-action text-[10px] text-slate-400">
+                <span>Auto-Discovered via Decentralized Bridge</span>
+              </div>
+            </div>
+
+            <div className="tr-nodes-body">
+              {Object.keys(safeNodeRegistry).length === 0 ? (
+                <div className="tr-no-nodes-card">
+                  <div className="tr-no-nodes-left">
+                    <Radio size={16} className="text-amber-400 animate-pulse" />
+                    <div>
+                      <div className="text-xs font-semibold text-slate-200">Listening for Remote Edge Participants</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Run join command on any Mac, Linux, or Cloud GPU instance to enroll:</div>
+                    </div>
+                  </div>
+                  <div className="tr-quick-join-box">
+                    <code>curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3</code>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3');
+                        setCopySuccess(true);
+                        setTimeout(() => setCopySuccess(false), 2000);
+                      }}
+                      className="tr-mini-copy-btn"
+                    >
+                      {copySuccess ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} />}
+                      <span>{copySuccess ? 'COPIED' : 'COPY'}</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="tr-nodes-grid">
+                  {Object.entries(safeNodeRegistry).map(([id, node]) => {
+                    const isNodeActive = selectedSource === id;
+                    return (
+                      <div 
+                        key={id} 
+                        className={`tr-node-card ${isNodeActive ? 'tr-node-card-selected' : ''}`}
+                        onClick={() => {
+                          setSelectedSource(id);
+                          setIsEditing(false);
+                        }}
+                      >
+                        {/* Node Card Header */}
+                        <div className="tr-node-header">
+                          <div className="tr-node-id-group">
+                            <div className="tr-node-status-dot-green" />
+                            <div>
+                              <div className="tr-node-name">{node.name || id}</div>
+                              <div className="tr-node-sub">{id.substring(0, 10)}... • {node.ip || '127.0.0.1'}</div>
+                            </div>
+                          </div>
+                          <div className="tr-node-rep-badge">
+                            <ShieldCheck size={11} className="text-emerald-400" />
+                            <span>{node.reputation ? node.reputation.toFixed(1) : '100.0'}% REP</span>
+                          </div>
+                        </div>
+
+                        {/* Specs Grid */}
+                        <div className="tr-node-specs">
+                          <div className="tr-node-spec-row">
+                            <span className="tr-spec-k">
+                              <Cpu size={10} className="text-purple-400 inline mr-1" />
+                              Compute:
+                            </span>
+                            <span className="tr-spec-v text-purple-300 font-medium truncate" title={node.device || 'CPU Core'}>
+                              {node.device || 'CPU Core'}
+                            </span>
+                          </div>
+                          <div className="tr-node-spec-row">
+                            <span className="tr-spec-k">
+                              <Layers size={10} className="text-cyan-400 inline mr-1" />
+                              Environment:
+                            </span>
+                            <span className="tr-spec-v text-cyan-200 truncate">
+                              {node.os || 'Darwin/Linux'} ({node.arch || 'arm64'}) • {node.python || 'v3.12'}
+                            </span>
+                          </div>
+                          <div className="tr-node-spec-row">
+                            <span className="tr-spec-k">
+                              <HardDrive size={10} className="text-emerald-400 inline mr-1" />
+                              Local Shard:
+                            </span>
+                            <span className="tr-spec-v text-emerald-300">
+                              {node.shard_size || '250 samples'} (Private RAM)
+                            </span>
+                          </div>
+                          <div className="tr-node-spec-row">
+                            <span className="tr-spec-k">
+                              <Lock size={10} className="text-amber-400 inline mr-1" />
+                              Privacy Spec:
+                            </span>
+                            <span className="tr-spec-v text-amber-200">
+                              {node.privacy || 'L2-Clip (1.5) + Gaussian σ=0.005'}
+                            </span>
+                          </div>
+                          <div className="tr-node-spec-row">
+                            <span className="tr-spec-k">
+                              <Code size={10} className="text-blue-400 inline mr-1" />
+                              Code File:
+                            </span>
+                            <span className="tr-spec-v text-blue-200 font-mono text-[10px]">
+                              {node.filename || 'model.py'} ({node.lines_count || 74} lines)
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Node Card Footer */}
+                        <div className="tr-node-footer">
+                          <span className="tr-node-hash font-mono">
+                            SHA: {node.code_hash ? node.code_hash.substring(0, 14) + '...' : '0x0000'}
+                          </span>
+                          <span className="tr-node-inspect-tag">
+                            {isNodeActive ? '● VIEWING SCRIPT' : 'INSPECT CODE →'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </section>
 
@@ -848,6 +983,184 @@ export const TrainingWorkspace = ({
         .tr-footer-stats { display: flex; align-items: center; gap: 10px; }
         .tr-stat-label { font-size: 8px; font-weight: 700; color: var(--text-muted); }
         .tr-stat-val { font-family: var(--font-mono, monospace); font-size: 10px; font-weight: 800; color: var(--text-main); }
+
+        /* ─── Enrolled Edge Nodes & Telemetry Section ─── */
+        .tr-nodes-section {
+          background: #ffffff;
+          border: 1px solid var(--border);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .tr-nodes-count-badge {
+          font-size: 9px;
+          font-weight: 800;
+          color: #0284c7;
+          background: #e0f2fe;
+          border: 1px solid #bae6fd;
+          padding: 2px 8px;
+          border-radius: 999px;
+          letter-spacing: 0.06em;
+        }
+        .tr-nodes-body {
+          padding: 16px 20px;
+        }
+        .tr-no-nodes-card {
+          background: #f8fafc;
+          border: 1px dashed #cbd5e1;
+          border-radius: 6px;
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .tr-no-nodes-left {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .tr-quick-join-box {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #0f172a;
+          color: #38bdf8;
+          padding: 8px 12px;
+          border-radius: 4px;
+          font-family: var(--font-mono, monospace);
+          font-size: 10px;
+        }
+        .tr-quick-join-box code {
+          word-break: break-all;
+        }
+        .tr-mini-copy-btn {
+          background: rgba(255,255,255,0.1);
+          color: #f1f5f9;
+          border: none;
+          padding: 4px 10px;
+          border-radius: 3px;
+          font-size: 9px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          flex-shrink: 0;
+          transition: background 0.15s;
+        }
+        .tr-mini-copy-btn:hover {
+          background: rgba(255,255,255,0.2);
+        }
+        .tr-nodes-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 16px;
+        }
+        .tr-node-card {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tr-node-card:hover {
+          background: #f1f5f9;
+          border-color: #94a3b8;
+          transform: translateY(-1px);
+        }
+        .tr-node-card-selected {
+          background: #eff6ff !important;
+          border-color: #3b82f6 !important;
+          box-shadow: 0 0 0 1px #3b82f6;
+        }
+        .tr-node-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+        .tr-node-id-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .tr-node-status-dot-green {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 8px #10b981;
+          flex-shrink: 0;
+        }
+        .tr-node-name {
+          font-size: 12px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+        .tr-node-sub {
+          font-family: var(--font-mono, monospace);
+          font-size: 9px;
+          color: #64748b;
+        }
+        .tr-node-rep-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          background: #ecfdf5;
+          color: #047857;
+          border: 1px solid #a7f3d0;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 9px;
+          font-weight: 800;
+        }
+        .tr-node-specs {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          background: #ffffff;
+          padding: 10px 12px;
+          border-radius: 4px;
+          border: 1px solid #f1f5f9;
+        }
+        .tr-node-spec-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 10px;
+        }
+        .tr-spec-k {
+          font-size: 9px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+        .tr-spec-v {
+          font-size: 10px;
+          max-width: 170px;
+          text-align: right;
+        }
+        .tr-node-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 4px;
+        }
+        .tr-node-hash {
+          font-size: 9px;
+          color: #059669;
+          background: #f0fdf4;
+          padding: 2px 6px;
+          border-radius: 3px;
+        }
+        .tr-node-inspect-tag {
+          font-size: 9px;
+          font-weight: 800;
+          color: #2563eb;
+          letter-spacing: 0.05em;
+        }
 
         /* ─── Console Overhaul ─── */
         .tr-console-container {
