@@ -650,9 +650,17 @@ class MNISTNet(nn.Module):
             total_rounds = status_res.get("total_rounds", 5)
             current_session_id = status_res.get("session_id")
 
-            # Detect new session started from coordinator/dashboard
+            # Detect new session started from coordinator/dashboard or round reset
             if current_session_id and current_session_id != last_session_id:
                 last_session_id = current_session_id
+                last_participated_round = -1
+                has_printed_complete = False
+            elif session_status in ("IDLE", "WAITING") and current_round == 0 and last_participated_round > 0:
+                # Coordinator reset to round 0/IDLE -> ready for next session
+                last_participated_round = -1
+                has_printed_complete = False
+            elif session_status in ("TRAINING", "IN_PROGRESS", "WAITING") and current_round < last_participated_round:
+                # New session with lower round count started
                 last_participated_round = -1
                 has_printed_complete = False
 

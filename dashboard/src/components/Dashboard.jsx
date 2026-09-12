@@ -464,11 +464,11 @@ export const Dashboard = ({
                 <div className="dist-cli-content">
                   <div className="flex items-center justify-between mb-1">
                     <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-wider">
-                      Cloud Stream (No repo clone)
+                      One-Liner Node Stream
                     </span>
                     <button 
                       onClick={() => {
-                        navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py | python3');
+                        navigator.clipboard.writeText(`curl -sSL ${API_BASE_URL}/join.py | python3`);
                         setCopyCloudSuccess(true);
                         setTimeout(() => setCopyCloudSuccess(false), 2000);
                       }}
@@ -482,7 +482,7 @@ export const Dashboard = ({
                   <div className="dist-terminal-box">
                     <div className="dist-terminal-prompt">$</div>
                     <code className="dist-terminal-code">
-                      <span className="token-cmd">curl</span> <span className="token-flag">-sSL</span> <span className="token-url">https://mdark4025-cybronites.hf.space/join.py</span> <span className="token-pipe">|</span> <span className="token-exec">python3</span>
+                      <span className="token-cmd">curl</span> <span className="token-flag">-sSL</span> <span className="token-url">{API_BASE_URL}/join.py</span> <span className="token-pipe">|</span> <span className="token-exec">python3</span>
                     </code>
                   </div>
                   <p className="dist-cli-desc">
@@ -496,11 +496,11 @@ export const Dashboard = ({
                 <div className="dist-cli-content">
                   <div className="flex items-center justify-between mb-1">
                     <span className="mono text-[8px] font-bold text-slate-500 uppercase tracking-wider">
-                      Download & Execute
+                      Download &amp; Execute
                     </span>
                     <button 
                       onClick={() => {
-                        navigator.clipboard.writeText('curl -sSL https://mdark4025-cybronites.hf.space/join.py -o join.py && python3 join.py');
+                        navigator.clipboard.writeText(`curl -sSL ${API_BASE_URL}/join.py -o join.py && python3 join.py`);
                         setCopyLocalSuccess(true);
                         setTimeout(() => setCopyLocalSuccess(false), 2000);
                       }}
@@ -514,7 +514,7 @@ export const Dashboard = ({
                   <div className="dist-terminal-box">
                     <div className="dist-terminal-prompt">$</div>
                     <code className="dist-terminal-code">
-                      <span className="token-cmd">curl</span> <span className="token-flag">-sSL</span> <span className="token-url">https://mdark4025-cybronites.hf.space/join.py</span> <span className="token-flag">-o</span> join.py <span className="token-pipe">&amp;&amp;</span> <span className="token-exec">python3 join.py</span>
+                      <span className="token-cmd">curl</span> <span className="token-flag">-sSL</span> <span className="token-url">{API_BASE_URL}/join.py</span> <span className="token-flag">-o</span> join.py <span className="token-pipe">&amp;&amp;</span> <span className="token-exec">python3 join.py</span>
                     </code>
                   </div>
                   <p className="dist-cli-desc">
@@ -531,7 +531,7 @@ export const Dashboard = ({
                       <code className="dist-flag-name">--name &lt;str&gt;</code>
                       <span className="dist-flag-desc">Custom node identity</span>
                     </div>
-                    <div className="dist-flag-row" onClick={() => navigator.clipboard.writeText('python3 join.py --server http://localhost:7880')}>
+                    <div className="dist-flag-row" onClick={() => navigator.clipboard.writeText(`python3 join.py --server ${API_BASE_URL}`)}>
                       <code className="dist-flag-name">--server &lt;url&gt;</code>
                       <span className="dist-flag-desc">Bridge server URL</span>
                     </div>
