@@ -68,7 +68,7 @@ function App() {
       return false;
     }
   });
-  const [footerHeight, setFooterHeight] = useState(280);
+  const [footerHeight, setFooterHeight] = useState(210);
   const [isTerminalMinimized, setIsTerminalMinimized] = useState(false);
 
   const resizingRef = useRef(null); // 'terminal' | 'sidebar' | null
@@ -299,7 +299,7 @@ function App() {
         />
 
         <main className="flex-1 flex flex-col" style={{ minWidth: 0, overflow: 'hidden' }}>
-          <div className="flex-1" style={{ overflowY: 'auto', minHeight: 0 }}>
+          <div className="flex-1" style={{ overflowY: 'auto', overflowX: 'hidden', minHeight: 0 }}>
             {renderView()}
           </div>
 

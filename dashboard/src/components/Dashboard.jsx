@@ -459,12 +459,16 @@ export const Dashboard = ({
 
       <style>{`
         .dash-root {
-          padding: 40px;
+          padding: 24px 28px 120px 28px;
           display: flex;
           flex-direction: column;
-          gap: 40px;
+          gap: 28px;
           background: var(--bg-main);
           min-height: 100%;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          overflow-x: hidden;
           font-family: var(--font-sans);
         }
 
@@ -472,22 +476,26 @@ export const Dashboard = ({
         .dash-header {
           display: flex;
           justify-content: space-between;
-          align-items: flex-end;
-          padding-bottom: 32px;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+          padding-bottom: 20px;
           border-bottom: 1px solid var(--border);
         }
         .dash-title {
           font-family: var(--font-serif);
-          font-size: 32px;
+          font-size: clamp(20px, 2.5vw, 28px);
           font-weight: 500;
           color: var(--text-main);
           letter-spacing: -0.02em;
-          margin: 0 0 16px 0;
+          margin: 0 0 8px 0;
+          word-break: break-word;
         }
         .dash-meta {
           display: flex;
           align-items: center;
-          gap: 16px;
+          flex-wrap: wrap;
+          gap: 12px;
         }
         .dash-meta-item {
           display: flex;
@@ -524,11 +532,12 @@ export const Dashboard = ({
         .dash-header-controls {
           display: flex;
           align-items: center;
-          gap: 40px;
+          flex-wrap: wrap;
+          gap: 20px;
         }
         .dash-stat-group {
           text-align: right;
-          padding-right: 40px;
+          padding-right: 20px;
           border-right: 1px solid var(--border);
           height: 44px;
           display: flex;
@@ -574,27 +583,28 @@ export const Dashboard = ({
         }
         @keyframes dash-pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         .dash-distributed-section { 
-          margin-top: 40px; 
-          margin-bottom: 60px; 
+          margin-top: 24px; 
+          margin-bottom: 32px; 
           position: relative;
         }
         .dist-organizer-grid {
           display: grid;
-          grid-template-columns: 280px 1fr 320px;
-          gap: 24px;
+          grid-template-columns: minmax(260px, 280px) minmax(0, 1fr) minmax(280px, 320px);
+          gap: 20px;
           position: relative;
           z-index: 10;
         }
-        @media (max-width: 1200px) { .dist-organizer-grid { grid-template-columns: 300px 1fr; } }
-        @media (max-width: 850px) { .dist-organizer-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1280px) { .dist-organizer-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 860px) { .dist-organizer-grid { grid-template-columns: 1fr; } }
 
         .dist-panel {
           background: var(--bg-surface);
           border: 1px solid var(--border);
-          padding: 32px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
           position: relative;
+          min-width: 0;
           transition: border-color 0.3s, transform 0.3s;
         }
         .dist-panel:hover { border-color: var(--accent); }
@@ -724,8 +734,13 @@ export const Dashboard = ({
         /* ─── Grid ─── */
         .dash-grid {
           display: grid;
-          grid-template-columns: 1fr 320px;
-          gap: 40px;
+          grid-template-columns: minmax(0, 1fr) 300px;
+          gap: 24px;
+        }
+        @media (max-width: 1024px) {
+          .dash-grid {
+            grid-template-columns: 1fr;
+          }
         }
         .dash-card {
           background: var(--bg-surface);
