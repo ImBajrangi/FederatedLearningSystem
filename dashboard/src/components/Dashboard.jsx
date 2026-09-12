@@ -14,6 +14,7 @@ export const Dashboard = ({
   clearSimulation,
   blockchain = [],
   clients = [],
+  nodeRegistry = {},
   rejectedCount = 0,
   round = 0,
   distributedStatus = {},

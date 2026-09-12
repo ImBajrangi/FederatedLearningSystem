@@ -232,6 +232,7 @@ function App() {
             clearSimulation={clearSimulation}
             blockchain={blockchain}
             clients={clients}
+            nodeRegistry={nodeRegistry}
             rejectedCount={rejectedCount}
             round={round}
             distributedStatus={distributedStatus}
