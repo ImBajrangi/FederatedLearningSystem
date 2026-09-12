@@ -149,6 +149,22 @@ def http_post(url, payload):
 #  MAIN PARTICIPANT LOOP
 # ═══════════════════════════════════════════════════════════════════════
 
+def prompt_tty(prompt_str, default_val=""):
+    """Reads user input from the terminal even during piped curl execution (curl ... | python3)."""
+    try:
+        if sys.stdin.isatty():
+            res = input(prompt_str).strip()
+            return res if res else default_val
+        else:
+            tty_path = "/dev/tty" if os.name != "nt" else "CON"
+            with open(tty_path, "r") as t:
+                sys.stdout.write(prompt_str)
+                sys.stdout.flush()
+                res = t.readline().strip()
+                return res if res else default_val
+    except Exception:
+        return default_val
+
 def load_dynamic_model(code_str):
     """Dynamically parses and instantiates any PyTorch nn.Module defined in code_str."""
     if not HAVE_TORCH:
@@ -172,7 +188,7 @@ def load_dynamic_model(code_str):
 
 def main():
     parser = argparse.ArgumentParser(description="Zero-Config Federated Learning Participant")
-    parser.add_argument("--server", type=str, default=None, help="Target Server URL (e.g., http://localhost:7880)")
+    parser.add_argument("--server", type=str, default=None, help="Target Server URL (e.g., https://mdark4025-cybronites.hf.space)")
     parser.add_argument("--name", type=str, default=None, help="Custom Device Name")
     parser.add_argument("--file", type=str, default=None, help="Path to local training/model Python file for code transparency")
     parser.add_argument("--dp", action="store_true", default=True, help="Enable Differential Privacy")
@@ -182,10 +198,11 @@ def main():
     server_candidates = [
         args.server,
         os.environ.get("SERVER_URL"),
-        "http://127.0.0.1:7880",
-        "http://localhost:7880",
+        "https://mdark4025-cybronites.hf.space",
         "http://127.0.0.1:7860",
-        "https://mdark4025-cybronites.hf.space"
+        "http://localhost:7860",
+        "http://127.0.0.1:7880",
+        "http://localhost:7880"
     ]
     server_url = None
     for cand in server_candidates:
@@ -201,65 +218,85 @@ def main():
             pass
 
     if not server_url:
-        server_url = (args.server or "http://127.0.0.1:7880").rstrip("/")
+        server_url = (args.server or "https://mdark4025-cybronites.hf.space").rstrip("/")
 
     # Device Metadata
     node_name = args.name or f"{platform.node() or 'Node'}-{str(uuid.uuid4())[:4]}"
     device_type = "CUDA GPU" if HAVE_TORCH and torch.cuda.is_available() else ("Apple MPS" if HAVE_TORCH and hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "CPU")
 
-    # ── Interactive / CLI Training Code Resolution ──
-    chosen_file_path = args.file
-    
-    # If no file specified and running interactively in a terminal, prompt user
-    if not chosen_file_path and sys.stdin.isatty():
-        print("""
+    print("""
 ╔════════════════════════════════════════════════════════════════════════╗
 ║    🛡️ SECURE FEDERATED LEARNING & BLOCKCHAIN CLIENT NODE               ║
 ║    Privacy-Preserving Training • Local Computation • Smart Contracts   ║
 ╚════════════════════════════════════════════════════════════════════════╝
 """)
-        default_file = "Cybronites/client/model.py" if os.path.exists("Cybronites/client/model.py") else ("model.py" if os.path.exists("model.py") else None)
-        print("  📁 Select Training Code Architecture to train locally & sync with platform:")
-        if default_file:
-            print(f"    [1] {default_file} (Default Institutional Architecture)")
-        else:
-            print("    [1] Default Embedded Convolutional Network (MNISTNet)")
-        print("    [2] Custom local Python file (enter path)")
-        
-        try:
-            choice = input("  👉 Enter selection [1]: ").strip()
-            if choice == "2":
-                custom_input = input("  📝 Enter path to training code (.py): ").strip()
-                if custom_input and os.path.exists(custom_input):
-                    chosen_file_path = custom_input
-                else:
-                    print(f"  ⚠️  File '{custom_input}' not found. Using default architecture.")
-            elif default_file:
-                chosen_file_path = default_file
-        except (KeyboardInterrupt, EOFError):
-            print("\n  Cancelled.")
-            sys.exit(0)
+    print(f"  🖥️  Device Node:     {node_name}")
+    print(f"  ⚡ Compute Engine:   {device_type} (PyTorch {torch.__version__ if HAVE_TORCH else 'NumPy'})")
+    print(f"  🌐 Coordinator:      {server_url}")
 
-    # Load chosen training code file
+    # Fetch active global code from the platform first
+    active_platform_code = ""
+    active_platform_filename = "model.py"
+    try:
+        code_res = http_get(f"{server_url}/api/v1/training/active-code")
+        if code_res.get("success") and code_res.get("active_code"):
+            active_platform_code = code_res["active_code"].get("code", "")
+            active_platform_filename = code_res["active_code"].get("filename", "model.py")
+    except Exception:
+        pass
+
+    # ── Interactive / CLI Training Code Resolution ──
+    chosen_file_path = args.file
     training_code = ""
     training_filename = "model.py"
-    
-    candidates = [
-        chosen_file_path,
-        os.path.join(os.getcwd(), "Cybronites", "client", "model.py"),
-        os.path.join(os.getcwd(), "client", "model.py"),
-        os.path.join(os.getcwd(), "model.py"),
-    ]
-    for fpath in candidates:
-        if fpath and os.path.exists(fpath):
-            try:
-                with open(fpath, "r", encoding="utf-8") as f:
-                    training_code = f.read()
-                    training_filename = os.path.basename(fpath)
-                    break
-            except Exception:
-                pass
 
+    if not chosen_file_path:
+        print("─" * 72)
+        print("  📁 [Training Architecture Setup]")
+        print("  Select training code for this participant node:")
+        print("    [1] Sync Active Model from Platform (No local file needed)")
+        print("    [2] Select or enter local Python model file (.py)")
+        
+        choice = prompt_tty("  👉 Enter choice [1]: ", "1")
+        if choice == "2":
+            custom_input = prompt_tty("  📝 Enter path to training code file (.py): ", "").strip()
+            if custom_input and os.path.exists(custom_input):
+                chosen_file_path = custom_input
+            else:
+                print(f"  ⚠️  File '{custom_input}' not found. Using Platform Active Model.")
+                training_code = active_platform_code
+                training_filename = active_platform_filename
+        else:
+            training_code = active_platform_code
+            training_filename = active_platform_filename
+
+    # If chosen_file_path was specified
+    if chosen_file_path and os.path.exists(chosen_file_path):
+        try:
+            with open(chosen_file_path, "r", encoding="utf-8") as f:
+                training_code = f.read()
+                training_filename = os.path.basename(chosen_file_path)
+        except Exception as e:
+            print(f"  ⚠️  Could not read '{chosen_file_path}': {e}")
+
+    # Fallback to local candidates if still empty
+    if not training_code:
+        candidates = [
+            os.path.join(os.getcwd(), "Cybronites", "client", "model.py"),
+            os.path.join(os.getcwd(), "client", "model.py"),
+            os.path.join(os.getcwd(), "model.py"),
+        ]
+        for fpath in candidates:
+            if os.path.exists(fpath):
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        training_code = f.read()
+                        training_filename = os.path.basename(fpath)
+                        break
+                except Exception:
+                    pass
+
+    # Ultimate embedded fallback
     if not training_code:
         training_code = """import torch
 import torch.nn as nn
@@ -288,20 +325,10 @@ class MNISTNet(nn.Module):
     # Dynamic Model Instantiation from Loaded Code
     local_model, model_class_name = load_dynamic_model(training_code)
 
-    if not sys.stdin.isatty() or args.file:
-        print("""
-╔════════════════════════════════════════════════════════════════════════╗
-║    🛡️ SECURE FEDERATED LEARNING & BLOCKCHAIN CLIENT NODE               ║
-║    Privacy-Preserving Training • Local Computation • Smart Contracts   ║
-╚════════════════════════════════════════════════════════════════════════╝
-""")
-    print(f"  🖥️  Device Node:     {node_name}")
-    print(f"  ⚡ Compute Engine:   {device_type} (PyTorch {torch.__version__ if HAVE_TORCH else 'NumPy'})")
     print(f"  🧠 Model Class:      {model_class_name}")
     print(f"  🔒 Privacy:          Local Differential Privacy (L2-Clip + Gaussian)")
     print(f"  📜 Training File:    {training_filename} ({len(training_code.splitlines())} lines)")
     print(f"  🔑 Code Checksum:    SHA-256: 0x{code_checksum[:16]}...")
-    print(f"  🌐 Coordinator:      {server_url}")
     print("─" * 72)
 
     # 1. Register with Coordinator and Submit Code for Full Transparency

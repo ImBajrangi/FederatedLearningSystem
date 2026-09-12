@@ -918,6 +918,7 @@ async def get_distributed_connection_info():
     }
 
 @app.get("/join.py")
+@app.get("/join")
 @app.get("/connect")
 async def serve_join_script():
     """Serves the standalone 1-command client join script."""
@@ -927,7 +928,7 @@ async def serve_join_script():
     ]
     for path in candidates:
         if os.path.exists(path):
-            return FileResponse(path, media_type="text/x-python", filename="join.py")
+            return FileResponse(path, media_type="text/plain; charset=utf-8", filename="join.py")
     return {"error": "join.py script not found on host."}
 
 # ── Real-Time Blockchain API Endpoints ──
