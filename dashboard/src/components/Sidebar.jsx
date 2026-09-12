@@ -22,13 +22,18 @@ export const Sidebar = ({ currentView, setView, clients = [], nodeRegistry = {},
   const { user, displayName, profile } = useAuth();
   const userEmail = user?.email || 'guest@node.local';
   const userInitials = displayName?.slice(0, 2)?.toUpperCase() || 'RN';
-  const activeCount = clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length;
-  const nodeCount = Object.keys(nodeRegistry).length || clients.length || 0;
+  
+  // Real live telemetry calculations
+  const regEntries = Object.entries(nodeRegistry || {});
+  const nodeCount = regEntries.length;
+  const activeCount = regEntries.filter(([_, n]) => ['CONNECTED', 'ACTIVE', 'BUSY', 'TRAINING'].includes(n.status)).length;
 
-  const yieldValue = blockchain && blockchain.length > 1
-    ? (100 - (rejectedCount / (blockchain.length - 1) * 100)).toFixed(1)
-    : "100.0";
-  const powerValue = (activeCount * 0.4 + 0.2).toFixed(1);
+  const totalTx = (blockchain || []).reduce((acc, blk) => acc + (blk.transactions ? blk.transactions.length : 0), 0);
+  const yieldValue = totalTx > 0
+    ? Math.max(0, Math.min(100, ((totalTx - (rejectedCount || 0)) / totalTx) * 100)).toFixed(1)
+    : (nodeCount > 0 ? "100.0" : "0.0");
+
+  const powerValue = nodeCount === 0 ? "0.0" : (activeCount * 1.25 + (blockchain && blockchain.length > 1 ? 0.35 : 0.0)).toFixed(1);
 
   const navItems = [
     { id: 'dashboard', label: 'Academic Progress', num: '01', icon: LayoutDashboard },

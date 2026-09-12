@@ -53,14 +53,25 @@ export function useSecureFederated() {
 
   const ws = useRef(null);
 
-  const updateClientStatus = useCallback((currentStatus, numActive = 2) => {
-    setClients(Array.from({ length: 8 }, (_, i) => ({
-      id: `NODE-${i}`,
-      org: ['Hospital', 'FinTech', 'AutoDrive', 'Retail', 'Logistics', 'HealthAI', 'EdTech', 'GovNet'][i % 8],
-      status: i < numActive ? (['TRAINING', 'AGGREGATING'].includes(currentStatus) ? 'BUSY' : 'ACTIVE') : 'IDLE',
-      reputation: 100
-    })));
-    setClientsActive(numActive);
+  const updateClientStatus = useCallback((currentStatus, numActive = 0, registry = {}) => {
+    const regEntries = Object.entries(registry || {});
+    if (regEntries.length > 0) {
+      const realClients = regEntries.map(([id, info]) => ({
+        id,
+        name: info.name || `Node-${id.substring(0, 6)}`,
+        org: info.name || 'Participant Node',
+        ip: info.ip || '127.0.0.1',
+        status: info.status || (['TRAINING', 'AGGREGATING'].includes(currentStatus) ? 'BUSY' : 'CONNECTED'),
+        reputation: info.reputation !== undefined ? info.reputation : 100,
+        filename: info.filename || 'model.py',
+        code_hash: info.code_hash || info.hash
+      }));
+      setClients(realClients);
+      setClientsActive(realClients.filter(c => ['CONNECTED', 'ACTIVE', 'BUSY', 'TRAINING'].includes(c.status)).length);
+    } else {
+      setClients([]);
+      setClientsActive(0);
+    }
   }, []);
 
   const onMessage = useCallback((event) => {
@@ -79,7 +90,8 @@ export function useSecureFederated() {
           setLossHistory(state.loss_history || []);
           setLogs(initialLogs.map(l => ({ msg: `${l}`, color: '#64748b' })));
           if (state.chain) setBlockchain(state.chain);
-          if (state.node_registry) setNodeRegistry(state.node_registry);
+          const currentRegistry = state.node_registry || {};
+          setNodeRegistry(currentRegistry);
           if (state.hyperparams) setHyperparams(state.hyperparams);
           if (state.round_history) {
              setRoundHistory(state.round_history.map(r => ({
@@ -102,28 +114,37 @@ export function useSecureFederated() {
               status: state.status,
               round: state.round ?? prev.round,
               totalRounds: state.total_rounds ?? prev.totalRounds,
-              registeredClients: state.clients_active ?? prev.registeredClients,
+              registeredClients: Object.keys(currentRegistry).length || state.clients_active || 0,
               updatesReceived: state.updates_received ?? prev.updatesReceived,
               updatesNeeded: state.updates_needed ?? prev.updatesNeeded,
             }));
           }
 
-          updateClientStatus(state.status, state.clients_active);
+          updateClientStatus(state.status, state.clients_active, currentRegistry);
           break;
         }
 
         case 'STAT_UPDATE': {
           console.log("STAT_UPDATE", payload);
           if (payload.round !== undefined) setRound(payload.round);
-          if (payload.status !== undefined) {
-            setStatus(payload.status);
-            setIsActive(['TRAINING', 'AGGREGATING', 'MINING'].includes(payload.status));
-            updateClientStatus(payload.status, payload.clients_active);
-          }
           if (payload.accuracy_history !== undefined) setAccuracyHistory(payload.accuracy_history);
           if (payload.loss_history !== undefined) setLossHistory(payload.loss_history);
           if (payload.chain !== undefined) setBlockchain(payload.chain);
-          if (payload.node_registry !== undefined) setNodeRegistry(payload.node_registry);
+          
+          let currentRegistry = nodeRegistry;
+          if (payload.node_registry !== undefined) {
+            currentRegistry = payload.node_registry;
+            setNodeRegistry(payload.node_registry);
+          }
+          
+          if (payload.status !== undefined) {
+            setStatus(payload.status);
+            setIsActive(['TRAINING', 'AGGREGATING', 'MINING'].includes(payload.status));
+            updateClientStatus(payload.status, payload.clients_active, currentRegistry);
+          } else if (payload.node_registry !== undefined) {
+            updateClientStatus(status, payload.clients_active, currentRegistry);
+          }
+          
           if (payload.hyperparams) setHyperparams(payload.hyperparams);
           if (payload.round_history) {
             setRoundHistory(

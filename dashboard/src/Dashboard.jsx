@@ -204,8 +204,8 @@ function Dashboard() {
                   </div>
                   <div className="p-8 space-y-6">
                     <div className="flex justify-between items-center pb-6 border-b border-border/50">
-                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Active Shards</span>
-                      <span className="type-label text-primary font-bold">{clients.filter(c => c.status === 'ACTIVE' || c.status === 'BUSY').length} / 8</span>
+                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Active Nodes</span>
+                      <span className="type-label text-primary font-bold">{clients.filter(c => ['CONNECTED', 'ACTIVE', 'BUSY', 'TRAINING'].includes(c.status)).length} / {Math.max(clients.length, 1)}</span>
                     </div>
                     <div className="flex justify-between items-center pb-6 border-b border-border/50">
                       <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Rounds Synced</span>
