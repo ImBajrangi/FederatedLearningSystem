@@ -923,12 +923,23 @@ async def get_distributed_connection_info():
 async def serve_join_script():
     """Serves the standalone 1-command client join script."""
     candidates = [
+        "/app/join.py",
         os.path.join(os.getcwd(), "join.py"),
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "join.py"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "join.py"),
     ]
     for path in candidates:
         if os.path.exists(path):
             return FileResponse(path, media_type="text/plain; charset=utf-8", filename="join.py")
+    
+    # Try reading from current workspace if available
+    try:
+        with open("join.py", "r", encoding="utf-8") as f:
+            from starlette.responses import PlainTextResponse
+            return PlainTextResponse(f.read(), media_type="text/plain; charset=utf-8")
+    except Exception:
+        pass
+
     return {"error": "join.py script not found on host."}
 
 # ── Real-Time Blockchain API Endpoints ──
